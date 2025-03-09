@@ -1,0 +1,93 @@
+//
+//  HomeRaces.swift
+//  Tribuneros
+//
+//  Created by albert vila on 19/2/25.
+//
+
+import SwiftUI
+
+extension HomeRaces {
+    
+    enum ViewState {
+        case idle
+        case loading
+        case loaded(Representable)
+        case error(ErrorView)
+        
+        var result: Representable {
+            guard case .loaded(let result) = self else {
+                return .init(sections: .init(title: "", nextToFinish: [], racesFinished: [], yesterdayResults: []))
+            }
+            return result
+        }
+    }
+    
+    struct Representable {
+        struct Section: Identifiable {
+            let id = UUID()
+            let title: String
+            let nextToFinish: [RaceNext]
+            let racesFinished: [TodayRaceFinished]
+            let yesterdayResults: [TodayRaceFinished]
+        }
+        struct TodayRaceFinished: Identifiable {
+            /*
+             let raceDetails: String
+             let winner: URL?
+             let podium: [Winner]
+             let additionalDetails: [AdditionalDetails]
+             */
+            struct Winner: Identifiable {
+                let id = UUID()
+                let position: String
+                let flag: URL?
+                let name: String
+                let team: String
+                let time: String
+            }
+            let id = UUID()
+            
+            let race: String
+            let winnerImgURL: URL?
+            let podium: [Winner]
+            let isCancel: Bool
+        }
+        struct RaceNext: Identifiable {
+            let id = UUID()
+            
+            let eta: String
+            let duration: String
+            let name: String
+            let category: String
+            let distance: String
+        }
+        let sections: Section
+    }
+    
+    enum Action: Hashable, Sendable {
+        case onAppear
+        case onDisappear
+        case request(date: Date)
+        case selectedHomeStation(String)
+    }
+    
+    enum ErrorView: Error {
+        case missingStationCode
+        case networkFailure
+        
+        /*
+        init(stationInteractorError: HomeStationInteractorImpl.ErrorReason) {
+            switch stationInteractorError {
+            case .missingCode:
+                self = .missingStationCode
+            default:
+                self = .networkFailure
+            }
+        }*/
+    }
+}
+
+//#Preview {
+//    HomeRaces.MainView()
+//}
