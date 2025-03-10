@@ -57,22 +57,35 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
                 return .error(.networkFailure)
             } else {
                 let nextToFinish = domain.nextToFinishRaces.map {
-                    HomeRaces.Representable.RaceNext(eta: $0.eta, duration: $0.duration, name: $0.name, category: $0.category, distance: $0.distance)
+                    HomeRaces.Representable.RaceNext(
+                        eta: $0.eta,
+                        duration: $0.duration,
+                        name: $0.name,
+                        category: $0.category,
+                        distance: $0.distance
+                    )
                 }
                 let todayRaces = domain.todayRaces.map { race in
-                    HomeRaces.Representable.TodayRaceFinished(
+                    HomeRaces.Representable.RaceFinished(
                         race: race.raceDetails,
                         winnerImgURL: race.winner,
                         podium: race.podium.map {
-                            HomeRaces.Representable.TodayRaceFinished.Winner(position: $0.position, flag: nil, name: $0.name, team: $0.team, time: $0.time) },
+                            HomeRaces.Representable.RaceFinished.Winner(
+                                position: $0.position,
+                                flag: nil,
+                                name: $0.name,
+                                team: $0.team,
+                                time: $0.time
+                            )
+                        },
                         isCancel: false)
                 }
                 let yesterdayResults = domain.yesterdayResults.map { race in
-                    HomeRaces.Representable.TodayRaceFinished(
+                    HomeRaces.Representable.RaceFinished(
                         race: race.raceDetails,
                         winnerImgURL: race.winner,
                         podium: race.podium.map {
-                            HomeRaces.Representable.TodayRaceFinished.Winner(position: $0.position, flag: nil, name: $0.name, team: $0.team, time: $0.time) },
+                            HomeRaces.Representable.RaceFinished.Winner(position: $0.position, flag: nil, name: $0.name, team: $0.team, time: $0.time) },
                         isCancel: false)
                 }
                 return .loaded(

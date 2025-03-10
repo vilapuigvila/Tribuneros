@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension HomeRaces {
+enum HomeRaces {
     
     enum ViewState {
         case idle
@@ -28,10 +28,10 @@ extension HomeRaces {
             let id = UUID()
             let title: String
             let nextToFinish: [RaceNext]
-            let racesFinished: [TodayRaceFinished]
-            let yesterdayResults: [TodayRaceFinished]
+            let racesFinished: [RaceFinished]
+            let yesterdayResults: [RaceFinished]
         }
-        struct TodayRaceFinished: Identifiable {
+        struct RaceFinished: Identifiable {
             /*
              let raceDetails: String
              let winner: URL?
