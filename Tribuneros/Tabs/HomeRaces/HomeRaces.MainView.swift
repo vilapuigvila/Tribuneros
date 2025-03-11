@@ -41,7 +41,7 @@ extension HomeRaces {
                         ScrollView {
                             LazyVGrid(columns: columns, spacing: 16) {
                                 if !representable.sections.nextToFinish.isEmpty {
-                                    NextToFinishView(races: representable.sections.nextToFinish)
+                                    NextToFinishRaceView(races: representable.sections.nextToFinish)
                                         .background(Color.green.opacity(0.2))
                                         .frame(height: heightCardView)
                                         .cornerRadius(8)
@@ -49,12 +49,93 @@ extension HomeRaces {
                                     buildNoResultsCardView()
                                 }
                                 if !representable.sections.racesFinished.isEmpty {
-                                    Text("results")
+                                    VStack(spacing: 2) {
+                                        buildTitleNextToFinishCardView("Results today")
+                                        
+                                        ForEach(representable.sections.racesFinished) { race in
+                                            GeometryReader { geometry in
+                                                
+                                            }
+                                            VStack(spacing: 0) {
+                                                HStack(alignment: .top, spacing: 8) {
+                                                    AsyncImageView(url: race.winnerImgURL)
+                                                        .frame(width: 35, height: 112*0.41)
+                                                        .padding(.leading, 8)
+                                                    
+                                                    VStack(alignment: .leading, spacing: 0) {
+                                                        Text(race.race)
+                                                            .font(.system(size: 11, weight: .bold, design: .default))
+                                                            .lineLimit(1)
+                                                        ForEach(race.podium) { podium in
+                                                            HStack(spacing: 6) {
+                                                                Text(podium.position)
+                                                                    .font(.system(size: 9, weight: .regular, design: .default))
+                                                                Text(podium.name)
+                                                                    .font(.system(size: 9, weight: .regular, design: .default))
+                                                                Text(podium.team)
+                                                                    .font(.system(size: 9, weight: .regular, design: .default))
+                                                            }
+                                                        }
+                                                        Spacer()
+                                                    }
+                                                    Spacer()
+                                                }
+                                                Spacer()
+                                            }
+                                            .padding(.top, 4)
+//                                            Spacer()
+                                        }
+                                        .background(Color.purple.opacity(0.2))
+//                                        .padding(.top, 4)
+                                    }
+                                    .background(Color.green.opacity(0.2))
+//                                    .frame(height: heightCardView)
+                                    .cornerRadius(8)
                                 } else {
                                     buildNoResultsCardView()
                                 }
                                 if !representable.sections.yesterdayResults.isEmpty {
-                                    Text("results")
+                                    VStack(spacing: 2) {
+                                        buildTitleNextToFinishCardView("Results yesterday")
+                                        
+                                        ForEach(representable.sections.yesterdayResults) { race in
+                                            VStack(spacing: 0) {
+                                                HStack(alignment: .top, spacing: 8) {
+                                                    AsyncImageView(url: race.winnerImgURL)
+                                                        .frame(width: 35, height: 112*0.41)
+//                                                        .aspectRatio(contentMode: .fit)
+//                                                        .padding(.vertical, 16)
+                                                        .padding(.leading, 8)
+                                                    
+                                                    VStack(alignment: .leading, spacing: 0) {
+                                                        Text(race.race)
+                                                            .lineLimit(1)
+                                                            .font(.system(size: 11, weight: .bold, design: .default))
+                                                        ForEach(race.podium) { podium in
+                                                            HStack(spacing: 6) {
+                                                                Text(podium.position)
+                                                                    .font(.system(size: 9, weight: .regular, design: .default))
+                                                                Text(podium.name)
+                                                                    .font(.system(size: 9, weight: .regular, design: .default))
+                                                                Text(podium.team)
+                                                                    .font(.system(size: 9, weight: .regular, design: .default))
+                                                            }
+                                                        }
+                                                        Spacer()
+                                                    }
+                                                    Spacer()
+                                                }
+                                                Spacer()
+                                            }
+                                            .padding(.top, 4)
+//                                            Spacer()
+                                        }
+//                                        .background(Color.purple.opacity(0.2))
+//                                        .padding(.top, 4)
+                                    }
+                                    .background(Color.green.opacity(0.2))
+//                                    .frame(height: heightCardView)
+                                    .cornerRadius(8)
                                 } else {
                                     buildNoResultsCardView()
                                 }
@@ -71,46 +152,6 @@ extension HomeRaces {
                 action(.onAppear)
             }
         }
-//        private let paddingHorizontal = 8.0
-//        private func buildNextToFinish(_ races: [HomeRaces.Representable.RaceNext]) -> some View {
-//            GeometryReader { proxy in
-//                VStack(spacing: 0) {
-//                    buildTitleNextToFinishCardView()
-//                    
-//                    buildHeaderNextToFinishSection(proxy.size.width)
-//                        .padding(.top, 6)
-//                        .padding(.bottom, 2)
-//	                    .frame(width: proxy.size.width)
-//                    
-//                    Spacer()
-//                    
-//                    ForEach(Array(races.prefix(2))) { item in
-//                        VStack(spacing: 0) {
-//                            HStack(spacing: 0) {
-//                                buildTextForRaceFinishedValue(item.eta, width: proxy.size.width * 0.14)
-//                                buildTextForRaceFinishedValue(item.duration, width: proxy.size.width * 0.09)
-//                                    .foregroundStyle(.purple)
-//                                buildTextForRaceFinishedValue(item.name, width: proxy.size.width * 0.54)
-//                                buildTextForRaceFinishedValue(item.category, width: proxy.size.width * 0.0925)
-//                                buildTextForRaceFinishedValue(item.distance, width: proxy.size.width * 0.0925)
-//                            }
-//                            .frame(width: proxy.size.width)
-//                            Spacer()
-//                        }
-//                    }
-//                    Spacer()
-//                    
-//                    Text("+ info")
-//                        .font(.system(size: 9, weight: .bold, design: .default))
-//                        .foregroundStyle(.link)
-//                        .frame(alignment: .bottomLeading)
-//                        .offset(y: -6)
-//                }
-//            }
-//            .background(Color.green.opacity(0.2))
-//            .frame(height: heightCardView)
-//            .cornerRadius(8)
-//        }
         
         private func buildNoResultsCardView() -> some View {
             Text("No results")
@@ -119,63 +160,61 @@ extension HomeRaces {
                 .background(Color.blue.opacity(0.2))
                 .cornerRadius(8)
         }
-//        
-//        private func buildTitleNextToFinishCardView() -> some View {
-//            Group {
-//                HStack {
-//                    Text("Next to finish")
-//                        .font(.system(size: 16, weight: .bold, design: .default))
-//                        .padding(.top, 12)
-//                        .padding(.horizontal, paddingHorizontal)
-//                    Spacer()
-//                }
-//                Rectangle()
-//                    .fill(Color.gray.opacity(0.3))
-//                    .frame(height: 0.5)
-//                    .frame(maxWidth: .infinity)
-//                    .padding(.horizontal, paddingHorizontal)
-//                    .padding(.top, 12)
-//            }
-//        }
         
-//        private func buildTextForRaceFinishedValue(_ text: String, width: CGFloat) -> some View {
-//            Text(text)
-//                .font(.system(size: 11, weight: .bold, design: .default))
-//                .lineLimit(1)
-//                .frame(width: width, alignment: .leading)
-//        }
-        
-//        private func buildTextForHeaderView(_ text: String, width: CGFloat) -> some View {
-//            Text(text)
-//                .font(.system(size: 11, weight: .regular, design: .monospaced))
-//                .foregroundStyle(.gray)
-//                .frame(width: width, alignment: .leading)
-//                .background(.gray.opacity(0.1))
-//        }
-        
-//        private func buildHeaderNextToFinishSection(_ width: CGFloat) -> some View {
-//            HStack(spacing: 0) {
-//                buildTextForHeaderView("ETA", width: width * 0.23)
-//                buildTextForHeaderView("Race", width: width * 0.53)
-//                buildTextForHeaderView("CAT.", width: width * 0.0925)
-//                buildTextForHeaderView("KM", width: width * 0.0925)
-//            }
-//        }
+        private func buildTitleNextToFinishCardView(_ title: String) -> some View {
+            Group {
+                HStack {
+                    Text(title)
+                        .font(.system(size: 16, weight: .bold, design: .default))
+                        .padding(.top, 12)
+                        .padding(.horizontal, 8)
+                    Spacer()
+                }
+                Rectangle()
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(height: 0.5)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 8)
+                    .padding(.top, 12)
+            }
+        }
     }
 }
 
 #Preview("Loaded") {
     let nextToFinish: [HomeRaces.Representable.RaceNext] = [
-        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Strade Bianche Home", category: "UCI", distance: "215"),
-        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Strade Bianche Donne", category: "UCI", distance: "215"),
-        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "paris Nice", category: "UCI", distance: "215"),
-        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Tirreno", category: "UCI", distance: "215")
+        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Strade Bianche Home", category: "UCI", raceType: "2.UWT", distance: "215"),
+        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Strade Bianche Donne", category: "UCI", raceType: "2.UWT", distance: "215"),
+        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "paris Nice", category: "UCI", raceType: "2.UWT", distance: "215"),
+        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Tirreno", category: "UCI", raceType: "2.UWT", distance: "215")
+    ]
+    let finished: [HomeRaces.Representable.RaceFinished] = [
+        HomeRaces.Representable.RaceFinished(
+            race: "Paris-Nice fjdkjfdk fjdkjf dfjdkfj fjdkfjdkf 1212ds21sd fdf fdf f",
+            winnerImgURL: URL(string: "https://www.procyclingstats.com/images/riders/bp/ee/filippo-ganna-2025.jpg")!,
+            podium: [
+                HomeRaces.Representable.RaceFinished.Winner(position: "1", flag: nil, name: "Pipo Ganna", team: "Ineos", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "2", flag: nil, name: "Pipo Ganna", team: "Ineos", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "3", flag: nil, name: "Pipo Ganna", team: "Ineos", time: "24:12")
+            ],
+            isCancel: false
+        ),
+        HomeRaces.Representable.RaceFinished(
+            race: "Tirreno",
+            winnerImgURL: URL(string: "https://www.procyclingstats.com/images/riders/bp/ee/filippo-ganna-2025.jpg")!,
+            podium: [
+                HomeRaces.Representable.RaceFinished.Winner(position: "1", flag: nil, name: "Matthieu", team: "Ineos", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "2", flag: nil, name: "Derek Gee", team: "Ineos", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "3", flag: nil, name: "Adam Yates", team: "Ineos", time: "24:12")
+            ],
+            isCancel: false
+        )
     ]
     let repre = HomeRaces.Representable(
         sections: HomeRaces.Representable.Section(
             title: "",
             nextToFinish: nextToFinish,
-            racesFinished: [],
+            racesFinished: finished,
             yesterdayResults: []
         )
     )

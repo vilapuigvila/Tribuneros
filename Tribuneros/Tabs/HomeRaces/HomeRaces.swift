@@ -60,6 +60,7 @@ enum HomeRaces {
             let duration: String
             let name: String
             let category: String
+            let raceType: String
             let distance: String
         }
         let sections: Section

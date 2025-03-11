@@ -23,6 +23,7 @@ enum DTO {
         let duration: String
         let name: String
         let category: String
+        let raceType: String
         let distance: String
         
         static func parse(cells: [[String]]) -> [NextToFinishResult] {
@@ -37,7 +38,7 @@ enum DTO {
                - 6 : "109"
              */
             cells.compactMap {
-                NextToFinishResult(eta: $0[1], duration: $0[2], name: $0[3], category: $0[4], distance: $0[6])
+                NextToFinishResult(eta: $0[1], duration: $0[2], name: $0[3], category: $0[4], raceType: $0[5], distance: $0[6])
             }
         }
     }
@@ -74,8 +75,7 @@ struct Requester {
             
             let document = try SwiftSoup.parse(htmlContent)
             let nextToFinishResults = parseNextToFinishResults(document)
-//            let todayResults = try parseResultsToday(document)
-            let todayResults = parseResultsTodayV2(from: document)
+            let todayResults = parseResultsToday(from: document)
             let yesterdayResults = try parseResultsYesterday(document)
             return DTO.Home(nextToFinish: nextToFinishResults, today: todayResults, yesterdayResults: yesterdayResults)
             
@@ -113,7 +113,7 @@ struct Requester {
         }
         return DTO.NextToFinishResult.parse(cells: results)
     }
-    
+    /*
     private static func parseResultsToday(_ document: Document) throws -> [DTO.TodayResult] {
         if let resultsTodayHeader = try document.select("h3.black-info-title:contains(Results today)").first() {
             // Get its next sibling element – the container with the details
@@ -218,10 +218,10 @@ struct Requester {
         assertionFailure()
         return []
     }
-
+*/
     // MARK: - Parsing Function -
 
-    static func parseResultsTodayV2(from document: Document) -> [DTO.TodayResult] {
+    static func parseResultsToday(from document: Document) -> [DTO.TodayResult] {
         var results = [DTO.TodayResult]()
         let baseUrl = "https://www.procyclingstats.com/"
         

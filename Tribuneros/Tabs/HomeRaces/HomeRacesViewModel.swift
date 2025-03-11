@@ -62,9 +62,13 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
                         duration: $0.duration,
                         name: $0.name,
                         category: $0.category,
+                        raceType: $0.raceType,
                         distance: $0.distance
                     )
                 }
+                let nextToFinishSorted = nextToFinish.filter { $0.raceType.contains("UWT") }
+                    + nextToFinish.filter { !$0.raceType.contains("UWT") }
+                
                 let todayRaces = domain.todayRaces.map { race in
                     HomeRaces.Representable.RaceFinished(
                         race: race.raceDetails,
@@ -78,21 +82,30 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
                                 time: $0.time
                             )
                         },
-                        isCancel: false)
+                        isCancel: false
+                    )
                 }
                 let yesterdayResults = domain.yesterdayResults.map { race in
                     HomeRaces.Representable.RaceFinished(
                         race: race.raceDetails,
                         winnerImgURL: race.winner,
                         podium: race.podium.map {
-                            HomeRaces.Representable.RaceFinished.Winner(position: $0.position, flag: nil, name: $0.name, team: $0.team, time: $0.time) },
-                        isCancel: false)
+                            HomeRaces.Representable.RaceFinished.Winner(
+                                position: $0.position,
+                                flag: nil,
+                                name: $0.name,
+                                team: $0.team,
+                                time: $0.time
+                            )
+                        },
+                        isCancel: false
+                    )
                 }
                 return .loaded(
                     HomeRaces.Representable(
                         sections: .init(
                             title: "",
-                            nextToFinish: nextToFinish,
+                            nextToFinish: nextToFinishSorted,
                             racesFinished: todayRaces,
                             yesterdayResults: yesterdayResults
                         )

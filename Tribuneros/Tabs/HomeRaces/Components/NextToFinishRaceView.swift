@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct NextToFinishView: View {
+struct NextToFinishRaceView: View {
     let races: [HomeRaces.Representable.RaceNext]
     
     var body: some View {
@@ -97,9 +97,9 @@ struct NextToFinishView: View {
 
 #Preview {
     let races: [HomeRaces.Representable.RaceNext] = [
-        HomeRaces.Representable.RaceNext(eta: "12:34", duration: "2H", name: "Paris-Nice", category: "UCI", distance: "190"),
-        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Tour du France", category: "UCI", distance: "230")
+        HomeRaces.Representable.RaceNext(eta: "12:34", duration: "2H", name: "Paris-Nice", category: "UCI", raceType: "2.UWT", distance: "190"),
+        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Tour du France", category: "UCI", raceType: "2.UWT", distance: "230")
     ]
-    NextToFinishView(races: races)
+    NextToFinishRaceView(races: races)
     Spacer()
 }
