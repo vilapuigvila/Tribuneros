@@ -47,6 +47,7 @@ enum DTO {
         struct Winner: Codable, Equatable {
             let position: String
             let flag: URL?
+            let countryCode: String?
             let name: String
             let team: String
             let time: String
@@ -257,37 +258,95 @@ struct Requester {
                 }
                 
                 // 3. Parse the podium winners from the table with class "top3"
+                
+                /*
                 var podiumWinners = [DTO.TodayResult.Winner]()
                 if let podiumRows = try? race.select("table.top3 > tbody > tr").array() {
                     for row in podiumRows {
                         let cells = try row.select("td").array()
-                        if cells.count >= 4 {
+                        if cells.count >= 3 {
                             let position = try cells[0].text()
                             
                             // Get the flag URL from the <span class="flag"> inside the second cell.
-                            var flagURL: URL? = nil
-                            if let flagSpan = try? cells[1].select("span.flag").first() {
-                                // The flag code is expected to be in one of the classes besides "flag"
-                                let classes = try flagSpan.className().split(separator: " ").map(String.init)
-                                if let code = classes.first(where: { $0.lowercased() != "flag" }) {
-                                    // Compose a full URL to the flag image (adjust the path as needed)
-                                    flagURL = URL(string: baseUrl + "images/flags/" + code + ".png")
+                            let flagSpan: (countryCode: String?, urlFlag: URL?) = {
+                                guard let flagSpan = try? cells[1].select("span.flag").first(),
+                                      let classes = try? flagSpan.className().split(separator: " ").map(String.init),
+                                      let code = classes.first(where: { $0.lowercased() != "flag" })
+                                else {
+                                    return (nil, nil)
                                 }
-                            }
+                                return (code, URL(string: baseUrl + "images/flags/" + code + ".png"))
+                            }()
+
+                            let raceInfo: (name: String, team: String, time: String) = {
+                                if cells.count == 3 {
+                                    let name = try! cells[1].select("a").text()
+                                    let team = ""
+                                    let time = try! cells[2].text()
+                                    return (name, team, time)
+                                } else {
+                                    let name = try! cells[1].select("a").text()
+                                    let team = try! cells[2].select("a").text()
+                                    let time = try! cells[3].text()
+                                    return (name, team, time)
+                                }
+                            }()
                             
-                            let name = try cells[1].select("a").text()
-                            let team = try cells[2].select("a").text()
-                            let time = try cells[3].text()
-                            
-                            let winner = DTO.TodayResult.Winner(position: position,
-                                                            flag: flagURL,
-                                                            name: name,
-                                                            team: team,
-                                                            time: time)
+                            let winner = DTO.TodayResult.Winner(
+                                position: position,
+                                flag: flagSpan.urlFlag,
+                                countryCode: flagSpan.countryCode,
+                                name: raceInfo.name,
+                                team: raceInfo.team,
+                                time: raceInfo.time
+                            )
                             podiumWinners.append(winner)
                         }
                     }
-                }
+                }*/
+                let podiumWinners: [DTO.TodayResult.Winner] = {
+                    guard let podiumRows = try? race.select("table.top3 > tbody > tr").array() else {
+                        return []
+                    }
+                    return podiumRows.compactMap { row in
+                        guard let cells = try? row.select("td").array(), cells.count >= 3 else {
+                            return nil
+                        }
+                        guard let position = try? cells[0].text() else {
+                            return nil
+                        }
+                        let flagSpan: (countryCode: String?, urlFlag: URL?) = {
+                            guard let flagSpan = try? cells[1].select("span.flag").first(),
+                                  let classes = try? flagSpan.className().split(separator: " ").map(String.init),
+                                  let code = classes.first(where: { $0.lowercased() != "flag" })
+                            else {
+                                return (nil, nil)
+                            }
+                            return (code, URL(string: baseUrl + "images/flags/" + code + ".png"))
+                        }()
+                        let raceInfo: (name: String?, team: String?, time: String?) = {
+                            if cells.count == 3 {
+                                let name = try? cells[1].select("a").text()
+                                let team = ""
+                                let time = try? cells[2].text()
+                                return (name, team, time)
+                            } else {
+                                let name = try? cells[1].select("a").text()
+                                let team = try? cells[2].select("a").text()
+                                let time = try? cells[3].text()
+                                return (name, team, time)
+                            }
+                        }()
+                        return DTO.TodayResult.Winner(
+                            position: position,
+                            flag: flagSpan.urlFlag,
+                            countryCode: flagSpan.countryCode,
+                            name: raceInfo.name ?? "",
+                            team: raceInfo.team ?? "",
+                            time: raceInfo.time ?? ""
+                        )
+                    }
+                }()
                 
                 // 4. Parse additional details from the <ul class="leaders">
                 var additionalDetails = [DTO.TodayResult.AdditionalDetails]()
@@ -353,55 +412,63 @@ struct Requester {
                }
                
                // 3. Parse the podium winners from the table with class "top3"
-               var podiumWinners = [DTO.TodayResult.Winner]()
-               if let podiumRows = try? race.select("table.top3 > tbody > tr").array() {
-                   for row in podiumRows {
-                       let tds = try row.select("td").array()
-                       if tds.count >= 4 {
-                           let position = try tds[0].text()
-                           
-                           // Extract the flag from the <span class="flag ...">.
-                           // (We assume that flags are shown via a class and that you build the URL from a known path.)
-                           var flagUrl: URL? = nil
-                           if let flagSpan = try? tds[1].select("span.flag").first() {
-                               // For example, if the span’s class is "flag no", we extract "no" as the flag code.
-                               let classes = try flagSpan.className().split(separator: " ").map(String.init)
-                               if let code = classes.first(where: { $0 != "flag" }) {
-                                   flagUrl = URL(string: baseUrl + "images/flags/" + code + ".png")
-                               }
-                           }
-                           
-                           // The winner's name is the text of the <a> inside the second td.
-                           let name = try tds[1].select("a").text()
-                           // The team is in the third td.
-                           let team = try tds[2].select("a").text()
-                           // The time is in the fourth td.
-                           let time = try tds[3].text()
-                           
-                           let winnerDTO = DTO.TodayResult.Winner(position: position,
-                                                                flag: flagUrl,
-                                                                name: name,
-                                                                team: team,
-                                                                time: time)
-                           podiumWinners.append(winnerDTO)
-                       }
+               let podiumWinners: [DTO.TodayResult.Winner] = {
+                   guard let podiumRows = try? race.select("table.top3 > tbody > tr").array() else {
+                       return []
                    }
-               }
+                   return podiumRows.compactMap { row in
+                       guard let tds = try? row.select("td").array(), tds.count >= 3 else {
+                           return nil
+                       }
+                       guard let position = try? tds[0].text() else {
+                           return nil
+                       }
+                       let flagSpan: (countryCode: String?, urlFlag: URL?) = {
+                           guard let flagSpan = try? tds[1].select("span.flag").first(),
+                                 let classes = try? flagSpan.className().split(separator: " ").map(String.init),
+                                 let code = classes.first(where: { $0.lowercased() != "flag" })
+                           else {
+                               return (nil, nil)
+                           }
+                           return (code, URL(string: baseUrl + "images/flags/" + code + ".png"))
+                       }()
+                       let raceInfo: (name: String?, team: String?, time: String?) = {
+                           if tds.count == 3 {
+                               let name = try? tds[1].select("a").text()
+                               let team = ""
+                               let time = try? tds[2].text()
+                               return (name, team, time)
+                           } else {
+                               let name = try? tds[1].select("a").text()
+                               let team = try? tds[2].select("a").text()
+                               let time = try? tds[3].text()
+                               return (name, team, time)
+                           }
+                       }()
+                       return DTO.TodayResult.Winner(
+                           position: position,
+                           flag: flagSpan.urlFlag,
+                           countryCode: flagSpan.countryCode,
+                           name: raceInfo.name ?? "#",
+                           team: raceInfo.team ?? "#",
+                           time: raceInfo.time ?? "#"
+                       )
+                   }
+               }()
                
                // 4. Parse additional details from the <ul class="leaders">.
-               var additionalDetails = [DTO.TodayResult.AdditionalDetails]()
-               if let leaderItems = try? race.select("ul.leaders > li").array() {
-                   for leader in leaderItems {
-                       // The <div> inside has a "data-stage_type" attribute.
-                       let tag = try leader.select("div").attr("data-stage_type")
-                       // The <a> holds a link (relative URL).
-                       let relUrl = try leader.select("a").attr("href")
+               let additionalDetails: [DTO.TodayResult.AdditionalDetails] = {
+                   guard let leaderItems = try? race.select("ul.leaders > li").array() else { return [] }
+                   return leaderItems.compactMap { leader in
+                       guard let tag = try? leader.select("div").attr("data-stage_type"),
+                             let relUrl = try? leader.select("a").attr("href")
+                       else {
+                           return nil
+                       }
                        let fullUrl = URL(string: baseUrl + relUrl)
-                       
-                       let detail = DTO.TodayResult.AdditionalDetails(tag: tag, url: fullUrl)
-                       additionalDetails.append(detail)
+                       return DTO.TodayResult.AdditionalDetails(tag: tag, url: fullUrl)
                    }
-               }
+               }()
                
                // 5. Create the TodayResult DTO for this race item.
                let resultDTO = DTO.TodayResult(raceDetails: raceDetails,
@@ -450,7 +517,7 @@ struct Requester {
 //        do {
 //            if let imgDiv = try item.select("div.winner-img").first() {
 //                let styleAttribute = try imgDiv.attr("style")
-//                
+//
 //                // Regular expression to capture the URL from the style attribute.
 //                // This pattern matches: url(something)
 //                let pattern = "url\\(([^)]+)\\)"

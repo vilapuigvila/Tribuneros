@@ -42,6 +42,7 @@ enum HomeRaces {
                 let id = UUID()
                 let position: String
                 let flag: URL?
+                let countryCode: String
                 let name: String
                 let team: String
                 let time: String

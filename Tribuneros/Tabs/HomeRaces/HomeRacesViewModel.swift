@@ -76,7 +76,8 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
                         podium: race.podium.map {
                             HomeRaces.Representable.RaceFinished.Winner(
                                 position: $0.position,
-                                flag: nil,
+                                flag: $0.flag,
+                                countryCode: $0.countryCode ?? "ad",
                                 name: $0.name,
                                 team: $0.team,
                                 time: $0.time
@@ -92,7 +93,8 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
                         podium: race.podium.map {
                             HomeRaces.Representable.RaceFinished.Winner(
                                 position: $0.position,
-                                flag: nil,
+                                flag: $0.flag,
+                                countryCode: $0.countryCode ?? "ad",
                                 name: $0.name,
                                 team: $0.team,
                                 time: $0.time

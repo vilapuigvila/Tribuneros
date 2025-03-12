@@ -40,104 +40,39 @@ extension HomeRaces {
                     NavigationStack {
                         ScrollView {
                             LazyVGrid(columns: columns, spacing: 16) {
-                                if !representable.sections.nextToFinish.isEmpty {
+                                
+                                /// - Next to Finish -
+                                if representable.sections.nextToFinish.isEmpty {
+                                    buildNoResultsCardView("Next to fihish")
+                                } else {
                                     NextToFinishRaceView(races: representable.sections.nextToFinish)
                                         .background(Color.green.opacity(0.2))
                                         .frame(height: heightCardView)
                                         .cornerRadius(8)
-                                } else {
-                                    buildNoResultsCardView()
                                 }
-                                if !representable.sections.racesFinished.isEmpty {
-                                    VStack(spacing: 2) {
-                                        buildTitleNextToFinishCardView("Results today")
-                                        
-                                        ForEach(representable.sections.racesFinished) { race in
-                                            GeometryReader { geometry in
-                                                
-                                            }
-                                            VStack(spacing: 0) {
-                                                HStack(alignment: .top, spacing: 8) {
-                                                    AsyncImageView(url: race.winnerImgURL)
-                                                        .frame(width: 35, height: 112*0.41)
-                                                        .padding(.leading, 8)
-                                                    
-                                                    VStack(alignment: .leading, spacing: 0) {
-                                                        Text(race.race)
-                                                            .font(.system(size: 11, weight: .bold, design: .default))
-                                                            .lineLimit(1)
-                                                        ForEach(race.podium) { podium in
-                                                            HStack(spacing: 6) {
-                                                                Text(podium.position)
-                                                                    .font(.system(size: 9, weight: .regular, design: .default))
-                                                                Text(podium.name)
-                                                                    .font(.system(size: 9, weight: .regular, design: .default))
-                                                                Text(podium.team)
-                                                                    .font(.system(size: 9, weight: .regular, design: .default))
-                                                            }
-                                                        }
-                                                        Spacer()
-                                                    }
-                                                    Spacer()
-                                                }
-                                                Spacer()
-                                            }
-                                            .padding(.top, 4)
-//                                            Spacer()
-                                        }
-                                        .background(Color.purple.opacity(0.2))
-//                                        .padding(.top, 4)
-                                    }
-                                    .background(Color.green.opacity(0.2))
-//                                    .frame(height: heightCardView)
-                                    .cornerRadius(8)
+                                
+                                /// - Results today -
+                                if representable.sections.racesFinished.isEmpty {
+                                    buildNoResultsCardView("Results today")
                                 } else {
-                                    buildNoResultsCardView()
+                                    RaceFinishedCardView(
+                                        title: "Results today",
+                                        races: representable.sections.racesFinished
+                                    )
+                                    .background(Color.green.opacity(0.2))
+                                    .cornerRadius(8)
                                 }
-                                if !representable.sections.yesterdayResults.isEmpty {
-                                    VStack(spacing: 2) {
-                                        buildTitleNextToFinishCardView("Results yesterday")
-                                        
-                                        ForEach(representable.sections.yesterdayResults) { race in
-                                            VStack(spacing: 0) {
-                                                HStack(alignment: .top, spacing: 8) {
-                                                    AsyncImageView(url: race.winnerImgURL)
-                                                        .frame(width: 35, height: 112*0.41)
-//                                                        .aspectRatio(contentMode: .fit)
-//                                                        .padding(.vertical, 16)
-                                                        .padding(.leading, 8)
-                                                    
-                                                    VStack(alignment: .leading, spacing: 0) {
-                                                        Text(race.race)
-                                                            .lineLimit(1)
-                                                            .font(.system(size: 11, weight: .bold, design: .default))
-                                                        ForEach(race.podium) { podium in
-                                                            HStack(spacing: 6) {
-                                                                Text(podium.position)
-                                                                    .font(.system(size: 9, weight: .regular, design: .default))
-                                                                Text(podium.name)
-                                                                    .font(.system(size: 9, weight: .regular, design: .default))
-                                                                Text(podium.team)
-                                                                    .font(.system(size: 9, weight: .regular, design: .default))
-                                                            }
-                                                        }
-                                                        Spacer()
-                                                    }
-                                                    Spacer()
-                                                }
-                                                Spacer()
-                                            }
-                                            .padding(.top, 4)
-//                                            Spacer()
-                                        }
-//                                        .background(Color.purple.opacity(0.2))
-//                                        .padding(.top, 4)
-                                    }
-                                    .background(Color.green.opacity(0.2))
-//                                    .frame(height: heightCardView)
-                                    .cornerRadius(8)
+                                
+                                /// - Results yesterday -
+                                if representable.sections.yesterdayResults.isEmpty {
+                                    buildNoResultsCardView("Results yesterday")
                                 } else {
-                                    buildNoResultsCardView()
+                                    RaceFinishedCardView(
+                                        title: "Results Yesterday",
+                                        races: representable.sections.yesterdayResults
+                                    )
+                                    .background(Color.green.opacity(0.2))
+                                    .cornerRadius(8)
                                 }
                             }
                             .padding()
@@ -153,33 +88,17 @@ extension HomeRaces {
             }
         }
         
-        private func buildNoResultsCardView() -> some View {
-            Text("No results")
+        private func buildNoResultsCardView(_ race: String) -> some View {
+            EmptyResultsCardView(title: "\(race)", info: "No info available")
                 .frame(height: heightCardView)
                 .frame(maxWidth: .infinity)
                 .background(Color.blue.opacity(0.2))
                 .cornerRadius(8)
         }
-        
-        private func buildTitleNextToFinishCardView(_ title: String) -> some View {
-            Group {
-                HStack {
-                    Text(title)
-                        .font(.system(size: 16, weight: .bold, design: .default))
-                        .padding(.top, 12)
-                        .padding(.horizontal, 8)
-                    Spacer()
-                }
-                Rectangle()
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(height: 0.5)
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal, 8)
-                    .padding(.top, 12)
-            }
-        }
     }
 }
+
+// MARK: - Previews -
 
 #Preview("Loaded") {
     let nextToFinish: [HomeRaces.Representable.RaceNext] = [
@@ -188,24 +107,66 @@ extension HomeRaces {
         HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "paris Nice", category: "UCI", raceType: "2.UWT", distance: "215"),
         HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Tirreno", category: "UCI", raceType: "2.UWT", distance: "215")
     ]
-    let finished: [HomeRaces.Representable.RaceFinished] = [
+    let todayFinished: [HomeRaces.Representable.RaceFinished] = [
         HomeRaces.Representable.RaceFinished(
-            race: "Paris-Nice fjdkjfdk fjdkjf dfjdkfj fjdkfjdkf 1212ds21sd fdf fdf f",
+            race: "Paris-Nice etapa 2",
             winnerImgURL: URL(string: "https://www.procyclingstats.com/images/riders/bp/ee/filippo-ganna-2025.jpg")!,
             podium: [
-                HomeRaces.Representable.RaceFinished.Winner(position: "1", flag: nil, name: "Pipo Ganna", team: "Ineos", time: "24:12"),
-                HomeRaces.Representable.RaceFinished.Winner(position: "2", flag: nil, name: "Pipo Ganna", team: "Ineos", time: "24:12"),
-                HomeRaces.Representable.RaceFinished.Winner(position: "3", flag: nil, name: "Pipo Ganna", team: "Ineos", time: "24:12")
+                HomeRaces.Representable.RaceFinished.Winner(position: "1", flag: nil, countryCode: "it", name: "Pipo Ganna", team: "Ineos", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "2", flag: nil, countryCode: "be", name: "Pipo Ganna", team: "Ineos", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "3", flag: nil, countryCode: "uk", name: "Pipo Ganna", team: "Ineos", time: "24:12")
             ],
             isCancel: false
         ),
         HomeRaces.Representable.RaceFinished(
             race: "Tirreno",
+            winnerImgURL: nil,
+            podium: [
+                HomeRaces.Representable.RaceFinished.Winner(position: "1", flag: nil, countryCode: "nl", name: "Matthieu", team: "Ineos", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "2", flag: nil, countryCode: "ie", name: "Ben Healy", team: "Ineos", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "3", flag: nil, countryCode: "nl", name: "Adam Yates", team: "Ineos", time: "24:12")
+            ],
+            isCancel: false
+        ),
+        HomeRaces.Representable.RaceFinished(
+            race: "Flandes ...",
             winnerImgURL: URL(string: "https://www.procyclingstats.com/images/riders/bp/ee/filippo-ganna-2025.jpg")!,
             podium: [
-                HomeRaces.Representable.RaceFinished.Winner(position: "1", flag: nil, name: "Matthieu", team: "Ineos", time: "24:12"),
-                HomeRaces.Representable.RaceFinished.Winner(position: "2", flag: nil, name: "Derek Gee", team: "Ineos", time: "24:12"),
-                HomeRaces.Representable.RaceFinished.Winner(position: "3", flag: nil, name: "Adam Yates", team: "Ineos", time: "24:12")
+                HomeRaces.Representable.RaceFinished.Winner(position: "1", flag: nil, countryCode: "au", name: "Wout van", team: "Ineos", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "2", flag: nil, countryCode: "", name: "Remco enve", team: "Ineos", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "3", flag: nil, countryCode: "", name: "Pipo Ganna", team: "Ineos", time: "24:12")
+            ],
+            isCancel: false
+        )
+    ]
+    let yesterdayResults: [HomeRaces.Representable.RaceFinished] = [
+        HomeRaces.Representable.RaceFinished(
+            race: "Tirreno Adriatico etapa 2",
+            winnerImgURL: URL(string: "https://www.procyclingstats.com/images/riders/bp/ee/filippo-ganna-2025.jpg")!,
+            podium: [
+                HomeRaces.Representable.RaceFinished.Winner(position: "1", flag: nil, countryCode: "it", name: "Joshua Tarlin", team: "Visma lease a bike", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "2", flag: nil, countryCode: "be", name: "Pipo Ganna", team: "Soudal Quick step", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "3", flag: nil, countryCode: "uk", name: "Pipo Ganna", team: "Lidl Trek", time: "24:12")
+            ],
+            isCancel: false
+        ),
+        HomeRaces.Representable.RaceFinished(
+            race: "Tirreno",
+            winnerImgURL: nil,
+            podium: [
+                HomeRaces.Representable.RaceFinished.Winner(position: "1", flag: nil, countryCode: "nl", name: "Visma | Lease a bike", team: "", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "2", flag: nil, countryCode: "au", name: "Team Jayco Alula", team: "", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "3", flag: nil, countryCode: "de", name: "Red Bull - Bora - Hansgrohe", team: "", time: "24:12")
+            ],
+            isCancel: false
+        ),
+        HomeRaces.Representable.RaceFinished(
+            race: "Flandes ...",
+            winnerImgURL: URL(string: "https://www.procyclingstats.com/images/riders/bp/ee/filippo-ganna-2025.jpg")!,
+            podium: [
+                HomeRaces.Representable.RaceFinished.Winner(position: "1", flag: nil, countryCode: "be", name: "Victor Campenaerts", team: "Visma | Lease a bike", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "2", flag: nil, countryCode: "no", name: "Tobias Foss", team: "Ineos", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "3", flag: nil, countryCode: "fr", name: "Julien Alaphilipe", team: "Tudor", time: "24:12")
             ],
             isCancel: false
         )
@@ -214,8 +175,8 @@ extension HomeRaces {
         sections: HomeRaces.Representable.Section(
             title: "",
             nextToFinish: nextToFinish,
-            racesFinished: finished,
-            yesterdayResults: []
+            racesFinished: todayFinished,
+            yesterdayResults: yesterdayResults
         )
     )
     HomeRaces.MainView(state: .loaded(repre)) { _ in
@@ -227,3 +188,22 @@ extension HomeRaces {
 #Preview("Loading") {
     HomeRaces.MainView(state: .loading) { _ in  }
 }
+
+
+struct DebugBackgroundModifier: ViewModifier {
+    let color: Color
+
+    func body(content: Content) -> some View {
+        content.background(color)
+    }
+}
+
+//extension View {
+//    func debugBackground(_ color: Color = .green) -> some View {
+//        if true {
+//            self as! ModifiedContent<Self, DebugBackgroundModifier>
+//        } else {
+//            modifier(DebugBackgroundModifier(color: color))
+//        }
+//    }
+//}
