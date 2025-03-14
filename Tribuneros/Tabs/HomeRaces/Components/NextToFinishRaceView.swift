@@ -19,7 +19,7 @@ struct NextToFinishRaceView: View {
     private func buildNextToFinish(_ races: [HomeRaces.Representable.RaceNext]) -> some View {
         GeometryReader { proxy in
             VStack(spacing: 0) {
-                buildTitleNextToFinishCardView()
+                HeaderRaceCardView(title: "Next to finish")
                 
                 buildHeaderNextToFinishSection(proxy.size.width)
                     .padding(.top, 6)
@@ -52,7 +52,7 @@ struct NextToFinishRaceView: View {
             }
         }
     }
-        
+    /*
     private func buildTitleNextToFinishCardView() -> some View {
         Group {
             HStack {
@@ -69,7 +69,8 @@ struct NextToFinishRaceView: View {
                 .padding(.horizontal, paddingHorizontal)
                 .padding(.top, 12)
         }
-    }
+    }*/
+    
     private func buildTextForHeaderView(_ text: String, width: CGFloat) -> some View {
         Text(text)
             .font(.system(size: 11, weight: .regular, design: .monospaced))

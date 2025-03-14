@@ -58,7 +58,11 @@ extension HomeRaces {
                                     RaceFinishedCardView(
                                         title: "Results today",
                                         races: representable.sections.racesFinished
-                                    )
+                                    ) {
+                                        print("avvp - spoiler action")
+                                    } showResultsAction: {
+                                        print("avvp - show")
+                                    }
                                     .background(Color.green.opacity(0.2))
                                     .cornerRadius(8)
                                 }
@@ -70,7 +74,11 @@ extension HomeRaces {
                                     RaceFinishedCardView(
                                         title: "Results Yesterday",
                                         races: representable.sections.yesterdayResults
-                                    )
+                                    ) {
+                                        print("avvp - spoiler action")
+                                    } showResultsAction: {
+                                        print("avvp - show")
+                                    }
                                     .background(Color.green.opacity(0.2))
                                     .cornerRadius(8)
                                 }
@@ -123,13 +131,13 @@ extension HomeRaces {
             winnerImgURL: nil,
             podium: [
                 HomeRaces.Representable.RaceFinished.Winner(position: "1", flag: nil, countryCode: "nl", name: "Matthieu", team: "Ineos", time: "24:12"),
-                HomeRaces.Representable.RaceFinished.Winner(position: "2", flag: nil, countryCode: "ie", name: "Ben Healy", team: "Ineos", time: "24:12"),
+                HomeRaces.Representable.RaceFinished.Winner(position: "2", flag: nil, countryCode: "ir", name: "Ben Healy", team: "Ineos", time: "24:12"),
                 HomeRaces.Representable.RaceFinished.Winner(position: "3", flag: nil, countryCode: "nl", name: "Adam Yates", team: "Ineos", time: "24:12")
             ],
             isCancel: false
         ),
         HomeRaces.Representable.RaceFinished(
-            race: "Flandes ...",
+            race: "Paris-Roubaix",
             winnerImgURL: URL(string: "https://www.procyclingstats.com/images/riders/bp/ee/filippo-ganna-2025.jpg")!,
             podium: [
                 HomeRaces.Representable.RaceFinished.Winner(position: "1", flag: nil, countryCode: "au", name: "Wout van", team: "Ineos", time: "24:12"),
@@ -151,7 +159,7 @@ extension HomeRaces {
             isCancel: false
         ),
         HomeRaces.Representable.RaceFinished(
-            race: "Tirreno",
+            race: "Tirreno Adriatico",
             winnerImgURL: nil,
             podium: [
                 HomeRaces.Representable.RaceFinished.Winner(position: "1", flag: nil, countryCode: "nl", name: "Visma | Lease a bike", team: "", time: "24:12"),

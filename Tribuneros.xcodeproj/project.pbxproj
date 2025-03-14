@@ -14,9 +14,22 @@
 		50B365772D6489EF000DA4AC /* Tribuneros.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tribuneros.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5057B1DD2D82FCB900A7B453 /* Exceptions for "Tribuneros" folder in "Tribuneros" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 50B365762D6489EF000DA4AC /* Tribuneros */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		50B365792D6489EF000DA4AC /* Tribuneros */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5057B1DD2D82FCB900A7B453 /* Exceptions for "Tribuneros" folder in "Tribuneros" target */,
+			);
 			path = Tribuneros;
 			sourceTree = "<group>";
 		};
@@ -264,6 +277,8 @@
 				DEVELOPMENT_TEAM = HL99S7U2Q3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Tribuneros/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -294,6 +309,8 @@
 				DEVELOPMENT_TEAM = HL99S7U2Q3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Tribuneros/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

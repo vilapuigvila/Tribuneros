@@ -8,64 +8,73 @@
 import SwiftUI
 
 struct RaceFinishedCardView: View {
-    @State private var imageExists: Bool = true
     
     let title: String
     let races: [HomeRaces.Representable.RaceFinished]
-    let paddingLabelsInRace: CGFloat = 4
-    let fontSizeLabelsInfo: CGFloat = 10
-    let debugOpacity: Double = 0.0
+    let spoilerModeAction: () -> Void
+    let showResultsAction: () -> Void
     
     var body: some View {
-        VStack(spacing: 0) {
-            buildTitleNextToFinishCardView(title)
+        VStack(spacing: Sizes.spacingVerticalRace) {
+            HeaderRaceCardView(
+                title: title,
+                spoilerModeAction: spoilerModeAction,
+                showResultsAction: showResultsAction
+            )
             
             ForEach(races) { race in
                 VStack(spacing: 2) {
                     HStack(alignment: .top, spacing: 8) {
                         AsyncImageView(url: race.winnerImgURL)
-                            .frame(width: 35)
+                            .frame(width: 45)
 //                          .frame(height: 112*0.41)
                             .padding(.leading, 8)
-                            .scaleEffect(0.95)
+                            .scaleEffect(Sizes.scaleEffect)
                         
-                        VStack(alignment: .leading, spacing: paddingLabelsInRace) {
+                        VStack(alignment: .leading, spacing: Sizes.spacingVerticalLabelsInRace) {
                             Text(race.race)
                                 .lineLimit(1)
-                                .font(.system(size: 11, weight: .bold, design: .default))
+                                .font(.system(size: 14, weight: .heavy, design: .default))
                                 .padding(.bottom, 2)
+                                .background(.yellow.opacity(Sizes.debugOpacity))
                             ForEach(race.podium) { podium in
-                                HStack(spacing: 6) {
+                                HStack(spacing: 2) {
                                     Text(podium.position)
                                         .lineLimit(1)
-                                        .font(.system(size: fontSizeLabelsInfo, weight: .regular, design: .monospaced))
+                                        .font(.system(size: Sizes.fontSizeLabelsInfo, weight: .regular, design: .monospaced))
                                     if UIImage(named: podium.countryCode) == nil {
                                         let _ = print("avvp 🔥 🔥 🔥 🔥 missing asset - \(podium.countryCode)")
                                     }
+                                    /// Flag
                                     Image(podium.countryCode)
                                         .resizable()
                                         .scaledToFill()
                                         .frame(width: 12, height: 8)
                                         .clipped()
-
+                                        .padding(.horizontal, 6)
+                                    
+                                    /// Name
                                     Text(podium.name)
                                         .lineLimit(1)
-                                        .font(.system(size: fontSizeLabelsInfo, weight: .semibold, design: .monospaced))
-                                        .frame(width: podium.team.isEmpty ? (200+(paddingLabelsInRace*2)) : 130, alignment: .leading)
-                                        .background(.yellow.opacity(debugOpacity))
+                                        .font(.system(size: Sizes.fontSizeLabelsInfo, weight: .bold, design: .monospaced))
+                                        .frame(width: podium.team.isEmpty ? (200+(Sizes.spacingVerticalLabelsInRace*2)) : 130, alignment: .leading)
+                                        .background(.yellow.opacity(Sizes.debugOpacity))
                                     
+                                    /// Team
                                     if !podium.team.isEmpty {
                                         Text(podium.team)
                                             .lineLimit(1)
-                                            .font(.system(size: fontSizeLabelsInfo, weight: .regular, design: .monospaced))
+                                            .font(.system(size: Sizes.fontSizeLabelsInfo-1, weight: .semibold, design: .monospaced))
                                             .frame(width: 70, alignment: .leading)
-                                            .background(.yellow.opacity(debugOpacity))
+                                            .background(.yellow.opacity(Sizes.debugOpacity))
                                     }
+                                    
+                                    /// Time
                                     Text(podium.time)
                                         .lineLimit(1)
-                                        .font(.system(size: fontSizeLabelsInfo, weight: .regular, design: .monospaced))
+                                        .font(.system(size: Sizes.fontSizeLabelsInfo-1, weight: .regular, design: .monospaced))
                                         .frame(width: 46, alignment: .leading)
-                                        .background(.yellow.opacity(debugOpacity))
+                                        .background(.yellow.opacity(Sizes.debugOpacity))
                                 }
                             }
                         }
@@ -81,15 +90,54 @@ struct RaceFinishedCardView: View {
 //          .background(Color.purple.opacity(0.4))
         }
     }
-    
+    /*
     private func buildTitleNextToFinishCardView(_ title: String) -> some View {
         Group {
-            HStack {
+            HStack(alignment: .center) {
                 Text(title)
                     .font(.system(size: 16, weight: .bold, design: .default))
                     .padding(.top, 12)
                     .padding(.horizontal, 8)
                 Spacer()
+                
+                HStack(alignment: .center) {
+                    Button {
+                        spoilerModeAction()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text("Spoiler On/Off")
+                                .font(.system(size: 10, weight: .bold, design: .default))
+                                .foregroundStyle(.gray)
+                                .padding(.all, 8)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .stroke(Color.gray, lineWidth: 1)
+                                )
+//                            Image(systemName: "eye.slash.fill")
+//                                .resizable()
+//                                .aspectRatio(contentMode: .fit)
+//                                .frame(width: 14, height: 14)
+                        }
+                        .padding(.horizontal, 8)
+                    }
+                    Button {
+                        showResultsAction()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text("Show")
+                                .font(.system(size: 10, weight: .bold, design: .default))
+                                .foregroundStyle(.gray)
+                                .padding(.all, 8)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .stroke(Color.gray, lineWidth: 1)
+                                )
+                        }
+                        .padding(.horizontal, 8)
+                    }
+                    
+                }
+                .padding(.top, 10)
             }
             Rectangle()
                 .fill(Color.gray.opacity(0.3))
@@ -98,6 +146,14 @@ struct RaceFinishedCardView: View {
                 .padding(.horizontal, 8)
                 .padding(.top, 12)
         }
+    }*/
+    
+    private enum Sizes {
+        static let spacingVerticalLabelsInRace: CGFloat = 8
+        static let spacingVerticalRace: CGFloat = 8
+        static let fontSizeLabelsInfo: CGFloat = 13
+        static let debugOpacity: Double = 0.1
+        static let scaleEffect: Double = 0.8
     }
 }
 

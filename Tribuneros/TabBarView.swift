@@ -21,12 +21,11 @@ struct TabBarView: View {
                 Image(systemName: "figure.indoor.cycle")
                 Text("Today Races")
             }
-            /*
-            StationsListView()
+            HateZoneView(url: URL(string: "http://ciclismo2005.com")!)
                 .tabItem {
-                    Image(systemName: "gearshape.fill")
-                    Text("Stations")
-                }*/
+                    Image(systemName: "wrongwaysign.fill")
+                    Text("Hate Zone")
+                }
         }
         .onAppear {
             print(#function)
