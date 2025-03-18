@@ -63,7 +63,8 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
                         name: $0.name,
                         category: $0.category,
                         raceType: $0.raceType,
-                        distance: $0.distance
+                        distance: $0.distance,
+                        isSpoilerModeOn: false
                     )
                 }
                 let nextToFinishSorted = nextToFinish.filter { $0.raceType.contains("UWT") }

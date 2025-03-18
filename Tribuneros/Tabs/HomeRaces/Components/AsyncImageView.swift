@@ -8,12 +8,14 @@
 import SwiftUI
 
 struct AsyncImageView: View {
-    let url: URL?
     @State private var timedOut: Bool = false
     @State private var opacity: Double = 0.3
     @State private var opacitySuccessImage: Double = 0
     @State private var isAnimating: Bool = false
     @State private var image: Image?
+    
+    let url: URL?
+    private(set) var cornerRadius: CGFloat = 0
     
     var body: some View {
         GeometryReader { geometry in
@@ -46,7 +48,7 @@ struct AsyncImageView: View {
                 }
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
-            .cornerRadius(4)
+            .cornerRadius(cornerRadius)
         }
     }
     private func buildImage(_ image: Image) -> some View {

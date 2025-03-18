@@ -60,6 +60,7 @@ extension HomeRaces {
                                         races: representable.sections.racesFinished
                                     ) {
                                         print("avvp - spoiler action")
+                                        UserSettings.spoilerModeResultsToday?.toggle()
                                     } showResultsAction: {
                                         print("avvp - show")
                                     }
@@ -76,6 +77,7 @@ extension HomeRaces {
                                         races: representable.sections.yesterdayResults
                                     ) {
                                         print("avvp - spoiler action")
+                                        UserSettings.spoilerModeResultsYesterday?.toggle()
                                     } showResultsAction: {
                                         print("avvp - show")
                                     }
@@ -110,10 +112,10 @@ extension HomeRaces {
 
 #Preview("Loaded") {
     let nextToFinish: [HomeRaces.Representable.RaceNext] = [
-        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Strade Bianche Home", category: "UCI", raceType: "2.UWT", distance: "215"),
-        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Strade Bianche Donne", category: "UCI", raceType: "2.UWT", distance: "215"),
-        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "paris Nice", category: "UCI", raceType: "2.UWT", distance: "215"),
-        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Tirreno", category: "UCI", raceType: "2.UWT", distance: "215")
+        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Strade Bianche Home", category: "UCI", raceType: "2.UWT", distance: "215", isSpoilerModeOn: false),
+        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Strade Bianche Donne", category: "UCI", raceType: "2.UWT", distance: "215", isSpoilerModeOn: false),
+        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "paris Nice", category: "UCI", raceType: "2.UWT", distance: "215", isSpoilerModeOn: false),
+        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Tirreno", category: "UCI", raceType: "2.UWT", distance: "215", isSpoilerModeOn: false)
     ]
     let todayFinished: [HomeRaces.Representable.RaceFinished] = [
         HomeRaces.Representable.RaceFinished(

@@ -32,12 +32,6 @@ enum HomeRaces {
             let yesterdayResults: [RaceFinished]
         }
         struct RaceFinished: Identifiable {
-            /*
-             let raceDetails: String
-             let winner: URL?
-             let podium: [Winner]
-             let additionalDetails: [AdditionalDetails]
-             */
             struct Winner: Identifiable {
                 let id = UUID()
                 let position: String
@@ -63,6 +57,7 @@ enum HomeRaces {
             let category: String
             let raceType: String
             let distance: String
+            let isSpoilerModeOn: Bool
         }
         let sections: Section
     }

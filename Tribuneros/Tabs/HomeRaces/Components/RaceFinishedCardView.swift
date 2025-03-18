@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct RaceFinishedCardView: View {
+    @State private var flagPng: String = ""
     
     let title: String
     let races: [HomeRaces.Representable.RaceFinished]
@@ -25,7 +26,7 @@ struct RaceFinishedCardView: View {
             ForEach(races) { race in
                 VStack(spacing: 2) {
                     HStack(alignment: .top, spacing: 8) {
-                        AsyncImageView(url: race.winnerImgURL)
+                        AsyncImageView(url: race.winnerImgURL, cornerRadius: 4)
                             .frame(width: 45)
 //                          .frame(height: 112*0.41)
                             .padding(.leading, 8)
@@ -42,15 +43,10 @@ struct RaceFinishedCardView: View {
                                     Text(podium.position)
                                         .lineLimit(1)
                                         .font(.system(size: Sizes.fontSizeLabelsInfo, weight: .regular, design: .monospaced))
-                                    if UIImage(named: podium.countryCode) == nil {
-                                        let _ = print("avvp 🔥 🔥 🔥 🔥 missing asset - \(podium.countryCode)")
-                                    }
+                                      
                                     /// Flag
-                                    Image(podium.countryCode)
-                                        .resizable()
-                                        .scaledToFill()
+                                    AsyncImageView(url: URL(string: "https://flagcdn.com/w40/\(podium.countryCode).png")!)
                                         .frame(width: 12, height: 8)
-                                        .clipped()
                                         .padding(.horizontal, 6)
                                     
                                     /// Name
@@ -90,70 +86,13 @@ struct RaceFinishedCardView: View {
 //          .background(Color.purple.opacity(0.4))
         }
     }
-    /*
-    private func buildTitleNextToFinishCardView(_ title: String) -> some View {
-        Group {
-            HStack(alignment: .center) {
-                Text(title)
-                    .font(.system(size: 16, weight: .bold, design: .default))
-                    .padding(.top, 12)
-                    .padding(.horizontal, 8)
-                Spacer()
-                
-                HStack(alignment: .center) {
-                    Button {
-                        spoilerModeAction()
-                    } label: {
-                        HStack(spacing: 4) {
-                            Text("Spoiler On/Off")
-                                .font(.system(size: 10, weight: .bold, design: .default))
-                                .foregroundStyle(.gray)
-                                .padding(.all, 8)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .stroke(Color.gray, lineWidth: 1)
-                                )
-//                            Image(systemName: "eye.slash.fill")
-//                                .resizable()
-//                                .aspectRatio(contentMode: .fit)
-//                                .frame(width: 14, height: 14)
-                        }
-                        .padding(.horizontal, 8)
-                    }
-                    Button {
-                        showResultsAction()
-                    } label: {
-                        HStack(spacing: 4) {
-                            Text("Show")
-                                .font(.system(size: 10, weight: .bold, design: .default))
-                                .foregroundStyle(.gray)
-                                .padding(.all, 8)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .stroke(Color.gray, lineWidth: 1)
-                                )
-                        }
-                        .padding(.horizontal, 8)
-                    }
-                    
-                }
-                .padding(.top, 10)
-            }
-            Rectangle()
-                .fill(Color.gray.opacity(0.3))
-                .frame(height: 0.5)
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, 8)
-                .padding(.top, 12)
-        }
-    }*/
     
     private enum Sizes {
         static let spacingVerticalLabelsInRace: CGFloat = 8
         static let spacingVerticalRace: CGFloat = 8
         static let fontSizeLabelsInfo: CGFloat = 13
         static let debugOpacity: Double = 0.1
-        static let scaleEffect: Double = 0.8
+        static let scaleEffect: Double = 0.9
     }
 }
 

@@ -52,24 +52,6 @@ struct NextToFinishRaceView: View {
             }
         }
     }
-    /*
-    private func buildTitleNextToFinishCardView() -> some View {
-        Group {
-            HStack {
-                Text("Next to finish")
-                    .font(.system(size: 16, weight: .bold, design: .default))
-                    .padding(.top, 12)
-                    .padding(.horizontal, paddingHorizontal)
-                Spacer()
-            }
-            Rectangle()
-                .fill(Color.gray.opacity(0.3))
-                .frame(height: 0.5)
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, paddingHorizontal)
-                .padding(.top, 12)
-        }
-    }*/
     
     private func buildTextForHeaderView(_ text: String, width: CGFloat) -> some View {
         Text(text)
@@ -98,8 +80,8 @@ struct NextToFinishRaceView: View {
 
 #Preview {
     let races: [HomeRaces.Representable.RaceNext] = [
-        HomeRaces.Representable.RaceNext(eta: "12:34", duration: "2H", name: "Paris-Nice", category: "UCI", raceType: "2.UWT", distance: "190"),
-        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Tour du France", category: "UCI", raceType: "2.UWT", distance: "230")
+        HomeRaces.Representable.RaceNext(eta: "12:34", duration: "2H", name: "Paris-Nice", category: "UCI", raceType: "2.UWT", distance: "190", isSpoilerModeOn: false),
+        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Tour du France", category: "UCI", raceType: "2.UWT", distance: "230", isSpoilerModeOn: false)
     ]
     NextToFinishRaceView(races: races)
     Spacer()

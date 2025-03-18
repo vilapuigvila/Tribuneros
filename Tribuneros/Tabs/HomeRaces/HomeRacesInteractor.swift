@@ -69,7 +69,8 @@ final class HomeRacesInteractorImpl: HomeRacesInteractorProtocol {
                             nextToFinishRaces: result.nextToFinish,
                             todayRaces: result.today,
                             yesterdayResults: result.yesterdayResults,
-                            error: (result.nextToFinish.isEmpty && result.today.isEmpty && result.yesterdayResults.isEmpty) ? ErrorReason.emptyResponse.toEquatableError() : nil,
+                            error: (result.nextToFinish.isEmpty && result.today.isEmpty && result.yesterdayResults.isEmpty) ?
+                                ErrorReason.emptyResponse.toEquatableError() : nil,
                             loading: false
                         )
                     )
