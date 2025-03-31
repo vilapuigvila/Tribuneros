@@ -72,7 +72,8 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
                 
                 let todayRaces = domain.todayRaces.map { race in
                     HomeRaces.Representable.RaceFinished(
-                        race: race.raceDetails,
+                        race: race.raceName,
+                        raceDetails: race.raceDetails,
                         winnerImgURL: race.winner,
                         podium: race.podium.map {
                             HomeRaces.Representable.RaceFinished.Winner(
@@ -89,7 +90,8 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
                 }
                 let yesterdayResults = domain.yesterdayResults.map { race in
                     HomeRaces.Representable.RaceFinished(
-                        race: race.raceDetails,
+                        race: race.raceName,
+                        raceDetails: race.raceDetails,
                         winnerImgURL: race.winner,
                         podium: race.podium.map {
                             HomeRaces.Representable.RaceFinished.Winner(
@@ -104,13 +106,17 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
                         isCancel: false
                     )
                 }
+                let tomorrowRaces = domain.tomorrowRaces.map {
+                    HomeRaces.Representable.RaceTomorrow(start: $0.startTime, eta: $0.eta, name: $0.raceName, url: $0.relativeUrl)
+                }
                 return .loaded(
                     HomeRaces.Representable(
                         sections: .init(
                             title: "",
                             nextToFinish: nextToFinishSorted,
                             racesFinished: todayRaces,
-                            yesterdayResults: yesterdayResults
+                            yesterdayResults: yesterdayResults,
+                            tomorrowRaces: tomorrowRaces
                         )
                     )
                 )

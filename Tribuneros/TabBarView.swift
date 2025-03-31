@@ -14,9 +14,12 @@ struct TabBarView: View {
     
     var body: some View {
         TabView {
-            HomeRacesView(
-                viewModel: HomeRacesViewModel(interactor: HomeRacesInteractorImpl())
-            )
+            NavigationView {
+                HomeRacesView(
+                    viewModel: HomeRacesViewModel(interactor: HomeRacesInteractorImpl())
+                )
+                .navigationTitle("PRO CYCLING STATS")
+            }
             .tabItem {
                 Image(systemName: "figure.indoor.cycle")
                 Text("Today Races")
@@ -32,8 +35,8 @@ struct TabBarView: View {
         }
     }
 }
-/*
+
 #Preview {
     TabBarView()
-}*/
+}
 

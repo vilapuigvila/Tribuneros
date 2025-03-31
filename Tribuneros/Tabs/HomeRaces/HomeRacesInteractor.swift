@@ -13,6 +13,7 @@ struct HomeRacesDomain: Equatable {
     let nextToFinishRaces: [DTO.NextToFinishResult]
     let todayRaces: [DTO.TodayResult]
     let yesterdayResults: [DTO.TodayResult]
+    let tomorrowRaces: [DTO.TomorrowRace]
     let error: EquatableError?
     private(set) var loading: Bool
     
@@ -20,6 +21,7 @@ struct HomeRacesDomain: Equatable {
         nextToFinishRaces: [],
         todayRaces: [],
         yesterdayResults: [],
+        tomorrowRaces: [],
         error: nil,
         loading: false
     )
@@ -69,7 +71,8 @@ final class HomeRacesInteractorImpl: HomeRacesInteractorProtocol {
                             nextToFinishRaces: result.nextToFinish,
                             todayRaces: result.today,
                             yesterdayResults: result.yesterdayResults,
-                            error: (result.nextToFinish.isEmpty && result.today.isEmpty && result.yesterdayResults.isEmpty) ?
+                            tomorrowRaces: result.tomorrowRaces,
+                            error: (result.nextToFinish.isEmpty && result.today.isEmpty && result.yesterdayResults.isEmpty && result.tomorrowRaces.isEmpty) ?
                                 ErrorReason.emptyResponse.toEquatableError() : nil,
                             loading: false
                         )
@@ -80,6 +83,7 @@ final class HomeRacesInteractorImpl: HomeRacesInteractorProtocol {
                             nextToFinishRaces: [],
                             todayRaces: [],
                             yesterdayResults: [],
+                            tomorrowRaces: [],
                             error: error.toEquatableError(),
                             loading: false
                         )

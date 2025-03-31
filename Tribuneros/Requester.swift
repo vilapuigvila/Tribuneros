@@ -16,6 +16,7 @@ enum DTO {
         let nextToFinish: [NextToFinishResult]
         let today: [TodayResult]
         let yesterdayResults: [TodayResult]
+        let tomorrowRaces: [TomorrowRace]
     }
     
     struct NextToFinishResult: Codable, Equatable {
@@ -27,16 +28,6 @@ enum DTO {
         let distance: String
         
         static func parse(cells: [[String]]) -> [NextToFinishResult] {
-            /*
-             ▿ 0 : 7 elements
-               - 0 : ""
-               - 1 : "15:45"
-               - 2 : "2h"
-               - 3 : "Vuelta a Extremadura Femenina - S2"
-               - 4 : "WE"
-               - 5 : "2.1"
-               - 6 : "109"
-             */
             cells.compactMap {
                 NextToFinishResult(eta: $0[1], duration: $0[2], name: $0[3], category: $0[4], raceType: $0[5], distance: $0[6])
             }
@@ -56,10 +47,18 @@ enum DTO {
             let tag: String
             let url: URL?
         }
+        let raceName: String
         let raceDetails: String
         let winner: URL?
         let podium: [Winner]
         let additionalDetails: [AdditionalDetails]
+    }
+    
+    struct TomorrowRace: Codable, Equatable {
+        let startTime: String
+        let raceName: String
+        let relativeUrl: URL?
+        let eta: String
     }
 }
 
@@ -68,6 +67,7 @@ struct Requester {
     
     static func getLatestResults() async throws -> DTO.Home {
         let url = URL(string: "https://www.procyclingstats.com/index.php")!
+//        let url = URL(string: "https://www.procyclingstats.com/race/settimana-internazionale-coppi-e-bartali/2025/stage-3/info/profiles")!
         do {
             let data = try await URLSession.shared.data(from: url).0
             guard let htmlContent = String(data: data, encoding: .utf8) else {
@@ -78,7 +78,15 @@ struct Requester {
             let nextToFinishResults = parseNextToFinishResults(document)
             let todayResults = parseResultsToday(from: document)
             let yesterdayResults = try parseResultsYesterday(document)
-            return DTO.Home(nextToFinish: nextToFinishResults, today: todayResults, yesterdayResults: yesterdayResults)
+            
+            let tomorrowRaces = parseRacesTomorrow(from: document)
+            
+            return DTO.Home(
+                nextToFinish: nextToFinishResults,
+                today: todayResults,
+                yesterdayResults: yesterdayResults,
+                tomorrowRaces: tomorrowRaces
+            )
             
         } catch {
             assertionFailure(error.localizedDescription)
@@ -114,112 +122,7 @@ struct Requester {
         }
         return DTO.NextToFinishResult.parse(cells: results)
     }
-    /*
-    private static func parseResultsToday(_ document: Document) throws -> [DTO.TodayResult] {
-        if let resultsTodayHeader = try document.select("h3.black-info-title:contains(Results today)").first() {
-            // Get its next sibling element – the container with the details
-            if let detailsDiv = try resultsTodayHeader.nextElementSibling() {
-                let resultsList = try document.select("ul.hp2-results").first()
-                guard let listItems = try resultsList?.select("li") else {
-                    assertionFailure()
-                    return []
-                }
-                
-                var todayResults: [DTO.TodayResult] = []
-                for item in listItems {
-                    // Optionally check if the item has class "race" (skip ads, etc.)
-                    if try item.hasClass("race") {
-                        // 1. Extract the image URL from the inline style of the "winner-img" div
-                        let winnerURL: URL? = try {
-                            if let imgDiv = try? item.select("div.winner-img").first() {
-                                guard let style = try? imgDiv.attr("style") else{
-                                    return nil
-                                }
-                                // Use a regex to capture the URL inside url(...)
-                                let pattern = "url\\(([^)]+)\\)"
-                                let regex = try NSRegularExpression(pattern: pattern, options: [])
-                                let nsString = style as NSString
-                                let range = NSRange(location: 0, length: nsString.length)
-                                let winnerImgURL: URL? = {
-                                    if let match = regex.firstMatch(in: style, options: [], range: range) {
-                                        let urlRange = match.range(at: 1)
-                                        if let swiftRange = Range(urlRange, in: style) {
-                                            let relativeUrl = String(style[swiftRange])
-                                            // Assuming the host is known
-                                            let host = "https://www.procyclingstats.com/"
-                                            if let fullUrl = URL(string: relativeUrl, relativeTo: URL(string: host))?.absoluteString {
-                                                return URL(string: fullUrl)
-                                            }
-                                        }
-                                    }
-                                    return nil
-                                }()
-                                return winnerImgURL
-                            }
-                            return nil
-                        }()
-                        
-                        // 2. Extract race details from the adjacent div (with inline style containing "calc(100% - 95px)")
-                        let raceDetails: String? = {
-                            if let detailsDiv = try? item.select("div[style*='calc(100% - 95px)']").first() {
-                                return try? detailsDiv.text()
-                            }
-                            return nil
-                        }()
-                        
-                        // 3. Wiiners
-                        var winners: [DTO.TodayResult.Winner] = []
-                        if let table = try item.select("table.top3").first() {
-                            let rows = try table.select("tr")
-                            for row in rows {
-                                let cells = try row.select("td")
-                                var cellTexts: [String] = []
-                                for cell in cells {
-                                    let cellText = try cell.text()
-                                    cellTexts.append(cellText)
-                                }
-                                let winner: DTO.TodayResult.Winner = .init(
-                                    position: cellTexts[0],
-                                    flag: nil,
-                                    name: cellTexts[1],
-                                    team: cellTexts[2],
-                                    time: cellTexts[3]
-                                )
-                                winners.append(winner)
-                            }
-                        }
-                        // Additional details
-                        let _additionalDetails: [DTO.TodayResult.AdditionalDetails] = {
-                            guard let links = try? item.select("a.goto-race") else { return [] }
-                            return links.array().compactMap { link in
-                                guard let tag = try? link.text() else { return nil }
-                                guard let urlString = try? link.attr("href"),
-                                      let url = URL(string: "https://www.procyclingstats.com/\(urlString)") else { return nil }
-                                return DTO.TodayResult.AdditionalDetails(tag: tag, url: url)
-                            }
-                        }()
-                        todayResults.append(
-                            DTO.TodayResult(
-                                raceDetails: raceDetails ?? "",
-                                winner: winnerURL,
-                                podium: winners,
-                                additionalDetails: _additionalDetails)
-                        )
-                    }
-                    return todayResults
-                }
-            } else {
-                assertionFailure()
-                return []
-            }
-        } else {
-            assertionFailure()
-            return []
-        }
-        assertionFailure()
-        return []
-    }
-*/
+    
     // MARK: - Parsing Function -
 
     static func parseResultsToday(from document: Document) -> [DTO.TodayResult] {
@@ -257,53 +160,6 @@ struct Requester {
                     }
                 }
                 
-                // 3. Parse the podium winners from the table with class "top3"
-                
-                /*
-                var podiumWinners = [DTO.TodayResult.Winner]()
-                if let podiumRows = try? race.select("table.top3 > tbody > tr").array() {
-                    for row in podiumRows {
-                        let cells = try row.select("td").array()
-                        if cells.count >= 3 {
-                            let position = try cells[0].text()
-                            
-                            // Get the flag URL from the <span class="flag"> inside the second cell.
-                            let flagSpan: (countryCode: String?, urlFlag: URL?) = {
-                                guard let flagSpan = try? cells[1].select("span.flag").first(),
-                                      let classes = try? flagSpan.className().split(separator: " ").map(String.init),
-                                      let code = classes.first(where: { $0.lowercased() != "flag" })
-                                else {
-                                    return (nil, nil)
-                                }
-                                return (code, URL(string: baseUrl + "images/flags/" + code + ".png"))
-                            }()
-
-                            let raceInfo: (name: String, team: String, time: String) = {
-                                if cells.count == 3 {
-                                    let name = try! cells[1].select("a").text()
-                                    let team = ""
-                                    let time = try! cells[2].text()
-                                    return (name, team, time)
-                                } else {
-                                    let name = try! cells[1].select("a").text()
-                                    let team = try! cells[2].select("a").text()
-                                    let time = try! cells[3].text()
-                                    return (name, team, time)
-                                }
-                            }()
-                            
-                            let winner = DTO.TodayResult.Winner(
-                                position: position,
-                                flag: flagSpan.urlFlag,
-                                countryCode: flagSpan.countryCode,
-                                name: raceInfo.name,
-                                team: raceInfo.team,
-                                time: raceInfo.time
-                            )
-                            podiumWinners.append(winner)
-                        }
-                    }
-                }*/
                 let podiumWinners: [DTO.TodayResult.Winner] = {
                     guard let podiumRows = try? race.select("table.top3 > tbody > tr").array() else {
                         return []
@@ -362,10 +218,13 @@ struct Requester {
                 }
                 
                 // 5. Create the TodayResult DTO and append to our results
-                let resultDTO = DTO.TodayResult(raceDetails: raceDetails,
-                                            winner: winnerURL,
-                                            podium: podiumWinners,
-                                            additionalDetails: additionalDetails)
+                let resultDTO = DTO.TodayResult(
+                    raceName: raceDetails,
+                    raceDetails: "",
+                    winner: winnerURL,
+                    podium: podiumWinners,
+                    additionalDetails: additionalDetails
+                )
                 results.append(resultDTO)
             }
         } catch {
@@ -393,7 +252,12 @@ struct Requester {
                let detailsDiv = try race.select("div").filter { element in
                    try element.hasAttr("style") && element.attr("style").contains("width: calc(100% - 95px)")
                }.first
-               let raceDetails = try detailsDiv?.text() ?? ""
+               
+               /// Volta Ciclista a Catalunya (2.UWT)
+               let raceTitle = try detailsDiv?.select("a").first()?.select("b").text()
+               let raceDetails = try detailsDiv?.select("a").first()?.select("span").text()
+               
+//               let raceDetails = try detailsDiv?.text()
                
                // 2. Get the winner image URL from the <div class="winner-img"> inside the first <a>.
                var raceWinnerUrl: URL? = nil
@@ -471,10 +335,13 @@ struct Requester {
                }()
                
                // 5. Create the TodayResult DTO for this race item.
-               let resultDTO = DTO.TodayResult(raceDetails: raceDetails,
-                                           winner: raceWinnerUrl,
-                                           podium: podiumWinners,
-                                           additionalDetails: additionalDetails)
+               let resultDTO = DTO.TodayResult(
+                raceName: raceTitle.debugOptional,
+                raceDetails: raceDetails.debugOptional,
+                winner: raceWinnerUrl,
+                podium: podiumWinners,
+                additionalDetails: additionalDetails
+               )
                results.append(resultDTO)
            }
        } catch {
@@ -514,41 +381,6 @@ struct Requester {
             print("avp - Error extracting winner image: \(error)")
             return nil
         }
-//        do {
-//            if let imgDiv = try item.select("div.winner-img").first() {
-//                let styleAttribute = try imgDiv.attr("style")
-//
-//                // Regular expression to capture the URL from the style attribute.
-//                // This pattern matches: url(something)
-//                let pattern = "url\\(([^)]+)\\)"
-//                let regex = try NSRegularExpression(pattern: pattern, options: [])
-//                let nsString = styleAttribute as NSString
-//                let range = NSRange(location: 0, length: nsString.length)
-//                if let match = regex.firstMatch(in: styleAttribute, options: [], range: range) {
-//                    // Extract the first capture group (the content between the parentheses)
-//                    let urlRange = match.range(at: 1)
-//                    if let swiftRange = Range(urlRange, in: styleAttribute) {
-//                        let imageUrl = String(styleAttribute[swiftRange])
-//
-//                        guard let hostUrl = URL(string: "https://www.procyclingstats.com"),
-//                              let fullUrl = URL(string: imageUrl, relativeTo: hostUrl)
-//                        else {
-//                            print("avp = No winner-img div found in this item.")
-//                            return nil
-//                        }
-//                        return fullUrl
-//                    }
-//                }
-//            } else {
-//                print("avp - No winner-img div found in this item.")
-//                return nil
-//            }
-//        } catch {
-//            print("avp - No winner-img div found in this item.")
-//            return nil
-//        }
-//        print("avp - No winner-img div found in this item.")
-//        return nil
     }
     
     static func getTodayRaces(date: Date? = nil) async -> [TodaySectionModel] {
@@ -656,6 +488,51 @@ struct Requester {
         return sections
     }
 
+    static func parseRacesTomorrow(from document: Document) -> [DTO.TomorrowRace] {
+        do {
+            // Select the container that immediately follows the header "Races tomorrow"
+            // Note: the header is <h3 class="info-title mb5">Races tomorrow</h3>
+            guard let container = try document.select("h3.info-title:contains(Races tomorrow) + span.table-cont").first() else {
+                assertionFailure("Races tomorrow section not found")
+                return []
+            }
+            
+            // Find the table with class "hp-tbl1 tomorrow" within the container
+            guard let table = try container.select("table.hp-tbl1.tomorrow").first() else {
+                assertionFailure("Races tomorrow section not found")
+                return []
+            }
+            
+            // Loop over each row in the table body
+            var tomorrowRaces: [DTO.TomorrowRace] = []
+            let rows = try table.select("tbody > tr").array()
+            for row in rows {
+                // Get start time from the first <td> (using the text in the span with class "cet_time")
+                let startTD = try row.select("td.fs12.start").first()
+                let startTime = try startTD?.select("span.cet_time").text() ?? ""
+                
+                // The race name cell is the third td (after the start and the icon cell)
+                let cells = try row.select("td").array()
+                let raceCell = cells.count >= 3 ? cells[2] : nil
+                let raceName = try raceCell?.select("a").text() ?? ""
+                let raceRelativeURL = try raceCell?.select("a").attr("href") ?? ""
+                let raceURL = URL(string: Requester.baseURL.absoluteString + raceRelativeURL)
+                
+                // Get ETA from the last cell (td.fs12.eta)
+                let etaTD = try row.select("td.fs12.eta").first()
+                let eta = try etaTD?.select("span.cet_time").text() ?? ""
+                tomorrowRaces.append(
+                    DTO.TomorrowRace(
+                        startTime: startTime,
+                        raceName: raceName, relativeUrl: raceURL, eta: eta))
+            }
+            return tomorrowRaces
+        } catch {
+            assertionFailure(": Unexpected error parsing HTML document.")
+            return []
+        }
+    }
+    // startTime, racename, relativeUrl, eta
 }
 
 struct TodaySectionModel: Decodable, Hashable, Sendable {
@@ -671,4 +548,17 @@ struct TodaySectionModel: Decodable, Hashable, Sendable {
     
     let sectionName: String
     let races: [Race]
+}
+
+extension String? {
+    var debugOptional: String {
+        guard let self = self else {
+#if DEBUG
+            return "shit 😭"
+#else
+            return "-"
+#endif
+        }
+        return self
+    }
 }

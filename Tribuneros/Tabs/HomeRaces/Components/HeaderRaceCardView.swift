@@ -53,7 +53,7 @@ struct HeaderRaceCardView: View {
     }
     
     private func buildButton(_ title: String, action: @escaping () -> Void) -> some View {
-        Button {
+        Button {let _ = print("avvp tap - ")
             action()
         } label: {
             HStack(spacing: 4) {
