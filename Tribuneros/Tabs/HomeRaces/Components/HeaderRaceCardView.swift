@@ -30,6 +30,7 @@ struct HeaderRaceCardView: View {
             HStack {
                 Text(title)
                     .font(.system(size: 16, weight: .bold, design: .default))
+                    .foregroundColor(.white) // avvp color
                 Spacer()
                 
                 if let spoilerModeAction, let showResultsAction {

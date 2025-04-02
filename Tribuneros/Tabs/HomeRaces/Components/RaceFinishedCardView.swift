@@ -13,7 +13,6 @@ struct RaceFinishedCardView: View {
     
     let title: String
     let races: [HomeRaces.Representable.RaceFinished]
-    let contentWidth: CGFloat
     let spoilerModeAction: () -> Void
     let showResultsAction: () -> Void
     
@@ -44,12 +43,13 @@ struct RaceFinishedCardView: View {
                             Text(race.race)
                                 .lineLimit(1)
                                 .font(.system(size: 14, weight: .heavy, design: .default))
+                                .foregroundColor(.white) // avvp color
                                 .debugBackground()
                             
                             Text(race.raceDetails)
                                 .lineLimit(1)
                                 .font(.system(size: 12, weight: .regular, design: .monospaced))
-                                .foregroundColor(.white.opacity(0.75))
+                                .foregroundColor(.white.opacity(0.8))
                                 .padding(.top, -4)
                             //                                .fixedSize(horizontal: false, vertical: true)
                                 .debugBackground()
@@ -98,6 +98,7 @@ struct RaceFinishedCardView: View {
             Text(podium.name)
                 .lineLimit(1)
                 .font(.system(size: Sizes.fontSizeLabelsInfo, weight: .bold, design: .monospaced))
+                .foregroundColor(.white) // avvp color
                 .frame(width: width * (podium.team.isEmpty ? 0.7 : 0.65), alignment: .leading)
                 .debugBackground()
             
@@ -108,6 +109,7 @@ struct RaceFinishedCardView: View {
                 Text(podium.team)
                     .lineLimit(1)
                     .font(.system(size: Sizes.fontSizeLabelsInfo-1, weight: .semibold, design: .monospaced))
+                    .foregroundColor(.white) // avvp color
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .debugBackground()
                 
@@ -118,6 +120,7 @@ struct RaceFinishedCardView: View {
             Text(podium.time)
                 .lineLimit(1)
                 .font(.system(size: Sizes.fontSizeLabelsInfo-1, weight: .regular, design: .monospaced))
+                .foregroundColor(.white) // avvp color
                 .frame(maxWidth: .infinity, alignment: podium.team.isEmpty ? .trailing : .leading)
                 .debugBackground()
         }
@@ -128,6 +131,7 @@ struct RaceFinishedCardView: View {
             Text(position)
                 .lineLimit(1)
                 .font(.system(size: Sizes.fontSizeLabelsInfo, weight: .regular, design: .monospaced))
+                .foregroundColor(.white) // avvp color
                 .debugBackground(color: .red, opacity: 0.3)
             
             AsyncImageView(url: URL(string: "https://flagcdn.com/w40/\(countryCode).png")!)
@@ -201,21 +205,46 @@ struct RaceFinishedCardView: View {
                 HomeRaces.Representable.RaceFinished.Winner(position: "3", flag: nil, countryCode: "de", name: "Red Bull - Bora - Hansgrohe", team: "", time: "24:12")
         ], isCancel: false)
     ]
-    
-    ScrollView {
-        RaceFinishedCardView(title: "Results Yesterday", races: _races, contentWidth: 440) {
-//            let _ = print("avvp - ")
-//            UserSettings.spoilerModeResultsYesterday?.toggle()
-        } showResultsAction: {
-            
+    ZStack {
+        Color.black
+        ScrollView {
+            VStack {
+                RaceFinishedCardView(title: "Results Yesterday", races: _races) {
+                    //            let _ = print("avvp - ")
+                    //            UserSettings.spoilerModeResultsYesterday?.toggle()
+                } showResultsAction: {
+                    
+                }
+                .background(Color.green.opacity(0.2))
+                .cornerRadius(8)
+            }
         }
-//        .frame(alignment: .center)
-        .background(Color.green.opacity(0.2))
-        .cornerRadius(8)
+        .padding()
+        .padding(.top, 144)
+//        .background(.green)
     }
-    .frame(height: 450, alignment: .center)
-    .debugBackground(color: .gray, opacity: 0.05)
-    .padding()
+    .edgesIgnoringSafeArea(.all)
+    
+//    ZStack {
+//        Color.black
+//            .edgesIgnoringSafeArea(.all)
+//        ScrollView {
+//            VStack {
+//                RaceFinishedCardView(title: "Results Yesterday", races: _races) {
+//                    //            let _ = print("avvp - ")
+//                    //            UserSettings.spoilerModeResultsYesterday?.toggle()
+//                } showResultsAction: {
+//                    
+//                }
+//                Spacer()
+//            }
+//            .background(Color.green.opacity(0.2))
+//            .cornerRadius(8)
+//        }
+//    }
+//    .frame(height: 450, alignment: .center)
+//    .background(.black)
+//    .padding()
 
 }
 

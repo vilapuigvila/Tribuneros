@@ -139,6 +139,11 @@ enum HomeRaces {
         let sections: Section
     }
     
+    struct UserPrefs: Equatable {
+        let isSpoilerModeResultsToday: Bool
+        let isSpoilerModeResultsYesterday: Bool
+    }
+    
     enum Action: Hashable, Sendable {
         case onAppear
         case onDisappear

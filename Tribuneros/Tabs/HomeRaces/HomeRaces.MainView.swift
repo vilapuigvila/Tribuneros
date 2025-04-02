@@ -112,8 +112,7 @@ extension HomeRaces {
                 } else {
                     RaceFinishedCardView(
                         title: "Results today",
-                        races: representable.sections.racesFinished,
-                        contentWidth: width
+                        races: representable.sections.racesFinished
                     ) {
                         print("avvp - spoiler action")
                         UserSettings.spoilerModeResultsToday?.toggle()
@@ -134,8 +133,7 @@ extension HomeRaces {
                 } else {
                     RaceFinishedCardView(
                         title: "Results Yesterday",
-                        races: representable.sections.yesterdayResults,
-                        contentWidth: width
+                        races: representable.sections.yesterdayResults
                     ) {
                         print("avvp - spoiler action")
                         UserSettings.spoilerModeResultsYesterday?.toggle()
