@@ -18,9 +18,10 @@ struct TomorrowRaceCardView: View {
     }
     
     private let paddingHorizontal = 8.0
+#warning("avp check it out ⚠️ -> spoiler mode")
     private func buildNextToFinish(_ races: [HomeRaces.Representable.RaceTomorrow], width: Double) -> some View {
         VStack(spacing: 0) {
-            HeaderRaceCardView(title: "Races tomorrow")
+            HeaderRaceCardView(title: "Races tomorrow", isSpoilerModeOn: false)
             
             VStack(spacing: 0) {
                 buildHeaderNextToFinishSection(width)

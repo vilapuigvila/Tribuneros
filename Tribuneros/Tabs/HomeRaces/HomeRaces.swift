@@ -84,7 +84,7 @@ enum HomeRaces {
         
         var result: Representable {
             guard case .loaded(let result) = self else {
-                return .init(sections: .init(title: "", nextToFinish: [], racesFinished: [], yesterdayResults: [], tomorrowRaces: []))
+                return .init(sections: .init(title: "", spoilerMode: .empty, nextToFinish: [], racesFinished: [], yesterdayResults: [], tomorrowRaces: []))
             }
             return result
         }
@@ -94,6 +94,7 @@ enum HomeRaces {
         struct Section: Identifiable {
             let id = UUID()
             let title: String
+            let spoilerMode: SpoilerMode
             let nextToFinish: [RaceNext]
             let racesFinished: [RaceFinished]
             let yesterdayResults: [RaceFinished]
@@ -126,7 +127,6 @@ enum HomeRaces {
             let category: String
             let raceType: String
             let distance: String
-            let isSpoilerModeOn: Bool
         }
         struct RaceTomorrow: Identifiable {
             let id = UUID()
@@ -139,9 +139,14 @@ enum HomeRaces {
         let sections: Section
     }
     
-    struct UserPrefs: Equatable {
+    struct SpoilerMode: Identifiable {
+        let id = UUID()
         let isSpoilerModeResultsToday: Bool
         let isSpoilerModeResultsYesterday: Bool
+        
+        static var empty: Self {
+            .init(isSpoilerModeResultsToday: false, isSpoilerModeResultsYesterday: false)
+        }
     }
     
     enum Action: Hashable, Sendable {
@@ -149,6 +154,8 @@ enum HomeRaces {
         case onDisappear
         case request(date: Date)
         case selectedHomeStation(String)
+        case spoilerModeResultToday
+        case spoilerModeResultYesterday
     }
     
     enum ErrorView: Error {

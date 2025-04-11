@@ -9,12 +9,11 @@ import SwiftUI
 
 struct RaceFinishedCardView: View {
     private typealias Podium = HomeRaces.Representable.RaceFinished.Winner
-    @State private var showPodium: Bool = UserSettings.spoilerModeResultsYesterday ?? false
     
     let title: String
     let races: [HomeRaces.Representable.RaceFinished]
+    let isSpoilerModeOn: Bool
     let spoilerModeAction: () -> Void
-    let showResultsAction: () -> Void
     
     var animationDuration: TimeInterval {
         0.5 + (Double(races.count / 2) * 0.05)
@@ -23,14 +22,10 @@ struct RaceFinishedCardView: View {
         VStack(/*alignment: .center,*/ spacing: Sizes.spacingVerticalRace) {
             HeaderRaceCardView(
                 title: title,
-                spoilerModeAction: spoilerModeAction,
-                showResultsAction: {
-                    withAnimation(.easeInOut(duration: animationDuration)) {
-                        showPodium.toggle()
-                    }
-                }
+                isSpoilerModeOn: isSpoilerModeOn,
+                spoilerModeAction: spoilerModeAction
             )
-            if showPodium {
+            if !isSpoilerModeOn {
                 ForEach(races) { race in
                     HStack(/*alignment: .center,*/  spacing: 0) {
                         AsyncImageView(url: race.winnerImgURL, cornerRadius: 4)
@@ -51,7 +46,6 @@ struct RaceFinishedCardView: View {
                                 .font(.system(size: 12, weight: .regular, design: .monospaced))
                                 .foregroundColor(.white.opacity(0.8))
                                 .padding(.top, -4)
-                            //                                .fixedSize(horizontal: false, vertical: true)
                                 .debugBackground()
                             
                             ForEach(race.podium) { podium in
@@ -73,22 +67,18 @@ struct RaceFinishedCardView: View {
                         Spacer()
                     }
                     .padding(.vertical, 4)
-//                    .scaleEffect(y: showPodium ? 1 : 0, anchor: .top)
-//                    .opacity(showPodium ? 1 : 0)
-//                    .animation(.easeInOut(duration: 1.4), value: showPodium)
-//                    .transition(
-//                        .opacity
-//                            .combined(with: .scale(scale: 1.0, anchor: .top))
-//                    )
-//                    .animation(.easeInOut(duration: 0.9), value: showPodium)
                     
                     Divider()
                 }
+//                .opacity(isSpoilerModeOn ? 1.0 : 0.0)
+//                .animation(.easeInOut(duration: 1), value: isSpoilerModeOn)
+//                .transition(.move(edge: .top).animation(.easeInOut(duration: 0.9)))
+//                .frame(height: isSpoilerModeOn ? nil : 0)
                 .debugBackground(color: .purple, opacity: 0.2)
-                .scaleEffect(y: showPodium ? 1 : 0, anchor: .top)
-//                .opacity(showPodium ? 1 : 0)
-//                .animation(.easeInOut(duration: 1.4), value: showPodium)
+//                .scaleEffect(y: isSpoilerModeOn ? 0 : 1, anchor: .top)
+//                .opacity(isSpoilerModeOn ? 0 : 1)
             }
+            Spacer()
         }
     }
     
@@ -209,11 +199,9 @@ struct RaceFinishedCardView: View {
         Color.black
         ScrollView {
             VStack {
-                RaceFinishedCardView(title: "Results Yesterday", races: _races) {
-                    //            let _ = print("avvp - ")
-                    //            UserSettings.spoilerModeResultsYesterday?.toggle()
-                } showResultsAction: {
-                    
+                RaceFinishedCardView(title: "Results Yesterday", races: _races, isSpoilerModeOn: false) {
+//                    let _ = print("avvp - ")
+//                    UserSettings.spoilerModeResultsYesterday?.toggle()
                 }
                 .background(Color.green.opacity(0.2))
                 .cornerRadius(8)

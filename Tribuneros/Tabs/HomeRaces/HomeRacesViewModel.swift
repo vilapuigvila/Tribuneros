@@ -7,9 +7,14 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: ObservableObject {
-    @Published private(set) var stateView: HomeRaces.ViewState = .idle
+    @Published private(set) var stateView: HomeRaces.ViewState = .idle {
+        didSet {
+            print("avvp - \(stateView)")
+        }
+    }
     
     private var cancellables = Set<AnyCancellable>()
         
@@ -37,6 +42,10 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
             interactor.useCase(.requestDayRaces(date: Date()))
         case .onDisappear:
             break
+        case .spoilerModeResultToday:
+            interactor.useCase(.spoilerModeResultToday)
+        case .spoilerModeResultYesterday:
+            interactor.useCase(.spoilerModeResultYesterday)
         case .request(let date):
             print("avp - \(date)")
         case .selectedHomeStation(let value):
@@ -63,10 +72,10 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
                         name: $0.name,
                         category: $0.category,
                         raceType: $0.raceType,
-                        distance: $0.distance,
-                        isSpoilerModeOn: false
+                        distance: $0.distance
                     )
                 }
+#warning("avp check it out ⚠️ -> al loro .. ")
                 let nextToFinishSorted = nextToFinish.filter { $0.raceType.contains("UWT") }
                     + nextToFinish.filter { !$0.raceType.contains("UWT") }
                 
@@ -113,6 +122,10 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
                     HomeRaces.Representable(
                         sections: .init(
                             title: "",
+                            spoilerMode: HomeRaces.SpoilerMode(
+                                isSpoilerModeResultsToday: domain.isOnSpoilerModeResultsToday,
+                                isSpoilerModeResultsYesterday: domain.isOnSpoilerModeResultsYesterday
+                            ),
                             nextToFinish: nextToFinishSorted,
                             racesFinished: todayRaces,
                             yesterdayResults: yesterdayResults,

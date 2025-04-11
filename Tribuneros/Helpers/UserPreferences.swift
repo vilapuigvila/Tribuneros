@@ -11,6 +11,7 @@ import Combine
 enum UserPreferencesKey: String {
     case lastListStationsRequest
     case spoilerModeResultsToday
+    case spoilerModeResultsYesterday
 }
 
 @propertyWrapper
@@ -129,7 +130,7 @@ struct UserSettings {
     @UserDefault(UserPreferencesKey.spoilerModeResultsToday.rawValue, defaultValue: false)
     static var spoilerModeResultsToday: Bool?
     
-    @UserDefault(UserPreferencesKey.spoilerModeResultsToday.rawValue, defaultValue: false)
+    @UserDefault(UserPreferencesKey.spoilerModeResultsYesterday.rawValue, defaultValue: false)
     static var spoilerModeResultsYesterday: Bool?
 }
 

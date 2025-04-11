@@ -14,6 +14,8 @@ struct HomeRacesDomain: Equatable {
     let todayRaces: [DTO.TodayResult]
     let yesterdayResults: [DTO.TodayResult]
     let tomorrowRaces: [DTO.TomorrowRace]
+    private(set) var isOnSpoilerModeResultsToday: Bool
+    private(set) var isOnSpoilerModeResultsYesterday: Bool
     let error: EquatableError?
     private(set) var loading: Bool
     
@@ -22,13 +24,17 @@ struct HomeRacesDomain: Equatable {
         todayRaces: [],
         yesterdayResults: [],
         tomorrowRaces: [],
+        isOnSpoilerModeResultsToday: false,
+        isOnSpoilerModeResultsYesterday: false,
         error: nil,
         loading: false
     )
     
-    func copy(loading: Bool) -> Self {
+    func copy(loading: Bool? = nil, spoilerModeResultsToday: Bool? = nil, isOnSpoilerModeResultsYesterday: Bool? = nil) -> Self {
         var copy = self
-        copy.loading = loading
+        copy.loading = loading ?? self.loading
+        copy.isOnSpoilerModeResultsToday = spoilerModeResultsToday ?? self.isOnSpoilerModeResultsToday
+        copy.isOnSpoilerModeResultsYesterday = isOnSpoilerModeResultsYesterday ?? self.isOnSpoilerModeResultsYesterday
         return copy
     }
 }
@@ -57,6 +63,14 @@ final class HomeRacesInteractorImpl: HomeRacesInteractorProtocol {
     
     func useCase(_ useCase: UseCase) {
         switch useCase {
+        case .spoilerModeResultToday:
+            let toggle = !(UserSettings.spoilerModeResultsToday ?? false)
+            UserSettings.spoilerModeResultsToday = toggle
+            subject.send(domain.copy(spoilerModeResultsToday: toggle))
+        case .spoilerModeResultYesterday:
+            let toggle = !(UserSettings.spoilerModeResultsYesterday ?? false)
+            UserSettings.spoilerModeResultsYesterday = toggle
+            subject.send(domain.copy(isOnSpoilerModeResultsYesterday: toggle))
         case .requestDayRaces(let date):
             guard task == nil else { return }
             subject.send(domain.copy(loading: true))
@@ -72,6 +86,8 @@ final class HomeRacesInteractorImpl: HomeRacesInteractorProtocol {
                             todayRaces: result.today,
                             yesterdayResults: result.yesterdayResults,
                             tomorrowRaces: result.tomorrowRaces,
+                            isOnSpoilerModeResultsToday: UserSettings.spoilerModeResultsToday ?? false,
+                            isOnSpoilerModeResultsYesterday: UserSettings.spoilerModeResultsYesterday ?? false,
                             error: (result.nextToFinish.isEmpty && result.today.isEmpty && result.yesterdayResults.isEmpty && result.tomorrowRaces.isEmpty) ?
                                 ErrorReason.emptyResponse.toEquatableError() : nil,
                             loading: false
@@ -84,6 +100,8 @@ final class HomeRacesInteractorImpl: HomeRacesInteractorProtocol {
                             todayRaces: [],
                             yesterdayResults: [],
                             tomorrowRaces: [],
+                            isOnSpoilerModeResultsToday: UserSettings.spoilerModeResultsToday ?? false,
+                            isOnSpoilerModeResultsYesterday: UserSettings.spoilerModeResultsYesterday ?? false,
                             error: error.toEquatableError(),
                             loading: false
                         )
@@ -101,6 +119,8 @@ extension HomeRacesInteractorImpl {
     enum UseCase {
         case requestDayRaces(date: Date)
         case cancelRequestStation
+        case spoilerModeResultToday
+        case spoilerModeResultYesterday
     }
     
     enum ErrorReason: Error {

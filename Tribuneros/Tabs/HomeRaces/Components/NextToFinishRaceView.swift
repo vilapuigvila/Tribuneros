@@ -19,7 +19,8 @@ struct NextToFinishRaceView: View {
     private func buildNextToFinish(_ races: [HomeRaces.Representable.RaceNext]) -> some View {
         GeometryReader { proxy in
             VStack(spacing: 0) {
-                HeaderRaceCardView(title: "Next to finish")
+#warning("avp check it out ⚠️ -> isSpoiler mode ")
+                HeaderRaceCardView(title: "Next to finish", isSpoilerModeOn: false)
                 
                 buildHeaderNextToFinishSection(proxy.size.width)
                     .padding(.top, 6)
@@ -80,8 +81,8 @@ struct NextToFinishRaceView: View {
 
 #Preview {
     let races: [HomeRaces.Representable.RaceNext] = [
-        HomeRaces.Representable.RaceNext(eta: "12:34", duration: "2H", name: "Paris-Nice", category: "UCI", raceType: "2.UWT", distance: "190", isSpoilerModeOn: false),
-        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Tour du France", category: "UCI", raceType: "2.UWT", distance: "230", isSpoilerModeOn: false)
+        HomeRaces.Representable.RaceNext(eta: "12:34", duration: "2H", name: "Paris-Nice", category: "UCI", raceType: "2.UWT", distance: "190"),
+        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Tour du France", category: "UCI", raceType: "2.UWT", distance: "230")
     ]
     NextToFinishRaceView(races: races)
     Spacer()

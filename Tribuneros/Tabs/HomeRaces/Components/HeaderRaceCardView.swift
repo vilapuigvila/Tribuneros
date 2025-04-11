@@ -9,16 +9,17 @@ import SwiftUI
 
 struct HeaderRaceCardView: View {
     let title: String
+    let isSpoilerModeOn: Bool
     let spoilerModeAction: (() -> Void)?
-    let showResultsAction: (() -> Void)?
+    
     init(
         title: String,
-        spoilerModeAction: ( () -> Void)? = nil,
-        showResultsAction: ( () -> Void)? = nil
+        isSpoilerModeOn: Bool,
+        spoilerModeAction: ( () -> Void)? = nil
     ) {
         self.title = title
+        self.isSpoilerModeOn = isSpoilerModeOn
         self.spoilerModeAction = spoilerModeAction
-        self.showResultsAction = showResultsAction
     }
     var body: some View {
         buildTitleNextToFinishCardView()
@@ -33,11 +34,10 @@ struct HeaderRaceCardView: View {
                     .foregroundColor(.white) // avvp color
                 Spacer()
                 
-                if let spoilerModeAction, let showResultsAction {
+                if let spoilerModeAction {
                     HStack(alignment: .center, spacing: 12) {
-                        buildButton("Spoiler on/off", action: spoilerModeAction)
-                        buildButton("Show", action: showResultsAction)
-                            .opacity(1)
+                        let textSpoilerBtn = isSpoilerModeOn ? "Spoiler is on" : "Spoiler is off"
+                        buildButton(textSpoilerBtn, action: spoilerModeAction)
                     }
                 }
             }
@@ -54,9 +54,7 @@ struct HeaderRaceCardView: View {
     }
     
     private func buildButton(_ title: String, action: @escaping () -> Void) -> some View {
-        Button {let _ = print("avvp tap - ")
-            action()
-        } label: {
+        Button(action: action) {
             HStack(spacing: 4) {
                 Text(title)
                     .font(.system(size: 11, weight: .bold, design: .monospaced))
@@ -73,9 +71,7 @@ struct HeaderRaceCardView: View {
 
 #Preview {
     VStack {
-        HeaderRaceCardView(title: "Results today") {
-            
-        } showResultsAction: {
+        HeaderRaceCardView(title: "Results today", isSpoilerModeOn: false) {
             
         }
         .frame(maxWidth: .infinity)
