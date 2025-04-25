@@ -8,16 +8,48 @@
 import SwiftUI
 
 struct HomeRacesView: View {
-    
     @ObservedObject var viewModel: HomeRacesViewModel<HomeRacesInteractorImpl>
     
     var body: some View {
         HomeRaces.MainView(state: viewModel.stateView) {
             viewModel.action($0)
         }
+        .navigationDestination(for: Router.Destination.self) { destination in
+            let _ = print("avvp [Navigation] - \(destination)")
+            switch destination {
+            case .nextToFinish:
+                NextToFinishListView(races: viewModel.stateView.result.sections.nextToFinish) { index in
+                    let urlPath = viewModel.stateView.result.sections.nextToFinish[index].urlPath
+                    assert(urlPath != nil)
+                    viewModel.action(.navigate(.detail(.race(name: urlPath))))
+                }
+//                .navigationTitle("NEXT TO FINISH")
+            case .detail(let race):
+                switch race {
+                case .race(let urlInfo):
+                    RaceInfo(urlInfo: urlInfo)
+                        .padding()
+                    //                    .navigationTitle("Race")
+                }
+            }
+        }
+        .navigationTitle("PRO CYCLING STATS")
     }
 }
-
+struct RaceInfo: View {
+    let urlInfo: String
+    
+    var body: some View {
+        Text("race")
+            .task {
+                do {
+                    try await Requester.getRace(urlString: urlInfo)
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                }
+            }
+    }
+}
 extension HomeRaces {
     
     struct MainView: View {
@@ -48,25 +80,21 @@ extension HomeRaces {
                                 buildNextToFinishView(representable)
                                 
                                 /// - Results today -
-//                                SingleAxisGeometryReader { width in
-                                    buildResultsTodayView(representable, width: 0)
-//                                }
+                                buildResultsTodayView(representable)
                                 
                                 /// - Results yesterday -
-//                                SingleAxisGeometryReader { width in
-                                    buildResultsYesterdayView(representable, width: 0)
-//                                }
+                                buildResultsYesterdayView(representable)
                                 
                                 /// - Tomorrow races -
-//                                SingleAxisGeometryReader { width in
-                                    buildTomorrowRaces(representable, width: 0)
-//                                }
-//                                }
-                                Color.clear.frame(height: safeAreaInsets.bottom*2+safeAreaInsets.bottom)
+                                buildTomorrowRaces(representable)
+                                
+                                Color.clear
+                                    .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
                             }
                             .padding()
                     }
                     .background(.black)
+                    
                 case .error(let errorView):
                     Text("Error: \(errorView)")
                 }
@@ -76,17 +104,14 @@ extension HomeRaces {
             }
         }
         
-        private func buildTomorrowRaces(_ representable: Representable, width: CGFloat) -> some View {
+        private func buildTomorrowRaces(_ representable: Representable) -> some View {
             Group {
                 if representable.sections.tomorrowRaces.isEmpty {
                     buildNoResultsCardView("Races tomorrow")
                 } else {
-                    TomorrowRaceCardView(
-                        races: representable.sections.tomorrowRaces
-                    )
-                    .background(Color.green.opacity(0.2))
-//                    .debugBackground()
-                    .cornerRadius(8)
+                    TomorrowRaceCardView(races: representable.sections.tomorrowRaces)
+	                    .background(Color.green.opacity(0.2))
+                        .cornerRadius(8)
                 }
             }
         }
@@ -96,16 +121,17 @@ extension HomeRaces {
                 if representable.sections.nextToFinish.isEmpty {
                     buildNoResultsCardView("Next to fihish")
                 } else {
-                    NextToFinishRaceView(races: representable.sections.nextToFinish)
-                        .debugBackground()
-                        .background(Color.green.opacity(0.2))
-//                        .frame(height: heightCardView)
-                        .cornerRadius(8)
+                    NextToFinishRaceView(races: representable.sections.nextToFinish) {
+                        action(.navigate(.nextToFinish))
+//                        router.routeTo(.todayRaces)
+                    }
+                    .background(Color.cardInfoBackground)
+                    .cornerRadius(8)
                 }
             }
         }
         
-        private func buildResultsTodayView(_ representable: Representable, width: CGFloat) -> some View {
+        private func buildResultsTodayView(_ representable: Representable) -> some View {
             Group {
                 if representable.sections.racesFinished.isEmpty {
                     buildNoResultsCardView("Results today")
@@ -113,18 +139,17 @@ extension HomeRaces {
                     RaceFinishedCardView(
                         title: "Results today",
                         races: representable.sections.racesFinished,
-                        isSpoilerModeOn: representable.sections.spoilerMode.isSpoilerModeResultsToday
+                        isSpoilerModeOnSubject: .init(representable.sections.spoilerMode.isSpoilerModeResultsToday)
                     ) {
                         action(.spoilerModeResultToday)
                     }
-//                    .debugBackground()
-                    .background(Color.green.opacity(0.2))
+                    .background(Color.cardInfoBackground)
                     .cornerRadius(8)
                 }
             }
         }
         
-        private func buildResultsYesterdayView(_ representable: Representable, width: CGFloat) -> some View {
+        private func buildResultsYesterdayView(_ representable: Representable) -> some View {
             Group {
                 if representable.sections.yesterdayResults.isEmpty {
                     buildNoResultsCardView("Results yesterday")
@@ -132,12 +157,11 @@ extension HomeRaces {
                     RaceFinishedCardView(
                         title: "Results Yesterday",
                         races: representable.sections.yesterdayResults,
-                        isSpoilerModeOn: representable.sections.spoilerMode.isSpoilerModeResultsYesterday
+                        isSpoilerModeOnSubject: .init(representable.sections.spoilerMode.isSpoilerModeResultsYesterday)
                     ) {
                         action(.spoilerModeResultYesterday)
                     }
-//                    .debugBackground()
-                    .background(Color.green.opacity(0.2))
+                    .background(Color.cardInfoBackground)
                     .cornerRadius(8)
                 }
             }
@@ -147,7 +171,7 @@ extension HomeRaces {
             EmptyResultsCardView(title: "\(race)", info: "No info available")
                 .frame(height: heightCardView)
                 .frame(maxWidth: .infinity)
-                .background(Color.blue.opacity(0.2))
+                .background(Color.cardMissingInfoBackground)
                 .cornerRadius(8)
         }
     }
@@ -157,10 +181,10 @@ extension HomeRaces {
 
 #Preview("Loaded") {
     let nextToFinish: [HomeRaces.Representable.RaceNext] = [
-        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Strade Bianche Home", category: "UCI", raceType: "2.UWT", distance: "215"),
-        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Strade Bianche Donne", category: "UCI", raceType: "2.UWT", distance: "215"),
-        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "paris Nice", category: "UCI", raceType: "2.UWT", distance: "215"),
-        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Tirreno", category: "UCI", raceType: "2.UWT", distance: "215")
+        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Strade Bianche Home", category: "UCI", raceType: "2.UWT", distance: "215", urlPath: nil),
+        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Strade Bianche Donne", category: "UCI", raceType: "2.UWT", distance: "215", urlPath: nil),
+        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "paris Nice", category: "UCI", raceType: "2.UWT", distance: "215", urlPath: nil),
+        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Tirreno", category: "UCI", raceType: "2.UWT", distance: "215", urlPath: nil)
     ]
     let todayFinished: [HomeRaces.Representable.RaceFinished] = [
         HomeRaces.Representable.RaceFinished(
@@ -242,7 +266,7 @@ extension HomeRaces {
             title: "",
             spoilerMode: .empty,
             nextToFinish: [], // nextToFinish,
-            racesFinished: [], // todayFinished,
+            racesFinished: todayFinished,
             yesterdayResults: yesterdayResults,
             tomorrowRaces: tomorrowRaces
         )

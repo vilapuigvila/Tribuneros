@@ -54,7 +54,10 @@ struct HeaderRaceCardView: View {
     }
     
     private func buildButton(_ title: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+        Button {
+            action()
+//            withAnimation(.spring(response: 0.65, dampingFraction: 0.75)) {            }
+        } label: {
             HStack(spacing: 4) {
                 Text(title)
                     .font(.system(size: 11, weight: .bold, design: .monospaced))

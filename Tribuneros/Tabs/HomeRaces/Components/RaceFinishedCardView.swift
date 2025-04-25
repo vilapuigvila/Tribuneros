@@ -6,28 +6,43 @@
 //
 
 import SwiftUI
+import Combine
 
 struct RaceFinishedCardView: View {
     private typealias Podium = HomeRaces.Representable.RaceFinished.Winner
     
+    @State private var _isSpoilerModeOn: Bool = false
+    @State private var allowsHitSpolierButton: Bool = true
+    
     let title: String
     let races: [HomeRaces.Representable.RaceFinished]
-    let isSpoilerModeOn: Bool
+    let isSpoilerModeOnSubject: CurrentValueSubject<Bool, Never>
     let spoilerModeAction: () -> Void
     
-    var animationDuration: TimeInterval {
-        0.5 + (Double(races.count / 2) * 0.05)
+    init(
+        title: String,
+        races: [HomeRaces.Representable.RaceFinished],
+        isSpoilerModeOnSubject: CurrentValueSubject<Bool, Never> = .init(true),
+        spoilerModeAction: @escaping () -> Void
+    ) {
+        self.title = title
+        self.races = races
+        self.isSpoilerModeOnSubject = isSpoilerModeOnSubject
+        self.spoilerModeAction = spoilerModeAction
     }
+    
     var body: some View {
-        VStack(/*alignment: .center,*/ spacing: Sizes.spacingVerticalRace) {
+        VStack(spacing: Sizes.spacingVerticalRace) {
             HeaderRaceCardView(
                 title: title,
-                isSpoilerModeOn: isSpoilerModeOn,
+                isSpoilerModeOn: isSpoilerModeOnSubject.value,
                 spoilerModeAction: spoilerModeAction
             )
-            if !isSpoilerModeOn {
+            .allowsHitTesting(allowsHitSpolierButton)
+            
+            VStack(spacing: 0) {
                 ForEach(races) { race in
-                    HStack(/*alignment: .center,*/  spacing: 0) {
+                    HStack(spacing: 0) {
                         AsyncImageView(url: race.winnerImgURL, cornerRadius: 4)
                             .frame(width: Sizes.imgWidth)
                         //                            .frame(height: 112*0.41)
@@ -70,15 +85,20 @@ struct RaceFinishedCardView: View {
                     
                     Divider()
                 }
-//                .opacity(isSpoilerModeOn ? 1.0 : 0.0)
-//                .animation(.easeInOut(duration: 1), value: isSpoilerModeOn)
-//                .transition(.move(edge: .top).animation(.easeInOut(duration: 0.9)))
-//                .frame(height: isSpoilerModeOn ? nil : 0)
-                .debugBackground(color: .purple, opacity: 0.2)
-//                .scaleEffect(y: isSpoilerModeOn ? 0 : 1, anchor: .top)
-//                .opacity(isSpoilerModeOn ? 0 : 1)
             }
-            Spacer()
+            .opacity(_isSpoilerModeOn ? 1 : 0)
+            .frame(maxWidth: .infinity, maxHeight: _isSpoilerModeOn ? .infinity : 0)
+            .clipped()
+        }
+        .onReceive(isSpoilerModeOnSubject) { isOn in
+            self.allowsHitSpolierButton = false
+            
+            withAnimation(.interpolatingSpring(.smooth, initialVelocity: 0.5)) {
+                _isSpoilerModeOn = isOn
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                self.allowsHitSpolierButton = true
+            }
         }
     }
     
@@ -167,6 +187,19 @@ struct RaceFinishedCardView: View {
     }
 }
 
+extension View {
+    /*func onReceiveOptional<Output>(
+        _ subject: CurrentValueSubject<Output, Never>?,
+        perform action: @escaping (Output) -> Void
+    ) -> some View {
+        if let subject {
+            return self.onReceive(subject, perform: action)
+        } else {
+            return self
+        }
+    }*/
+}
+
 #Preview {
     let racesITT = [
         HomeRaces.Representable.RaceFinished(race: "Volta Catalunya", raceDetails: "General classification", winnerImgURL: URL(string: "https://www.procyclingstats.com/images/riders/bp/ee/filippo-ganna-2025.jpg"), podium: [
@@ -199,43 +232,40 @@ struct RaceFinishedCardView: View {
         Color.black
         ScrollView {
             VStack {
-                RaceFinishedCardView(title: "Results Yesterday", races: _races, isSpoilerModeOn: false) {
+                ContentPreviewView(races: _races)
+                /*
+                RaceFinishedCardView(
+                    title: "Results Yesterday",
+                    races: _races, isSpoilerModeOn: false
+                ) {
 //                    let _ = print("avvp - ")
-//                    UserSettings.spoilerModeResultsYesterday?.toggle()
+                    UserSettings.spoilerModeResultsYesterday?.toggle()
                 }
                 .background(Color.green.opacity(0.2))
-                .cornerRadius(8)
+                .cornerRadius(8)*/
             }
         }
         .padding()
         .padding(.top, 144)
-//        .background(.green)
     }
     .edgesIgnoringSafeArea(.all)
-    
-//    ZStack {
-//        Color.black
-//            .edgesIgnoringSafeArea(.all)
-//        ScrollView {
-//            VStack {
-//                RaceFinishedCardView(title: "Results Yesterday", races: _races) {
-//                    //            let _ = print("avvp - ")
-//                    //            UserSettings.spoilerModeResultsYesterday?.toggle()
-//                } showResultsAction: {
-//                    
-//                }
-//                Spacer()
-//            }
-//            .background(Color.green.opacity(0.2))
-//            .cornerRadius(8)
-//        }
-//    }
-//    .frame(height: 450, alignment: .center)
-//    .background(.black)
-//    .padding()
 
 }
 
+private struct ContentPreviewView: View {
+    let races: [HomeRaces.Representable.RaceFinished]
+    @State private var isSpoilerOn: Bool = true
+    var body: some View {
+        RaceFinishedCardView(
+            title: "Results Yesterday",
+            races: races
+        ) {
+            isSpoilerOn.toggle()
+        }
+        .background(Color.green.opacity(0.2))
+        .cornerRadius(8)
+    }
+}
 
 struct DebugBackgroundModifier: ViewModifier {
     var color: Color
@@ -265,6 +295,6 @@ extension View {
 
 extension ProcessInfo {
     var isPreview: Bool {
-        environment["XCODE_RUNNING_FOR_PREVIEWS"] == "0"
+        environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
     }
 }

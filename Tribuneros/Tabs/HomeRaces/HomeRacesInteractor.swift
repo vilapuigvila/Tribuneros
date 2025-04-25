@@ -121,6 +121,7 @@ extension HomeRacesInteractorImpl {
         case cancelRequestStation
         case spoilerModeResultToday
         case spoilerModeResultYesterday
+//        case navigate(HomeRaces.Navigate)
     }
     
     enum ErrorReason: Error {

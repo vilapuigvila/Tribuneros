@@ -10,18 +10,22 @@ import SwiftUI
 struct NextToFinishRaceView: View {
     let races: [HomeRaces.Representable.RaceNext]
     
+    let onTap: () -> Void
+    
     var body: some View {
         buildNextToFinish(races)
             .frame(height: 140)
+            .contentShape(Rectangle())
+            .onTapGesture(perform: onTap)
     }
     
-    private let paddingHorizontal = 8.0
     private func buildNextToFinish(_ races: [HomeRaces.Representable.RaceNext]) -> some View {
         GeometryReader { proxy in
             VStack(spacing: 0) {
-#warning("avp check it out ⚠️ -> isSpoiler mode ")
-                HeaderRaceCardView(title: "Next to finish", isSpoilerModeOn: false)
-                
+                HeaderRaceCardView(
+                    title: "Next to finish",
+                    isSpoilerModeOn: false
+                )
                 buildHeaderNextToFinishSection(proxy.size.width)
                     .padding(.top, 6)
                     .padding(.bottom, 2)
@@ -39,17 +43,19 @@ struct NextToFinishRaceView: View {
                             buildTextForRaceFinishedValue(item.category, width: proxy.size.width * 0.0925)
                             buildTextForRaceFinishedValue(item.distance, width: proxy.size.width * 0.0925)
                         }
-                        .frame(width: proxy.size.width)
+//                        .frame(width: proxy.size.width)
+                        
                         Spacer()
                     }
                 }
-                Spacer()
                 
-                Text("+ info")
-                    .font(.system(size: 9, weight: .bold, design: .default))
-                    .foregroundStyle(.link)
-                    .frame(alignment: .bottomLeading)
-                    .offset(y: -6)
+                if races.count > 2 {
+                    Text("+ info")
+                        .font(.system(size: 9, weight: .bold, design: .default))
+                        .foregroundStyle(.link)
+                        .frame(alignment: .bottomLeading)
+                        .padding(.bottom, 6)
+                }
             }
         }
     }
@@ -81,9 +87,14 @@ struct NextToFinishRaceView: View {
 
 #Preview {
     let races: [HomeRaces.Representable.RaceNext] = [
-        HomeRaces.Representable.RaceNext(eta: "12:34", duration: "2H", name: "Paris-Nice", category: "UCI", raceType: "2.UWT", distance: "190"),
-        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Tour du France", category: "UCI", raceType: "2.UWT", distance: "230")
+        HomeRaces.Representable.RaceNext(eta: "12:34", duration: "2H", name: "Paris-Nice", category: "UCI", raceType: "2.UWT", distance: "190", urlPath: nil),
+        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Tour du France", category: "UCI", raceType: "2.UWT", distance: "230", urlPath: nil)
     ]
-    NextToFinishRaceView(races: races)
-    Spacer()
+    NextToFinishRaceView(races: races) {
+        
+    }
+    .background(Color.cardInfoBackground)
+    .cornerRadius(8)
+    .padding()
+//    Spacer()
 }

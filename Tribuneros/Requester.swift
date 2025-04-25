@@ -11,57 +11,6 @@ import FoundationXML // Necessary for XML parsing on certain platforms
 #endif
 import `SwiftSoup` // Add SwiftSoup for HTML parsing
 
-enum DTO {
-    struct Home: Codable, Equatable {
-        let nextToFinish: [NextToFinishResult]
-        let today: [TodayResult]
-        let yesterdayResults: [TodayResult]
-        let tomorrowRaces: [TomorrowRace]
-    }
-    
-    struct NextToFinishResult: Codable, Equatable {
-        let eta: String
-        let duration: String
-        let name: String
-        let category: String
-        let raceType: String
-        let distance: String
-        
-        static func parse(cells: [[String]]) -> [NextToFinishResult] {
-            cells.compactMap {
-                NextToFinishResult(eta: $0[1], duration: $0[2], name: $0[3], category: $0[4], raceType: $0[5], distance: $0[6])
-            }
-        }
-    }
-    
-    struct TodayResult: Codable, Equatable {
-        struct Winner: Codable, Equatable {
-            let position: String
-            let flag: URL?
-            let countryCode: String?
-            let name: String
-            let team: String
-            let time: String
-        }
-        struct AdditionalDetails: Codable, Equatable {
-            let tag: String
-            let url: URL?
-        }
-        let raceName: String
-        let raceDetails: String
-        let winner: URL?
-        let podium: [Winner]
-        let additionalDetails: [AdditionalDetails]
-    }
-    
-    struct TomorrowRace: Codable, Equatable {
-        let startTime: String
-        let raceName: String
-        let relativeUrl: URL?
-        let eta: String
-    }
-}
-
 struct Requester {
     private static let baseURL = URL(string: "https://www.procyclingstats.com/")!
     
@@ -95,13 +44,11 @@ struct Requester {
     }
     
     private static func parseNextToFinishResults(_ document: Document) -> [DTO.NextToFinishResult] {
-        guard let table = try? document.select("table.hp-tbl1.next-to-finish").first() else {
-            return []
-        }
-        guard let tbody = try? table.select("tbody").first() else {
-            return []
-        }
-        guard let rows = try? tbody.select("tr") else {
+        guard let table = try? document.select("table.hp-tbl1.next-to-finish").first(),
+              let tbody = try? table.select("tbody").first(),
+              let rows = try? tbody.select("tr")
+        else {
+            print("avvp [NETWORK] - empty next to finish")
             return []
         }
         var results: [[String]] = []
@@ -118,6 +65,13 @@ struct Requester {
                 }
                 rowData.append(cellText)
             }
+            // get race path url
+            if let pathURL = try? row.select("a").first(), let href = try? pathURL.attr("href") {
+                let urlString = "https://www.procyclingstats.com/\(href)"
+                rowData.append(urlString)
+            } else {
+                rowData.append("")
+            }
             results.append(rowData)
         }
         return DTO.NextToFinishResult.parse(cells: results)
@@ -132,7 +86,7 @@ struct Requester {
         do {
             // First, select the "Results yesterday" header and get the next <ul> with class "hp2-results"
             guard let resultsList = try document.select("h3.black-info-title:contains(Results today) + ul.hp2-results").first() else {
-                print("Results yesterday list not found")
+                print("avvp [NETWORK] - empty today results")
                 return results
             }
             
@@ -228,9 +182,8 @@ struct Requester {
                 results.append(resultDTO)
             }
         } catch {
-            print("Error parsing Results yesterday: \(error)")
+            print("avvp [NETWORK] - \(error.localizedDescription)")
         }
-        
         return results
     }
     
@@ -241,7 +194,7 @@ struct Requester {
        do {
            // Use an adjacent-sibling CSS selector to get the <ul> with results that immediately follows the header:
            guard let resultsUl = try document.select("h3.black-info-title:contains(Results yesterday) + ul.hp2-results").first() else {
-               print("Results yesterday list not found")
+               print("avvp [NETWORK] - empty yesterday results")
                return results
            }
            let raceItems = try resultsUl.select("li.race").array()
@@ -355,7 +308,6 @@ struct Requester {
     private static func extractImgWinner(_ item: Element) -> URL? {
         do {
             guard let imgDiv = try item.select("div.winner-img").first() else {
-                print("avp - No winner-img div found in this item.")
                 return nil
             }
             let styleAttribute = try imgDiv.attr("style")
@@ -366,19 +318,16 @@ struct Requester {
             guard let match = regex.firstMatch(in: styleAttribute, options: [], range: range),
                     let swiftRange = Range(match.range(at: 1), in: styleAttribute)
             else {
-                print("avp - Could not extract URL from style attribute.")
                 return nil
             }
             let imageUrl = String(styleAttribute[swiftRange])
             guard let hostUrl = URL(string: "https://www.procyclingstats.com"),
                     let fullUrl = URL(string: imageUrl, relativeTo: hostUrl)
             else {
-                print("avp - Failed to create full URL from imageUrl: \(imageUrl)")
                 return nil
             }
             return fullUrl
         } catch {
-            print("avp - Error extracting winner image: \(error)")
             return nil
         }
     }
@@ -393,16 +342,17 @@ struct Requester {
         do {
             let data = try await URLSession.shared.data(from: url).0
             guard let htmlContent = String(data: data, encoding: .utf8) else {
+                print("avvp [NETWORK] - error today races: invalid data encoding")
                 throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
             }
             
             let document = try SwiftSoup.parse(htmlContent)
             // MARK: Extract UCI races
             if let uciSection = try document.select("div.mt30:has(h3:contains(UCI races))").first() {
-                print("UCI races section found")
+                
                 if let uciTable = try uciSection.select("table.basic").first() {
                     let uciRows = try uciTable.select("tbody tr")
-                    print("UCI Races:")
+                    
                     var races: [TodaySectionModel.Race] = []
                     for row in uciRows {
                         let cells = try row.select("td")
@@ -422,14 +372,12 @@ struct Requester {
                     assertionFailure()
                 }
             } else {
-//                assertionFailure()
+                assertionFailure()
             }
             
             if let nationalSection = try document.select("div.mt30:has(h3:contains(National races))").first() {
-                print("National races section found")
                 if let nationalTable = try nationalSection.select("table.basic").first() {
                     let nationalRows = try nationalTable.select("tbody tr")
-                    print("National Races:")
                     var races: [TodaySectionModel.Race] = []
                     for row in nationalRows {
                         let cells = try row.select("td")
@@ -447,17 +395,16 @@ struct Requester {
                     }
                     sections.append(TodaySectionModel(sectionName: "National Races", races: races))
                 } else {
-                    print("No National table found")
+                    print("avvp [NETWORK] No National table found")
                 }
             } else {
-                print("No National races section found")
+                print("avvp [NETWORK] No National races section found")
             }
             
             if let nationalSection = try document.select("div.mt30:has(h3:contains(CX races))").first() {
-                print("CX races section found")
+                
                 if let nationalTable = try nationalSection.select("table.basic").first() {
                     let nationalRows = try nationalTable.select("tbody tr")
-                    print("CX Races:")
                     var races: [TodaySectionModel.Race] = []
                     for row in nationalRows {
                         let cells = try row.select("td")
@@ -476,10 +423,11 @@ struct Requester {
                     }
                     sections.append(TodaySectionModel(sectionName: "CX Races", races: races))
                 } else {
-                    print("No CX table found")
+                    assertionFailure()
+                    print("avvp [NETWORK] CX table found")
                 }
             } else {
-                print("No CX races section found")
+                print("avvp [NETWORK] No CX races section found")
             }
             
         } catch {
@@ -532,7 +480,20 @@ struct Requester {
             return []
         }
     }
-    // startTime, racename, relativeUrl, eta
+    
+    static func getRace(urlString: String) async throws {
+        let url = URL(string: urlString)!
+        do {
+            let data = try await URLSession.shared.data(from: url).0
+            guard let htmlContent = String(data: data, encoding: .utf8) else {
+                throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
+            }
+            print("avvp - \(htmlContent)")
+        } catch {
+            assertionFailure(error.localizedDescription)
+            throw NSError(domain: "Impossible parsing", code: 0, userInfo: nil)
+        }
+    }
 }
 
 struct TodaySectionModel: Decodable, Hashable, Sendable {

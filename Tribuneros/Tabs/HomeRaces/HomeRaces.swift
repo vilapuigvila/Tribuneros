@@ -127,6 +127,7 @@ enum HomeRaces {
             let category: String
             let raceType: String
             let distance: String
+            let urlPath: String?
         }
         struct RaceTomorrow: Identifiable {
             let id = UUID()
@@ -152,15 +153,26 @@ enum HomeRaces {
     enum Action: Hashable, Sendable {
         case onAppear
         case onDisappear
-        case request(date: Date)
-        case selectedHomeStation(String)
         case spoilerModeResultToday
         case spoilerModeResultYesterday
+        case navigate(Navigate)
+    }
+    
+    enum Navigate: Hashable, Sendable {
+        enum Detail: Hashable, Sendable {
+            case race(name: String?)
+        }
+        case nextToFinish
+        case todayResults
+        case yesterdayResults
+        case tomorrowRaces
+        case detail(Detail)
     }
     
     enum ErrorView: Error {
         case missingStationCode
         case networkFailure
+        case raceInfoFetchFailure
         
         /*
         init(stationInteractorError: HomeStationInteractorImpl.ErrorReason) {

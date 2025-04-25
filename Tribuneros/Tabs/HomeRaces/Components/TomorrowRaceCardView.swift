@@ -11,47 +11,48 @@ struct TomorrowRaceCardView: View {
     let races: [HomeRaces.Representable.RaceTomorrow]
     
     var body: some View {
-        GeometryReader { geometry in
-//            let _ = print("avvp - \(geometry.size)")
-            buildNextToFinish(races, width: geometry.size.width)
-        }
+        buildNextToFinish(races)
     }
     
     private let paddingHorizontal = 8.0
-#warning("avp check it out ⚠️ -> spoiler mode")
-    private func buildNextToFinish(_ races: [HomeRaces.Representable.RaceTomorrow], width: Double) -> some View {
+
+    private func buildNextToFinish(_ races: [HomeRaces.Representable.RaceTomorrow]) -> some View {
         VStack(spacing: 0) {
-            HeaderRaceCardView(title: "Races tomorrow", isSpoilerModeOn: false)
-            
-            VStack(spacing: 0) {
-                buildHeaderNextToFinishSection(width)
-                    .padding(.top, 6)
-                    .padding(.bottom, 2)
-                    .frame(maxWidth: .infinity)
-                
-                Spacer()
+            HeaderRaceCardView(
+                title: "Races tomorrow",
+                isSpoilerModeOn: false
+            )
+            VStack(spacing: 12) {
+                GeometryReader { geo in
+                    buildHeaderNextToFinishSection(geo.size.width)
+                }
+                .padding(.top, 4)
+                .padding(.bottom, 6)
                 
                 ForEach(Array(races.prefix(4))) { item in
-                    VStack(spacing: 0) {
-                        HStack(spacing: 2) {
-                            buildTextForRaceFinishedValue(item.start, width: width * 0.14) // 0.14
-                            buildTextForRaceFinishedValue(item.name, width: width * 0.71) // 0.71
-                            buildTextForRaceFinishedValue(item.eta, width: width * 0.14) // 0.14
+                    GeometryReader { geo in
+                        HStack(spacing: Constants.spacingLabels) {
+                            buildTextForRaceFinishedValue(item.start, width: geo.size.width*Constants.startMultiplier)
+                            buildTextForRaceFinishedValue(item.name, width: geo.size.width*Constants.raceMultiplier)
+                            buildTextForRaceFinishedValue(item.eta, width: geo.size.width*Constants.etaMultiplier)
                                 .foregroundStyle(.purple)
                         }
-                        .frame(maxWidth: .infinity)
                     }
-                    Spacer().frame(height: 10)
                 }
                 Spacer()
                 
-                Text("+ info")
-                    .font(.system(size: 9, weight: .bold, design: .default))
-                    .foregroundStyle(.link)
-                    .frame(alignment: .bottomLeading)
-                    .offset(y: -6)
+                if races.count > 4 {
+                    Text("+ info")
+                        .font(.system(size: 9, weight: .bold, design: .default))
+                        .foregroundStyle(.link)
+                        .frame(alignment: .bottomLeading)
+                        .offset(y: -8)
+                }
             }
+//            .frame(maxHeight: _isSpoilerModeOn ? .infinity : 0)
+//            .opacity(_isSpoilerModeOn ? 1 : 0)
             .padding(.horizontal, 8)
+//            .clipped()
         }
     }
     
@@ -64,10 +65,10 @@ struct TomorrowRaceCardView: View {
     }
         
     private func buildHeaderNextToFinishSection(_ width: CGFloat) -> some View {
-        HStack(spacing: 0) {
-            buildTextForHeaderView("START", width: width * 0.14)
-            buildTextForHeaderView("RACE", width: width * 0.71)
-            buildTextForHeaderView("ETA", width: width * 0.14)
+        HStack(spacing: Constants.spacingLabels) {
+            buildTextForHeaderView("START", width: width * Constants.startMultiplier)
+            buildTextForHeaderView("RACE", width: width * Constants.raceMultiplier)
+            buildTextForHeaderView("ETA", width: width * Constants.etaMultiplier)
         }
     }
     
@@ -75,28 +76,38 @@ struct TomorrowRaceCardView: View {
         Text(text)
             .font(.system(size: 11, weight: .bold, design: .default))
             .lineLimit(1)
+//            .frame(maxWidth: .infinity, alignment: .leading)
             .frame(width: width, alignment: .leading)
-            .background(.gray.opacity(0.1))
+            .debugBackground()
+    }
+    
+    private enum Constants {
+        static let startMultiplier: CGFloat = 0.14
+        static let raceMultiplier: CGFloat = 0.71
+        static let etaMultiplier: CGFloat = 0.14
+        static let spacingLabels: CGFloat = 2.0
     }
 }
+
+// MARK: - Preview -
 
 #Preview {
     let races = [
-        HomeRaces.Representable.RaceTomorrow(start: "11:10", eta: "15:45", name: "Paris-Roubais", url: nil),
+        HomeRaces.Representable.RaceTomorrow(start: "11:10", eta: "15:45", name: "Paris-Roubaix", url: nil),
         HomeRaces.Representable.RaceTomorrow(start: "12:10", eta: "16:45", name: "Milan-Torino", url: nil),
         HomeRaces.Representable.RaceTomorrow(start: "13:10", eta: "16:45", name: "Nokere-Amstelhan", url: nil)
     ]
-    GeometryReader { proxy in
+    VStack {
         TomorrowRaceCardView(races: races)
-            .frame(height: 150)
-            .background(.gray.opacity(0.1))
+            .background(Color.green.opacity(0.2))
+            .cornerRadius(8)
         
         Spacer()
     }
-//    .safeAreaPadding(.top)
-//    .edgesIgnoringSafeArea(.all)
+    .frame(maxHeight: 160)
 }
 
+/*
 struct SingleAxisGeometryReader<Content: View>: View {
     private struct SizeKey: PreferenceKey {
         static var defaultValue: CGFloat { 10 }
@@ -121,3 +132,4 @@ struct SingleAxisGeometryReader<Content: View>: View {
             }).onPreferenceChange(SizeKey.self) { size = $0 }
     }
 }
+*/

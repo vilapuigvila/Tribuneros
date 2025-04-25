@@ -12,6 +12,7 @@ enum UserPreferencesKey: String {
     case lastListStationsRequest
     case spoilerModeResultsToday
     case spoilerModeResultsYesterday
+    case spoilerModeResultsTomorrow
 }
 
 @propertyWrapper
@@ -132,8 +133,9 @@ struct UserSettings {
     
     @UserDefault(UserPreferencesKey.spoilerModeResultsYesterday.rawValue, defaultValue: false)
     static var spoilerModeResultsYesterday: Bool?
+    @UserDefault(UserPreferencesKey.spoilerModeResultsTomorrow.rawValue, defaultValue: false)
+    static var spoilerModeResultsTomorrow: Bool?
 }
-
 
 
 extension Notification.Name {
