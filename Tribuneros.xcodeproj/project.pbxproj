@@ -114,7 +114,6 @@
 			mainGroup = 50B3656E2D6489EF000DA4AC;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				500DE0C82D64CFE800D7D4DE /* XCLocalSwiftPackageReference "../SwiftSoup" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 50B365782D6489EF000DA4AC /* Products */;
@@ -352,13 +351,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCLocalSwiftPackageReference section */
-		500DE0C82D64CFE800D7D4DE /* XCLocalSwiftPackageReference "../SwiftSoup" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../SwiftSoup;
-		};
-/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		500DE0C92D64CFE800D7D4DE /* SwiftSoup */ = {
