@@ -74,7 +74,7 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
             if domain.error != nil {
                 return .error(.networkFailure)
             }
-            if domain.nextToFinishRaces.isEmpty && domain.todayRaces.isEmpty {
+            if Self.errorDueEmptyData(domain) {
                 return .error(.networkFailure)
             } else {
                 return .loaded(
@@ -91,6 +91,10 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
                 )
             }
         }
+    }
+    private static func errorDueEmptyData(_ domain: HomeRacesDomain) -> Bool {
+        domain.nextToFinishRaces.isEmpty && domain.todayRaces.isEmpty &&
+        domain.yesterdayResults.isEmpty && domain.tomorrowRaces.isEmpty
     }
     
     private func spoilerMode(_ domain: HomeRacesDomain) -> HomeRaces.SpoilerMode {
