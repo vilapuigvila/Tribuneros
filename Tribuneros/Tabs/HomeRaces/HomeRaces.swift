@@ -128,6 +128,7 @@ enum HomeRaces {
             let raceType: String
             let distance: String
             let urlPath: String?
+            let flagCode: String
         }
         struct RaceTomorrow: Identifiable {
             let id = UUID()
@@ -162,7 +163,7 @@ enum HomeRaces {
         enum Detail: Hashable, Sendable {
             case race(name: String?)
         }
-        case nextToFinish
+        case nextToFinishRace(index: Int)
         case todayResults
         case yesterdayResults
         case tomorrowRaces

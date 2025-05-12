@@ -40,8 +40,10 @@ struct RaceFinishedCardView: View {
             )
             .allowsHitTesting(allowsHitSpolierButton)
             
-            VStack(spacing: 0) {
+            VStack(spacing: 16) {
                 ForEach(races) { race in
+                    RaceFinishedRowView(race: race)
+                    /*
                     HStack(spacing: 0) {
                         AsyncImageView(url: race.winnerImgURL, cornerRadius: 4)
                             .frame(width: Sizes.imgWidth)
@@ -84,6 +86,7 @@ struct RaceFinishedCardView: View {
                     .padding(.vertical, 4)
                     
                     Divider()
+                    */
                 }
             }
             .opacity(_isSpoilerModeOn ? 1 : 0)
@@ -163,7 +166,7 @@ struct RaceFinishedCardView: View {
         static let scaleEffect: Double = 1.0
         static let imgWidth: Double = 50
         static let flagWidth: Double = 12
-        
+        /*
         private static func totalWidth(_ parentWidth: CGFloat) -> CGFloat {
             parentWidth - leadingImg - imgWidth - leadingContainerInfo - flagWidth - (2*4) // 3 o 4
         }
@@ -183,7 +186,7 @@ struct RaceFinishedCardView: View {
         static func timeWith(_ parentWidth: CGFloat) -> CGFloat {
             let _totalWidth: CGFloat = totalWidth(parentWidth)
             return _totalWidth * 0.15
-        }
+        }*/
     }
 }
 
@@ -297,4 +300,9 @@ extension ProcessInfo {
     var isPreview: Bool {
         environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
     }
+    var isMockingEnabled: Bool {
+        environment["MOCKING"] != nil
+    }
 }
+
+public let isMockingEnabled: Bool = ProcessInfo.processInfo.isMockingEnabled

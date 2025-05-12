@@ -14,7 +14,7 @@ class Router: ObservableObject {
         enum Detail: Hashable {
             case race(urlInfo: String)
         }
-        case nextToFinish
+        case nextToFinishRace(index: Int)
         case detail(Detail)
     }
     

@@ -46,17 +46,19 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
             interactor.useCase(.spoilerModeResultYesterday)
         case .navigate(let destiantion):
             switch destiantion {
-            case .nextToFinish:
-                router.routeTo(.nextToFinish)
-            case .detail(let detail):
-                switch detail {
-                case .race(let url):
-                    guard let url else {
-//                        stateView = .error(.raceInfoFetchFailure)
-                        return
-                    }
-                    router.routeTo(.detail(.race(urlInfo: url)))
-                }
+            case .nextToFinishRace(let index):
+                router.routeTo(.nextToFinishRace(index: index))
+            case .detail:
+                assertionFailure()
+                break
+//                switch detail {
+//                case .race(let url):
+//                    guard let url else {
+////                        stateView = .error(.raceInfoFetchFailure)
+//                        return
+//                    }
+//                    router.routeTo(.detail(.race(urlInfo: url)))
+//                }
             default:
                 assertionFailure()
            }
@@ -126,6 +128,9 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
     }
     
     private func nextToFinish(_ domain: HomeRacesDomain) -> [HomeRaces.Representable.RaceNext] {
+        guard !domain.nextToFinishRaces.isEmpty else {
+            return isMockingEnabled ? HomeRaces.Representable.RaceNext.mockList : []
+        }
         let nextToFinish = domain.nextToFinishRaces.map {
             HomeRaces.Representable.RaceNext(
                 eta: $0.eta,
@@ -134,7 +139,8 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
                 category: $0.category,
                 raceType: $0.raceType,
                 distance: $0.distance,
-                urlPath: $0.urlPath.isEmpty ? nil : $0.urlPath
+                urlPath: $0.urlPath.isEmpty ? nil : $0.urlPath,
+                flagCode: $0.flagCode
             )
         }
         return nextToFinish.filter { $0.raceType.contains("UWT") } +

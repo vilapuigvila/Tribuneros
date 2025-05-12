@@ -23,10 +23,19 @@ enum DTO {
         let raceType: String
         let distance: String
         let urlPath: String
+        let flagCode: String
         
         static func parse(cells: [[String]]) -> [NextToFinishResult] {
             cells.compactMap {
-                NextToFinishResult(eta: $0[1], duration: $0[2], name: $0[3], category: $0[4], raceType: $0[5], distance: $0[6], urlPath: $0[7])
+                NextToFinishResult(
+                    eta: $0[1],
+                    duration: $0[2],
+                    name: $0[3],
+                    category: $0[4],
+                    raceType: $0[5],
+                    distance: $0[6],
+                    urlPath: $0[7],
+                    flagCode: $0[8])
             }
         }
     }
@@ -56,5 +65,20 @@ enum DTO {
         let raceName: String
         let relativeUrl: URL?
         let eta: String
+    }
+}
+
+extension DTO {
+    struct RaceDetailInfo: Codable, Equatable {
+        let title: String
+        let date: String
+        let startTime: String
+        let classification: String
+        let category: String
+        let distance: String
+        let departure: String
+        let arrival: String
+        let verticalMeters: String
+        let profileURL: URL?
     }
 }

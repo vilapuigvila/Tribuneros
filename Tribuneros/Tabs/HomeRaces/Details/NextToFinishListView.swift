@@ -42,7 +42,7 @@ struct NextToFinishListView: View {
                         }
                     }
                 }
-                .background(Color.cardInfoBackground)
+                .background(Color.tribuneru(.greenCardBackground))
                 .cornerRadius(8)
             }
         }
@@ -76,12 +76,12 @@ struct NextToFinishListView: View {
 
 #Preview {
     let races: [HomeRaces.Representable.RaceNext] = [
-        HomeRaces.Representable.RaceNext(eta: "12:34", duration: "2H", name: "Paris-Nice", category: "UCI", raceType: "2.UWT", distance: "190", urlPath: nil),
-        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Tour du France", category: "UCI", raceType: "2.UWT", distance: "230", urlPath: nil),
-        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Giro", category: "UCI", raceType: "2.UWT", distance: "230", urlPath: nil),
-        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Romandia", category: "UCI", raceType: "2.UWT", distance: "230", urlPath: nil),
-        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Tour swizertland", category: "UCI", raceType: "2.UWT", distance: "230", urlPath: nil),
-        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Volta Cat", category: "UCI", raceType: "2.UWT", distance: "230", urlPath: nil)
+        HomeRaces.Representable.RaceNext(eta: "12:34", duration: "2H", name: "Paris-Nice", category: "UCI", raceType: "2.UWT", distance: "190", urlPath: nil, flagCode: ""),
+        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Tour du France", category: "UCI", raceType: "2.UWT", distance: "230", urlPath: nil, flagCode: ""),
+        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Giro", category: "UCI", raceType: "2.UWT", distance: "230", urlPath: nil, flagCode: ""),
+        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Romandia", category: "UCI", raceType: "2.UWT", distance: "230", urlPath: nil, flagCode: ""),
+        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Tour swizertland", category: "UCI", raceType: "2.UWT", distance: "230", urlPath: nil, flagCode: ""),
+        HomeRaces.Representable.RaceNext(eta: "12:31", duration: "3H", name: "Volta Cat", category: "UCI", raceType: "2.UWT", distance: "230", urlPath: nil, flagCode: "")
     ]
     NextToFinishListView(races: races) { _ in
         

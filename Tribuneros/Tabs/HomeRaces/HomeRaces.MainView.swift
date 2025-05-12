@@ -17,39 +17,22 @@ struct HomeRacesView: View {
         .navigationDestination(for: Router.Destination.self) { destination in
             let _ = print("avvp [Navigation] - \(destination)")
             switch destination {
-            case .nextToFinish:
-                NextToFinishListView(races: viewModel.stateView.result.sections.nextToFinish) { index in
-                    let urlPath = viewModel.stateView.result.sections.nextToFinish[index].urlPath
-                    assert(urlPath != nil)
-                    viewModel.action(.navigate(.detail(.race(name: urlPath))))
+            case .nextToFinishRace(let index):
+                if let urlPath = viewModel.stateView.result.sections.nextToFinish[index].urlPath {
+                    NextToFinishRaceDetail(urlInfo: urlPath)
+                } else {
+                    let _ = assertionFailure()
+                    EmptyView()
                 }
 //                .navigationTitle("NEXT TO FINISH")
-            case .detail(let race):
-                switch race {
-                case .race(let urlInfo):
-                    RaceInfo(urlInfo: urlInfo)
-                        .padding()
-                    //                    .navigationTitle("Race")
-                }
+            case .detail(let race): // avvp not use delete
+                EmptyView()
             }
         }
         .navigationTitle("PRO CYCLING STATS")
     }
 }
-struct RaceInfo: View {
-    let urlInfo: String
-    
-    var body: some View {
-        Text("race")
-            .task {
-                do {
-                    try await Requester.getRace(urlString: urlInfo)
-                } catch {
-                    assertionFailure(error.localizedDescription)
-                }
-            }
-    }
-}
+
 extension HomeRaces {
     
     struct MainView: View {
@@ -121,11 +104,10 @@ extension HomeRaces {
                 if representable.sections.nextToFinish.isEmpty {
                     buildNoResultsCardView("Next to fihish")
                 } else {
-                    NextToFinishRaceView(races: representable.sections.nextToFinish) {
-                        action(.navigate(.nextToFinish))
-//                        router.routeTo(.todayRaces)
+                    NextToFinishRaceView(races: representable.sections.nextToFinish) { index in
+                        action(.navigate(.nextToFinishRace(index: index)))
                     }
-                    .background(Color.cardInfoBackground)
+                    .background(Color.tribuneru(.greenCardBackground))
                     .cornerRadius(8)
                 }
             }
@@ -143,7 +125,7 @@ extension HomeRaces {
                     ) {
                         action(.spoilerModeResultToday)
                     }
-                    .background(Color.cardInfoBackground)
+                    .background(Color.tribuneru(.greenCardBackground))
                     .cornerRadius(8)
                 }
             }
@@ -161,7 +143,7 @@ extension HomeRaces {
                     ) {
                         action(.spoilerModeResultYesterday)
                     }
-                    .background(Color.cardInfoBackground)
+                    .background(Color.tribuneru(.greenCardBackground))
                     .cornerRadius(8)
                 }
             }
@@ -171,7 +153,7 @@ extension HomeRaces {
             EmptyResultsCardView(title: "\(race)", info: "No info available")
                 .frame(height: heightCardView)
                 .frame(maxWidth: .infinity)
-                .background(Color.cardMissingInfoBackground)
+                .background(Color.tribuneru(.blueMissingInfoBackground))
                 .cornerRadius(8)
         }
     }
@@ -181,10 +163,10 @@ extension HomeRaces {
 
 #Preview("Loaded") {
     let nextToFinish: [HomeRaces.Representable.RaceNext] = [
-        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Strade Bianche Home", category: "UCI", raceType: "2.UWT", distance: "215", urlPath: nil),
-        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Strade Bianche Donne", category: "UCI", raceType: "2.UWT", distance: "215", urlPath: nil),
-        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "paris Nice", category: "UCI", raceType: "2.UWT", distance: "215", urlPath: nil),
-        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Tirreno", category: "UCI", raceType: "2.UWT", distance: "215", urlPath: nil)
+        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Strade Bianche Home", category: "UCI", raceType: "2.UWT", distance: "215", urlPath: nil, flagCode: ""),
+        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Strade Bianche Donne", category: "UCI", raceType: "2.UWT", distance: "215", urlPath: nil, flagCode: ""),
+        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "paris Nice", category: "UCI", raceType: "2.UWT", distance: "215", urlPath: nil, flagCode: ""),
+        HomeRaces.Representable.RaceNext(eta: "14:00", duration: "2H", name: "Tirreno", category: "UCI", raceType: "2.UWT", distance: "215", urlPath: nil, flagCode: "")
     ]
     let todayFinished: [HomeRaces.Representable.RaceFinished] = [
         HomeRaces.Representable.RaceFinished(
