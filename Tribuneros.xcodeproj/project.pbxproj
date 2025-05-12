@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		500DE0CA2D64CFE800D7D4DE /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 500DE0C92D64CFE800D7D4DE /* SwiftSoup */; };
+		50788AC62DD1FDE40051A80F /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 50788AC52DD1FDE40051A80F /* SwiftSoup */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				500DE0CA2D64CFE800D7D4DE /* SwiftSoup in Frameworks */,
+				50788AC62DD1FDE40051A80F /* SwiftSoup in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +86,7 @@
 			name = Tribuneros;
 			packageProductDependencies = (
 				500DE0C92D64CFE800D7D4DE /* SwiftSoup */,
+				50788AC52DD1FDE40051A80F /* SwiftSoup */,
 			);
 			productName = Tribuneros;
 			productReference = 50B365772D6489EF000DA4AC /* Tribuneros.app */;
@@ -114,6 +117,7 @@
 			mainGroup = 50B3656E2D6489EF000DA4AC;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				50788AC42DD1FDE40051A80F /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 50B365782D6489EF000DA4AC /* Products */;
@@ -352,9 +356,25 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		50788AC42DD1FDE40051A80F /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.8.7;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		500DE0C92D64CFE800D7D4DE /* SwiftSoup */ = {
 			isa = XCSwiftPackageProductDependency;
+			productName = SwiftSoup;
+		};
+		50788AC52DD1FDE40051A80F /* SwiftSoup */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 50788AC42DD1FDE40051A80F /* XCRemoteSwiftPackageReference "SwiftSoup" */;
 			productName = SwiftSoup;
 		};
 /* End XCSwiftPackageProductDependency section */
