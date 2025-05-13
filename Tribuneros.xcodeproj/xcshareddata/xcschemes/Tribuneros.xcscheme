@@ -59,7 +59,7 @@
          <EnvironmentVariable
             key = "DEBUG_BACKGROUND"
             value = "YES"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "MOCKING"

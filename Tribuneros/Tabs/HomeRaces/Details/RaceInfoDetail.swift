@@ -11,6 +11,7 @@ struct NextToFinishRaceDetail: View {
     let urlInfo: String
     
     @State private var raceInfo: DTO.RaceDetailInfo? = nil
+    @State private var profileImage: UIImage? = nil
     @State private var isLoading = false
     @State private var errorMessage: String? = nil
     @State private var showAlert = false
@@ -33,6 +34,13 @@ struct NextToFinishRaceDetail: View {
             errorMessage = nil
             do {
                 raceInfo = try await Requester.getNextToFinishRaceDetail(urlInfo)
+                guard let profileURL = raceInfo?.profileURL else {
+                    return
+                }
+                guard let uiImage = await loadImage(profileURL) else {
+                    return
+                }
+                profileImage = uiImage
             } catch {
                 assertionFailure(error.localizedDescription)
                 errorMessage = error.localizedDescription
@@ -102,29 +110,31 @@ struct NextToFinishRaceDetail: View {
             TribuneruText(content: "Race Profile", style: .size14WeightSemiBold)
                 .padding(.top, 8)
 
-            if let url = raceInfo.profileURL {
-                RemoteZoomableImage(url: url)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding()
+            if let profileImage {
+                ZoomableMainScreen {
+                    Image(uiImage: profileImage)
+                        .resizable()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                }
+//                RemoteZoomableImage(url: url)
+//                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                    .padding()
             }
             Spacer()
         }
     }
-}
-
-#warning("avp check it out ⚠️ -> move")
-struct TribunerosDivider: View {
-    let height: CGFloat
-    let color: Color
-    
-    init(height: CGFloat = 0.5, color: Color = .gray.opacity(0.6)) {
-        self.height = height
-        self.color = color
-    }
-    var body: some View {
-        Rectangle()
-            .fill(color)
-            .frame(height: height)
+    private func loadImage(_ url: URL) async -> UIImage? {
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            if let uiImage = UIImage(data: data) {
+                return uiImage
+            }
+            return nil
+        } catch {
+            assertionFailure(error.localizedDescription)
+            return nil
+        }
     }
 }
 
@@ -210,18 +220,25 @@ struct RemoteZoomableImage: View {
 import SwiftUI
 
 struct ZoomableMainScreen<Content: View>: View {
+    @State private var aspectRatio: CGFloat? = nil
+    @State private var loadedImage: UIImage? = nil
+    
     @State private var scale: CGFloat = 1.0
     @State private var lastScale: CGFloat = 1.0
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
 
+//    let url: URL?
     let content: () -> Content
 
     var body: some View {
         GeometryReader { proxy in
+//            AsyncImage(url: url)
             content()
+//                .aspectRatio(aspectRatio, contentMode: .fit)
                 .scaleEffect(scale)
                 .offset(offset)
+//                .clipped()
                 .gesture(
                     SimultaneousGesture(
                         MagnificationGesture()
@@ -243,9 +260,22 @@ struct ZoomableMainScreen<Content: View>: View {
                             }
                     )
                 )
+                .onTapGesture(count: 2) {
+                    withAnimation {
+                        if scale > 1 {
+                            scale = 1
+                            lastScale = 1
+                            offset = .zero
+                            lastOffset = .zero
+                        } else {
+                            scale = 1.75
+                            lastScale = 1.75
+                        }
+                    }
+                }
                 .animation(.spring(), value: scale)
                 .animation(.spring(), value: offset)
-                .frame(width: proxy.size.width, height: proxy.size.height)
+//                .frame(width: proxy.size.width, height: proxy.size.height)
         }
         .ignoresSafeArea()
     }

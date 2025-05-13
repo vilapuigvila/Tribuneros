@@ -33,6 +33,7 @@ struct TribuneruText: View {
         case .size16WeightBold, .size16WeightSemiBold: 16
         case .size14WeightSemiBold: 14
         case .size14WeightRegular: 14
+        case .size14LightMonospaced: 14
         case .size12WeightRegular: 12
         }
     }
@@ -43,11 +44,13 @@ struct TribuneruText: View {
         case .size16WeightSemiBold: .semibold
         case .size14WeightSemiBold: .semibold
         case .size14WeightRegular: .regular
+        case .size14LightMonospaced: .light
         case .size12WeightRegular: .regular
         }
     }
     private var design: Font.Design {
         switch style {
+        case .size14LightMonospaced: .monospaced
         default: .default
         }
     }
@@ -60,6 +63,62 @@ extension TribuneruText {
         case size16WeightSemiBold
         case size14WeightSemiBold
         case size14WeightRegular
+        case size14LightMonospaced
         case size12WeightRegular
+    }
+}
+
+// MARK: - Helpers -
+
+enum TribuneruTextStyle {
+    case size20WeightBold
+    case size16WeightBold
+    case size16WeightSemiBold
+    case size14WeightSemiBold
+    case size14WeightRegular
+    case size14LightMonospaced
+    case size12WeightRegular
+    
+    var size: CGFloat {
+        switch self {
+        case .size20WeightBold: return 20
+        case .size16WeightBold, .size16WeightSemiBold: return 16
+        case .size14WeightSemiBold, .size14WeightRegular, .size14LightMonospaced: return 14
+        case .size12WeightRegular: return 12
+        }
+    }
+    
+    var weight: Font.Weight {
+        switch self {
+        case .size20WeightBold, .size16WeightBold: return .bold
+        case .size16WeightSemiBold, .size14WeightSemiBold: return .semibold
+        case .size14WeightRegular, .size12WeightRegular: return .regular
+        case .size14LightMonospaced: return .light
+        }
+    }
+    
+    var design: Font.Design {
+        switch self {
+        case .size14LightMonospaced: return .monospaced
+        default: return .default
+        }
+    }
+}
+struct TribuneruTextModifier: ViewModifier {
+    let style: TribuneruTextStyle
+    let color: Color
+    let lineLimit: Int
+    
+    func body(content: Content) -> some View {
+        content
+            .lineLimit(lineLimit)
+            .font(.system(size: style.size, weight: style.weight, design: style.design))
+            .foregroundColor(color)
+    }
+}
+
+extension View {
+    func tribuneruStyle(_ style: TribuneruTextStyle, color: Color = .white, lineLimit: Int = 1) -> some View {
+        modifier(TribuneruTextModifier(style: style, color: color, lineLimit: lineLimit))
     }
 }

@@ -38,7 +38,7 @@ extension HomeRaces {
     struct MainView: View {
         @Environment(\.safeAreaInsets) private var safeAreaInsets
         
-        private let heightCardView: Double = 140
+        private let heightCardView: Double = 100
         private let spacingRows: Double = 16
         private let columns = [
             GridItem(.flexible(), spacing: 0)
@@ -90,7 +90,7 @@ extension HomeRaces {
         private func buildTomorrowRaces(_ representable: Representable) -> some View {
             Group {
                 if representable.sections.tomorrowRaces.isEmpty {
-                    buildNoResultsCardView("Races tomorrow")
+                    buildNoResultsCardView("Races tomorrow", info: "No Races", delaySlideInfo: 0)
                 } else {
                     TomorrowRaceCardView(races: representable.sections.tomorrowRaces)
 	                    .background(Color.green.opacity(0.2))
@@ -102,7 +102,7 @@ extension HomeRaces {
         private func buildNextToFinishView(_ representable: Representable) -> some View {
             Group {
                 if representable.sections.nextToFinish.isEmpty {
-                    buildNoResultsCardView("Next to fihish")
+                    buildNoResultsCardView("Next to fihish", info: "No info yet", delaySlideInfo: 2)
                 } else {
                     NextToFinishRaceView(races: representable.sections.nextToFinish) { index in
                         action(.navigate(.nextToFinishRace(index: index)))
@@ -116,7 +116,7 @@ extension HomeRaces {
         private func buildResultsTodayView(_ representable: Representable) -> some View {
             Group {
                 if representable.sections.racesFinished.isEmpty {
-                    buildNoResultsCardView("Results today")
+                    buildNoResultsCardView("Results today", info: "No Info yet", delaySlideInfo: 4)
                 } else {
                     RaceFinishedCardView(
                         title: "Results today",
@@ -134,7 +134,7 @@ extension HomeRaces {
         private func buildResultsYesterdayView(_ representable: Representable) -> some View {
             Group {
                 if representable.sections.yesterdayResults.isEmpty {
-                    buildNoResultsCardView("Results yesterday")
+                    buildNoResultsCardView("Results yesterday", info: "No Races", delaySlideInfo: 6)
                 } else {
                     RaceFinishedCardView(
                         title: "Results Yesterday",
@@ -149,8 +149,8 @@ extension HomeRaces {
             }
         }
         
-        private func buildNoResultsCardView(_ race: String) -> some View {
-            EmptyResultsCardView(title: "\(race)", info: "No info available")
+        private func buildNoResultsCardView(_ race: String, info: String, delaySlideInfo: Double) -> some View {
+            EmptyResultsCardView(title: "\(race)", info: info, delaySlideInfo: delaySlideInfo)
                 .frame(height: heightCardView)
                 .frame(maxWidth: .infinity)
                 .background(Color.tribuneru(.blueMissingInfoBackground))
