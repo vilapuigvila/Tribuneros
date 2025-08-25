@@ -82,6 +82,7 @@ extension HomeRaces {
                     Text("Error: \(errorView)")
                 }
             }
+            .preferredColorScheme(.dark)
             .onAppear {
                 action(.onAppear)
             }

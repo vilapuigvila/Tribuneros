@@ -10,10 +10,14 @@ import SafariServices
 import WebKit
 
 struct SafariView: UIViewControllerRepresentable {
-    let url: URL
+    let url: URL?
 
     func makeUIViewController(context: Context) -> SFSafariViewController {
-        return SFSafariViewController(url: url)
+        if let url {
+            return SFSafariViewController(url: url)
+        } else {
+            return SFSafariViewController(url: URL(string: "https://apple.com")!)
+        }
     }
 
     func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {}
@@ -56,21 +60,51 @@ struct WebView: UIViewRepresentable {
 struct HateZoneView: View {
     
 //    @ObservedObject var viewModel: HomeRacesViewModel<HomeRacesInteractorImpl>
-    let url: URL?
+    let representable: [HateZone.Representable]
     
     var body: some View {
-        HateZone.MainView(url: url)
+        HateZone.MainView(representable: representable)
     }
 }
 
 extension HateZone {
     
+    struct Representable: Hashable {
+        let title: String
+        let url: URL?
+        
+        static let empty: Self = .init(title: "Sergio", url: URL(string: "http://ciclismo2005.com"))
+    }
     
     struct MainView: View {
-        let url: URL?
+        let representable: [HateZone.Representable]
         @State private var webView: WKWebView = WKWebView()
         
         var body: some View {
+            NavigationView {
+                ZStack {
+                    Color.black
+                        .ignoresSafeArea()
+                    
+                    List {
+                        ForEach(representable, id: \.self) { item in
+                            NavigationLink(destination: SafariView(url: item.url)) {
+                                Text(item.title)
+                                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                                    .foregroundColor(.white)
+                                    .padding()
+                            }
+                            .listRowBackground(Color.clear)
+                        }
+                    }
+                    .listStyle(.plain)
+                    .background(Color.clear)
+                }
+                .navigationTitle("Hate Zone")
+//                .navigationBarTitleDisplayMode(.inline)
+            }
+            .preferredColorScheme(.dark)
+            /*
             if let url {
                 /*
                 VStack {
@@ -112,11 +146,11 @@ extension HateZone {
                 SafariView(url: url)
             } else {
                 Text("No URL provided")
-            }
+            }*/
         }
     }
 }
 
 #Preview {
-    HateZone.MainView(url: URL(string: "http://ciclismo2005.com")!)
+    HateZone.MainView(representable: [.empty])
 }

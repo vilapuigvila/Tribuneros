@@ -503,7 +503,7 @@ struct Requester {
             }
             do {
                 let doc: Document = try SwiftSoup.parse(htmlContent)
-                if let ul = try doc.select("ul.infolist").first() {
+//                if let ul = try doc.select("ul.infolist").first() {
                     var date: String = ""
                     var startTime: String = ""
                     var classification: String = ""
@@ -513,7 +513,7 @@ struct Requester {
                     var arrival: String = ""
                     var verticalMeters: String = ""
                     
-                    let items = try ul.select("li")
+                    let items = try doc.select("li")
                     for item in items {
                         let divs = try item.select("div")
                         if divs.count >= 2 {
@@ -548,14 +548,12 @@ struct Requester {
                         return desc
                     }()
                     let imgURL: URL? = {
-                        guard let h3 = try? doc.select("h3").first(where: { try! $0.text() == "Race profile" }),
-                                let next = try? h3.nextElementSibling(),
-                                let img = try? next.select("img").first(),
-                                let src = try? img.attr("src")
+                        guard let img = try? doc.select("img[src*=trofeo-citta-di-brescia-2025-result-profile]").first(),
+                              let relativeURL = try? img.attr("src")
                         else {
                             return nil
                         }
-                        return URL(string: "\(baseURL)\(src)")
+                        return URL(string: "\(baseURL)\(relativeURL)")
                     }()
                     let raceInfo = DTO.RaceDetailInfo(
                         title: title,
@@ -571,10 +569,11 @@ struct Requester {
                     )
                     print("avvp [NETWORK] get next to finish race detail - \(raceInfo)")
                     return raceInfo
-                } else {
+            /*    }
+            else {
                     assertionFailure()
                     return nil
-                }
+                }*/
             } catch {
                 print("avvp [NETWORK - ERROR] get next to finish race detail - \(error)")
                 return nil

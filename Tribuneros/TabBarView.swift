@@ -19,7 +19,14 @@ struct TabBarView: View {
     @StateObject private var router = Router()
     let homeRacesViewModel: HomeRacesViewModel<HomeRacesInteractorImpl>
     
-    let url = URL(string: "http://ciclismo2005.com")!
+    static let hateZoneRepresentable: [HateZone.Representable] = [
+        .init(title: "Ciclismo 2005", url: URL(string: "http://ciclismo2005.com")),
+        .init(title: "Escape Collective", url: URL(string: "https://escapecollective.com")),
+        .init(title: "Cycling News", url: URL(string: "https://www.cyclingnews.com")),
+        .init(title: "Cycling Update", url: URL(string: "https://cyclinguptodate.com")),
+        .init(title: "Ciclismo al dia", url: URL(string: "https://ciclismoaldia.es")),
+        .init(title: "Joan Seguidor", url: URL(string: "https://joanseguidor.com"))
+    ]
     
     init() {
         let router = Router()
@@ -48,7 +55,7 @@ struct TabBarView: View {
             
             // Hate zone -
             
-            HateZoneView(url: url)
+            HateZoneView(representable: Self.hateZoneRepresentable)
                 .tabItem {
                     Image(systemName: "wrongwaysign.fill")
                     Text("Hate Zone")

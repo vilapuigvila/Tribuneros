@@ -1,6 +1,24 @@
 {
-  "originHash" : "2b6d335272326468abc2114223e2ce9f2cf9645d68fa4e525733ecbf43f90359",
+  "originHash" : "86cd08e0171d853f95f1ec617223a82ea28342c8c6c0ee9fd5fdad7e98b2a71d",
   "pins" : [
+    {
+      "identity" : "alfy",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/vilapuigvila/Alfy.git",
+      "state" : {
+        "branch" : "develop",
+        "revision" : "38d4cd04c0309ac681a5bb6a26c900e175f4e451"
+      }
+    },
+    {
+      "identity" : "kingfisher",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/onevcat/Kingfisher.git",
+      "state" : {
+        "revision" : "010a06c4387cea2d13606222b6c08e0454e6dd2d",
+        "version" : "8.3.3"
+      }
+    },
     {
       "identity" : "swiftsoup",
       "kind" : "remoteSourceControl",

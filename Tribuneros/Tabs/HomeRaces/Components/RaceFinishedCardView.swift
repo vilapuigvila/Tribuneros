@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import Kingfisher
 
 struct RaceFinishedCardView: View {
     private typealias Podium = HomeRaces.Representable.RaceFinished.Winner
@@ -43,50 +44,6 @@ struct RaceFinishedCardView: View {
             VStack(spacing: 16) {
                 ForEach(races) { race in
                     RaceFinishedRowView(race: race)
-                    /*
-                    HStack(spacing: 0) {
-                        AsyncImageView(url: race.winnerImgURL, cornerRadius: 4)
-                            .frame(width: Sizes.imgWidth)
-                        //                            .frame(height: 112*0.41)
-                            .padding(.leading, Sizes.leadingImg)
-                            .scaleEffect(Sizes.scaleEffect)
-                        
-                        VStack(alignment: .leading, spacing: Sizes.spacingVerticalLabelsInRace) {
-                            Text(race.race)
-                                .lineLimit(1)
-                                .font(.system(size: 14, weight: .heavy, design: .default))
-                                .foregroundColor(.white) // avvp color
-                                .debugBackground()
-                            
-                            Text(race.raceDetails)
-                                .lineLimit(1)
-                                .font(.system(size: 12, weight: .regular, design: .monospaced))
-                                .foregroundColor(.white.opacity(0.8))
-                                .padding(.top, -4)
-                                .debugBackground()
-                            
-                            ForEach(race.podium) { podium in
-                                HStack(alignment: .top, spacing: 2) {
-                                    buildPositionAndFlag(
-                                        position: podium.position,
-                                        countryCode: podium.countryCode
-                                    )
-                                    GeometryReader { geo in
-                                        buildPodiumInfo(podium: podium, width: geo.size.width)
-                                    }
-                                }
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            }
-                        }
-                        .padding(.leading, Sizes.leadingContainerInfo)
-                        .debugBackground(color: .red, opacity: 0.5)
-                        
-                        Spacer()
-                    }
-                    .padding(.vertical, 4)
-                    
-                    Divider()
-                    */
                 }
             }
             .opacity(_isSpoilerModeOn ? 1 : 0)
@@ -146,8 +103,8 @@ struct RaceFinishedCardView: View {
                 .font(.system(size: Sizes.fontSizeLabelsInfo, weight: .regular, design: .monospaced))
                 .foregroundColor(.white) // avvp color
                 .debugBackground(color: .red, opacity: 0.3)
-            
-            AsyncImageView(url: URL(string: "https://flagcdn.com/w40/\(countryCode).png")!)
+            CachedImageView(imageUrl: URL(string: "https://flagcdn.com/w40/\(countryCode).png")!)
+//            AsyncImageView(url: URL(string: "https://flagcdn.com/w40/\(countryCode).png")!)
                 .frame(width: Sizes.flagWidth, height: 9)
                 .padding(.horizontal, 6)
                 .debugBackground()

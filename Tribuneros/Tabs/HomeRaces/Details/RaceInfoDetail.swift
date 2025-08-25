@@ -10,6 +10,7 @@ import SwiftUI
 struct NextToFinishRaceDetail: View {
     let urlInfo: String
     
+    @State private var showZoom = false
     @State private var raceInfo: DTO.RaceDetailInfo? = nil
     @State private var profileImage: UIImage? = nil
     @State private var isLoading = false
@@ -48,6 +49,31 @@ struct NextToFinishRaceDetail: View {
             }
             isLoading = false
         }
+        .sheet(isPresented: $showZoom) {
+            NavigationView {
+                ZStack {
+                    Color.black.ignoresSafeArea()
+                    ZoomableMainScreen {
+                        if let image = profileImage {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFit()
+                        }
+                    }
+                }
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") { showZoom = false }
+                            .bold()
+                            .foregroundColor(.white)
+                    }
+                }
+            }
+//           .presentationDetents([.fraction(0.9)])
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+        }
         .alert("Error", isPresented: $showAlert, actions: {
             Button("OK", role: .cancel) {
                 
@@ -61,69 +87,41 @@ struct NextToFinishRaceDetail: View {
         VStack(spacing: 12) {
             TribuneruText(content: raceInfo.title, style: .size16WeightBold)
                 .frame(maxWidth: .infinity, alignment: .leading)
+            
             TribunerosDivider()
                 .padding(.vertical, 4)
             
-            HStack(spacing: 16) {
-                TribuneruText(content: "Date:", style: .size14WeightSemiBold)
-                TribuneruText(content: raceInfo.date, style: .size14WeightRegular)
-                Spacer()
+            ForEach(rows, id: \.title) { row in
+                HStack(spacing: 16) {
+                    TribuneruText(content: "\(row.title):", style: .size14WeightSemiBold)
+                        .minimumScaleFactor(0.6)
+                        .frame(width: UIScreen.main.bounds.width * 0.4, alignment: .leading)
+                        .debugBackground()
+                    
+                    TribuneruText(content: row.content ?? "–", style: .size14WeightRegular)
+                        .minimumScaleFactor(0.5)
+                    Spacer()
+                }
             }
-            HStack {
-                TribuneruText(content: "Start time:", style: .size14WeightSemiBold)
-                TribuneruText(content: raceInfo.startTime, style: .size14WeightRegular)
-                Spacer()
-            }
-            HStack {
-                TribuneruText(content: "Classification:", style: .size14WeightSemiBold)
-                TribuneruText(content: raceInfo.classification, style: .size14WeightRegular)
-                Spacer()
-            }
-            HStack {
-                TribuneruText(content: "Race Category:", style: .size14WeightSemiBold)
-                TribuneruText(content: raceInfo.category, style: .size14WeightRegular)
-                Spacer()
-            }
-            HStack {
-                TribuneruText(content: "Distance:", style: .size14WeightSemiBold)
-                TribuneruText(content: raceInfo.distance, style: .size14WeightRegular)
-                Spacer()
-            }
-            HStack {
-                TribuneruText(content: "Vertical meters:", style: .size14WeightSemiBold)
-                TribuneruText(content: raceInfo.verticalMeters, style: .size14WeightRegular)
-                Spacer()
-            }
-            HStack {
-                TribuneruText(content: "Departure:", style: .size14WeightSemiBold)
-                TribuneruText(content: raceInfo.departure, style: .size14WeightRegular)
-                Spacer()
-            }
-            HStack {
-                TribuneruText(content: "Arrival:", style: .size14WeightSemiBold)
-                TribuneruText(content: raceInfo.arrival, style: .size14WeightRegular)
-                Spacer()
-            }
-            
             TribunerosDivider()
             
             TribuneruText(content: "Race Profile", style: .size14WeightSemiBold)
                 .padding(.top, 8)
 
             if let profileImage {
-                ZoomableMainScreen {
-                    Image(uiImage: profileImage)
-                        .resizable()
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                }
-//                RemoteZoomableImage(url: url)
-//                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                    .padding()
+                Image(uiImage: profileImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 200)
+                    .cornerRadius(8)
+                    .onTapGesture {
+                        showZoom = true
+                    }
             }
             Spacer()
         }
     }
+    
     private func loadImage(_ url: URL) async -> UIImage? {
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
@@ -136,8 +134,22 @@ struct NextToFinishRaceDetail: View {
             return nil
         }
     }
+    
+    private var rows: [(title: String, content: String?)] {
+        [
+            ("Date",           raceInfo?.date),
+            ("Start Time",     raceInfo?.startTime),
+            ("Classification", raceInfo?.classification),
+            ("Category",       raceInfo?.category),
+            ("Distance",       raceInfo?.distance),
+            ("Departure",      raceInfo?.departure),
+            ("Arrival",        raceInfo?.arrival),
+            ("Vertical Meters",raceInfo?.verticalMeters)
+        ]
+    }
 }
 
+/*
 struct RemoteZoomableImage: View {
     let url: URL
 
@@ -217,8 +229,6 @@ struct RemoteZoomableImage: View {
     }
 }
 
-import SwiftUI
-
 struct ZoomableMainScreen<Content: View>: View {
     @State private var aspectRatio: CGFloat? = nil
     @State private var loadedImage: UIImage? = nil
@@ -276,6 +286,88 @@ struct ZoomableMainScreen<Content: View>: View {
                 .animation(.spring(), value: scale)
                 .animation(.spring(), value: offset)
 //                .frame(width: proxy.size.width, height: proxy.size.height)
+        }
+        .ignoresSafeArea()
+    }
+}
+*/
+struct ZoomableMainScreen<Content: View>: View {
+    
+    @State private var scale: CGFloat = 1.0
+    @State private var lastScale: CGFloat = 1.0
+    @State private var offset: CGSize = .zero
+    @State private var lastOffset: CGSize = .zero
+
+    /// The content to be zoomed and panned
+    let content: () -> Content
+    
+    init(@ViewBuilder content: @escaping () -> Content) {
+        self.content = content
+    }
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack {
+                content()
+                    .scaledToFit()
+                    .frame(
+                        maxWidth: proxy.size.width * 1.0,
+                        maxHeight: proxy.size.height * 1.0
+                    )
+                    .scaleEffect(scale)
+                    .offset(offset)
+                    .gesture(
+                        SimultaneousGesture(
+                            // Pinch to zoom
+                            MagnificationGesture()
+                                .onChanged { value in
+                                    scale = lastScale * value
+                                }
+                                .onEnded { _ in
+                                    lastScale = scale
+                                    // Reset position if zoom returns to identity
+                                    if lastScale <= 1 {
+                                        offset = .zero
+                                        lastOffset = .zero
+                                    }
+                                },
+                            // Drag to pan only when zoomed
+                            DragGesture()
+                                .onChanged { value in
+                                    guard lastScale > 1 else { return }
+                                    offset = CGSize(
+                                        width: lastOffset.width + value.translation.width,
+                                        height: lastOffset.height + value.translation.height
+                                    )
+                                }
+                                .onEnded { _ in
+                                    guard lastScale > 1 else {
+                                        offset = .zero
+                                        lastOffset = .zero
+                                        return
+                                    }
+                                    lastOffset = offset
+                                }
+                        )
+                    )
+                    .onTapGesture(count: 2) {
+                        withAnimation(.spring()) {
+                            if scale > 1 {
+                                scale = 1
+                                lastScale = 1
+                                offset = .zero
+                                lastOffset = .zero
+                            } else {
+                                scale = 1.75
+                                lastScale = 1.75
+                            }
+                        }
+                    }
+                    .animation(.spring(), value: scale)
+                    .animation(.spring(), value: offset)
+            }
+            // Fill the available screen
+            .frame(width: proxy.size.width, height: proxy.size.height)
         }
         .ignoresSafeArea()
     }

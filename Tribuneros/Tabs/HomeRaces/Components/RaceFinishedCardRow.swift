@@ -10,10 +10,10 @@ import SwiftUI
 struct RaceFinishedRowView: View {
     let race: HomeRaces.Representable.RaceFinished
     var body: some View {
-        HStack(alignment: .top, spacing: 0) {
+        HStack(alignment: .center, spacing: 0) {
             winnerImageSection
                 .padding(.trailing, 0)
-                .padding(.vertical, 16)
+//                .padding(.vertical, 16)
                 .padding(.leading, 8)
             raceDetailsSection
         }
@@ -24,9 +24,10 @@ struct RaceFinishedRowView: View {
     // MARK: - Subviews
     
     private var winnerImageSection: some View {
-        AsyncImageView(url: race.winnerImgURL, cornerRadius: 4)
+        CachedImageView(imageUrl: race.winnerImgURL)
+//        AsyncImageView(url: race.winnerImgURL, cornerRadius: 4)
             .frame(width: 80)
-            .scaleEffect(1.0)
+//            .scaleEffect(1.0)
     }
     
     private var raceDetailsSection: some View {
@@ -124,4 +125,44 @@ extension HomeRaces.Representable.RaceFinished.Winner {
         }
     }
 //    .frame(alignment: .center)
+}
+
+import Kingfisher
+
+struct CachedImageView: View {
+    @State private var didFail: Bool = false
+    
+    let imageUrl: URL?
+
+    var body: some View {
+        ZStack {
+            if didFail {
+                buildFailureImage()
+            } else {
+                KFImage(imageUrl)
+                    .onSuccess { result in
+                        print("[KINGFISHER] - Image loaded from: \(result.cacheType)")
+                    }
+                    .onFailure { error in
+                        print("[KINGFISHER] - error: \(error.localizedDescription)")
+                        didFail = true
+                    }
+                    .placeholder {
+                        ProgressView()
+                    }
+                    .cancelOnDisappear(true)
+                    .resizable()
+                    .scaledToFit()
+                    .cornerRadius(5)
+            }
+        }
+    }
+    
+    private func buildFailureImage() -> some View {
+        Image(systemName: "figure.indoor.cycle")
+            .resizable()
+            .scaledToFit()
+            .foregroundColor(.gray)
+            .scaleEffect(0.35)
+    }
 }
