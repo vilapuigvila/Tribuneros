@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		500DE0CA2D64CFE800D7D4DE /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 500DE0C92D64CFE800D7D4DE /* SwiftSoup */; };
+		505A57A72DE766D9007BDD3D /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 505A57A62DE766D9007BDD3D /* Kingfisher */; };
+		506E30002DE83FD100B7A78E /* Alfy in Frameworks */ = {isa = PBXBuildFile; productRef = 506E2FFF2DE83FD100B7A78E /* Alfy */; };
 		50788AC62DD1FDE40051A80F /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 50788AC52DD1FDE40051A80F /* SwiftSoup */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +43,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				506E30002DE83FD100B7A78E /* Alfy in Frameworks */,
+				505A57A72DE766D9007BDD3D /* Kingfisher in Frameworks */,
 				500DE0CA2D64CFE800D7D4DE /* SwiftSoup in Frameworks */,
 				50788AC62DD1FDE40051A80F /* SwiftSoup in Frameworks */,
 			);
@@ -87,6 +91,8 @@
 			packageProductDependencies = (
 				500DE0C92D64CFE800D7D4DE /* SwiftSoup */,
 				50788AC52DD1FDE40051A80F /* SwiftSoup */,
+				505A57A62DE766D9007BDD3D /* Kingfisher */,
+				506E2FFF2DE83FD100B7A78E /* Alfy */,
 			);
 			productName = Tribuneros;
 			productReference = 50B365772D6489EF000DA4AC /* Tribuneros.app */;
@@ -118,6 +124,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				50788AC42DD1FDE40051A80F /* XCRemoteSwiftPackageReference "SwiftSoup" */,
+				505A57A52DE766D9007BDD3D /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				506E2FFE2DE83FD100B7A78E /* XCRemoteSwiftPackageReference "Alfy" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 50B365782D6489EF000DA4AC /* Products */;
@@ -357,6 +365,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		505A57A52DE766D9007BDD3D /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.3.2;
+			};
+		};
+		506E2FFE2DE83FD100B7A78E /* XCRemoteSwiftPackageReference "Alfy" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/vilapuigvila/Alfy.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		50788AC42DD1FDE40051A80F /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
@@ -371,6 +395,16 @@
 		500DE0C92D64CFE800D7D4DE /* SwiftSoup */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SwiftSoup;
+		};
+		505A57A62DE766D9007BDD3D /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 505A57A52DE766D9007BDD3D /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+		506E2FFF2DE83FD100B7A78E /* Alfy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 506E2FFE2DE83FD100B7A78E /* XCRemoteSwiftPackageReference "Alfy" */;
+			productName = Alfy;
 		};
 		50788AC52DD1FDE40051A80F /* SwiftSoup */ = {
 			isa = XCSwiftPackageProductDependency;
