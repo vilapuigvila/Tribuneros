@@ -494,6 +494,19 @@ struct Requester {
         }
     }
     
+    static func getInfoProfiles(_ urlString: String) async throws {
+        let url = URL(string: urlString + "/info/profiles")!
+        do {
+            let data = try await URLSession.shared.data(from: url).0
+            guard let htmlContent = String(data: data, encoding: .utf8) else {
+                throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
+            }
+            print(htmlContent)
+        } catch {
+            assertionFailure(error.localizedDescription)
+        }
+    }
+    
     static func getNextToFinishRaceDetail(_ urlString: String) async throws -> DTO.RaceDetailInfo? {
         let url = URL(string: urlString)!
         do {
@@ -548,12 +561,12 @@ struct Requester {
                         return desc
                     }()
                     let imgURL: URL? = {
-                        guard let img = try? doc.select("img[src*=trofeo-citta-di-brescia-2025-result-profile]").first(),
-                              let relativeURL = try? img.attr("src")
+                        guard let relativeURL: Element = try? doc.select("div.mt10 img").first(),
+                              let src: String = try? relativeURL.attr("src")
                         else {
                             return nil
                         }
-                        return URL(string: "\(baseURL)\(relativeURL)")
+                        return URL(string: "\(baseURL)\(src)")
                     }()
                     let raceInfo = DTO.RaceDetailInfo(
                         title: title,

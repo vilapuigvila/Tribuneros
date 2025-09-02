@@ -25,7 +25,7 @@ struct HomeRacesView: View {
                     EmptyView()
                 }
 //                .navigationTitle("NEXT TO FINISH")
-            case .detail(let race): // avvp not use delete
+            case .detail: // avpv not use delete
                 EmptyView()
             }
         }

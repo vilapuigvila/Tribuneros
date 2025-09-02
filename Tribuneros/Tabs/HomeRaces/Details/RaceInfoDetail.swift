@@ -35,6 +35,7 @@ struct NextToFinishRaceDetail: View {
             errorMessage = nil
             do {
                 raceInfo = try await Requester.getNextToFinishRaceDetail(urlInfo)
+                try await Requester.getInfoProfiles(urlInfo)
                 guard let profileURL = raceInfo?.profileURL else {
                     return
                 }
