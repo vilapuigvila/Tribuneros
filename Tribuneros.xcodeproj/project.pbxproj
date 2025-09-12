@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		500388222E740ED40041E747 /* FirebaseAppDistribution-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 500388212E740ED40041E747 /* FirebaseAppDistribution-Beta */; };
+		500388242E740ED40041E747 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 500388232E740ED40041E747 /* FirebaseCrashlytics */; };
+		500388262E740ED40041E747 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 500388252E740ED40041E747 /* FirebaseRemoteConfig */; };
 		500DE0CA2D64CFE800D7D4DE /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 500DE0C92D64CFE800D7D4DE /* SwiftSoup */; };
 		5068D4362E1266A200012BFE /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 5068D4352E1266A200012BFE /* Kingfisher */; };
 		50788AC62DD1FDE40051A80F /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 50788AC52DD1FDE40051A80F /* SwiftSoup */; };
@@ -45,6 +48,9 @@
 			files = (
 				5068D4362E1266A200012BFE /* Kingfisher in Frameworks */,
 				500DE0CA2D64CFE800D7D4DE /* SwiftSoup in Frameworks */,
+				500388222E740ED40041E747 /* FirebaseAppDistribution-Beta in Frameworks */,
+				500388262E740ED40041E747 /* FirebaseRemoteConfig in Frameworks */,
+				500388242E740ED40041E747 /* FirebaseCrashlytics in Frameworks */,
 				50F43D112DE89C5D006AE0A1 /* Alfy in Frameworks */,
 				50788AC62DD1FDE40051A80F /* SwiftSoup in Frameworks */,
 			);
@@ -79,6 +85,7 @@
 				50B365732D6489EF000DA4AC /* Sources */,
 				50B365742D6489EF000DA4AC /* Frameworks */,
 				50B365752D6489EF000DA4AC /* Resources */,
+				500388272E74368F0041E747 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -93,6 +100,9 @@
 				50788AC52DD1FDE40051A80F /* SwiftSoup */,
 				50F43D102DE89C5D006AE0A1 /* Alfy */,
 				5068D4352E1266A200012BFE /* Kingfisher */,
+				500388212E740ED40041E747 /* FirebaseAppDistribution-Beta */,
+				500388232E740ED40041E747 /* FirebaseCrashlytics */,
+				500388252E740ED40041E747 /* FirebaseRemoteConfig */,
 			);
 			productName = Tribuneros;
 			productReference = 50B365772D6489EF000DA4AC /* Tribuneros.app */;
@@ -126,6 +136,7 @@
 				50788AC42DD1FDE40051A80F /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 				50F43D0F2DE89C5D006AE0A1 /* XCRemoteSwiftPackageReference "Alfy" */,
 				5068D4342E1266A200012BFE /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				500388202E740ED40041E747 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 50B365782D6489EF000DA4AC /* Products */;
@@ -146,6 +157,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		500388272E74368F0041E747 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		50B365732D6489EF000DA4AC /* Sources */ = {
@@ -365,6 +396,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		500388202E740ED40041E747 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.2.0;
+			};
+		};
 		5068D4342E1266A200012BFE /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
@@ -392,6 +431,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		500388212E740ED40041E747 /* FirebaseAppDistribution-Beta */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 500388202E740ED40041E747 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseAppDistribution-Beta";
+		};
+		500388232E740ED40041E747 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 500388202E740ED40041E747 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		500388252E740ED40041E747 /* FirebaseRemoteConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 500388202E740ED40041E747 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfig;
+		};
 		500DE0C92D64CFE800D7D4DE /* SwiftSoup */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SwiftSoup;
