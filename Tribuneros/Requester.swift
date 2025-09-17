@@ -494,16 +494,36 @@ struct Requester {
         }
     }
     
-    static func getInfoProfiles(_ urlString: String) async throws {
+    static func getInfoProfiles(_ urlString: String) async throws -> [DTO.StageProfile] {
         let url = URL(string: urlString + "/info/profiles")!
         do {
             let data = try await URLSession.shared.data(from: url).0
             guard let htmlContent = String(data: data, encoding: .utf8) else {
                 throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
             }
-            print(htmlContent)
+            let doc: Document = try SwiftSoup.parse(htmlContent)
+            let listItems: Elements = try doc.select("ul.list > li")
+            
+            let stageImages: [DTO.StageProfile] = try listItems.array().compactMap { li in
+                guard
+                    let type = try li.select("div.fs14.bold").first()?.text(),
+                    let img = try li.select("img").first()
+                else {
+                    return nil
+                }
+                let src = try img.attr("src")
+                if src.hasSuffix(".jpg") || src.hasSuffix(".png") {
+                    let fullUrl = src.hasPrefix("http") ? src : baseStringURL + src
+                    let imageType = DTO.StageProfile.ProfileImageType(rawValue: type)
+                    return DTO.StageProfile(type: imageType, url: fullUrl)
+                }
+                return nil
+            }
+            print("avpv [NETWORK] get stage profile info - \(dump(stageImages))")
+            return stageImages
         } catch {
             assertionFailure(error.localizedDescription)
+            return []
         }
     }
     
@@ -560,6 +580,7 @@ struct Requester {
                         }
                         return desc
                     }()
+                /*
                     let imgURL: URL? = {
                         guard let relativeURL: Element = try? doc.select("div.mt10 img").first(),
                               let src: String = try? relativeURL.attr("src")
@@ -567,7 +588,7 @@ struct Requester {
                             return nil
                         }
                         return URL(string: "\(baseURL)\(src)")
-                    }()
+                    }()*/
                     let raceInfo = DTO.RaceDetailInfo(
                         title: title,
                         date: date,
@@ -578,9 +599,9 @@ struct Requester {
                         departure: departure,
                         arrival: arrival,
                         verticalMeters: verticalMeters,
-                        profileURL: imgURL
+                        profileURL: nil // imgURL
                     )
-                    print("avvp [NETWORK] get next to finish race detail - \(raceInfo)")
+                    print("avpv [NETWORK] get next to finish race detail - \(raceInfo)")
                     return raceInfo
             /*    }
             else {

@@ -81,4 +81,29 @@ extension DTO {
         let verticalMeters: String
         let profileURL: URL?
     }
+    
+    struct StageProfile: Codable, Equatable {
+        enum ProfileImageType: String, Codable {
+            case profile = "Profile"
+            case climb = "Climb"
+            case map = "Map"
+            case finishProfile = "Finish profile"
+            case none
+            
+            init(rawValue: String) {
+                switch rawValue {
+                case "Profile": self = .profile
+                case "Map": self = .map
+                case "Climb": self = .climb
+                case "Finish profile": self = .finishProfile
+                default:
+                    assertionFailure(rawValue)
+                    self = .none
+                    
+                }
+            }
+        }
+        let type: ProfileImageType
+        let url: String
+    }
 }
