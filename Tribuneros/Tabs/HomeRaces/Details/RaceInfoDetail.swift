@@ -8,60 +8,100 @@
 import SwiftUI
 
 struct NextToFinishRaceDetail: View {
+    private typealias ImageType = DTO.StageProfile.ProfileImageType
     let urlInfo: String
     
     @State private var showZoom = false
     @State private var raceInfo: DTO.RaceDetailInfo? = nil
     @State private var profileImage: UIImage? = nil
+    @State private var profileImages: [(ImageType, UIImage)] = []
+    @State private var stageProfile: [DTO.StageProfile] = []
     @State private var isLoading = false
-    @State private var errorMessage: String? = nil
-    @State private var showAlert = false
+    
+    @State private var showLoader = false
+
+    @State private var activeAlert: ActiveAlert?
     
     var body: some View {
-        Group {
-            if let raceInfo {
-                buildInfoView(raceInfo)
-                    .padding()
-            } else if isLoading {
-                ProgressView("Loading...")
-            } else {
-                Text("No info available.")
+        ZStack {
+            Group {
+                if let raceInfo {
+                    buildInfoView(raceInfo)
+                        .padding()
+                        .transition(.opacity)
+                } else if showLoader {
+                    CyclistLoaderWithIcon(withAnimating: true)
+                        .background(.black)
+                        .transition(.opacity)
+                    
+                } else {
+                    EmptyView()
+                }
             }
         }
+        .animation(.easeInOut(duration: 0.75), value: (raceInfo != nil || isLoading))
         .background(Color.tribuneru(.greenCardBackground))
-        
         .task {
+            showLoader = false
             isLoading = true
-            errorMessage = nil
-            do {
-                raceInfo = try await Requester.getNextToFinishRaceDetail(urlInfo)
-                try await Requester.getInfoProfiles(urlInfo)
-                guard let profileURL = raceInfo?.profileURL else {
-                    return
+            Task {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                if isLoading {
+                    showLoader = true
                 }
-                guard let uiImage = await loadImage(profileURL) else {
-                    return
-                }
-                profileImage = uiImage
-            } catch {
-                assertionFailure(error.localizedDescription)
-                errorMessage = error.localizedDescription
-                showAlert = true
             }
-            isLoading = false
+            do {
+                async let raceInfoTask = Requester.getNextToFinishRaceDetail(urlInfo)
+                async let stageProfileTask = Requester.getInfoProfiles(urlInfo)
+
+                let (_raceInfo, _stageProfile) = try await (raceInfoTask, stageProfileTask)
+                raceInfo = _raceInfo
+                stageProfile = _stageProfile
+                
+                isLoading = false
+                
+                await downloadAllProfilesImages()
+
+            } catch {
+                activeAlert = .error(error.localizedDescription)
+                isLoading = false
+                assertionFailure(error.localizedDescription)
+            }
         }
         .sheet(isPresented: $showZoom) {
             NavigationView {
                 ZStack {
                     Color.black.ignoresSafeArea()
-                    ZoomableMainScreen {
-                        if let image = profileImage {
-                            Image(uiImage: image)
-                                .resizable()
-                                .scaledToFit()
+                    if !profileImages.isEmpty {
+                        TabView {
+                            if let image = profileImage {
+                                ZoomableMainScreen {
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                        .background(Color.black)
+                                }
+                            }
+
+                            let climbs = profileImages.filter { $0.0 == .climb }
+                            ForEach(Array(climbs.enumerated()), id: \.offset) { _, climb in
+                                ZoomableMainScreen {
+                                    Image(uiImage: climb.1)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                        .background(Color.black)
+                                }
+                            }
                         }
+                        .tabViewStyle(.page)
+                        .indexViewStyle(.page(backgroundDisplayMode: .automatic))
+                    } else {
+                        EmptyView()
                     }
                 }
+                .padding(.top, 4)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
@@ -75,13 +115,22 @@ struct NextToFinishRaceDetail: View {
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
         }
-        .alert("Error", isPresented: $showAlert, actions: {
-            Button("OK", role: .cancel) {
-                
+        .alert(item: $activeAlert) { alert in
+            switch alert {
+            case .error(let message):
+                return Alert(
+                    title: Text("Error"),
+                    message: Text(message),
+                    dismissButton: .cancel(Text("OK"))
+                )
+            case .debug(let message):
+                return Alert(
+                    title: Text("DEBUG ERROR"),
+                    message: Text(message),
+                    dismissButton: .cancel(Text("OK"))
+                )
             }
-        }, message: {
-            Text(errorMessage ?? "Unknown error")
-        })
+        }
     }
     
     private func buildInfoView(_ raceInfo: DTO.RaceDetailInfo) -> some View {
@@ -123,11 +172,44 @@ struct NextToFinishRaceDetail: View {
         }
     }
     
-    private func loadImage(_ url: URL) async -> UIImage? {
+    private func downloadAllProfilesImages() async {
+        let types: [ImageType] = [.climb, .profile, .profile, .finishProfile]
+
+        let allURLs: [(ImageType, URL)] = types.flatMap { type in
+            stageProfile
+                .filter { $0.type == type }
+                .compactMap { URL(string: $0.url).map { (type, $0) } }
+        }
+        
+        guard !allURLs.isEmpty else {
+            activeAlert = .debug("No profile URLs found")
+            return
+        }
+
+        var images: [(ImageType, UIImage)] = []
+        images.reserveCapacity(allURLs.count)
+
+        await withTaskGroup(of: (ImageType, UIImage)?.self) { group in
+            for tuple in allURLs {
+                group.addTask {
+                    await loadImage(tuple.1, key: tuple.0)
+                }
+            }
+            for await image in group {
+                if let img = image {
+                    images.append(img)
+                }
+            }
+        }
+        profileImage = images.first(where: { $0.0 == .profile })?.1
+        profileImages = images
+    }
+    
+    private func loadImage(_ url: URL, key: ImageType) async -> (ImageType, UIImage)? {
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
             if let uiImage = UIImage(data: data) {
-                return uiImage
+                return (key, uiImage)
             }
             return nil
         } catch {
@@ -148,228 +230,114 @@ struct NextToFinishRaceDetail: View {
             ("Vertical Meters",raceInfo?.verticalMeters)
         ]
     }
-}
-
-/*
-struct RemoteZoomableImage: View {
-    let url: URL
-
-    @State private var aspectRatio: CGFloat? = nil
-    @State private var loadedImage: UIImage? = nil
-    @State private var scale: CGFloat = 1.0
-    @State private var lastScale: CGFloat = 1.0
-    @State private var offset: CGSize = .zero
-    @State private var lastOffset: CGSize = .zero
-
-    var body: some View {
-        Group {
-            if let uiImage = loadedImage {
-//                GeometryReader { proxy in
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .aspectRatio(aspectRatio, contentMode: .fit)
-                        .scaleEffect(scale)
-                        .offset(offset)
-                        .gesture(
-                            SimultaneousGesture(
-                                MagnificationGesture()
-                                    .onChanged { value in
-                                        scale = lastScale * value
-                                    }
-                                    .onEnded { value in
-                                        lastScale = scale
-                                    },
-                                DragGesture()
-                                    .onChanged { value in
-                                        offset = CGSize(
-                                            width: lastOffset.width + value.translation.width,
-                                            height: lastOffset.height + value.translation.height
-                                        )
-                                    }
-                                    .onEnded { value in
-                                        lastOffset = offset
-                                    }
-                            )
-                        )
-                        .onTapGesture(count: 2) {
-                            withAnimation {
-                                if scale > 1 {
-                                    scale = 1
-                                    lastScale = 1
-                                    offset = .zero
-                                    lastOffset = .zero
-                                } else {
-                                    scale = 1.5
-                                    lastScale = 1.5
-                                }
-                            }
-                        }
-//                        .frame(width: proxy.size.width, height: proxy.size.height)
-//                }
-            } else {
-                ProgressView()
-                    .frame(width: 100, height: 100)
-                    .task {
-                        await loadImage()
-                    }
+    
+    private enum ActiveAlert: Identifiable {
+        case error(String)
+        case debug(String)
+        
+        var id: String {
+            switch self {
+            case .error: return "error"
+            case .debug: return "debug"
             }
-        }
-        .clipped()
-    }
-
-    func loadImage() async {
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            if let uiImage = UIImage(data: data) {
-                loadedImage = uiImage
-                aspectRatio = uiImage.size.width / uiImage.size.height
-            }
-        } catch {
-            // handle error (show a placeholder, etc.)
         }
     }
 }
+
+// MARK: - Zoom View -
 
 struct ZoomableMainScreen<Content: View>: View {
-    @State private var aspectRatio: CGFloat? = nil
-    @State private var loadedImage: UIImage? = nil
-    
-    @State private var scale: CGFloat = 1.0
-    @State private var lastScale: CGFloat = 1.0
+    @State private var scale: CGFloat = 1
+    @State private var lastScale: CGFloat = 1
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
 
-//    let url: URL?
     let content: () -> Content
+    init(@ViewBuilder content: @escaping () -> Content) { self.content = content }
 
     var body: some View {
         GeometryReader { proxy in
-//            AsyncImage(url: url)
+            // Gestures
+            let magnify = MagnificationGesture()
+                .onChanged { value in
+                    scale = max(1, lastScale * value)
+                }
+                .onEnded { _ in
+                    lastScale = max(1, scale)
+                    if lastScale == 1 {
+                        offset = .zero
+                        lastOffset = .zero
+                    }
+                }
+
+            let pan = DragGesture(minimumDistance: 0)
+                .onChanged { value in
+                    guard lastScale > 1 else { return }
+                    offset = CGSize(
+                        width: lastOffset.width + value.translation.width,
+                        height: lastOffset.height + value.translation.height
+                    )
+                }
+                .onEnded { _ in
+                    if lastScale > 1 {
+                        lastOffset = offset
+                    } else {
+                        offset = .zero
+                        lastOffset = .zero
+                    }
+                }
+
             content()
-//                .aspectRatio(aspectRatio, contentMode: .fit)
+                .scaledToFit()
+                .frame(maxWidth: proxy.size.width, maxHeight: proxy.size.height)
                 .scaleEffect(scale)
                 .offset(offset)
-//                .clipped()
-                .gesture(
-                    SimultaneousGesture(
-                        MagnificationGesture()
-                            .onChanged { value in
-                                scale = lastScale * value
-                            }
-                            .onEnded { _ in
-                                lastScale = scale
-                            },
-                        DragGesture()
-                            .onChanged { value in
-                                offset = CGSize(
-                                    width: lastOffset.width + value.translation.width,
-                                    height: lastOffset.height + value.translation.height
-                                )
-                            }
-                            .onEnded { _ in
-                                lastOffset = offset
-                            }
-                    )
-                )
+                .contentShape(Rectangle())              // full hit area
+                .gesture(magnify)                       // always allow pinch
+                // Only enable drag gesture when zoomed; otherwise let TabView swipe
+                .simultaneousGesture(pan, including: lastScale > 1 ? .all : .none)
                 .onTapGesture(count: 2) {
-                    withAnimation {
-                        if scale > 1 {
-                            scale = 1
-                            lastScale = 1
-                            offset = .zero
-                            lastOffset = .zero
+                    withAnimation(.spring()) {
+                        if lastScale > 1 {
+                            scale = 1; lastScale = 1
+                            offset = .zero; lastOffset = .zero
                         } else {
-                            scale = 1.75
-                            lastScale = 1.75
+                            scale = 1.75; lastScale = 1.75
                         }
                     }
                 }
                 .animation(.spring(), value: scale)
                 .animation(.spring(), value: offset)
-//                .frame(width: proxy.size.width, height: proxy.size.height)
+                .frame(width: proxy.size.width, height: proxy.size.height)
         }
         .ignoresSafeArea()
     }
 }
-*/
-struct ZoomableMainScreen<Content: View>: View {
-    
-    @State private var scale: CGFloat = 1.0
-    @State private var lastScale: CGFloat = 1.0
-    @State private var offset: CGSize = .zero
-    @State private var lastOffset: CGSize = .zero
 
-    /// The content to be zoomed and panned
-    let content: () -> Content
-    
-    init(@ViewBuilder content: @escaping () -> Content) {
-        self.content = content
-    }
 
+struct CyclistLoaderWithIcon: View {
+    @State private var rotation: Double = 0
+    
+    let withAnimating: Bool
+    
     var body: some View {
-        GeometryReader { proxy in
-            ZStack {
-                content()
-                    .scaledToFit()
-                    .frame(
-                        maxWidth: proxy.size.width * 1.0,
-                        maxHeight: proxy.size.height * 1.0
-                    )
-                    .scaleEffect(scale)
-                    .offset(offset)
-                    .gesture(
-                        SimultaneousGesture(
-                            // Pinch to zoom
-                            MagnificationGesture()
-                                .onChanged { value in
-                                    scale = lastScale * value
-                                }
-                                .onEnded { _ in
-                                    lastScale = scale
-                                    // Reset position if zoom returns to identity
-                                    if lastScale <= 1 {
-                                        offset = .zero
-                                        lastOffset = .zero
-                                    }
-                                },
-                            // Drag to pan only when zoomed
-                            DragGesture()
-                                .onChanged { value in
-                                    guard lastScale > 1 else { return }
-                                    offset = CGSize(
-                                        width: lastOffset.width + value.translation.width,
-                                        height: lastOffset.height + value.translation.height
-                                    )
-                                }
-                                .onEnded { _ in
-                                    guard lastScale > 1 else {
-                                        offset = .zero
-                                        lastOffset = .zero
-                                        return
-                                    }
-                                    lastOffset = offset
-                                }
-                        )
-                    )
-                    .onTapGesture(count: 2) {
-                        withAnimation(.spring()) {
-                            if scale > 1 {
-                                scale = 1
-                                lastScale = 1
-                                offset = .zero
-                                lastOffset = .zero
-                            } else {
-                                scale = 1.75
-                                lastScale = 1.75
-                            }
-                        }
-                    }
-                    .animation(.spring(), value: scale)
-                    .animation(.spring(), value: offset)
-            }
-            // Fill the available screen
-            .frame(width: proxy.size.width, height: proxy.size.height)
+        ZStack {
+            Circle()
+                .stroke(Color.gray.opacity(0.3), lineWidth: 6)
+                .frame(width: 80, height: 80)
+
+            Image(systemName: "bicycle")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 30, height: 30)
+                .rotationEffect(.degrees(withAnimating ? rotation : 0))
         }
-        .ignoresSafeArea()
+        .onAppear {
+            if withAnimating {
+                withAnimation(Animation.linear(duration: 1).repeatForever(autoreverses: false)) {
+                    rotation = 360
+                }
+            }
+        }
     }
 }
