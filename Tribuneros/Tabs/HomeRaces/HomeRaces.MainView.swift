@@ -132,21 +132,20 @@ extension HomeRaces {
             }
         }
         
+        @ViewBuilder
         private func buildResultsYesterdayView(_ representable: Representable) -> some View {
-            Group {
-                if representable.sections.yesterdayResults.isEmpty {
-                    buildNoResultsCardView("Results yesterday", info: "No Races", delaySlideInfo: 6)
-                } else {
-                    RaceFinishedCardView(
-                        title: "Results Yesterday",
-                        races: representable.sections.yesterdayResults,
-                        isSpoilerModeOnSubject: .init(representable.sections.spoilerMode.isSpoilerModeResultsYesterday)
-                    ) {
-                        action(.spoilerModeResultYesterday)
-                    }
-                    .background(Color.tribuneru(.greenCardBackground))
-                    .cornerRadius(8)
+            if representable.sections.yesterdayResults.isEmpty {
+                buildNoResultsCardView("Results yesterday", info: "No Races", delaySlideInfo: 6)
+            } else {
+                RaceFinishedCardView(
+                    title: "Results Yesterday",
+                    races: representable.sections.yesterdayResults,
+                    isSpoilerModeOnSubject: .init(representable.sections.spoilerMode.isSpoilerModeResultsYesterday)
+                ) {
+                    action(.spoilerModeResultYesterday)
                 }
+                .background(Color.tribuneru(.greenCardBackground))
+                .cornerRadius(8)
             }
         }
         

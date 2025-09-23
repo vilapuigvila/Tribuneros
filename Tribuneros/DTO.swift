@@ -82,12 +82,28 @@ extension DTO {
         let profileURL: URL?
     }
     
-    struct StageProfile: Codable, Equatable {
-        enum ProfileImageType: String, Codable {
+    struct StageProfile: Codable, Equatable, CustomStringConvertible {
+        var description: String {
+            return "Type: \(type) - url: \(url)"
+        }
+        
+        enum ProfileImageType: String, Codable, CustomStringConvertible {
+            var description: String {
+                switch self {
+                case .profile: return "Profile"
+                case .map: return "Map"
+                case .climb: return "Climb"
+                case .finishProfile: return "Finish profile"
+                case .none: return "none"
+                case .localCircut: return "Local circuit"
+                }
+            }
+            
             case profile = "Profile"
             case climb = "Climb"
             case map = "Map"
             case finishProfile = "Finish profile"
+            case localCircut = "Local circuit"
             case none
             
             init(rawValue: String) {
@@ -96,8 +112,9 @@ extension DTO {
                 case "Map": self = .map
                 case "Climb": self = .climb
                 case "Finish profile": self = .finishProfile
+                case "Local circuit": self = .localCircut
                 default:
-                    assertionFailure(rawValue)
+                    nonFatalCrashlytics(false, "new StageProfile.ProfileImageType case: \(rawValue)", domain: .tribuneru)
                     self = .none
                     
                 }

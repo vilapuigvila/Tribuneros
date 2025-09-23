@@ -28,9 +28,6 @@ struct TribunerosApp: App {
     
     init() {
       FirebaseApp.configure()
-//        let randomWords = ["alf", "vila", "123", "456", "hola", "mundo", "adios"]
-        nonFatalCrashlytics(false, "alffffffff", domain: .tribuneru)
-//        fatalError(["alf", "vila", "123", "456"].randomElement() ?? "not random")
     }
     
     var body: some Scene {
@@ -90,7 +87,7 @@ func nonFatalCrashlytics(_ condition: @autoclosure () -> Bool,
     guard !condition() else {
         return
     }
-//    assert(condition(), message())
+    assert(condition(), message())
     guard !condition() else {
         return
     }
