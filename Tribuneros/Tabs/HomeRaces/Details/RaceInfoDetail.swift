@@ -65,7 +65,7 @@ struct NextToFinishRaceDetail: View {
             } catch {
                 activeAlert = .error(error.localizedDescription)
                 isLoading = false
-                assertionFailure(error.localizedDescription)
+                nonFatalCrashlytics(false, error.localizedDescription)
             }
         }
         .sheet(isPresented: $showZoom) {
@@ -213,7 +213,7 @@ struct NextToFinishRaceDetail: View {
             }
             return nil
         } catch {
-            assertionFailure(error.localizedDescription)
+            nonFatalCrashlytics(false, error.localizedDescription)
             return nil
         }
     }

@@ -49,7 +49,7 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
             case .nextToFinishRace(let index):
                 router.routeTo(.nextToFinishRace(index: index))
             case .detail:
-                assertionFailure()
+                nonFatalCrashlytics(false, "can't navigate to detail")
                 break
 //                switch detail {
 //                case .race(let url):
@@ -60,7 +60,7 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
 //                    router.routeTo(.detail(.race(urlInfo: url)))
 //                }
             default:
-                assertionFailure()
+                nonFatalCrashlytics(false, "not implemented")
            }
         }
     }

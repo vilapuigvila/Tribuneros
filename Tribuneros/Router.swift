@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-class Router: ObservableObject {
+final class Router: ObservableObject {
     
     enum Destination: Hashable {
         enum Detail: Hashable {
@@ -19,7 +19,7 @@ class Router: ObservableObject {
     }
     
     @Published var navPath = NavigationPath()
-        
+    
     func routeTo(_ destination: Destination) {
         navPath.append(destination)
     }

@@ -23,7 +23,7 @@ struct Requester {
             guard let htmlContent = String(data: data, encoding: .utf8) else {
                 throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
             }
-            
+            _ = try await getCxEvents()
             let document = try SwiftSoup.parse(htmlContent)
             let nextToFinishResults = parseNextToFinishResults(document)
             let todayResults = parseResultsToday(from: document)
@@ -40,7 +40,7 @@ struct Requester {
             
         } catch {
             if (error as NSError).code != -1009 {
-                assertionFailure(error.localizedDescription)
+                nonFatalCrashlytics(false, error.localizedDescription)
             }
             throw NSError(domain: "Impossible parsing", code: 0, userInfo: nil)
         }
@@ -311,7 +311,7 @@ struct Requester {
                results.append(resultDTO)
            }
        } catch {
-           assertionFailure(error.localizedDescription)
+           nonFatalCrashlytics(false, error.localizedDescription)
        }
        return results
     }
@@ -382,10 +382,10 @@ struct Requester {
                     }
                     sections.append(TodaySectionModel(sectionName: "UCI races", races: races))
                 } else {
-                    assertionFailure()
+                    nonFatalCrashlytics(false, "missing")
                 }
             } else {
-                assertionFailure()
+                nonFatalCrashlytics(false, "missing")
             }
             
             if let nationalSection = try document.select("div.mt30:has(h3:contains(National races))").first() {
@@ -436,15 +436,14 @@ struct Requester {
                     }
                     sections.append(TodaySectionModel(sectionName: "CX Races", races: races))
                 } else {
-                    assertionFailure()
-                    print("avvp [NETWORK] CX table found")
+                    nonFatalCrashlytics(false, "CX table found")
                 }
             } else {
-                print("avvp [NETWORK] No CX races section found")
+                nonFatalCrashlytics(false, "No CX races section found")
             }
             
         } catch {
-            assertionFailure(error.localizedDescription)
+            nonFatalCrashlytics(false, error.localizedDescription)
         }
         return sections
     }
@@ -454,13 +453,13 @@ struct Requester {
             // Select the container that immediately follows the header "Races tomorrow"
             // Note: the header is <h3 class="info-title mb5">Races tomorrow</h3>
             guard let container = try document.select("h3.info-title:contains(Races tomorrow) + span.table-cont").first() else {
-                assertionFailure("Races tomorrow section not found")
+                nonFatalCrashlytics(false, "Races tomorrow section not found")
                 return []
             }
             
             // Find the table with class "hp-tbl1 tomorrow" within the container
             guard let table = try container.select("table.hp-tbl1.tomorrow").first() else {
-                assertionFailure("Races tomorrow section not found")
+                nonFatalCrashlytics(false, "Races tomorrow section not found")
                 return []
             }
             
@@ -489,7 +488,7 @@ struct Requester {
             }
             return tomorrowRaces
         } catch {
-            assertionFailure(": Unexpected error parsing HTML document.")
+            nonFatalCrashlytics(false, "Unexpected error parsing HTML document.")
             return []
         }
     }
@@ -522,7 +521,7 @@ struct Requester {
             print("avpv [NETWORK] get stage profile info - \(dump(stageImages))")
             return stageImages
         } catch {
-            assertionFailure(error.localizedDescription)
+            nonFatalCrashlytics(false, error.localizedDescription)
             return []
         }
     }
@@ -605,7 +604,6 @@ struct Requester {
                     return raceInfo
             /*    }
             else {
-                    assertionFailure()
                     return nil
                 }*/
             } catch {
@@ -613,7 +611,7 @@ struct Requester {
                 return nil
             }
         } catch {
-            assertionFailure(error.localizedDescription)
+            nonFatalCrashlytics(false, error.localizedDescription)
             throw NSError(domain: "Impossible parsing", code: 0, userInfo: nil)
         }
     }

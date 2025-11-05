@@ -21,7 +21,6 @@ struct HomeRacesView: View {
                 if let urlPath = viewModel.stateView.result.sections.nextToFinish[index].urlPath {
                     NextToFinishRaceDetail(urlInfo: urlPath)
                 } else {
-                    let _ = assertionFailure()
                     EmptyView()
                 }
 //                .navigationTitle("NEXT TO FINISH")

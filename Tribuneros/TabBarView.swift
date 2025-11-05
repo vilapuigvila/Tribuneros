@@ -7,8 +7,18 @@
 
 import SwiftUI
 
+final class AppContainer {
+    let router = Router()
+    let homeRacesInteractor = HomeRacesInteractorImpl()
+    
+    lazy var homeRacesViewModel = HomeRacesViewModel(
+        interactor: homeRacesInteractor,
+        router: router
+    )
+}
+
 enum Tab {
-    case home, hateZone
+    case home, hateZone, cxZone
 }
 
 struct TabBarView: View {
@@ -35,9 +45,6 @@ struct TabBarView: View {
             interactor: HomeRacesInteractorImpl(),
             router: router
         )
-//        homeRacesViewModel = HomeRacesViewModel(
-//            interactor: HomeRacesInteractorImpl()
-//        )
     }
     
     var body: some View {
@@ -52,6 +59,17 @@ struct TabBarView: View {
                 Text("Today Races")
             }
             .tag(Tab.home)
+            
+            // CX Zone -
+            
+            VStack {
+                Text("CX zone")
+            }
+            .tabItem {
+                Image(systemName: "bicycle.sensor.tag.radiowaves.left.and.right.fill")
+                Text("CX Zone")
+            }
+            .tag(Tab.cxZone)
             
             // Hate zone -
             
