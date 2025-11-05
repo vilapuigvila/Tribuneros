@@ -36,6 +36,7 @@ extension HomeRaces {
     
     struct MainView: View {
         @Environment(\.safeAreaInsets) private var safeAreaInsets
+        @State private var retryCount = 0
         
         private let heightCardView: Double = 100
         private let spacingRows: Double = 16
@@ -52,7 +53,14 @@ extension HomeRaces {
                 case .idle:
                     Text("Hello, World!")
                 case .loading:
-                    ProgressView()
+                    VStack {
+                        LoaderView(
+                            title: "Loading races…",
+                            subtitle: "Fetching latest data"
+                        )
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(.black)
                 case .loaded(let representable):
 //                    NavigationStack {
                         ScrollView {
@@ -78,7 +86,28 @@ extension HomeRaces {
                     .background(.black)
                     
                 case .error(let errorView):
-                    Text("Error: \(errorView)")
+                    VStack(spacing: 20) {
+                        Spacer(minLength: safeAreaInsets.top + 20)
+                        switch errorView {
+                        case .emtpyData:
+                            ErrorCardView.emptyData(
+                                showTryAgainButton: retryCount < 3
+                            ) {
+                                retryCount += 1
+                                action(.onAppear)
+                            }
+                        default:
+                            ErrorCardView.generic(
+                                message: "\(errorView)",
+                                showTryAgainButton: retryCount < 3
+                            ) {
+                                retryCount += 1
+                                action(.onAppear)
+                            }
+                        }
+                        Spacer(minLength: safeAreaInsets.bottom + 20)
+                    }
+                    .padding(.horizontal)
                 }
             }
             .preferredColorScheme(.dark)
@@ -93,7 +122,7 @@ extension HomeRaces {
                     buildNoResultsCardView("Races tomorrow", info: "No Races", delaySlideInfo: 0)
                 } else {
                     TomorrowRaceCardView(races: representable.sections.tomorrowRaces)
-	                    .background(Color.green.opacity(0.2))
+                        .background(Color.green.opacity(0.2))
                         .cornerRadius(8)
                 }
             }

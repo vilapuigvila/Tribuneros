@@ -71,11 +71,11 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
         if domain.loading {
             return .loading
         } else {
-            if domain.error != nil {
-                return .error(.networkFailure)
-            }
-            if Self.errorDueEmptyData(domain) {
-                return .error(.networkFailure)
+            if let error = domain.error {
+                guard let errorType = error.asError(type: HomeRacesInteractorImpl.ErrorReason.self) else {
+                    return .error(.networkFailure)
+                }
+                return .error(errorType.asErrorView)
             } else {
                 return .loaded(
                     HomeRaces.Representable(

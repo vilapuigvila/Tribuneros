@@ -453,7 +453,7 @@ struct Requester {
             // Select the container that immediately follows the header "Races tomorrow"
             // Note: the header is <h3 class="info-title mb5">Races tomorrow</h3>
             guard let container = try document.select("h3.info-title:contains(Races tomorrow) + span.table-cont").first() else {
-                nonFatalCrashlytics(false, "Races tomorrow section not found")
+//                nonFatalCrashlytics(false, "Races tomorrow section not found")
                 return []
             }
             

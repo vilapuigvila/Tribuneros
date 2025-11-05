@@ -127,5 +127,9 @@ extension HomeRacesInteractorImpl {
     
     enum ErrorReason: Error {
         case emptyResponse
+        
+        var asErrorView: HomeRaces.ErrorView {
+            .emtpyData
+        }
     }
 }

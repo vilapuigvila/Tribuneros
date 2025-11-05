@@ -174,6 +174,7 @@ enum HomeRaces {
         case missingStationCode
         case networkFailure
         case raceInfoFetchFailure
+        case emtpyData
         
         /*
         init(stationInteractorError: HomeStationInteractorImpl.ErrorReason) {
