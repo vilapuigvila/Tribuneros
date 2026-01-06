@@ -32,6 +32,8 @@ extension CXRaces {
             }
             return result
         }
+        var isCalendarEventsEmpty: Bool { result.calendarEvents.isEmpty }
+        var isRacesEmpty: Bool { result.races.sections.isEmpty }
     }
     
     struct Representable: Identifiable {

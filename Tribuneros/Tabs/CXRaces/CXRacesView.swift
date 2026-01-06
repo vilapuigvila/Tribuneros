@@ -12,7 +12,15 @@ struct CXRacesRacesView: View {
     
     var body: some View {
         CXRaces.MainView(state: viewModel.stateView) {
-            viewModel.action($0)
+            switch $0 {
+            case .didAppeared:
+                guard viewModel.isRequiredRequestData else {
+                    return
+                }
+                viewModel.action(.didAppeared)
+            default:
+                viewModel.action($0)
+            }
         }
         .navigationDestination(for: Router.Destination.self) { destination in
             let _ = print("avvp [Navigation] - \(destination)")

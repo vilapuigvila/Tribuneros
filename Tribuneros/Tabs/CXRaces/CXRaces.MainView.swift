@@ -32,7 +32,10 @@ extension CXRaces {
                         LazyVGrid(columns: columns, spacing: 1) {
                             /// calendar
                             if representable.nextThreeEvents().isEmpty {
-                                TribuneruText(content: "Calendar is empty.. something went wrong 😑", style: .size16WeightBold)
+                                TribuneruText(
+                                    content: "Calendar is empty.. something went wrong 😑",
+                                    style: .size16WeightBold
+                                )
                             } else {
                                 TribuneruText(content: "Next races", style: .size20WeightBold)
                                     .frame(maxWidth: .infinity, alignment: .leading)

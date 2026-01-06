@@ -34,6 +34,13 @@ extension CXRaces {
                 .assign(to: &$stateView)
         }
         
+        var isRequiredRequestData: Bool {
+            if case .idle = stateView {
+                return true
+            }
+            return stateView.isRacesEmpty || stateView.isCalendarEventsEmpty
+        }
+        
         func action(_ action: CXRaces.Action) {
             switch action {
             case .didAppeared:
