@@ -26,42 +26,12 @@ struct CXRacesRacesView: View {
             let _ = print("avvp [Navigation] - \(destination)")
             switch destination {
             case .cxZone(.allRaces):
-                CXAllRacesView(events: viewModel.stateView.result.calendarEvents)
+                CXRaces.CXAllRacesView(events: viewModel.stateView.result.calendarEvents)
                     .navigationTitle("All races")
             default:
                 EmptyView()
             }
         }
         .navigationTitle("CX ZONE")
-    }
-}
-
-private struct CXAllRacesView: View {
-    let events: [DTO.CXCalendarEvent]
-    
-    var body: some View {
-        List {
-            ForEach(events.indices, id: \.self) { idx in
-                let event = events[idx]
-                HStack(spacing: 12) {
-                    TribuneruText(content: event.date, style: .size12WeightRegular)
-                        .frame(width: 84, alignment: .leading)
-                    
-                    CachedImageView(imageUrl: event.flagURL)
-                        .frame(width: 24)
-                    
-                    VStack(alignment: .leading, spacing: 2) {
-                        TribuneruText(content: event.race, style: .size12WeightRegular)
-                        TribuneruText(content: event.winnerName, style: .size10WeightRegular, color: .gray)
-                    }
-                }
-                .padding(.vertical, 6)
-                .listRowBackground(Color.black)
-            }
-        }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-        .background(.black)
-        .preferredColorScheme(.dark)
     }
 }
