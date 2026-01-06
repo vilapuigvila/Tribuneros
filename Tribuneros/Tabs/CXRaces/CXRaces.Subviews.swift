@@ -13,9 +13,11 @@ extension CXRaces {
     struct CXAllRacesView: View {
         private enum UI {
             static let rowHeight: CGFloat = 58
+            static let autoScrollDelay: TimeInterval = 0.75
         }
         
         let events: [DTO.CXCalendarEvent]
+        @State private var didAutoScrollToToday = false
         
         var body: some View {
             ScrollViewReader { proxy in
@@ -53,9 +55,11 @@ extension CXRaces {
                     }
                 }
                 .onAppear {
+                    guard !didAutoScrollToToday else { return }
                     scrollToToday(proxy)
                 }
                 .onChange(of: events) {
+                    guard !didAutoScrollToToday else { return }
                     scrollToToday(proxy)
                 }
                 .listStyle(.plain)
@@ -86,8 +90,11 @@ extension CXRaces {
         private func scrollToToday(_ proxy: ScrollViewProxy) {
             guard let idx = todayIndex else { return }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) {
-                withAnimation {
+            didAutoScrollToToday = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + UI.autoScrollDelay) {
+                var transaction = Transaction()
+                transaction.animation = .easeInOut(duration: 0.45)
+                withTransaction(transaction) {
                     proxy.scrollTo(idx, anchor: .top)
                 }
             }

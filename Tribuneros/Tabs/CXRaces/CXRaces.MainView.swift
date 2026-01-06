@@ -46,7 +46,7 @@ extension CXRaces {
                                         HStack(spacing: 0) {
                                             TribuneruText(
                                                 content: event.date,
-                                                style: .size12WeightRegular
+                                                style: .size14WeightRegular
                                             )
                                             .frame(maxWidth: 84, alignment: .leading)
 //                                            .debugBackground()
@@ -60,7 +60,7 @@ extension CXRaces {
                                             
                                             TribuneruText(
                                                 content: event.race,
-                                                style: .size12WeightRegular
+                                                style: .size14WeightRegular
                                             )
                                         }
                                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -69,7 +69,7 @@ extension CXRaces {
                                         .padding(.trailing, 4)
                                         
                                     }
-                                    TribuneruText(content: "more races..", style: .size10WeightRegular, color: .cyan)
+                                    TribuneruText(content: "more races..", style: .size12WeightRegular, color: .cyan)
                                         .frame(maxWidth: .infinity , alignment: .trailing)
                                         .padding(.vertical, 6)
                                         .padding(.trailing, 8)
