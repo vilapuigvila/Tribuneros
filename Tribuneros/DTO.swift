@@ -124,3 +124,50 @@ extension DTO {
         let url: String
     }
 }
+
+// MARK: - CX -
+
+extension DTO {
+    struct CX24Homepage: Equatable, Sendable {
+        struct Section: Equatable, Sendable {
+            let title: String
+            let races: [Race]
+        }
+
+        struct Race: Equatable, Sendable {
+            let title: String
+            let country: String
+            let countryFlagURL: URL?
+            let date: String
+            let location: String
+            let raceURL: URL?
+            let categories: [Category]
+        }
+
+        struct Category: Equatable, Sendable {
+            let title: String
+            let categoryURL: URL?
+            let winnerImageURL: URL?
+            let podium: [Podium]
+        }
+
+        struct Podium: Equatable, Sendable {
+            let position: Int
+            let rider: String
+            let riderURL: URL?
+            let country: String
+            let countryFlagURL: URL?
+            let time: String
+        }
+
+        let sections: [Section]
+    }
+    
+    struct CXCalendarEvent: Equatable, Sendable {
+        let date: String
+        let race: String
+        let raceClass: String
+        let flagURL: URL?
+        let winnerName: String
+    }
+}

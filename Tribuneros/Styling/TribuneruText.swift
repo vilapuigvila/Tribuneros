@@ -35,6 +35,7 @@ struct TribuneruText: View {
         case .size14WeightRegular: 14
         case .size14LightMonospaced: 14
         case .size12WeightRegular: 12
+        case .size10WeightRegular: 10
         }
     }
     private var weight: Font.Weight {
@@ -46,6 +47,7 @@ struct TribuneruText: View {
         case .size14WeightRegular: .regular
         case .size14LightMonospaced: .light
         case .size12WeightRegular: .regular
+        case .size10WeightRegular: .regular
         }
     }
     private var design: Font.Design {
@@ -65,6 +67,7 @@ extension TribuneruText {
         case size14WeightRegular
         case size14LightMonospaced
         case size12WeightRegular
+        case size10WeightRegular
     }
 }
 
@@ -78,6 +81,7 @@ enum TribuneruTextStyle {
     case size14WeightRegular
     case size14LightMonospaced
     case size12WeightRegular
+    case size10WeightRegular
     
     var size: CGFloat {
         switch self {
@@ -85,6 +89,7 @@ enum TribuneruTextStyle {
         case .size16WeightBold, .size16WeightSemiBold: return 16
         case .size14WeightSemiBold, .size14WeightRegular, .size14LightMonospaced: return 14
         case .size12WeightRegular: return 12
+        case .size10WeightRegular: return 10
         }
     }
     
@@ -92,7 +97,7 @@ enum TribuneruTextStyle {
         switch self {
         case .size20WeightBold, .size16WeightBold: return .bold
         case .size16WeightSemiBold, .size14WeightSemiBold: return .semibold
-        case .size14WeightRegular, .size12WeightRegular: return .regular
+        case .size14WeightRegular, .size12WeightRegular, .size10WeightRegular: return .regular
         case .size14LightMonospaced: return .light
         }
     }

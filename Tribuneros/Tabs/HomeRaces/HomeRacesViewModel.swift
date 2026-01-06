@@ -9,11 +9,12 @@ import Foundation
 import Combine
 import SwiftUI
 
-final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: ObservableObject {
+final class HomeRacesViewModel<Interactor: InteractorProtocol>: ObservableObject
+where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseCase {
     private var cancellables = Set<AnyCancellable>()
     
     @Published private(set) var stateView: HomeRaces.ViewState = .idle
-    @ObservedObject var router: Router
+    let router: Router
     
     let interactor: Interactor
     
@@ -27,10 +28,9 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
         interactor
             .publisher
             .receive(on: DispatchQueue.main)
-            .map { _ in
-                return self.mapToHomeStationState()
+            .sink { [weak self] domain in
+                self?.stateView = self?.mapToHomeRacesState(domain) ?? .idle
             }
-            .weakAssign(to: \.stateView, on: self)
             .store(in: &cancellables)
     }
     
@@ -65,14 +65,12 @@ final class HomeRacesViewModel<Interactor: HomeRacesInteractorProtocol>: Observa
         }
     }
     
-    private func mapToHomeStationState() -> HomeRaces.ViewState {
-        let domain: HomeRacesDomain = interactor.domain as! HomeRacesDomain
-        
+    private func mapToHomeRacesState(_ domain: HomeRacesDomain) -> HomeRaces.ViewState {
         if domain.loading {
             return .loading
         } else {
             if let error = domain.error {
-                guard let errorType = error.asError(type: HomeRacesInteractorImpl.ErrorReason.self) else {
+                guard let errorType = error.asError(type: HomeRaces.ErrorReason.self) else {
                     return .error(.networkFailure)
                 }
                 return .error(errorType.asErrorView)

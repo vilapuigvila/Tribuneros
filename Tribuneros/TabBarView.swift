@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+/*
 final class AppContainer {
     let router = Router()
     let homeRacesInteractor = HomeRacesInteractorImpl()
@@ -15,7 +15,7 @@ final class AppContainer {
         interactor: homeRacesInteractor,
         router: router
     )
-}
+}*/
 
 enum Tab {
     case home, hateZone, cxZone
@@ -26,8 +26,11 @@ struct TabBarView: View {
 //    @State private var selectedTab: Tab = .home
 //    @StateObject private var router: Router
 //    private var homeRacesViewModel: HomeRacesViewModel<HomeRacesInteractorImpl>
-    @StateObject private var router = Router()
+    @StateObject private var homeRouter: Router
+    @StateObject private var cxRouter: Router
     let homeRacesViewModel: HomeRacesViewModel<HomeRacesInteractorImpl>
+    let cxRacesViewModel: CXRaces.ViewModel<CXRaces.InteractorImpl>
+    
     
     static let hateZoneRepresentable: [HateZone.Representable] = [
         .init(title: "Ciclismo 2005", url: URL(string: "http://ciclismo2005.com")),
@@ -39,17 +42,23 @@ struct TabBarView: View {
     ]
     
     init() {
-        let router = Router()
-        _router = StateObject(wrappedValue: router)
+        let homeRouter = Router()
+        let cxRouter = Router()
+        _homeRouter = StateObject(wrappedValue: homeRouter)
+        _cxRouter = StateObject(wrappedValue: cxRouter)
         homeRacesViewModel = HomeRacesViewModel(
             interactor: HomeRacesInteractorImpl(),
-            router: router
+            router: homeRouter
+        )
+        cxRacesViewModel = CXRaces.ViewModel(
+            router: cxRouter,
+            interactor: CXRaces.InteractorImpl()
         )
     }
     
     var body: some View {
         TabView {
-            NavigationStack(path: $router.navPath) {
+            NavigationStack(path: $homeRouter.navPath) {
                 HomeRacesView(
                     viewModel: homeRacesViewModel
                 )
@@ -62,8 +71,8 @@ struct TabBarView: View {
             
             // CX Zone -
             
-            VStack {
-                Text("CX zone")
+            NavigationStack(path: $cxRouter.navPath) {
+                CXRacesRacesView(viewModel: cxRacesViewModel)
             }
             .tabItem {
                 Image(systemName: "bicycle.sensor.tag.radiowaves.left.and.right.fill")
@@ -104,4 +113,3 @@ struct TabBarView: View {
 #Preview {
     TabBarView()
 }
-

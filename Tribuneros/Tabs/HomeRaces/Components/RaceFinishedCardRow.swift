@@ -133,7 +133,11 @@ struct CachedImageView: View {
     @State private var didFail: Bool = false
     
     let imageUrl: URL?
-
+    let cornerRadius: Double
+    init(imageUrl: URL?, cornerRadius: Double = 5) {
+        self.imageUrl = imageUrl
+        self.cornerRadius = cornerRadius
+    }
     var body: some View {
         ZStack {
             if didFail {
@@ -153,7 +157,7 @@ struct CachedImageView: View {
                     .cancelOnDisappear(true)
                     .resizable()
                     .scaledToFit()
-                    .cornerRadius(5)
+                    .cornerRadius(cornerRadius)
             }
         }
     }

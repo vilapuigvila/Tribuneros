@@ -14,8 +14,13 @@ final class Router: ObservableObject {
         enum Detail: Hashable {
             case race(urlInfo: String)
         }
+        enum CXZone: Hashable {
+            case allRaces
+        }
+        
         case nextToFinishRace(index: Int)
         case detail(Detail)
+        case cxZone(CXZone)
     }
     
     @Published var navPath = NavigationPath()

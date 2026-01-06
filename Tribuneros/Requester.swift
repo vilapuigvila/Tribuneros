@@ -23,7 +23,7 @@ struct Requester {
             guard let htmlContent = String(data: data, encoding: .utf8) else {
                 throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
             }
-            _ = try await getCxEvents()
+            
             let document = try SwiftSoup.parse(htmlContent)
             let nextToFinishResults = parseNextToFinishResults(document)
             let todayResults = parseResultsToday(from: document)

@@ -40,15 +40,18 @@ struct HomeRacesDomain: Equatable {
     }
 }
 
-protocol HomeRacesInteractorProtocol {
+protocol InteractorProtocol {
     associatedtype Domain: Equatable
+    associatedtype UseCase: Sendable
+    
     var domain: Domain { get }
     var publisher: AnyPublisher<Domain, Never> { get }
-    func useCase(_ useCase: HomeRacesInteractorImpl.UseCase)
+    func useCase(_ useCase: UseCase)
 }
 
-final class HomeRacesInteractorImpl: HomeRacesInteractorProtocol {
+final class HomeRacesInteractorImpl: InteractorProtocol {
     typealias Domain = HomeRacesDomain
+    typealias UseCase = HomeRaces.UseCase
     
     private let subject = CurrentValueSubject<Domain, Never>(.empty)
     
@@ -90,7 +93,7 @@ final class HomeRacesInteractorImpl: HomeRacesInteractorProtocol {
                             isOnSpoilerModeResultsToday: UserSettings.spoilerModeResultsToday ?? false,
                             isOnSpoilerModeResultsYesterday: UserSettings.spoilerModeResultsYesterday ?? false,
                             error: (result.nextToFinish.isEmpty && result.today.isEmpty && result.yesterdayResults.isEmpty && result.tomorrowRaces.isEmpty) ?
-                                ErrorReason.emptyResponse.toEquatableError() : nil,
+	                            HomeRaces.ErrorReason.emptyResponse.toEquatableError() : nil,
                             loading: false
                         )
                     )
@@ -116,8 +119,8 @@ final class HomeRacesInteractorImpl: HomeRacesInteractorProtocol {
     }
 }
 
-extension HomeRacesInteractorImpl {
-    enum UseCase {
+extension HomeRaces {
+    enum UseCase: Sendable {
         case requestDayRaces(date: Date)
         case cancelRequestStation
         case spoilerModeResultToday
