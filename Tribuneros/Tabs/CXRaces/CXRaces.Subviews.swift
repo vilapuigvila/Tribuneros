@@ -11,6 +11,10 @@ import SwiftUI
 extension CXRaces {
     
     struct CXAllRacesView: View {
+        private enum UI {
+            static let rowHeight: CGFloat = 58
+        }
+        
         let events: [DTO.CXCalendarEvent]
         
         var body: some View {
@@ -19,28 +23,32 @@ extension CXRaces {
                     ForEach(events.indices, id: \.self) { idx in
                         let event = events[idx]
                         HStack(spacing: 12) {
-                            TribuneruText(content: event.date, style: .size12WeightRegular)
+                            TribuneruText(content: event.date, style: .size14WeightRegular)
                                 .frame(width: 84, alignment: .leading)
                             
-                            CachedImageView(imageUrl: event.flagURL)
-                                .frame(width: 24)
+                            CachedImageView(
+                                imageUrl: event.flagURL,
+                                cornerRadius: 1
+                            )
+                            .frame(width: 24)
                             
                             VStack(alignment: .leading, spacing: 2) {
                                 TribuneruText(
                                     content: event.race,
-                                    style: .size12WeightRegular
+                                    style: .size14WeightRegular
                                 )
                                 if !event.winnerName.isEmpty {
                                     TribuneruText(
                                         content: event.winnerName,
-                                        style: .size10WeightRegular,
+                                        style: .size12WeightRegular,
                                         color: .gray
                                     )
                                 }
                             }
                         }
+                        .frame(height: UI.rowHeight)
                         .id(idx)
-                        .padding(.vertical, 6)
+                        .listRowInsets(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
                         .listRowBackground(Color.gray.opacity(0.1))
                     }
                 }
@@ -53,6 +61,7 @@ extension CXRaces {
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .background(.black)
+                .environment(\.defaultMinListRowHeight, UI.rowHeight)
                 .preferredColorScheme(.dark)
             }
         }
@@ -77,8 +86,10 @@ extension CXRaces {
         private func scrollToToday(_ proxy: ScrollViewProxy) {
             guard let idx = todayIndex else { return }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                proxy.scrollTo(idx, anchor: .top)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) {
+                withAnimation {
+                    proxy.scrollTo(idx, anchor: .top)
+                }
             }
         }
     }
@@ -118,4 +129,3 @@ extension Array where Element == DTO.CXCalendarEvent {
 }
 
 #endif
-
