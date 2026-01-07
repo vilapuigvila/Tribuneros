@@ -169,5 +169,19 @@ extension DTO {
         let raceClass: String
         let flagURL: URL?
         let winnerName: String
+
+        let isCancelled: Bool
+        let raceID: Int?
+        let raceSlug: String?
+        let raceURL: URL?
+        let resultsURL: URL?
+        let videoURL: URL?
+
+        let websiteURL: URL?
+
+        let raceCountry: String?
+        let winnerURL: URL?
+        let winnerCountry: String?
+        let winnerFlagURL: URL?
     }
 }

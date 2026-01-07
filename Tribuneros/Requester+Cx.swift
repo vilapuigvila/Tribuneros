@@ -141,30 +141,64 @@ extension Requester {
         try document
             .select("tr.r1_row.ri_calendar")
             .array()
-            .compactMap { row in
+            .compactMap { row -> DTO.CXCalendarEvent? in
+                let isCancelled = row.hasClass("race_cancelled") || ((try? row.select("div.cancel").first()) != nil)
+
                 let date = try row.select("td.r1_cal_date").first()?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                 let raceTd = try row.select("td.r1_cal_rider").first()
-                let race = try raceTd?.select("a").first()?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                
+                let raceAnchor = try raceTd?.select("a[href^=/race/]").first()
+                let race = try raceAnchor?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+
+                let racePath = try raceAnchor?.attr("href") ?? ""
+                let raceURL = cx24AbsoluteURL(racePath)
+                let raceSlug = cx24RaceCode(fromRacePath: racePath)
+
                 let className = try row.select("td.r1_cal_class").first()?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                
+
                 let flagImg = try raceTd?.select("img.flag").first()
                 let flagURL = cx24AbsoluteURL(try flagImg?.attr("src") ?? "")
-                
-                let winner = try row
-                    .select("td.r1_cal_winner a.rurl")
-                    .first()?
-                    .text()
-                    .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                
+                let raceCountry = (try flagImg?.attr("title"))?.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                let winnerTd = try row.select("td.r1_cal_winner").first()
+                let resultsAnchor = try winnerTd?.select("a[title=Results][href^=/race/]").first()
+                    ?? winnerTd?.select("a[href^=/race/]").first()
+                let resultsPath = try resultsAnchor?.attr("href") ?? ""
+                let resultsURL = cx24AbsoluteURL(resultsPath)
+                let raceID = cx24RaceID(fromRacePath: resultsPath)
+
+                let videoPath = try row.select("td.r1_cal_yt a[href$=#video]").first()?.attr("href") ?? ""
+                let videoURL = cx24AbsoluteURL(videoPath)
+
+                let websiteHref = try row.select("td.r1_cal_web a[href]").first()?.attr("href") ?? ""
+                let websiteURL = cx24AbsoluteURL(websiteHref)
+
+                let winnerAnchor = try winnerTd?.select("a.rurl[href^=/rider/]").first()
+                let winner = try winnerAnchor?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                let winnerURL = cx24AbsoluteURL(try winnerAnchor?.attr("href") ?? "")
+
+                let winnerFlagImg = try winnerTd?.select("img.flag").first()
+                let winnerCountry = (try winnerFlagImg?.attr("title"))?.trimmingCharacters(in: .whitespacesAndNewlines)
+                let winnerFlagURL = cx24AbsoluteURL(try winnerFlagImg?.attr("src") ?? "")
+
                 guard !date.isEmpty, !race.isEmpty else { return nil }
                 
-                return .init(
+                return DTO.CXCalendarEvent(
                     date: date,
                     race: race,
                     raceClass: className,
                     flagURL: flagURL,
-                    winnerName: winner
+                    winnerName: winner,
+                    isCancelled: isCancelled,
+                    raceID: raceID,
+                    raceSlug: raceSlug,
+                    raceURL: raceURL,
+                    resultsURL: resultsURL,
+                    videoURL: videoURL,
+                    websiteURL: websiteURL,
+                    raceCountry: raceCountry,
+                    winnerURL: winnerURL,
+                    winnerCountry: winnerCountry,
+                    winnerFlagURL: winnerFlagURL
                 )
             }
     }
@@ -179,5 +213,18 @@ extension Requester {
             return url
         }
         return URL(string: trimmed, relativeTo: cx24BaseURL)?.absoluteURL
+    }
+
+    private static func cx24RaceCode(fromRacePath href: String) -> String? {
+        let trimmed = href.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        let components = trimmed.split(separator: "/", omittingEmptySubsequences: true)
+        guard components.count >= 2, components[0] == "race" else { return nil }
+        return String(components[1])
+    }
+
+    private static func cx24RaceID(fromRacePath href: String) -> Int? {
+        guard let code = cx24RaceCode(fromRacePath: href) else { return nil }
+        return Int(code)
     }
 }

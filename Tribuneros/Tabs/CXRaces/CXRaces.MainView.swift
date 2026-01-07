@@ -31,54 +31,8 @@ extension CXRaces {
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 1) {
                             /// calendar
-                            if representable.nextThreeEvents().isEmpty {
-                                TribuneruText(
-                                    content: "Calendar is empty.. something went wrong 😑",
-                                    style: .size16WeightBold
-                                )
-                            } else {
-                                TribuneruText(content: "Next races", style: .size20WeightBold)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.bottom, 12)
-                                VStack(spacing: 0) {
-                                    ForEach(representable.nextThreeEvents().indices, id: \.self) { idx in
-                                        let event = representable.nextThreeEvents()[idx]
-                                        HStack(spacing: 0) {
-                                            TribuneruText(
-                                                content: event.date,
-                                                style: .size14WeightRegular
-                                            )
-                                            .frame(maxWidth: 84, alignment: .leading)
-//                                            .debugBackground()
-                                            
-                                            CachedImageView(
-                                                imageUrl: event.flagURL,
-                                                cornerRadius: 1
-                                            )
-                                            .frame(width: 20)
-                                            .padding(.trailing, 12)
-                                            
-                                            TribuneruText(
-                                                content: event.race,
-                                                style: .size14WeightRegular
-                                            )
-                                        }
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .padding(.vertical, 12)
-                                        .padding(.leading, 12)
-                                        .padding(.trailing, 4)
-                                        
-                                    }
-                                    TribuneruText(content: "more races..", style: .size12WeightRegular, color: .cyan)
-                                        .frame(maxWidth: .infinity , alignment: .trailing)
-                                        .padding(.vertical, 6)
-                                        .padding(.trailing, 8)
-                                }
-                                .background(Color.tribuneru(.greenCardBackground))
-                                .cornerRadius(8)
-                                .onTapGesture {
-                                    action(.didTapOnNextRaces)
-                                }
+                            CalendarView(representable: representable) {
+                                action(.didTapOnNextRaces)
                             }
                             
                             /// latests results
@@ -104,6 +58,67 @@ extension CXRaces {
             }
         }
     }
+    
+    private struct CalendarView: View {
+        let representable: CXRaces.Representable
+        let action: () -> Void
+        
+        var body: some View {
+            VStack(alignment: .leading) {
+                TribuneruText(content: "Next races", style: .size20WeightBold)
+                    .padding(.bottom, 12)
+                
+                if representable.nextThreeEvents().isEmpty {
+                    TribuneruText(
+                        content: "👨‍🚒 Calendar is empty.. something went wrong",
+                        style: .size16WeightBold,
+                        color: .red,
+                        lineLimit: 2
+                    )
+                } else {
+                    VStack(spacing: 0) {
+                        ForEach(representable.nextThreeEvents().indices, id: \.self) { idx in
+                            let event = representable.nextThreeEvents()[idx]
+                            HStack(spacing: 0) {
+                                TribuneruText(
+                                    content: event.date,
+                                    style: .size14WeightRegular
+                                )
+                                .frame(maxWidth: 84, alignment: .leading)
+                                //                                            .debugBackground()
+                                
+                                CachedImageView(
+                                    imageUrl: event.flagURL,
+                                    cornerRadius: 1
+                                )
+                                .frame(width: 20)
+                                .padding(.trailing, 12)
+                                
+                                TribuneruText(
+                                    content: event.race,
+                                    style: .size14WeightRegular
+                                )
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, 12)
+                            .padding(.leading, 12)
+                            .padding(.trailing, 4)
+                            
+                        }
+                        TribuneruText(content: "more races..", style: .size12WeightRegular, color: .cyan)
+                            .frame(maxWidth: .infinity , alignment: .trailing)
+                            .padding(.vertical, 6)
+                            .padding(.trailing, 8)
+                    }
+                    .background(Color.tribuneru(.greenCardBackground))
+                    .cornerRadius(8)
+                    .onTapGesture {
+                        action()
+                    }
+                }
+            }
+        }
+    }
 }
 
 #if DEBUG
@@ -111,6 +126,10 @@ extension CXRaces {
 // MARK: - Mocks -
 
 extension CXRaces.Representable {
+    static var mockEmpty: Self {
+        .init(calendarEvents: [], races: .init(sections: []))
+    }
+    
     static var mock: Self {
         let calendarEvents: [DTO.CXCalendarEvent] = [
             .init(
@@ -118,21 +137,54 @@ extension CXRaces.Representable {
                 race: "CX World Cup",
                 raceClass: "C1",
                 flagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png")!,
-                winnerName: "Rider One"
+                winnerName: "Rider One",
+                isCancelled: false,
+                raceID: 99901,
+                raceSlug: "cx-world-cup",
+                raceURL: URL(string: "https://cyclocross24.com/race/cx-world-cup/"),
+                resultsURL: URL(string: "https://cyclocross24.com/race/99901/"),
+                videoURL: URL(string: "https://cyclocross24.com/race/99901/#video"),
+                websiteURL: URL(string: "https://www.ucicyclocrossworldcup.com"),
+                raceCountry: "Belgium",
+                winnerURL: URL(string: "https://cyclocross24.com/rider/rider-one/"),
+                winnerCountry: "Belgium",
+                winnerFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png")
             ),
             .init(
                 date: "01-01-2100",
                 race: "Belgian National Championships Mol",
                 raceClass: "C1",
                 flagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png")!,
-                winnerName: "Rider Two"
+                winnerName: "Rider Two",
+                isCancelled: false,
+                raceID: 99902,
+                raceSlug: "mol",
+                raceURL: URL(string: "https://cyclocross24.com/race/mol/"),
+                resultsURL: URL(string: "https://cyclocross24.com/race/99902/"),
+                videoURL: nil,
+                websiteURL: nil,
+                raceCountry: "Belgium",
+                winnerURL: URL(string: "https://cyclocross24.com/rider/rider-two/"),
+                winnerCountry: "Belgium",
+                winnerFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png")
             ),
             .init(
                 date: "02-01-2100",
                 race: "Belgian National Championships Beringen or Mol",
                 raceClass: "C1",
                 flagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png")!,
-                winnerName: "Rider Three"
+                winnerName: "Rider Three",
+                isCancelled: false,
+                raceID: 99903,
+                raceSlug: "beringen-or-mol",
+                raceURL: URL(string: "https://cyclocross24.com/race/beringen-or-mol/"),
+                resultsURL: URL(string: "https://cyclocross24.com/race/99903/"),
+                videoURL: nil,
+                websiteURL: nil,
+                raceCountry: "Belgium",
+                winnerURL: URL(string: "https://cyclocross24.com/rider/rider-three/"),
+                winnerCountry: "Belgium",
+                winnerFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png")
             )
         ]
         
@@ -165,7 +217,6 @@ extension CXRaces.Representable {
                 )
             ]
         )
-        
         return .init(calendarEvents: calendarEvents, races: races)
     }
 }
@@ -180,6 +231,9 @@ extension CXRaces.ViewState {
 
 #Preview("Loaded") {
     CXRaces.MainView(state: .mock) { _ in }
+}
+#Preview("Loaded Empty data") {
+    CXRaces.MainView(state: .loaded(.mockEmpty)) { _ in }
 }
 
 #endif
