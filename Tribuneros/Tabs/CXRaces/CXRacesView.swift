@@ -26,7 +26,7 @@ struct CXRacesRacesView: View {
             let _ = print("avvp [Navigation] - \(destination)")
             switch destination {
             case .cxZone(.allRaces):
-                CXRaces.CXAllRacesView(events: viewModel.stateView.result.calendarEvents)
+                CXAllRacesView(events: viewModel.stateView.result.calendarEvents)
                     .navigationTitle("All races")
             default:
                 EmptyView()

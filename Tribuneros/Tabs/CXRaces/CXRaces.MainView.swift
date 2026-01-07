@@ -29,20 +29,14 @@ extension CXRaces {
                     Text("Error: \(error.localizedDescription)")
                 case .loaded(let representable):
                     ScrollView {
-                        LazyVGrid(columns: columns, spacing: 1) {
+                        LazyVGrid(columns: columns, spacing: 16) {
                             /// calendar
                             CalendarView(representable: representable) {
                                 action(.didTapOnNextRaces)
                             }
                             
                             /// latests results
-                            if let latestResult = representable.races.sections.first {
-                                ForEach(latestResult.races.indices, id: \.self) { idx in
-                                    HStack {
-                                        
-                                    }
-                                }
-                            }
+                            LatestResultsView(races: representable.races)
                             
                             Color.clear
                                 .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
@@ -119,6 +113,180 @@ extension CXRaces {
             }
         }
     }
+    
+    private struct LatestResultsView: View {
+        let races: DTO.CX24Homepage
+        
+        var body: some View {
+            VStack(alignment: .leading) {
+                TribuneruText(
+                    content: "Latest Cyclocross Results",
+                    style: .size20WeightBold
+                )
+                .padding(.bottom, 6)
+                
+                if let firstRace = firstRaceFromFirstSection {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 10) {
+                            CachedImageView(imageUrl: firstRace.countryFlagURL, cornerRadius: 1)
+                                .frame(width: 14)
+                            
+                            TribuneruText(
+                                content: firstRace.title,
+                                style: .size14WeightRegular,
+                                lineLimit: 2
+                            )
+                            
+                            Spacer(minLength: 0)
+                        }
+                        
+                        HStack(spacing: 10) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "calendar")
+                                    .font(.system(size: 12, weight: .regular))
+                                    .foregroundColor(.gray)
+                                TribuneruText(
+                                    content: firstRace.date,
+                                    style: .size12WeightRegular,
+                                    color: .gray,
+                                    lineLimit: 1
+                                )
+                            }
+                            
+                            HStack(spacing: 6) {
+                                Image(systemName: "mappin.and.ellipse")
+                                    .font(.system(size: 12, weight: .regular))
+                                    .foregroundColor(.gray)
+                                TribuneruText(
+                                    content: firstRace.location,
+                                    style: .size12WeightRegular,
+                                    color: .gray,
+                                    lineLimit: 1
+                                )
+                            }
+                            
+                            Spacer(minLength: 0)
+                        }
+                        .padding(.bottom, 6)
+                        
+                        VStack(spacing: 12) {
+                            ForEach(firstRace.categories.prefix(2).indices, id: \.self) { idx in
+                                let category = firstRace.categories[idx]
+                                CategoryResultsView(category: category)
+                            }
+                        }
+                    }
+                    .padding(12)
+                    .background(Color.tribuneru(.greenCardBackground))
+                    .cornerRadius(8)
+                } else {
+                    TribuneruText(
+                        content: "No results found.",
+                        style: .size16WeightBold,
+                        color: .red,
+                        lineLimit: 2
+                    )
+                }
+            }
+        }
+        
+        private struct FirstRaceInfo {
+            let title: String
+            let countryFlagURL: URL?
+            let date: String
+            let location: String
+            let categories: [DTO.CX24Homepage.Category]
+        }
+        
+        private var firstRaceFromFirstSection: FirstRaceInfo? {
+            guard
+                let section = races.sections.first,
+                let race = section.races.first
+            else {
+                return nil
+            }
+            return .init(
+                title: race.title,
+                countryFlagURL: race.countryFlagURL,
+                date: race.date,
+                location: race.location,
+                categories: race.categories
+            )
+        }
+        
+        private struct CategoryResultsView: View {
+            let category: DTO.CX24Homepage.Category
+            
+            var body: some View {
+                let podiums = Array(category.podium.prefix(3))
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 8) {
+                        TribuneruText(
+                            content: category.title.uppercased(),
+                            style: .size12WeightRegular,
+                            color: .gray
+                        )
+                        
+                        Spacer(minLength: 0)
+                    }
+                    
+                    HStack(alignment: .top, spacing: 12) {
+                        CachedImageView(imageUrl: category.winnerImageURL, cornerRadius: 0)
+                            .frame(width: 64, height: 64)
+                            .clipShape(Circle())
+                        
+                        VStack(spacing: 0) {
+                            ForEach(podiums.indices, id: \.self) { idx in
+                                let podium = podiums[idx]
+                                PodiumRow(podium: podium)
+                                
+                                if idx < podiums.count - 1 {
+                                    TribunerosDivider(height: 0.5, color: .gray.opacity(0.2))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        private struct PodiumRow: View {
+            let podium: DTO.CX24Homepage.Podium
+            
+            var body: some View {
+                HStack(spacing: 10) {
+                    TribuneruText(
+                        content: "\(podium.position)",
+                        style: .size12WeightRegular,
+                        color: .gray
+                    )
+                    .frame(width: 18, alignment: .leading)
+                    
+                    CachedImageView(
+                        imageUrl: podium.countryFlagURL,
+                        cornerRadius: 1
+                    )
+                    .frame(width: 16, height: 16)
+                    
+                    TribuneruText(
+                        content: podium.rider,
+                        style: .size12WeightRegular,
+                        lineLimit: 1
+                    )
+                    
+                    Spacer(minLength: 0)
+                    
+                    TribuneruText(
+                        content: podium.time,
+                        style: .size12WeightRegular,
+                        color: .gray,
+                        lineLimit: 1
+                    )
+                }
+                .padding(.vertical, 6)
+            }
+        }
+    }
 }
 
 #if DEBUG
@@ -137,7 +305,7 @@ extension CXRaces.Representable {
                 race: "CX World Cup",
                 raceClass: "C1",
                 flagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png")!,
-                winnerName: "Rider One",
+                winnerName: "Mathieu Van der Poel",
                 isCancelled: false,
                 raceID: 99901,
                 raceSlug: "cx-world-cup",
@@ -194,21 +362,73 @@ extension CXRaces.Representable {
                     title: "Latest results",
                     races: [
                         .init(
-                            title: "Mock GP",
+                            title: "UCI World Cup Zonhoven (CDM)",
                             country: "Belgium",
-                            countryFlagURL: nil,
-                            date: "31-12-2099",
-                            location: "Antwerp",
+                            countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png")!,
+                            date: "4 January 2026",
+                            location: "Zonhoven, Belgium",
                             raceURL: nil,
                             categories: [
                                 .init(
-                                    title: "Elite Men",
+                                    title: "Men Elite",
                                     categoryURL: nil,
-                                    winnerImageURL: nil,
+                                    winnerImageURL: URL(string: "https://cyclocross24.com/images/rider/mathieu-van-der-poel-kL0.png"),
                                     podium: [
-                                        .init(position: 1, rider: "Rider One", riderURL: nil, country: "Belgium", countryFlagURL: nil, time: "1:02:03"),
-                                        .init(position: 2, rider: "Rider Two", riderURL: nil, country: "Netherlands", countryFlagURL: nil, time: "+0:10"),
-                                        .init(position: 3, rider: "Rider Three", riderURL: nil, country: "France", countryFlagURL: nil, time: "+0:25")
+                                        .init(
+                                            position: 1,
+                                            rider: "VAN DER POEL Mathieu",
+                                            riderURL: nil,
+                                            country: "Belgium",
+                                            countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png")!,
+                                            time: "59:36"
+                                        ),
+                                        .init(
+                                            position: 2,
+                                            rider: "DEL GROSSO Tibor",
+                                            riderURL: nil,
+                                            country: "Netherlands",
+                                            countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png")!,
+                                            time: "0:45"
+                                        ),
+                                        .init(
+                                            position: 3,
+                                            rider: "VERSTRYNGE Emiel",
+                                            riderURL: nil,
+                                            country: "Belgium",
+                                            countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png")!,
+                                            time: "1:03"
+                                        )
+                                    ]
+                                ),
+                                .init(
+                                    title: "Women Elite",
+                                    categoryURL: nil,
+                                    winnerImageURL: URL(string: "https://cyclocross24.com/cx24logo.jpg"),
+                                    podium: [
+                                        .init(
+                                            position: 1,
+                                            rider: "ALVARADO Ceylin Del Carmen",
+                                            riderURL: nil,
+                                            country: "Netherlands",
+                                            countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png")!,
+                                            time: "51:33"
+                                        ),
+                                        .init(
+                                            position: 2,
+                                            rider: "BRAND Lucinda",
+                                            riderURL: nil,
+                                            country: "Netherlands",
+                                            countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png")!,
+                                            time: "0:23"
+                                        ),
+                                        .init(
+                                            position: 3,
+                                            rider: "PIETERSE Puck",
+                                            riderURL: nil,
+                                            country: "Netherlands",
+                                            countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png")!,
+                                            time: "0:49"
+                                        )
                                     ]
                                 )
                             ]
