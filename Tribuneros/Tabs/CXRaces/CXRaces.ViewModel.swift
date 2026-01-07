@@ -47,6 +47,8 @@ extension CXRaces {
                 interactor.useCase(.request)
             case .didTapOnNextRaces:
                 router.routeTo(.cxZone(.allRaces))
+            case .didTapOnLatestResults:
+                router.routeTo(.cxZone(.latestResults))
             }
         }
         

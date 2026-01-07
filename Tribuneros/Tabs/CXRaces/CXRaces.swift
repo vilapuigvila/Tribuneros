@@ -14,6 +14,7 @@ extension CXRaces {
     enum Action {
         case didAppeared
         case didTapOnNextRaces
+        case didTapOnLatestResults
     }
 }
 

@@ -28,6 +28,9 @@ struct CXRacesRacesView: View {
             case .cxZone(.allRaces):
                 CXAllRacesView(events: viewModel.stateView.result.calendarEvents)
                     .navigationTitle("All races")
+            case .cxZone(.latestResults):
+                LatestAllResultsView(races: viewModel.stateView.result.races)
+                    .navigationTitle("Latest results")
             default:
                 EmptyView()
             }

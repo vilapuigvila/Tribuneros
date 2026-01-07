@@ -36,7 +36,9 @@ extension CXRaces {
                             }
                             
                             /// latests results
-                            LatestResultsView(races: representable.races)
+                            LatestResultsView(races: representable.races) {
+                                action(.didTapOnLatestResults)
+                            }
                             
                             Color.clear
                                 .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
@@ -116,6 +118,7 @@ extension CXRaces {
     
     private struct LatestResultsView: View {
         let races: DTO.CX24Homepage
+        let action: () -> Void
         
         var body: some View {
             VStack(alignment: .leading) {
@@ -179,6 +182,9 @@ extension CXRaces {
                     .padding(12)
                     .background(Color.tribuneru(.greenCardBackground))
                     .cornerRadius(8)
+                    .onTapGesture {
+                        action()
+                    }
                 } else {
                     TribuneruText(
                         content: "No results found.",
@@ -231,9 +237,12 @@ extension CXRaces {
                     }
                     
                     HStack(alignment: .top, spacing: 12) {
-                        CachedImageView(imageUrl: category.winnerImageURL, cornerRadius: 0)
-                            .frame(width: 64, height: 64)
-                            .clipShape(Circle())
+                        CachedImageView(
+                            imageUrl: category.winnerImageURL,
+                            cornerRadius: 0
+                        )
+                        .frame(width: 64, height: 64)
+                        .clipShape(Circle())
                         
                         VStack(spacing: 0) {
                             ForEach(podiums.indices, id: \.self) { idx in
