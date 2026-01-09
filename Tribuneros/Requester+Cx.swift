@@ -30,6 +30,62 @@ extension Requester {
             throw error
         }
     }
+
+    static func getCxStandings() async throws -> DTO.CXStandings {
+        do {
+            let data = try await URLSession.shared.data(from: cx24BaseURL).0
+            guard let htmlContent = String(data: data, encoding: .utf8) else {
+                throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
+            }
+            let document = try SwiftSoup.parse(htmlContent)
+            let base = try parseCx24StandingsLinks(document)
+
+            var items = base.items
+            await withTaskGroup(of: (Int, DTO.CXStandings.Item).self) { group in
+                for (idx, item) in items.enumerated() {
+                    guard let url = item.url else { continue }
+                    group.addTask {
+                        do {
+                            return (
+                                idx,
+                                try await enrichStandingsItem(item, url: url, includeLeaderImage: idx == 0)
+                            )
+                        } catch {
+                            nonFatalCrashlytics(false, error.localizedDescription)
+                            return (idx, item)
+                        }
+                    }
+                }
+
+                for await (idx, updated) in group {
+                    items[idx] = updated
+                }
+            }
+
+            return DTO.CXStandings(items: items)
+        } catch {
+            if (error as NSError).code != -1009 {
+                nonFatalCrashlytics(false, error.localizedDescription)
+            }
+            throw error
+        }
+    }
+    /*
+    static func getCxRaceDetail(_ url: URL) async throws -> DTO.CX24Homepage.Race {
+        do {
+            let data = try await URLSession.shared.data(from: url).0
+            guard let htmlContent = String(data: data, encoding: .utf8) else {
+                throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
+            }
+            let document = try SwiftSoup.parse(htmlContent)
+            return try parseCx24RaceDetail(document, url: url)
+        } catch {
+            if (error as NSError).code != -1009 {
+                nonFatalCrashlytics(false, error.localizedDescription)
+            }
+            throw error
+        }
+    }*/
     
     static func getCxAllCalendarEvents(season: String = "2025-2026", category: String = "ME") async throws -> [DTO.CXCalendarEvent] {
         let url = URL(string: "https://cyclocross24.com/calendar/\(season)/\(category)/")!
@@ -62,6 +118,264 @@ extension Requester {
         
         return DTO.CX24Homepage(sections: sections)
     }
+
+    private static func parseCx24StandingsLinks(_ document: Document) throws -> DTO.CXStandings {
+        let footerLinks = try document
+            .select("ul:has(li.footer_title:matchesOwn((?i)^Standings$)) a[href]")
+            .array()
+
+        let links = footerLinks.isEmpty
+            ? try document.select("a[href^=/uciranking/], a[href^=/standings/]").array()
+            : footerLinks
+
+        var seenTitles = Set<String>()
+        let items: [DTO.CXStandings.Item] = try links.compactMap { anchor in
+            let title = try anchor.text().trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !title.isEmpty, seenTitles.insert(title).inserted else { return nil }
+            let href = try anchor.attr("href")
+            return DTO.CXStandings.Item(title: title, url: cx24AbsoluteURL(href), logoURL: nil, categories: [])
+        }
+
+        func score(_ item: DTO.CXStandings.Item) -> Int {
+            guard let path = item.url?.path.lowercased() else { return 1 }
+            return path.contains("uciranking") ? 0 : 1
+        }
+
+        let orderedItems = items
+            .enumerated()
+            .sorted { lhs, rhs in
+                let l = score(lhs.element)
+                let r = score(rhs.element)
+                if l != r { return l < r }
+                return lhs.offset < rhs.offset
+            }
+            .map(\.element)
+
+        return DTO.CXStandings(items: orderedItems)
+    }
+
+    private static func enrichStandingsItem(
+        _ item: DTO.CXStandings.Item,
+        url: URL,
+        includeLeaderImage: Bool
+    ) async throws -> DTO.CXStandings.Item {
+        let data = try await URLSession.shared.data(from: url).0
+        guard let htmlContent = String(data: data, encoding: .utf8) else {
+            throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
+        }
+        let document = try SwiftSoup.parse(htmlContent)
+
+        let normalizedTitle = normalizedStandingsTitle((try? document.select("h1.main_title").first()?.text()) ?? item.title)
+        let logoURL = parseStandingsLogo(document)
+            ?? (url.path.contains("uciranking") ? cx24AbsoluteURL("/images/flag/32/UCI.png") : nil)
+
+        let (categoriesBaseAll, selectedIndexAll) = try parseStandingsCategories(document)
+        let categoriesBase = Array(categoriesBaseAll.prefix(3))
+        let selectedIndex = min(selectedIndexAll, max(0, categoriesBase.count - 1))
+        let currentLeaders = try parseStandingsLeaders(document)
+
+        var categories: [DTO.CXStandings.Category] = []
+        categories.reserveCapacity(categoriesBase.count)
+
+        for (idx, baseCategory) in categoriesBase.enumerated() {
+            if idx == selectedIndex {
+                categories.append(
+                    .init(
+                        title: baseCategory.title,
+                        url: baseCategory.url,
+                        leaders: currentLeaders,
+                        leaderImageURL: nil
+                    )
+                )
+            } else if let categoryURL = baseCategory.url {
+                do {
+                    let data = try await URLSession.shared.data(from: categoryURL).0
+                    guard let html = String(data: data, encoding: .utf8) else {
+                        throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
+                    }
+                    let doc = try SwiftSoup.parse(html)
+                    let leaders = try parseStandingsLeaders(doc)
+                    categories.append(.init(title: baseCategory.title, url: baseCategory.url, leaders: leaders, leaderImageURL: nil))
+                } catch {
+                    categories.append(.init(title: baseCategory.title, url: baseCategory.url, leaders: [], leaderImageURL: nil))
+                    nonFatalCrashlytics(false, error.localizedDescription)
+                }
+            } else {
+                categories.append(.init(title: baseCategory.title, url: baseCategory.url, leaders: [], leaderImageURL: nil))
+            }
+        }
+
+        if includeLeaderImage, !categories.isEmpty {
+            var selected = categories[selectedIndex]
+            if let riderURL = selected.leaders.first?.riderURL {
+                selected = .init(
+                    title: selected.title,
+                    url: selected.url,
+                    leaders: selected.leaders,
+                    leaderImageURL: try? await fetchRiderAvatarURL(riderURL)
+                )
+                categories[selectedIndex] = selected
+            }
+        }
+
+        return .init(
+            title: normalizedTitle,
+            url: item.url,
+            logoURL: logoURL ?? item.logoURL,
+            categories: categories
+        )
+    }
+
+    private static func normalizedStandingsTitle(_ raw: String) -> String {
+        var title = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let beforeDash = title.components(separatedBy: " - ").first {
+            title = beforeDash
+        }
+        if let yearRange = title.range(
+            of: "\\b\\d{4}\\s*[-–]\\s*\\d{4}\\b",
+            options: .regularExpression
+        ) {
+            title.removeSubrange(yearRange)
+        }
+        title = title
+            .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return title
+    }
+
+    private static func parseStandingsLogo(_ document: Document) -> URL? {
+        let logo = (try? document.select("div.standings_logo img").first())
+            ?? (try? document.select(".rid_land img.flag").first())
+        let src = (try? logo?.attr("data-src")) ?? (try? logo?.attr("src"))
+        return cx24AbsoluteURL(src ?? "")
+    }
+
+    private static func parseStandingsCategories(_ document: Document) throws -> (categories: [(title: String, url: URL?)], selectedIndex: Int) {
+        let tabEls = try document.select("a.cx-cat[href]").array()
+        if !tabEls.isEmpty {
+            var categories: [(String, URL?)] = []
+            categories.reserveCapacity(tabEls.count)
+
+            var selectedIndex = 0
+            for (idx, el) in tabEls.enumerated() {
+                let title = try el.text().trimmingCharacters(in: .whitespacesAndNewlines)
+                let href = try el.attr("href")
+                categories.append((title, cx24AbsoluteURL(href)))
+                let className = (try? el.attr("class")) ?? ""
+                if className.contains("c10") && className.contains("t10") {
+                    selectedIndex = idx
+                }
+            }
+            return (categories, selectedIndex)
+        }
+
+        let optionEls = try document.select("select[name=cat] option[value]").array()
+        var categories: [(String, URL?)] = []
+        categories.reserveCapacity(optionEls.count)
+
+        var selectedIndex = 0
+        for (idx, el) in optionEls.enumerated() {
+            let title = try el.text().trimmingCharacters(in: .whitespacesAndNewlines)
+            let href = try el.attr("value")
+            categories.append((title, cx24AbsoluteURL(href)))
+            if el.hasAttr("selected") {
+                selectedIndex = idx
+            }
+        }
+        return (categories, selectedIndex)
+    }
+
+    private static func parseStandingsLeaders(_ document: Document) throws -> [DTO.CXStandings.Leader] {
+        let rows = try document.select("tr.r1_row").array()
+        guard !rows.isEmpty else { return [] }
+
+        let topRows = Array(rows.prefix(5))
+        return try topRows.compactMap { row in
+            if let positionText = try row.select("td.r1_uci_position").first()?.text(),
+               let position = Int(positionText.trimmingCharacters(in: .whitespacesAndNewlines))
+            {
+                let riderAnchor = try row.select("a.rurl").first()
+                let rider = try riderAnchor?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                let riderURL = cx24AbsoluteURL(try riderAnchor?.attr("href") ?? "")
+
+                let flagImg = try row.select("img.flag").first()
+                let flagURL = cx24AbsoluteURL(try flagImg?.attr("src") ?? "")
+
+                let points = try row.select("td.r1_uci_points").first()?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                guard !rider.isEmpty else { return nil }
+
+                return DTO.CXStandings.Leader(
+                    position: position,
+                    rider: rider,
+                    riderURL: riderURL,
+                    countryFlagURL: flagURL,
+                    points: points
+                )
+            } else if let positionText = try row.select("td.stand_position, td.cx24_column.stand_position").first()?.text(),
+                      let position = Int(positionText.trimmingCharacters(in: .whitespacesAndNewlines))
+            {
+                let riderAnchor = try row.select("a.rurl").first()
+                let rider = try riderAnchor?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                let riderURL = cx24AbsoluteURL(try riderAnchor?.attr("href") ?? "")
+
+                let flagImg = try row.select("img.flag").first()
+                let flagURL = cx24AbsoluteURL(try flagImg?.attr("src") ?? "")
+
+                let points = try row.select("td.stand_points, td.cx24_column.stand_points").first()?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                guard !rider.isEmpty else { return nil }
+
+                return DTO.CXStandings.Leader(
+                    position: position,
+                    rider: rider,
+                    riderURL: riderURL,
+                    countryFlagURL: flagURL,
+                    points: points
+                )
+            }
+            return nil
+        }
+    }
+
+    private static func fetchRiderAvatarURL(_ riderURL: URL) async throws -> URL? {
+        let data = try await URLSession.shared.data(from: riderURL).0
+        guard let htmlContent = String(data: data, encoding: .utf8) else {
+            throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
+        }
+        let document = try SwiftSoup.parse(htmlContent)
+        let img = try document.select("img.rider-avatar__image").first()
+            ?? (try document.select("img[src*=/images/rider/]").first())
+        let src = try img?.attr("src") ?? ""
+        return cx24AbsoluteURL(src)
+    }
+    /*
+    private static func parseCx24RaceDetail(_ document: Document, url: URL) throws -> DTO.CX24Homepage.Race {
+        let raceInfo = try document.select("div.race_info").first()
+        let title = try raceInfo?.select("h1,h2,h3.h3").first()?.text()
+            ?? (try document.title())
+        
+        let flagImg = (try? raceInfo?.select("img.flag").first())
+            ?? (try? document.select("img.flag").first())
+        let country = (try? flagImg?.attr("title")) ?? ""
+        let countryFlagURL = cx24AbsoluteURL((try? flagImg?.attr("src")) ?? "")
+        
+        let infoText = (try? raceInfo?.select("div.race_info_bar").first()?.text())
+            ?? (try? document.select("div.race_info_bar").first()?.text())
+            ?? ""
+        let (date, location) = parseCx24DateLocation(infoText)
+        
+        let categoryEls = try document.select("div.race_category").array()
+        let categories = try categoryEls.map { try parseCx24Category($0) }
+        
+        return DTO.CX24Homepage.Race(
+            title: title,
+            country: country,
+            countryFlagURL: countryFlagURL,
+            date: date,
+            location: location,
+            raceURL: url,
+            categories: categories
+        )
+    }*/
     
     private static func parseCx24RaceBlock(_ raceBlock: Element) throws -> DTO.CX24Homepage.Race? {
         guard let raceInfo = try raceBlock.select("div.race_info").first() else {
@@ -95,6 +409,17 @@ extension Requester {
             categories: categories
         )
     }
+    /*
+    private static func parseCx24DateLocation(_ infoText: String) -> (date: String, location: String) {
+        let trimmed = infoText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let tokens = trimmed.split(whereSeparator: \.isWhitespace).map(String.init)
+        guard tokens.count >= 3 else {
+            return (trimmed, "")
+        }
+        let date = tokens.prefix(3).joined(separator: " ")
+        let location = tokens.dropFirst(3).joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines)
+        return (date, location)
+    }*/
     
     private static func parseCx24Category(_ category: Element) throws -> DTO.CX24Homepage.Category {
         let categoryAnchor = try category.select("div.fp_category > a").first()
@@ -179,7 +504,6 @@ extension Requester {
                 let winnerFlagImg = try winnerTd?.select("img.flag").first()
                 let winnerCountry = (try winnerFlagImg?.attr("title"))?.trimmingCharacters(in: .whitespacesAndNewlines)
                 let winnerFlagURL = cx24AbsoluteURL(try winnerFlagImg?.attr("src") ?? "")
-
                 guard !date.isEmpty, !race.isEmpty else { return nil }
                 
                 return DTO.CXCalendarEvent(

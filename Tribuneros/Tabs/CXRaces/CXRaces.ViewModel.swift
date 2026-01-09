@@ -49,6 +49,11 @@ extension CXRaces {
                 router.routeTo(.cxZone(.allRaces))
             case .didTapOnLatestResults:
                 router.routeTo(.cxZone(.latestResults))
+            case .didTapOnRace(let url):
+                guard let url else { return }
+                router.routeTo(.detail(.race(urlInfo: url.absoluteString)))
+            case .didTapOnStandings:
+                router.routeTo(.cxZone(.standings))
             }
         }
         
@@ -63,7 +68,7 @@ extension CXRaces {
             } else if domain.races.sections.isEmpty {
                 return .error(.unknown)
             }
-            return .loaded(.init(calendarEvents: domain.calendar, races: domain.races))
+            return .loaded(.init(calendarEvents: domain.calendar, races: domain.races, standings: domain.standings))
         }
     }
 }

@@ -17,6 +17,7 @@ final class Router: ObservableObject {
         enum CXZone: Hashable {
             case allRaces
             case latestResults
+            case standings
         }
         
         case nextToFinishRace(index: Int)

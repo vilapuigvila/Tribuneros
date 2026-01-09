@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 /*
 final class AppContainer {
     let router = Router()
@@ -23,7 +24,7 @@ enum Tab {
 
 struct TabBarView: View {
     
-//    @State private var selectedTab: Tab = .home
+    @State private var selectedTab: Tab = .home
 //    @StateObject private var router: Router
 //    private var homeRacesViewModel: HomeRacesViewModel<HomeRacesInteractorImpl>
     @StateObject private var homeRouter: Router
@@ -57,15 +58,11 @@ struct TabBarView: View {
     }
     
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             NavigationStack(path: $homeRouter.navPath) {
                 HomeRacesView(
                     viewModel: homeRacesViewModel
                 )
-            }
-            .tabItem {
-                Image(systemName: "figure.indoor.cycle")
-                Text("Today Races")
             }
             .tag(Tab.home)
             
@@ -74,42 +71,127 @@ struct TabBarView: View {
             NavigationStack(path: $cxRouter.navPath) {
                 CXRacesRacesView(viewModel: cxRacesViewModel)
             }
-            .tabItem {
-                Image(systemName: "bicycle.sensor.tag.radiowaves.left.and.right.fill")
-                Text("CX Zone")
-            }
             .tag(Tab.cxZone)
             
             // Hate zone -
             
             HateZoneView(representable: Self.hateZoneRepresentable)
-                .tabItem {
-                    Image(systemName: "wrongwaysign.fill")
-                    Text("Hate Zone")
-                }
                 .tag(Tab.hateZone)
         }
-    }
-    
-    /*
-    private func tabSelection() -> Binding<Tab> {
-        Binding { //this is the get block
-            self.selectedTab
-        } set: { tappedTab in
-            if tappedTab == self.selectedTab {
-                //User tapped on the tab twice == Pop to root view
-                if homeNavigationStack.isEmpty {
-                    //User already on home view, scroll to top
-                } else {
-                    homeNavigationStack = []
-                }
-            }
-            //Set the tab to the tabbed tab
-            self.selectedTab = tappedTab
+        .toolbar(.hidden, for: .tabBar)
+        .safeAreaInset(edge: .bottom) {
+            CustomTabBar(
+                selectedTab: $selectedTab,
+                cxZoneSymbolName: "bicycle"
+            )
         }
-    }*/
+    }
+
+//    private var cxZoneSymbolName: String {
+//        let preferred = "bicycle.sensor.tag.radiowaves.left.and.right.fill"
+//        return UIImage(systemName: preferred) != nil ? preferred : "bicycle"
+//    }
 }
 
-#Preview {
+private struct CustomTabBar: View {
+    @Binding var selectedTab: Tab
+    let cxZoneSymbolName: String
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            TribunerosDivider(height: 0.5, color: .white.opacity(0.1))
+            
+            HStack {
+                TabBarButton(
+                    title: "Today Races",
+                    systemImage: "figure.indoor.cycle",
+                    isSelected: selectedTab == .home
+                ) {
+                    selectedTab = .home
+                }
+                
+                Spacer(minLength: 0)
+                
+                TabBarButton(
+                    title: "CX Zone",
+                    systemImage: cxZoneSymbolName,
+                    isSelected: selectedTab == .cxZone,
+                    animateWhenSelected: true
+                ) {
+                    selectedTab = .cxZone
+                }
+                
+                Spacer(minLength: 0)
+                
+                TabBarButton(
+                    title: "Hate Zone",
+                    systemImage: "wrongwaysign.fill",
+                    isSelected: selectedTab == .hateZone
+                ) {
+                    selectedTab = .hateZone
+                }
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 10)
+            .padding(.bottom, 10)
+            .background(Color.black.opacity(0.95))
+        }
+    }
+}
+
+private struct TabBarButton: View {
+    let title: String
+    let systemImage: String
+    let isSelected: Bool
+    let animateWhenSelected: Bool
+    let action: () -> Void
+    
+    init(
+        title: String,
+        systemImage: String,
+        isSelected: Bool,
+        animateWhenSelected: Bool = false,
+        action: @escaping () -> Void
+    ) {
+        self.title = title
+        self.systemImage = systemImage
+        self.isSelected = isSelected
+        self.animateWhenSelected = animateWhenSelected
+        self.action = action
+    }
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                icon
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(isSelected ? .cyan : .gray)
+                Text(title)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(isSelected ? .cyan : .gray)
+                    .lineLimit(1)
+            }
+            .frame(minWidth: 72)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+    
+    @ViewBuilder
+    private var icon: some View {
+        let image = Image(systemName: systemImage)
+        if animateWhenSelected && isSelected {
+            if #available(iOS 18.0, *) {
+                image.symbolEffect(.bounce.down.byLayer, options: .repeat(.periodic(3, delay: 0.5)))
+            } else {
+                image
+            }
+        } else {
+            image
+        }
+    }
+}
+
+#Preview("Tab bar view") {
     TabBarView()
 }

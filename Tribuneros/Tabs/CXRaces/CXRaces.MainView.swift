@@ -39,6 +39,11 @@ extension CXRaces {
                             LatestResultsView(races: representable.races) {
                                 action(.didTapOnLatestResults)
                             }
+
+                            /// standings
+                            CyclocrossStandingsSectionView(standings: representable.standings) {
+                                action(.didTapOnStandings)
+                            }
                             
                             Color.clear
                                 .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
@@ -51,67 +56,6 @@ extension CXRaces {
             .preferredColorScheme(.dark)
             .onAppear {
                 action(.didAppeared)
-            }
-        }
-    }
-    
-    private struct CalendarView: View {
-        let representable: CXRaces.Representable
-        let action: () -> Void
-        
-        var body: some View {
-            VStack(alignment: .leading) {
-                TribuneruText(content: "Next races", style: .size20WeightBold)
-                    .padding(.bottom, 12)
-                
-                if representable.nextThreeEvents().isEmpty {
-                    TribuneruText(
-                        content: "👨‍🚒 Calendar is empty.. something went wrong",
-                        style: .size16WeightBold,
-                        color: .red,
-                        lineLimit: 2
-                    )
-                } else {
-                    VStack(spacing: 0) {
-                        ForEach(representable.nextThreeEvents().indices, id: \.self) { idx in
-                            let event = representable.nextThreeEvents()[idx]
-                            HStack(spacing: 0) {
-                                TribuneruText(
-                                    content: event.date,
-                                    style: .size14WeightRegular
-                                )
-                                .frame(maxWidth: 84, alignment: .leading)
-                                //                                            .debugBackground()
-                                
-                                CachedImageView(
-                                    imageUrl: event.flagURL,
-                                    cornerRadius: 1
-                                )
-                                .frame(width: 20)
-                                .padding(.trailing, 12)
-                                
-                                TribuneruText(
-                                    content: event.race,
-                                    style: .size14WeightRegular
-                                )
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.vertical, 12)
-                            .padding(.leading, 12)
-                            .padding(.trailing, 4)
-                            
-                        }
-                        TribuneruText(content: "more races..", style: .size12WeightRegular, color: .cyan)
-                            .frame(maxWidth: .infinity , alignment: .trailing)
-                            .padding(.vertical, 6)
-                            .padding(.trailing, 8)
-                    }
-                    .background(Color.tribuneru(.greenCardBackground))
-                    .cornerRadius(8)
-                    .onTapGesture {
-                        action()
-                    }
-                }
             }
         }
     }
@@ -178,6 +122,15 @@ extension CXRaces {
                                 CategoryResultsView(category: category)
                             }
                         }
+
+                        HStack(spacing: 6) {
+                            Spacer(minLength: 0)
+                            TribuneruText(content: "more info..", style: .size12WeightRegular, color: .cyan, lineLimit: 1)
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(.cyan)
+                        }
+                        .padding(.top, 2)
                     }
                     .padding(12)
                     .background(Color.tribuneru(.greenCardBackground))
@@ -296,6 +249,32 @@ extension CXRaces {
             }
         }
     }
+
+    private struct CyclocrossStandingsSectionView: View {
+        let standings: DTO.CXStandings
+        let action: () -> Void
+
+        var body: some View {
+            VStack(alignment: .leading) {
+                TribuneruText(
+                    content: "Cyclocross Standings",
+                    style: .size20WeightBold
+                )
+                .padding(.bottom, 6)
+
+                if let first = standings.items.first {
+                    CyclocrossStandingsCardView(item: first, onTap: action)
+                } else {
+                    TribuneruText(
+                        content: "No standings found.",
+                        style: .size14WeightRegular,
+                        color: .gray,
+                        lineLimit: 2
+                    )
+                }
+            }
+        }
+    }
 }
 
 #if DEBUG
@@ -304,7 +283,7 @@ extension CXRaces {
 
 extension CXRaces.Representable {
     static var mockEmpty: Self {
-        .init(calendarEvents: [], races: .init(sections: []))
+        .init(calendarEvents: [], races: .init(sections: []), standings: .init(items: []))
     }
     
     static var mock: Self {
@@ -446,7 +425,94 @@ extension CXRaces.Representable {
                 )
             ]
         )
-        return .init(calendarEvents: calendarEvents, races: races)
+        
+        let uciMenElite: [DTO.CXStandings.Leader] = [
+            .init(
+                position: 1,
+                rider: "VANTHOURENHOUT Michael",
+                riderURL: URL(string: "https://cyclocross24.com/rider/michael-vanthourenhout/"),
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+                points: "2058"
+            ),
+            .init(
+                position: 2,
+                rider: "VAN DER POEL Mathieu",
+                riderURL: URL(string: "https://cyclocross24.com/rider/mathieu-van-der-poel/"),
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png"),
+                points: "2040"
+            ),
+            .init(
+                position: 3,
+                rider: "NYS Thibau",
+                riderURL: URL(string: "https://cyclocross24.com/rider/thibau-nys/"),
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+                points: "1953"
+            ),
+            .init(
+                position: 4,
+                rider: "NIEUWENHUIS Joris",
+                riderURL: URL(string: "https://cyclocross24.com/rider/joris-nieuwenhuis/"),
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png"),
+                points: "1912"
+            ),
+            .init(
+                position: 5,
+                rider: "VANDEPUTTE Niels",
+                riderURL: URL(string: "https://cyclocross24.com/rider/niels-vandeputte/"),
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+                points: "1903"
+            )
+        ]
+
+        let standings = DTO.CXStandings(
+            items: [
+                .init(
+                    title: "UCI Ranking Cyclocross",
+                    url: URL(string: "https://cyclocross24.com/uciranking/"),
+                    logoURL: URL(string: "https://cyclocross24.com/images/flag/32/UCI.png"),
+                    categories: [
+                        .init(
+                            title: "Men Elite",
+                            url: URL(string: "https://cyclocross24.com/uciranking/2025-2026/ME/"),
+                            leaders: uciMenElite,
+                            leaderImageURL: URL(string: "https://cyclocross24.com/images/rider/michael-vanthourenhout-sX4.png")
+                        ),
+                        .init(
+                            title: "Women Elite",
+                            url: URL(string: "https://cyclocross24.com/uciranking/2025-2026/WE/"),
+                            leaders: uciMenElite,
+                            leaderImageURL: nil
+                        ),
+                        .init(
+                            title: "Men Junior",
+                            url: URL(string: "https://cyclocross24.com/uciranking/2025-2026/MJ/"),
+                            leaders: uciMenElite,
+                            leaderImageURL: nil
+                        )
+                    ]
+                ),
+                .init(
+                    title: "UCI World Cup",
+                    url: URL(string: "https://cyclocross24.com/standings/uci-world-cup/"),
+                    logoURL: nil,
+                    categories: []
+                ),
+                .init(
+                    title: "Superprestige",
+                    url: URL(string: "https://cyclocross24.com/standings/superprestige/"),
+                    logoURL: nil,
+                    categories: []
+                ),
+                .init(
+                    title: "X2O Badkamers Trofee",
+                    url: URL(string: "https://cyclocross24.com/standings/x2o-trofee/"),
+                    logoURL: nil,
+                    categories: []
+                )
+            ]
+        )
+        
+        return .init(calendarEvents: calendarEvents, races: races, standings: standings)
     }
 }
 

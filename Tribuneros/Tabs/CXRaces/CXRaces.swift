@@ -15,6 +15,8 @@ extension CXRaces {
         case didAppeared
         case didTapOnNextRaces
         case didTapOnLatestResults
+        case didTapOnRace(URL?)
+        case didTapOnStandings
     }
 }
 
@@ -29,7 +31,7 @@ extension CXRaces {
         
         var result: Representable {
             guard case .loaded(let result) = self else {
-                return .init(calendarEvents: [], races: .init(sections: []))
+                return .init(calendarEvents: [], races: .init(sections: []), standings: .init(items: []))
             }
             return result
         }
@@ -41,6 +43,7 @@ extension CXRaces {
         let id = UUID()
         let calendarEvents: [DTO.CXCalendarEvent]
         let races: DTO.CX24Homepage
+        let standings: DTO.CXStandings
         
         func nextThreeEvents() -> [DTO.CXCalendarEvent] {
             let calendar = Calendar.current

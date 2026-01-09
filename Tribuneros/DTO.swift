@@ -162,6 +162,32 @@ extension DTO {
 
         let sections: [Section]
     }
+
+    struct CXStandings: Equatable, Sendable {
+        struct Leader: Equatable, Sendable, Hashable {
+            let position: Int
+            let rider: String
+            let riderURL: URL?
+            let countryFlagURL: URL?
+            let points: String
+        }
+
+        struct Category: Equatable, Sendable, Hashable {
+            let title: String
+            let url: URL?
+            let leaders: [Leader]
+            let leaderImageURL: URL?
+        }
+
+        struct Item: Equatable, Sendable, Hashable {
+            let title: String
+            let url: URL?
+            let logoURL: URL?
+            let categories: [Category]
+        }
+
+        let items: [Item]
+    }
     
     struct CXCalendarEvent: Equatable, Sendable {
         let date: String

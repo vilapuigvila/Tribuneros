@@ -14,11 +14,12 @@ extension CXRaces {
     struct Domain: Equatable, Sendable {
         let races: DTO.CX24Homepage
         let calendar: [DTO.CXCalendarEvent]
+        let standings: DTO.CXStandings
         let loading: Bool
         let error: EquatableError?
         
         static var empty: Domain {
-            .init(races: .init(sections: []), calendar: [], loading: false, error: nil)
+            .init(races: .init(sections: []), calendar: [], standings: .init(items: []), loading: false, error: nil)
         }
     }
     
@@ -51,23 +52,52 @@ extension CXRaces {
             task?.cancel()
             
             let current = domain
-            subject.send(.init(races: current.races, calendar: current.calendar, loading: true, error: nil))
+            subject.send(
+                .init(
+                    races: current.races,
+                    calendar: current.calendar,
+                    standings: current.standings,
+                    loading: true,
+                    error: nil
+                )
+            )
             
             task = Task { [weak self] in
                 guard let self else { return }
                 do {
-                    async let races = try await Requester.getCxEvents()
-                    async let calendar = try await Requester.getCxAllCalendarEvents()
+                    async let racesTask = Requester.getCxEvents()
+                    async let calendarTask = Requester.getCxAllCalendarEvents()
                     
-                    let (racesResult, calendarResult) = try await (races, calendar)
+                    let (racesResult, calendarResult) = try await (racesTask, calendarTask)
+                    let standingsResult: DTO.CXStandings
+                    do {
+                        standingsResult = try await Requester.getCxStandings()
+                    } catch {
+                        standingsResult = current.standings
+                        nonFatalCrashlytics(false, error.localizedDescription)
+                    }
                     try Task.checkCancellation()
                     
-                    self.subject.send(.init(races: racesResult, calendar: calendarResult, loading: false, error: nil))
+                    self.subject.send(
+                        .init(
+                            races: racesResult,
+                            calendar: calendarResult,
+                            standings: standingsResult,
+                            loading: false,
+                            error: nil
+                        )
+                    )
                 } catch {
                     guard !Task.isCancelled else { return }
                     nonFatalCrashlytics(false, error.localizedDescription)
                     self.subject.send(
-                        .init(races: current.races, calendar: current.calendar, loading: false, error: error.toEquatableError())
+                        .init(
+                            races: current.races,
+                            calendar: current.calendar,
+                            standings: current.standings,
+                            loading: false,
+                            error: error.toEquatableError()
+                        )
                     )
                 }
             }

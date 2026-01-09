@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LatestAllResultsView: View {
     let races: DTO.CX24Homepage
+    let action: (URL?) -> Void
     
     var body: some View {
         List {
@@ -20,6 +21,9 @@ struct LatestAllResultsView: View {
                         RaceRowView(race: race)
                             .listRowInsets(.init(top: 8, leading: 16, bottom: 8, trailing: 16))
                             .listRowBackground(Color.clear)
+                            .onTapGesture {
+                                action(race.raceURL)
+                            }
                     }
                 } header: {
                     TribuneruText(content: section.title, style: .size14WeightSemiBold, color: .cyan)
@@ -37,7 +41,7 @@ struct LatestAllResultsView: View {
 
 private struct RaceRowView: View {
     let race: DTO.CX24Homepage.Race
-    
+//    print("avpv - share card from preview")
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
@@ -158,8 +162,10 @@ private struct PodiumRow: View {
 
 #Preview("Latest all results") {
     NavigationStack {
-        LatestAllResultsView(races: CXRaces.Representable.mock.races)
-            .navigationTitle("Latest results")
+        LatestAllResultsView(races: CXRaces.Representable.mock.races) { _ in
+            
+        }
+        .navigationTitle("Latest results")
     }
 }
 

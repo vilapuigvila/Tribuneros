@@ -10,11 +10,12 @@ import SwiftUI
     
 struct CXAllRacesView: View {
     private enum UI {
-        static let rowHeight: CGFloat = 58
-        static let autoScrollDelay: TimeInterval = 0.75
+        static let rowHeight: CGFloat = 84
+        static let autoScrollDelay: TimeInterval = 0.5
     }
     
     let events: [DTO.CXCalendarEvent]
+    let action: (URL?) -> Void
     @State private var didAutoScrollToToday = false
     
     var body: some View {
@@ -22,37 +23,43 @@ struct CXAllRacesView: View {
             List {
                 ForEach(events.indices, id: \.self) { idx in
                     let event = events[idx]
-                    HStack(spacing: 12) {
-                        TribuneruText(content: event.date, style: .size14WeightRegular)
-                            .frame(width: 84, alignment: .leading)
-                        
-                        CachedImageView(
-                            imageUrl: event.flagURL,
-                            cornerRadius: 1
-                        )
-                        .frame(width: 24)
-                        
-                        VStack(alignment: .leading, spacing: 2) {
-                            TribuneruText(
-                                content: event.race,
-                                style: .size14WeightRegular
+                    Button {
+                        action(event.raceURL ?? event.resultsURL ?? event.websiteURL)
+                    } label: {
+                        HStack(spacing: 12) {
+                            TribuneruText(content: event.date, style: .size14WeightRegular)
+                                .frame(width: 84, alignment: .leading)
+                            
+                            CachedImageView(
+                                imageUrl: event.flagURL,
+                                cornerRadius: 1
                             )
-                            if event.isCancelled {
+                            .frame(width: 24)
+                            
+                            VStack(alignment: .leading, spacing: 2) {
                                 TribuneruText(
-                                    content: "Cancelled",
-                                    style: .size12WeightRegular,
-                                    color: .red
+                                    content: event.race,
+                                    style: .size14WeightRegular
                                 )
-                            } else if !event.winnerName.isEmpty {
-                                TribuneruText(
-                                    content: event.winnerName,
-                                    style: .size12WeightRegular,
-                                    color: .gray
-                                )
+                                if event.isCancelled {
+                                    TribuneruText(
+                                        content: "Cancelled",
+                                        style: .size12WeightRegular,
+                                        color: .red
+                                    )
+                                } else if !event.winnerName.isEmpty {
+                                    TribuneruText(
+                                        content: event.winnerName,
+                                        style: .size12WeightRegular,
+                                        color: .gray
+                                    )
+                                }
                             }
                         }
+                        .frame(height: UI.rowHeight)
+                        .contentShape(Rectangle())
                     }
-                    .frame(height: UI.rowHeight)
+                    .buttonStyle(.plain)
                     .id(idx)
                     .listRowInsets(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
                     .listRowBackground(Color.gray.opacity(0.1))
@@ -218,7 +225,7 @@ extension Array where Element == DTO.CXCalendarEvent {
 
 #Preview("CX All Races") {
     NavigationStack {
-        CXAllRacesView(events: .mockCXRacesAllRaces)
+        CXAllRacesView(events: .mockCXRacesAllRaces) { _ in }
             .navigationTitle("All races")
     }
 }

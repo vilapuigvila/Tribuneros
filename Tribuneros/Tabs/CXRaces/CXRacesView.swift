@@ -26,15 +26,25 @@ struct CXRacesRacesView: View {
             let _ = print("avvp [Navigation] - \(destination)")
             switch destination {
             case .cxZone(.allRaces):
-                CXAllRacesView(events: viewModel.stateView.result.calendarEvents)
+                CXAllRacesView(events: viewModel.stateView.result.calendarEvents) { url in
+                    viewModel.action(.didTapOnRace(url))
+                }
                     .navigationTitle("All races")
             case .cxZone(.latestResults):
-                LatestAllResultsView(races: viewModel.stateView.result.races)
-                    .navigationTitle("Latest results")
+                LatestAllResultsView(races: viewModel.stateView.result.races) { raceURL in
+                    viewModel.action(.didTapOnRace(raceURL))
+                }
+                .navigationTitle("Latest results")
+            case .cxZone(.standings):
+                CXStandingsListView(standings: viewModel.stateView.result.standings)
+                    .navigationTitle("Standings")
+            case .detail(.race(let urlInfo)):
+                SafariView(url: URL(string: urlInfo))
             default:
                 EmptyView()
             }
         }
+        .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("CX ZONE")
     }
 }
