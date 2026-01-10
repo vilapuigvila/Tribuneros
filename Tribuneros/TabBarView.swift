@@ -182,7 +182,7 @@ private struct TabBarButton: View {
         let image = Image(systemName: systemImage)
         if animateWhenSelected && isSelected {
             if #available(iOS 18.0, *) {
-                image.symbolEffect(.bounce.down.byLayer, options: .repeat(.periodic(3, delay: 0.5)))
+                image.symbolEffect(.bounce.down.byLayer, options: .repeat(.periodic(2, delay: 0.5)))
             } else {
                 image
             }

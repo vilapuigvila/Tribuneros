@@ -247,6 +247,82 @@ extension CXRaces.Representable {
                 points: "1903"
             )
         ]
+        
+        let uciWomenElite: [DTO.CXStandings.Leader] = [
+            .init(
+                position: 1,
+                rider: "VAN EMPEL Fem",
+                riderURL: URL(string: "https://cyclocross24.com/rider/fem-van-empel/"),
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png"),
+                points: "2121"
+            ),
+            .init(
+                position: 2,
+                rider: "ALVARADO Ceylin del Carmen",
+                riderURL: URL(string: "https://cyclocross24.com/rider/ceylin-del-carmen-alvarado/"),
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png"),
+                points: "2084"
+            ),
+            .init(
+                position: 3,
+                rider: "WORST Annemarie",
+                riderURL: URL(string: "https://cyclocross24.com/rider/annemarie-worst/"),
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png"),
+                points: "2002"
+            ),
+            .init(
+                position: 4,
+                rider: "BRAND Lucinda",
+                riderURL: URL(string: "https://cyclocross24.com/rider/lucinda-brand/"),
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png"),
+                points: "1988"
+            ),
+            .init(
+                position: 5,
+                rider: "PIETERSE Puck",
+                riderURL: URL(string: "https://cyclocross24.com/rider/puck-pieterse/"),
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png"),
+                points: "1965"
+            )
+        ]
+        
+        let uciMenJunior: [DTO.CXStandings.Leader] = [
+            .init(
+                position: 1,
+                rider: "Rider One",
+                riderURL: URL(string: "https://cyclocross24.com/rider/rider-one/"),
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+                points: "1780"
+            ),
+            .init(
+                position: 2,
+                rider: "Rider Two",
+                riderURL: URL(string: "https://cyclocross24.com/rider/rider-two/"),
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/France.png"),
+                points: "1692"
+            ),
+            .init(
+                position: 3,
+                rider: "Rider Three",
+                riderURL: URL(string: "https://cyclocross24.com/rider/rider-three/"),
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Italy.png"),
+                points: "1630"
+            ),
+            .init(
+                position: 4,
+                rider: "Rider Four",
+                riderURL: URL(string: "https://cyclocross24.com/rider/rider-four/"),
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png"),
+                points: "1591"
+            ),
+            .init(
+                position: 5,
+                rider: "Rider Five",
+                riderURL: URL(string: "https://cyclocross24.com/rider/rider-five/"),
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Spain.png"),
+                points: "1533"
+            )
+        ]
 
         let standings = DTO.CXStandings(
             items: [
@@ -264,13 +340,13 @@ extension CXRaces.Representable {
                         .init(
                             title: "Women Elite",
                             url: URL(string: "https://cyclocross24.com/uciranking/2025-2026/WE/"),
-                            leaders: uciMenElite,
+                            leaders: uciWomenElite,
                             leaderImageURL: nil
                         ),
                         .init(
                             title: "Men Junior",
                             url: URL(string: "https://cyclocross24.com/uciranking/2025-2026/MJ/"),
-                            leaders: uciMenElite,
+                            leaders: uciMenJunior,
                             leaderImageURL: nil
                         )
                     ]

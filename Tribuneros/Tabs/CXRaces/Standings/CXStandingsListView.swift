@@ -55,11 +55,11 @@ struct CyclocrossStandingsCardView: View {
                     style: .size16WeightSemiBold,
                     lineLimit: 2
                 )
-
                 Spacer(minLength: 0)
             }
 
             if let firstCategory = item.categories.first {
+                EmptyView()
                 StandingsCategorySummaryView(category: firstCategory)
             } else {
                 TribuneruText(
@@ -72,7 +72,12 @@ struct CyclocrossStandingsCardView: View {
 
             HStack(spacing: 6) {
                 Spacer(minLength: 0)
-                TribuneruText(content: "more info..", style: .size12WeightRegular, color: .cyan, lineLimit: 1)
+                TribuneruText(
+                    content: "more info..",
+                    style: .size12WeightRegular,
+                    color: .cyan,
+                    lineLimit: 1
+                )
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(.cyan)
@@ -88,6 +93,7 @@ struct CyclocrossStandingsCardView: View {
     }
 }
 
+// MARK: - UCI Ranking Cx ... -
 private struct StandingsItemView: View {
     let item: DTO.CXStandings.Item
     @State private var selectedCategoryIndex: Int = 0
@@ -102,8 +108,9 @@ private struct StandingsItemView: View {
                     TribuneruText(
                         content: item.title,
                         style: .size16WeightSemiBold,
-                        lineLimit: 2
+                        lineLimit: 1
                     )
+                    .truncationMode(.tail)
 
                     TribuneruText(
                         content: item.categories.isEmpty ? "No categories" : "\(item.categories.count) categories",
@@ -111,18 +118,16 @@ private struct StandingsItemView: View {
                         color: .gray
                     )
                 }
+                .layoutPriority(1)
 
                 Spacer(minLength: 0)
 
                 if let url = item.url {
                     NavigationLink(destination: SafariView(url: url)) {
-                        Image(systemName: "safari")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.cyan)
-                            .padding(8)
-                            .background(Color.gray.opacity(0.12))
-                            .cornerRadius(8)
+                        EmptyView()
                     }
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
                     .buttonStyle(.plain)
                 }
             }
@@ -153,7 +158,7 @@ private struct StandingsLogoView: View {
     var body: some View {
         ZStack {
             if logoURL != nil {
-                CachedImageView(imageUrl: logoURL, cornerRadius: 6)
+                CachedImageView(imageUrl: logoURL, cornerRadius: 1)
             } else {
                 Image(systemName: "trophy")
                     .resizable()
@@ -257,14 +262,21 @@ private struct StandingsTabsView: View {
                     Button {
                         selectedCategoryIndex = idx
                     } label: {
-                        Text(category.title.uppercased())
-                            .font(.system(size: 12, weight: .bold, design: .default))
-                            .foregroundColor(.white)
-                            .padding(.vertical, UI.paddingV)
-                            .padding(.horizontal, UI.paddingH)
-                            .frame(maxWidth: .infinity)
-                            .background(isSelected(idx) ? Color.green.opacity(0.75) : Color.black.opacity(0.25))
-                            .cornerRadius(UI.cornerRadius)
+                        TribuneruText(
+                            content: category.title.uppercased(),
+                            style: .size14WeightSemiBold,
+                            color: .white,
+                            lineLimit: 1
+                        )
+                        .padding(.vertical, UI.paddingV)
+                        .padding(.horizontal, UI.paddingH)
+                        .frame(maxWidth: .infinity)
+                        .background(
+                            isSelected(idx)
+                            ?
+                            Color.tribuneru(.greenSoft) : Color.tribuneru(.gray).opacity(0.15)
+                        )
+                        .cornerRadius(UI.cornerRadius)
                     }
                     .buttonStyle(.plain)
                 }
@@ -287,25 +299,12 @@ private struct StandingsLeadersTableView: View {
                 StandingsLeaderTableRowView(leader: leader)
 
                 if idx < category.leaders.count - 1 {
-                    Rectangle()
-                        .fill(Color.white.opacity(0.12))
-                        .frame(height: 0.5)
+                    TribunerosDivider()
                 }
             }
         }
         .background(Color.tribuneru(.greenCardBackground))
         .cornerRadius(2)
-        .overlay(alignment: .topTrailing) {
-            if let url = category.url {
-                NavigationLink(destination: SafariView(url: url)) {
-                    Image(systemName: "safari")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(.white.opacity(0.9))
-                        .padding(8)
-                }
-                .buttonStyle(.plain)
-            }
-        }
     }
 }
 
@@ -321,8 +320,11 @@ private struct StandingsLeaderTableRowView: View {
             )
                 .frame(width: 18, alignment: .leading)
 
-            CachedImageView(imageUrl: leader.countryFlagURL, cornerRadius: 1)
-                .frame(width: 16, height: 16)
+            CachedImageView(
+                imageUrl: leader.countryFlagURL,
+                cornerRadius: 1
+            )
+            .frame(width: 18, height: 18)
 
             TribuneruText(
                 content: leader.rider,
