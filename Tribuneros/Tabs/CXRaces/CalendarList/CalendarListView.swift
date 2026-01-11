@@ -12,72 +12,110 @@ struct CXAllRacesView: View {
     private enum UI {
         static let rowHeight: CGFloat = 84
         static let autoScrollDelay: TimeInterval = 0.5
+        static let showButtonDelay: TimeInterval = 0.5
     }
     
     let events: [DTO.CXCalendarEvent]
     let action: (URL?) -> Void
     @State private var didAutoScrollToToday = false
+    @State private var showTodayButton = false
+    @State private var isScrolling = false
+    @State private var scrollTimer: Timer?
     
     var body: some View {
         ScrollViewReader { proxy in
-            List {
-                ForEach(events.indices, id: \.self) { idx in
-                    let event = events[idx]
-                    Button {
-                        action(event.raceURL ?? event.resultsURL ?? event.websiteURL)
-                    } label: {
-                        HStack(spacing: 12) {
-                            TribuneruText(content: event.date, style: .size14WeightRegular)
-                                .frame(width: 84, alignment: .leading)
-                            
-                            CachedImageView(
-                                imageUrl: event.flagURL,
-                                cornerRadius: 1
-                            )
-                            .frame(width: 24)
-                            
-                            VStack(alignment: .leading, spacing: 2) {
-                                TribuneruText(
-                                    content: event.race,
-                                    style: .size14WeightRegular
+            ZStack(alignment: .bottomTrailing) {
+                List {
+                    ForEach(events.indices, id: \.self) { idx in
+                        let event = events[idx]
+                        Button {
+                            action(event.raceURL ?? event.resultsURL ?? event.websiteURL)
+                        } label: {
+                            HStack(spacing: 12) {
+                                TribuneruText(content: event.date, style: .size14WeightRegular)
+                                    .frame(width: 84, alignment: .leading)
+                                
+                                CachedImageView(
+                                    imageUrl: event.flagURL,
+                                    cornerRadius: 1
                                 )
-                                if event.isCancelled {
+                                .frame(width: 24)
+                                
+                                VStack(alignment: .leading, spacing: 2) {
                                     TribuneruText(
-                                        content: "Cancelled",
-                                        style: .size12WeightRegular,
-                                        color: .red
+                                        content: event.race,
+                                        style: .size14WeightRegular
                                     )
-                                } else if !event.winnerName.isEmpty {
-                                    TribuneruText(
-                                        content: event.winnerName,
-                                        style: .size12WeightRegular,
-                                        color: .gray
-                                    )
+                                    if event.isCancelled {
+                                        TribuneruText(
+                                            content: "Cancelled",
+                                            style: .size12WeightRegular,
+                                            color: .red
+                                        )
+                                    } else if !event.winnerName.isEmpty {
+                                        TribuneruText(
+                                            content: event.winnerName,
+                                            style: .size12WeightRegular,
+                                            color: .gray
+                                        )
+                                    }
                                 }
                             }
+                            .frame(height: UI.rowHeight)
+                            .contentShape(Rectangle())
                         }
-                        .frame(height: UI.rowHeight)
-                        .contentShape(Rectangle())
+                        .buttonStyle(.plain)
+                        .id(idx)
+                        .listRowInsets(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
+                        .listRowBackground(Color.gray.opacity(0.1))
                     }
-                    .buttonStyle(.plain)
-                    .id(idx)
-                    .listRowInsets(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
-                    .listRowBackground(Color.gray.opacity(0.1))
+                }
+                .onAppear {
+                    guard !didAutoScrollToToday else { return }
+                    scrollToToday(proxy)
+                }
+                .onChange(of: events) {
+                    guard !didAutoScrollToToday else { return }
+                    scrollToToday(proxy)
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(.black)
+                .environment(\.defaultMinListRowHeight, UI.rowHeight)
+                .preferredColorScheme(.dark)
+                .simultaneousGesture(
+                    DragGesture()
+                        .onChanged { _ in
+                            isScrolling = true
+                            showTodayButton = false
+                            scrollTimer?.invalidate()
+                        }
+                        .onEnded { _ in
+                            startShowButtonTimer()
+                        }
+                )
+                
+                if showTodayButton {
+                    Button(action: { scrollToToday(proxy) }) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "calendar.circle.fill")
+                            TribuneruText(
+                                content: "Today Races",
+                                style: .size14WeightRegular
+                            )
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 12)
+                        .background(Color.tribuneru(.greenCardBackground))
+                        .cornerRadius(8)
+                        .background(Color.tribuneru(.black).opacity(0.95))
+                        .cornerRadius(8)
+                    }
+                    .padding(16)
+                    .padding(.bottom, 16)
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
                 }
             }
-            .onAppear {
-                guard !didAutoScrollToToday else { return }
-                scrollToToday(proxy)
-            }
-            .onChange(of: events) {
-                guard !didAutoScrollToToday else { return }
-                scrollToToday(proxy)
-            }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .background(.black)
-            .environment(\.defaultMinListRowHeight, UI.rowHeight)
-            .preferredColorScheme(.dark)
         }
     }
     
@@ -110,6 +148,16 @@ struct CXAllRacesView: View {
             }
         }
     }
+    
+    private func startShowButtonTimer() {
+        scrollTimer?.invalidate()
+        scrollTimer = Timer.scheduledTimer(withTimeInterval: UI.showButtonDelay, repeats: false) { _ in
+            withAnimation {
+                isScrolling = false
+                showTodayButton = todayIndex != nil
+            }
+        }
+    }
 }
 
 #if DEBUG
@@ -129,6 +177,96 @@ extension Array where Element == DTO.CXCalendarEvent {
         }
         
         return [
+            .init(
+                date: dateString(calendar.date(byAdding: .day, value: -3, to: today) ?? today),
+                race: "Superprestige Ruddervoorde",
+                raceClass: "C1",
+                flagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+                winnerName: "VANTHOURENHOUT Michael",
+                isCancelled: false,
+                raceID: 17552,
+                raceSlug: "ruddervoorde",
+                raceURL: URL(string: "https://cyclocross24.com/race/ruddervoorde/"),
+                resultsURL: URL(string: "https://cyclocross24.com/race/17552/"),
+                videoURL: URL(string: "https://cyclocross24.com/race/17552/#video"),
+                websiteURL: URL(string: "https://www.superprestigecyclocross.be"),
+                raceCountry: "Belgium",
+                winnerURL: URL(string: "https://cyclocross24.com/rider/michael-vanthourenhout/"),
+                winnerCountry: "Belgium",
+                winnerFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png")
+            ),
+            .init(
+                date: dateString(calendar.date(byAdding: .day, value: -3, to: today) ?? today),
+                race: "Superprestige Ruddervoorde",
+                raceClass: "C1",
+                flagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+                winnerName: "VANTHOURENHOUT Michael",
+                isCancelled: false,
+                raceID: 17552,
+                raceSlug: "ruddervoorde",
+                raceURL: URL(string: "https://cyclocross24.com/race/ruddervoorde/"),
+                resultsURL: URL(string: "https://cyclocross24.com/race/17552/"),
+                videoURL: URL(string: "https://cyclocross24.com/race/17552/#video"),
+                websiteURL: URL(string: "https://www.superprestigecyclocross.be"),
+                raceCountry: "Belgium",
+                winnerURL: URL(string: "https://cyclocross24.com/rider/michael-vanthourenhout/"),
+                winnerCountry: "Belgium",
+                winnerFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png")
+            ),
+            .init(
+                date: dateString(calendar.date(byAdding: .day, value: -3, to: today) ?? today),
+                race: "Superprestige Ruddervoorde",
+                raceClass: "C1",
+                flagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+                winnerName: "VANTHOURENHOUT Michael",
+                isCancelled: false,
+                raceID: 17552,
+                raceSlug: "ruddervoorde",
+                raceURL: URL(string: "https://cyclocross24.com/race/ruddervoorde/"),
+                resultsURL: URL(string: "https://cyclocross24.com/race/17552/"),
+                videoURL: URL(string: "https://cyclocross24.com/race/17552/#video"),
+                websiteURL: URL(string: "https://www.superprestigecyclocross.be"),
+                raceCountry: "Belgium",
+                winnerURL: URL(string: "https://cyclocross24.com/rider/michael-vanthourenhout/"),
+                winnerCountry: "Belgium",
+                winnerFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png")
+            ),
+            .init(
+                date: dateString(calendar.date(byAdding: .day, value: -3, to: today) ?? today),
+                race: "Superprestige Ruddervoorde",
+                raceClass: "C1",
+                flagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+                winnerName: "VANTHOURENHOUT Michael",
+                isCancelled: false,
+                raceID: 17552,
+                raceSlug: "ruddervoorde",
+                raceURL: URL(string: "https://cyclocross24.com/race/ruddervoorde/"),
+                resultsURL: URL(string: "https://cyclocross24.com/race/17552/"),
+                videoURL: URL(string: "https://cyclocross24.com/race/17552/#video"),
+                websiteURL: URL(string: "https://www.superprestigecyclocross.be"),
+                raceCountry: "Belgium",
+                winnerURL: URL(string: "https://cyclocross24.com/rider/michael-vanthourenhout/"),
+                winnerCountry: "Belgium",
+                winnerFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png")
+            ),
+            .init(
+                date: dateString(calendar.date(byAdding: .day, value: -3, to: today) ?? today),
+                race: "Superprestige Ruddervoorde",
+                raceClass: "C1",
+                flagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+                winnerName: "VANTHOURENHOUT Michael",
+                isCancelled: false,
+                raceID: 17552,
+                raceSlug: "ruddervoorde",
+                raceURL: URL(string: "https://cyclocross24.com/race/ruddervoorde/"),
+                resultsURL: URL(string: "https://cyclocross24.com/race/17552/"),
+                videoURL: URL(string: "https://cyclocross24.com/race/17552/#video"),
+                websiteURL: URL(string: "https://www.superprestigecyclocross.be"),
+                raceCountry: "Belgium",
+                winnerURL: URL(string: "https://cyclocross24.com/rider/michael-vanthourenhout/"),
+                winnerCountry: "Belgium",
+                winnerFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png")
+            ),
             .init(
                 date: dateString(calendar.date(byAdding: .day, value: -3, to: today) ?? today),
                 race: "Superprestige Ruddervoorde",

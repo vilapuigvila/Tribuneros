@@ -248,6 +248,7 @@ private struct StandingsTabsView: View {
     private enum UI {
         static let paddingV: CGFloat = 10
         static let paddingH: CGFloat = 12
+        static let spacing: CGFloat = 8
         static let cornerRadius: CGFloat = 2
     }
 
@@ -256,7 +257,7 @@ private struct StandingsTabsView: View {
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
+            HStack(spacing: UI.spacing) {
                 ForEach(categories.indices, id: \.self) { idx in
                     let category = categories[idx]
                     Button {
@@ -281,6 +282,7 @@ private struct StandingsTabsView: View {
                     .buttonStyle(.plain)
                 }
             }
+            .padding(.horizontal, UI.spacing)
         }
     }
 
