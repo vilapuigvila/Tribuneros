@@ -80,7 +80,7 @@ struct CXAllRacesView: View {
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
-                .background(.black)
+                .background(Color.tribuneru(.greenCardBackground))
                 .environment(\.defaultMinListRowHeight, UI.rowHeight)
                 .preferredColorScheme(.dark)
                 .simultaneousGesture(
@@ -99,6 +99,9 @@ struct CXAllRacesView: View {
                     Button(action: { scrollToToday(proxy) }) {
                         HStack(spacing: 8) {
                             Image(systemName: "calendar.circle.fill")
+                                .foregroundStyle(
+                                    Color.tribuneru(.green(brightness: 1, saturation: 1))
+                                )
                             TribuneruText(
                                 content: "Today Races",
                                 style: .size14WeightRegular
@@ -106,11 +109,14 @@ struct CXAllRacesView: View {
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 12)
-                        .background(Color.tribuneru(.greenCardBackground))
+                        .background(
+                            Color.tribuneru(.green(brightness: 0.5, saturation: 0.9)).opacity(0.9)
+                        )
                         .cornerRadius(8)
-                        .background(Color.tribuneru(.black).opacity(0.95))
+//                        .background(Color.tribuneru(.black).opacity(0.75))
                         .cornerRadius(8)
                     }
+                    .clipShape(Capsule())
                     .padding(16)
                     .padding(.bottom, 16)
                     .transition(.opacity.combined(with: .move(edge: .bottom)))

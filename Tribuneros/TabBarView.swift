@@ -25,10 +25,9 @@ enum Tab {
 struct TabBarView: View {
     
     @State private var selectedTab: Tab = .home
-//    @StateObject private var router: Router
-//    private var homeRacesViewModel: HomeRacesViewModel<HomeRacesInteractorImpl>
     @StateObject private var homeRouter: Router
     @StateObject private var cxRouter: Router
+    
     let homeRacesViewModel: HomeRacesViewModel<HomeRacesInteractorImpl>
     let cxRacesViewModel: CXRaces.ViewModel<CXRaces.InteractorImpl>
     
@@ -82,20 +81,36 @@ struct TabBarView: View {
         .safeAreaInset(edge: .bottom) {
             CustomTabBar(
                 selectedTab: $selectedTab,
-                cxZoneSymbolName: "bicycle"
+                cxZoneSymbolName: "bicycle",
+                onTabTap: handleTabSelection
             )
         }
     }
 
-//    private var cxZoneSymbolName: String {
-//        let preferred = "bicycle.sensor.tag.radiowaves.left.and.right.fill"
-//        return UIImage(systemName: preferred) != nil ? preferred : "bicycle"
-//    }
+    private func handleTabSelection(_ tab: Tab) {
+        if selectedTab == tab {
+            popToRoot(for: tab)
+        } else {
+            selectedTab = tab
+        }
+    }
+
+    private func popToRoot(for tab: Tab) {
+        switch tab {
+        case .home:
+            homeRouter.popToRoot()
+        case .hateZone:
+            break
+        case .cxZone:
+            cxRouter.popToRoot()
+        }
+    }
 }
 
 private struct CustomTabBar: View {
     @Binding var selectedTab: Tab
     let cxZoneSymbolName: String
+    let onTabTap: (Tab) -> Void
     
     var body: some View {
         VStack(spacing: 0) {
@@ -107,7 +122,7 @@ private struct CustomTabBar: View {
                     systemImage: "figure.indoor.cycle",
                     isSelected: selectedTab == .home
                 ) {
-                    selectedTab = .home
+                    onTabTap(.home)
                 }
                 
                 Spacer(minLength: 0)
@@ -118,7 +133,7 @@ private struct CustomTabBar: View {
                     isSelected: selectedTab == .cxZone,
                     animateWhenSelected: true
                 ) {
-                    selectedTab = .cxZone
+                    onTabTap(.cxZone)
                 }
                 
                 Spacer(minLength: 0)
@@ -128,7 +143,7 @@ private struct CustomTabBar: View {
                     systemImage: "wrongwaysign.fill",
                     isSelected: selectedTab == .hateZone
                 ) {
-                    selectedTab = .hateZone
+                    onTabTap(.hateZone)
                 }
             }
             .padding(.horizontal, 24)

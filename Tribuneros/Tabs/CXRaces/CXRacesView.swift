@@ -29,7 +29,7 @@ struct CXRacesRacesView: View {
                 CXAllRacesView(events: viewModel.stateView.result.calendarEvents) { url in
                     viewModel.action(.didTapOnRace(url))
                 }
-                    .navigationTitle("All races")
+                .navigationTitle("All races")
             case .cxZone(.latestResults):
                 LatestAllResultsView(races: viewModel.stateView.result.races) { raceURL in
                     viewModel.action(.didTapOnRace(raceURL))
