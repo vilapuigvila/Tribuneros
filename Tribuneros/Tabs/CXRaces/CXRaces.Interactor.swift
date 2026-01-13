@@ -65,17 +65,11 @@ extension CXRaces {
             task = Task { [weak self] in
                 guard let self else { return }
                 do {
-                    async let racesTask = Requester.getCxEvents()
                     async let calendarTask = Requester.getCxAllCalendarEvents()
+                    async let racesTask = Requester.getCxEvents()
+                    async let standings = Requester.getCxStandings()
                     
-                    let (racesResult, calendarResult) = try await (racesTask, calendarTask)
-                    let standingsResult: DTO.CXStandings
-                    do {
-                        standingsResult = try await Requester.getCxStandings()
-                    } catch {
-                        standingsResult = current.standings
-                        nonFatalCrashlytics(false, error.localizedDescription)
-                    }
+                    let (racesResult, calendarResult, standingsResult) = try await (racesTask, calendarTask, standings)
                     try Task.checkCancellation()
                     
                     self.subject.send(
