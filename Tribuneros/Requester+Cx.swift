@@ -70,22 +70,6 @@ extension Requester {
             throw error
         }
     }
-    /*
-    static func getCxRaceDetail(_ url: URL) async throws -> DTO.CX24Homepage.Race {
-        do {
-            let data = try await URLSession.shared.data(from: url).0
-            guard let htmlContent = String(data: data, encoding: .utf8) else {
-                throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
-            }
-            let document = try SwiftSoup.parse(htmlContent)
-            return try parseCx24RaceDetail(document, url: url)
-        } catch {
-            if (error as NSError).code != -1009 {
-                nonFatalCrashlytics(false, error.localizedDescription)
-            }
-            throw error
-        }
-    }*/
     
     static func getCxAllCalendarEvents(season: String = "2025-2026", category: String = "ME") async throws -> [DTO.CXCalendarEvent] {
         let url = URL(string: "https://cyclocross24.com/calendar/\(season)/\(category)/")!
@@ -104,27 +88,35 @@ extension Requester {
             throw error
         }
     }
-//    print("avpv - get from detail.. ")
-    static func getCxRaceCategoryResults(_ race: DTO.CX24Homepage.Race) async throws -> [DTO.CX24Homepage.CategoryResult] {
-        var allResults: [DTO.CX24Homepage.CategoryResult] = []
+
+    static func getCxRaceCategoryResults(_ race: DTO.CX24Homepage.Race) async throws -> [String: [DTO.CX24Homepage.CategoryResult]] {
+        var allResults: [String: [DTO.CX24Homepage.CategoryResult]] = [:]
         
-        for category in race.categories {
-            guard let categoryURL = category.categoryURL else { continue }
-            
-            do {
-                let data = try await URLSession.shared.data(from: categoryURL).0
-                guard let htmlContent = String(data: data, encoding: .utf8) else {
-                    throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
+        await withTaskGroup(of: (String, [DTO.CX24Homepage.CategoryResult]?).self) { group in
+            for category in race.categories {
+                guard let categoryURL = category.categoryURL else { continue }
+                
+                group.addTask {
+                    do {
+                        let data = try await URLSession.shared.data(from: categoryURL).0
+                        guard let htmlContent = String(data: data, encoding: .utf8) else {
+                            throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
+                        }
+                        let document = try SwiftSoup.parse(htmlContent)
+                        let results = try parseCx24CategoryResults(document)
+                        return (category.title, results)
+                    } catch {
+                        nonFatalCrashlytics(false, "Failed to fetch category results: \(error.localizedDescription)")
+                        return (category.title, nil)
+                    }
                 }
-                let document = try SwiftSoup.parse(htmlContent)
-                let results = try parseCx24CategoryResults(document)
-                allResults.append(contentsOf: results)
-            } catch {
-                nonFatalCrashlytics(false, "Failed to fetch category results: \(error.localizedDescription)")
-                throw error
+            }
+            for await (categoryTitle, results) in group {
+                if let results = results {
+                    allResults[categoryTitle] = results
+                }
             }
         }
-        
         return allResults
     }
     
@@ -370,35 +362,6 @@ extension Requester {
         let src = try img?.attr("src") ?? ""
         return cx24AbsoluteURL(src)
     }
-    /*
-    private static func parseCx24RaceDetail(_ document: Document, url: URL) throws -> DTO.CX24Homepage.Race {
-        let raceInfo = try document.select("div.race_info").first()
-        let title = try raceInfo?.select("h1,h2,h3.h3").first()?.text()
-            ?? (try document.title())
-        
-        let flagImg = (try? raceInfo?.select("img.flag").first())
-            ?? (try? document.select("img.flag").first())
-        let country = (try? flagImg?.attr("title")) ?? ""
-        let countryFlagURL = cx24AbsoluteURL((try? flagImg?.attr("src")) ?? "")
-        
-        let infoText = (try? raceInfo?.select("div.race_info_bar").first()?.text())
-            ?? (try? document.select("div.race_info_bar").first()?.text())
-            ?? ""
-        let (date, location) = parseCx24DateLocation(infoText)
-        
-        let categoryEls = try document.select("div.race_category").array()
-        let categories = try categoryEls.map { try parseCx24Category($0) }
-        
-        return DTO.CX24Homepage.Race(
-            title: title,
-            country: country,
-            countryFlagURL: countryFlagURL,
-            date: date,
-            location: location,
-            raceURL: url,
-            categories: categories
-        )
-    }*/
     
     private static func parseCx24RaceBlock(_ raceBlock: Element) throws -> DTO.CX24Homepage.Race? {
         guard let raceInfo = try raceBlock.select("div.race_info").first() else {
@@ -432,17 +395,6 @@ extension Requester {
             categories: categories
         )
     }
-    /*
-    private static func parseCx24DateLocation(_ infoText: String) -> (date: String, location: String) {
-        let trimmed = infoText.trimmingCharacters(in: .whitespacesAndNewlines)
-        let tokens = trimmed.split(whereSeparator: \.isWhitespace).map(String.init)
-        guard tokens.count >= 3 else {
-            return (trimmed, "")
-        }
-        let date = tokens.prefix(3).joined(separator: " ")
-        let location = tokens.dropFirst(3).joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines)
-        return (date, location)
-    }*/
     
     private static func parseCx24Category(_ category: Element) throws -> DTO.CX24Homepage.Category {
         let categoryAnchor = try category.select("div.fp_category > a").first()

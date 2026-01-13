@@ -38,12 +38,19 @@ struct RaceDetailView: View {
                 
                 Spacer()
             }
-            .padding()
+            .padding(8)
         }
         .background(.black)
         .preferredColorScheme(.dark)
         .task {
-            await loadCategoryResults()
+            isLoading = true
+            errorMessage = nil
+            do {
+                categoryResults = try await Requester.getCxRaceCategoryResults(race)
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+            isLoading = false
         }
     }
     
@@ -96,9 +103,6 @@ struct RaceDetailView: View {
                     ) {
                         selectedCategory = index
                     }
-//                    Rectangle()
-//                        .frame(width: 0.5)
-//                        .foregroundStyle(.gray.opacity(0.5))
                 }
             }
         }
@@ -126,7 +130,7 @@ struct RaceDetailView: View {
                         
                         if index < results.count - 1 {
                             TribunerosDivider(
-                                height: 0.5,
+                                height: 1,
                                 color: .gray.opacity(0.2)
                             )
                         }
@@ -178,95 +182,6 @@ struct RaceDetailView: View {
         }
         .padding(.vertical, 8)
         .padding(.bottom, 4)
-    }
-    
-    private func loadCategoryResults() async {
-        isLoading = true
-        errorMessage = nil
-        
-        var results: [String: [DTO.CX24Homepage.CategoryResult]] = [:]
-        
-        for category in race.categories {
-            guard let categoryURL = category.categoryURL else { continue }
-            
-            do {
-                let data = try await URLSession.shared.data(from: categoryURL).0
-                guard let htmlContent = String(data: data, encoding: .utf8) else {
-                    throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
-                }
-                let document = try SwiftSoup.parse(htmlContent)
-                let categoryResults = try parseCx24CategoryResults(document)
-                results[category.title] = categoryResults
-            } catch {
-                errorMessage = error.localizedDescription
-            }
-        }
-        
-        categoryResults = results
-        isLoading = false
-    }
-    
-    private func parseCx24CategoryResults(_ document: Document) throws -> [DTO.CX24Homepage.CategoryResult] {
-        // Try different selectors - the site might use different classes
-        var rows = try document.select("tr.r1_row").array()
-        
-        // If no r1_row found, try generic table rows
-        if rows.isEmpty {
-            rows = try document.select("table tr").array()
-        }
-        
-        // Debug: print what we found
-        print("DEBUG: Found \(rows.count) rows")
-        
-        return try rows.compactMap { row -> DTO.CX24Homepage.CategoryResult? in
-            let cells = try row.select("td").array()
-            
-            // Debug first few rows
-            if cells.count > 0 {
-                print("DEBUG: Row has \(cells.count) cells")
-            }
-            
-            guard cells.count >= 5 else { return nil }
-            
-            let position = try cells[0].text().trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !position.isEmpty, Int(position) != nil else { return nil }
-            
-            let riderCell = cells[1]
-            let rider = try riderCell.select("a").first()?.text().trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-                ?? riderCell.text().trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-            
-            let flagImg = try riderCell.select("img.flag").first()
-            let flagSrc = try flagImg?.attr("src") ?? ""
-            let countryFlagURL = cx24AbsoluteURL(flagSrc)
-            
-            let age = try cells[2].text().trimmingCharacters(in: .whitespacesAndNewlines)
-            let team = try cells[3].text().trimmingCharacters(in: .whitespacesAndNewlines)
-            let time = try cells[4].text().trimmingCharacters(in: .whitespacesAndNewlines)
-            
-            guard !rider.isEmpty else { return nil }
-            
-            return DTO.CX24Homepage.CategoryResult(
-                position: position,
-                rider: rider,
-                age: age,
-                team: team,
-                time: time,
-                countryFlagURL: countryFlagURL
-            )
-        }
-    }
-    
-    private func cx24AbsoluteURL(_ href: String) -> URL? {
-        let trimmed = href.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
-        let baseURL = URL(string: "https://cyclocross24.com")!
-        if trimmed.hasPrefix("//") {
-            return URL(string: "https:" + trimmed)
-        }
-        if let url = URL(string: trimmed), url.scheme != nil {
-            return url
-        }
-        return URL(string: trimmed, relativeTo: baseURL)?.absoluteURL
     }
 }
 
@@ -346,11 +261,9 @@ private struct ResultRow: View {
 }
 
 #if DEBUG
-/*
+
 #Preview("Race Detail") {
-//    NavigationStack {
-        Text("hihi")
-        /*
+    NavigationStack {
         RaceDetailView(
             race: .init(
                 title: "UCI World Cup Zonhoven (CDM)",
@@ -362,7 +275,7 @@ private struct ResultRow: View {
                 categories: [
                     .init(
                         title: "Men Elite",
-                        categoryURL: URL(string: "https://cyclocross24.com/race/18063/"),
+                        categoryURL: URL(string: "https://cyclocross24.com/race/18062/"),
                         winnerImageURL: nil,
                         podium: []
                     ),
@@ -374,8 +287,8 @@ private struct ResultRow: View {
                     )
                 ]
             )
-        )*/
-//    }
+        )
+    }
 }
-*/
+
 #endif
