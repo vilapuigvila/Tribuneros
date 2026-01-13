@@ -104,6 +104,29 @@ extension Requester {
             throw error
         }
     }
+//    print("avpv - get from detail.. ")
+    static func getCxRaceCategoryResults(_ race: DTO.CX24Homepage.Race) async throws -> [DTO.CX24Homepage.CategoryResult] {
+        var allResults: [DTO.CX24Homepage.CategoryResult] = []
+        
+        for category in race.categories {
+            guard let categoryURL = category.categoryURL else { continue }
+            
+            do {
+                let data = try await URLSession.shared.data(from: categoryURL).0
+                guard let htmlContent = String(data: data, encoding: .utf8) else {
+                    throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
+                }
+                let document = try SwiftSoup.parse(htmlContent)
+                let results = try parseCx24CategoryResults(document)
+                allResults.append(contentsOf: results)
+            } catch {
+                nonFatalCrashlytics(false, "Failed to fetch category results: \(error.localizedDescription)")
+                throw error
+            }
+        }
+        
+        return allResults
+    }
     
     private static func parseCx24Homepage(_ document: Document) throws -> DTO.CX24Homepage {
         let sectionElements = try document.select("div.raceday:has(div.race_block)").array()
@@ -525,6 +548,46 @@ extension Requester {
                     winnerFlagURL: winnerFlagURL
                 )
             }
+    }
+    
+    private static func parseCx24CategoryResults(_ document: Document) throws -> [DTO.CX24Homepage.CategoryResult] {
+        // Try different selectors - the site might use different classes
+        var rows = try document.select("tr.r1_row").array()
+        
+        // If no r1_row found, try generic table rows
+        if rows.isEmpty {
+            rows = try document.select("table tr").array()
+        }
+        
+        return try rows.compactMap { row -> DTO.CX24Homepage.CategoryResult? in
+            let cells = try row.select("td").array()
+            guard cells.count >= 5 else { return nil }
+            
+            let position = try cells[0].text().trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !position.isEmpty, Int(position) != nil else { return nil }
+            
+            let riderCell = cells[1]
+            let rider = try riderCell.select("a").first()?.text().trimmingCharacters(in: .whitespacesAndNewlines)
+                ?? riderCell.text().trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            let flagImg = try riderCell.select("img.flag").first()
+            let countryFlagURL = cx24AbsoluteURL(try flagImg?.attr("src") ?? "")
+            
+            let age = try cells[2].text().trimmingCharacters(in: .whitespacesAndNewlines)
+            let team = try cells[3].text().trimmingCharacters(in: .whitespacesAndNewlines)
+            let time = try cells[4].text().trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            guard !rider.isEmpty else { return nil }
+            
+            return DTO.CX24Homepage.CategoryResult(
+                position: position,
+                rider: rider,
+                age: age,
+                team: team,
+                time: time,
+                countryFlagURL: countryFlagURL
+            )
+        }
     }
 
     private static func cx24AbsoluteURL(_ href: String) -> URL? {

@@ -52,6 +52,8 @@ extension CXRaces {
             case .didTapOnRace(let url):
                 guard let url else { return }
                 router.routeTo(.detail(.race(urlInfo: url.absoluteString)))
+            case .didTapOnRaceDetail(let race):
+                router.routeTo(.cxZone(.raceDetail(race)))
             case .didTapOnStandings:
                 router.routeTo(.cxZone(.standings))
             }

@@ -17,6 +17,7 @@ final class Router: ObservableObject {
         enum CXZone: Hashable {
             case allRaces
             case latestResults
+            case raceDetail(DTO.CX24Homepage.Race)
             case standings
         }
         

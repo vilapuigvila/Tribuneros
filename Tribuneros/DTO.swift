@@ -129,12 +129,12 @@ extension DTO {
 
 extension DTO {
     struct CX24Homepage: Equatable, Sendable {
-        struct Section: Equatable, Sendable {
+        struct Section: Equatable, Sendable, Hashable {
             let title: String
             let races: [Race]
         }
 
-        struct Race: Equatable, Sendable {
+        struct Race: Equatable, Sendable, Hashable {
             let title: String
             let country: String
             let countryFlagURL: URL?
@@ -144,20 +144,29 @@ extension DTO {
             let categories: [Category]
         }
 
-        struct Category: Equatable, Sendable {
+        struct Category: Equatable, Sendable, Hashable {
             let title: String
             let categoryURL: URL?
             let winnerImageURL: URL?
             let podium: [Podium]
         }
 
-        struct Podium: Equatable, Sendable {
+        struct Podium: Equatable, Sendable, Hashable {
             let position: Int
             let rider: String
             let riderURL: URL?
             let country: String
             let countryFlagURL: URL?
             let time: String
+        }
+        
+        struct CategoryResult: Equatable, Sendable, Hashable {
+            let position: String
+            let rider: String
+            let age: String
+            let team: String
+            let time: String
+            let countryFlagURL: URL?
         }
 
         let sections: [Section]

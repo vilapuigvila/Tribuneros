@@ -1,5 +1,5 @@
 {
-  "originHash" : "43f5a1557cf88ea17fcbadc46ebbbf4fb3fa6bcda2f8d5054b5fe0cb69c6d6a7",
+  "originHash" : "9a655fea29d71b9199d8c4635a50c991b7f3023e26a5a7b862152379ba52a743",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -197,15 +197,6 @@
       "state" : {
         "revision" : "d86f244ed497d48012782e2f59c985a55e77b3f5",
         "version" : "2.11.3"
-      }
-    },
-    {
-      "identity" : "traceback-ios",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/InQBarna/traceback-iOS",
-      "state" : {
-        "revision" : "3c8f23ac63d7180da741f7e1c41733fcae5979a3",
-        "version" : "0.5.3"
       }
     }
   ],

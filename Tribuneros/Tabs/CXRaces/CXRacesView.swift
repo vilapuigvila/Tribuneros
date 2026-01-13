@@ -31,10 +31,13 @@ struct CXRacesRacesView: View {
                 }
                 .navigationTitle("All races")
             case .cxZone(.latestResults):
-                LatestAllResultsView(races: viewModel.stateView.result.races) { raceURL in
-                    viewModel.action(.didTapOnRace(raceURL))
+                LatestAllResultsView(races: viewModel.stateView.result.races) { race in
+                    viewModel.action(.didTapOnRaceDetail(race))
                 }
                 .navigationTitle("Latest results")
+            case .cxZone(.raceDetail(let race)):
+                RaceDetailView(race: race)
+//                    .navigationTitle("Race Details")
             case .cxZone(.standings):
                 CXStandingsListView(standings: viewModel.stateView.result.standings)
                     .navigationTitle("Standings")

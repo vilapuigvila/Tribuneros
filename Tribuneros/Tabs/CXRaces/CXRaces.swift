@@ -16,6 +16,7 @@ extension CXRaces {
         case didTapOnNextRaces
         case didTapOnLatestResults
         case didTapOnRace(URL?)
+        case didTapOnRaceDetail(DTO.CX24Homepage.Race)
         case didTapOnStandings
     }
 }
