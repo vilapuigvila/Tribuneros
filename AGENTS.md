@@ -36,7 +36,12 @@
 
 ## Text in SwiftUI
 - Not use Text("")
-- Use TribuneruText()
+- Use
+ `TribuneruText(
+    content: "Team",
+    style: .size12WeightRegular,
+    color: Color.tribuneru(<.somecase>)
+)`
 
 # Colors
 - use `Color.tribuneru(.somecase)`
