@@ -114,7 +114,7 @@ extension DTO {
                 case "Finish profile": self = .finishProfile
                 case "Local circuit": self = .localCircut
                 default:
-                    nonFatalCrashlytics(false, "new StageProfile.ProfileImageType case: \(rawValue)", domain: .tribuneru)
+                    nonFatalCrashlytics(false, "new StageProfile.ProfileImageType case: \(rawValue)", domain: .default)
                     self = .none
                     
                 }
