@@ -37,6 +37,7 @@ extension HomeRaces {
     struct MainView: View {
         @Environment(\.safeAreaInsets) private var safeAreaInsets
         @State private var retryCount = 0
+//        @State private var didRequestOnAppear = false
         
         private let heightCardView: Double = 100
         private let spacingRows: Double = 16

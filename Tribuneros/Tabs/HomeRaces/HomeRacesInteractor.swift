@@ -53,6 +53,9 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
     typealias Domain = HomeRacesDomain
     typealias UseCase = HomeRaces.UseCase
     
+    private let requestThrottle =
+        RequestThrottleController(minimumInterval: 60, extraRequestsLimit: 2)
+    
     private let subject = CurrentValueSubject<Domain, Never>(.empty)
     
     var publisher: AnyPublisher<Domain, Never> {
@@ -75,8 +78,11 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
             let toggle = !(UserSettings.spoilerModeResultsYesterday ?? false)
             UserSettings.spoilerModeResultsYesterday = toggle
             subject.send(domain.copy(isOnSpoilerModeResultsYesterday: toggle))
-        case .requestDayRaces(let date):
+        case .requestDayRaces(_):
             guard task == nil else { return }
+            let requestDate = Date()
+            guard requestThrottle.startRequestIfAllowed(at: requestDate) else { return }
+            
             subject.send(domain.copy(loading: true))
             
             task = Task { [weak self] in
@@ -84,6 +90,9 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                 do {
                     let result = try await Requester.getLatestResults()
                     try Task.checkCancellation()
+                    
+                    self?.requestThrottle.registerOutcome(isFailure: false)
+                    
                     self?.subject.send(
                         Domain(
                             nextToFinishRaces: result.nextToFinish,
@@ -93,11 +102,13 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                             isOnSpoilerModeResultsToday: UserSettings.spoilerModeResultsToday ?? false,
                             isOnSpoilerModeResultsYesterday: UserSettings.spoilerModeResultsYesterday ?? false,
                             error: (result.nextToFinish.isEmpty && result.today.isEmpty && result.yesterdayResults.isEmpty && result.tomorrowRaces.isEmpty) ?
-	                            HomeRaces.ErrorReason.emptyResponse.toEquatableError() : nil,
+                                HomeRaces.ErrorReason.emptyResponse.toEquatableError() : nil,
                             loading: false
                         )
                     )
                 } catch {
+                    self?.requestThrottle.registerOutcome(isFailure: true)
+                    
                     self?.subject.send(
                         Domain(
                             nextToFinishRaces: [],

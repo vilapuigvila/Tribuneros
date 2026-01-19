@@ -16,7 +16,7 @@
       "location" : "https://github.com/vilapuigvila/Alfy.git",
       "state" : {
         "branch" : "develop",
-        "revision" : "0933085dc353ea81a6c79c0f0ecb49a7d356acd0"
+        "revision" : "82b7d6ffd3a5bad2ae54cd61491a7cd40b9c6bf0"
       }
     },
     {
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk",
       "state" : {
-        "revision" : "45210bd1ea695779e6de016ab00fea8c0b7eb2ef",
-        "version" : "12.7.0"
+        "revision" : "674d9a7ee9858207181a3dd0b42c77298c6fb71b",
+        "version" : "12.8.0"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "c2d59acf17a8ba7ed80a763593c67c9c7c006ad1",
-        "version" : "12.5.0"
+        "revision" : "2ffd220823f3716904733162e9ae685545c276d1",
+        "version" : "12.8.0"
       }
     },
     {
@@ -123,8 +123,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nicklockwood/LRUCache.git",
       "state" : {
-        "revision" : "0d91406ecd4d6c1c56275866f00508d9aeacc92a",
-        "version" : "1.2.0"
+        "revision" : "cb5b2bd0da83ad29c0bec762d39f41c8ad0eaf3e",
+        "version" : "1.2.1"
       }
     },
     {
@@ -179,15 +179,6 @@
       "state" : {
         "revision" : "b601256eab081c0f92f059e12818ac1d4f178ff7",
         "version" : "1.3.0"
-      }
-    },
-    {
-      "identity" : "swift-protobuf",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-protobuf.git",
-      "state" : {
-        "revision" : "c169a5744230951031770e27e475ff6eefe51f9d",
-        "version" : "1.33.3"
       }
     },
     {

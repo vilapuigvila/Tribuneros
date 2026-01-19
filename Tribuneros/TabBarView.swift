@@ -7,16 +7,6 @@
 
 import SwiftUI
 import UIKit
-/*
-final class AppContainer {
-    let router = Router()
-    let homeRacesInteractor = HomeRacesInteractorImpl()
-    
-    lazy var homeRacesViewModel = HomeRacesViewModel(
-        interactor: homeRacesInteractor,
-        router: router
-    )
-}*/
 
 enum Tab {
     case home, hateZone, cxZone
@@ -89,6 +79,9 @@ struct TabBarView: View {
 
     private func handleTabSelection(_ tab: Tab) {
         if selectedTab == tab {
+            if tab == .home {
+                refreshHomeRacesIfNeeded()
+            }
             popToRoot(for: tab)
         } else {
             selectedTab = tab
@@ -104,6 +97,13 @@ struct TabBarView: View {
         case .cxZone:
             cxRouter.popToRoot()
         }
+    }
+
+    private func refreshHomeRacesIfNeeded() {
+        if case .loading = homeRacesViewModel.stateView {
+            return
+        }
+        homeRacesViewModel.action(.onAppear)
     }
 }
 
