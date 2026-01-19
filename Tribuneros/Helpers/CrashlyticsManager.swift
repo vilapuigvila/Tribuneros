@@ -6,62 +6,139 @@
 //
 
 import Foundation
+
+#if canImport(FirebaseCore)
 import FirebaseCore
+#endif
+
+#if canImport(FirebaseCrashlytics)
 import FirebaseCrashlytics
+#endif
 
-struct CrashlyticsManager {
-    
-    static let shared = CrashlyticsManager()
+public protocol CrashlyticsBackend {
+    func log(_ message: String)
+    func record(error: NSError)
+    func setUserID(_ userID: String)
+    func setCustomValue(_ value: Any?, forKey key: String)
+    func setCrashlyticsCollectionEnabled(_ enabled: Bool)
+}
 
-    private static var _isConfigured: Bool = false
+public final class CrashlyticsManager {
+    public struct Configuration {
+        public var isEnabled: Bool
+        public var defaultDomain: CrashlyticsDomain
+        public var assertionEnvironmentVariable: String
+        public var crashlyticsCollectionEnabled: Bool?
+        public var configureSDKIfNeeded: () -> Void
+        public var backend: CrashlyticsBackend
 
-    private init() {}
-    
-    func configure() {
-        guard !Self._isConfigured else { return }
-        Self._isConfigured = true
-        FirebaseApp.configure()
+        public init(
+            isEnabled: Bool = true,
+            defaultDomain: CrashlyticsDomain = .default,
+            assertionEnvironmentVariable: String = "ASSERT_NON_FATAL_CRASHLYTICS",
+            crashlyticsCollectionEnabled: Bool? = nil,
+            configureSDKIfNeeded: (() -> Void)? = nil,
+            backend: CrashlyticsBackend? = nil
+        ) {
+            self.isEnabled = isEnabled
+            self.defaultDomain = defaultDomain
+            self.assertionEnvironmentVariable = assertionEnvironmentVariable
+            self.crashlyticsCollectionEnabled = crashlyticsCollectionEnabled
+            self.configureSDKIfNeeded = configureSDKIfNeeded ?? Self.defaultConfigureSDKIfNeeded
+            self.backend = backend ?? Self.defaultBackend
+        }
+
+        private static var defaultConfigureSDKIfNeeded: () -> Void {
+            {
+                #if canImport(FirebaseCore)
+                if FirebaseApp.app() == nil {
+                    FirebaseApp.configure()
+                }
+                #endif
+            }
+        }
+
+        private static var defaultBackend: CrashlyticsBackend {
+            #if canImport(FirebaseCrashlytics)
+            FirebaseCrashlyticsBackend()
+            #else
+            NoopCrashlyticsBackend()
+            #endif
+        }
     }
 
+    public static let shared = CrashlyticsManager()
 
-    /// Records a non-fatal error to Crashlytics.
-    /// - Parameters:
-    ///   - error: The non-fatal error wrapper.
-    ///   - domain: A domain string to help categorize the error in Crashlytics.
-    static func reportNonFatal(error: CrashlyticsNonFatalError, domain: String) {
+    private static let configurationLock = NSLock()
+    private static var isConfigured: Bool = false
+
+    public private(set) var configuration: Configuration
+
+    public init(configuration: Configuration = Configuration()) {
+        self.configuration = configuration
+    }
+
+    public func setConfiguration(_ configuration: Configuration) {
+        self.configuration = configuration
+    }
+
+    public func configure() {
+        Self.configurationLock.lock()
+        defer { Self.configurationLock.unlock() }
+
+        guard configuration.isEnabled else { return }
+        guard !Self.isConfigured else { return }
+        Self.isConfigured = true
+
+        configuration.configureSDKIfNeeded()
+        if let crashlyticsCollectionEnabled = configuration.crashlyticsCollectionEnabled {
+            configuration.backend.setCrashlyticsCollectionEnabled(crashlyticsCollectionEnabled)
+        }
+    }
+
+    public func log(_ message: String) {
+        guard configuration.isEnabled else { return }
+        configuration.backend.log(message)
+    }
+
+    public func setUserID(_ userID: String?) {
+        guard configuration.isEnabled else { return }
+        configuration.backend.setUserID(userID ?? "")
+    }
+
+    public func setCustomValue(_ value: Any?, forKey key: String) {
+        guard configuration.isEnabled else { return }
+        configuration.backend.setCustomValue(value, forKey: key)
+    }
+
+    public func reportNonFatal(error: CrashlyticsNonFatalError, domain: CrashlyticsDomain? = nil) {
         report(error, domain: domain)
     }
 
-    /// Records a non-fatal error to Crashlytics.
-    /// - Parameters:
-    ///   - error: The non-fatal error wrapper.
-    ///   - domain: A domain string to help categorize the error in Crashlytics.
-    static func report(_ error: CrashlyticsNonFatalError, domain: String) {
-        Crashlytics.crashlytics().record(error: error.asNSError(domain: domain))
+    public func report(_ error: CrashlyticsNonFatalError, domain: CrashlyticsDomain? = nil) {
+        guard configuration.isEnabled else { return }
+        let resolvedDomain = domain ?? configuration.defaultDomain
+        configuration.backend.record(error: error.asNSError(domain: resolvedDomain.rawValue))
     }
 
-    /// Convenience helper to record a non-fatal message without manually
-    /// constructing a `CrashlyticsNonFatalError`.
-    static func recordMessage(_ message: String,
-                              domain: String,
-                              file: String = #fileID,
-                              function: String = #function,
-                              line: UInt = #line,
-                              code: Int = 0) {
-        let error = CrashlyticsNonFatalError(message, file, function, line, code)
-        Crashlytics.crashlytics().record(error: error.asNSError(domain: domain))
+    public static func reportNonFatal(error: CrashlyticsNonFatalError, domain: String) {
+        shared.reportNonFatal(error: error, domain: CrashlyticsDomain(domain))
+    }
+
+    public static func report(_ error: CrashlyticsNonFatalError, domain: String) {
+        shared.report(error, domain: CrashlyticsDomain(domain))
     }
 }
 
 /// Non-fatal error captured by Crashlytics with rich context.
-struct CrashlyticsNonFatalError: LocalizedError {
-    let message: String
-    let file: String
-    let function: String
-    let line: UInt
-    let code: Int
+public struct CrashlyticsNonFatalError: LocalizedError {
+    public let message: String
+    public let file: String
+    public let function: String
+    public let line: UInt
+    public let code: Int
 
-    init(_ message: String, _ file: String, _ function: String, _ line: UInt, _ code: Int = 0) {
+    public init(_ message: String, _ file: String, _ function: String, _ line: UInt, _ code: Int = 0) {
         self.message = message
         self.file = file
         self.function = function
@@ -69,9 +146,23 @@ struct CrashlyticsNonFatalError: LocalizedError {
         self.code = code
     }
 
-    var errorDescription: String? { message }
+    public init(
+        _ message: String,
+        file: StaticString = #fileID,
+        function: StaticString = #function,
+        line: UInt = #line,
+        code: Int = 0
+    ) {
+        self.message = message
+        self.file = "\(file)"
+        self.function = "\(function)"
+        self.line = line
+        self.code = code
+    }
 
-    var userInfo: [String: Any] {
+    public var errorDescription: String? { message }
+
+    public var userInfo: [String: Any] {
         [
             CrashlyticsNonFatalError.descriptionKey: message,
             CrashlyticsNonFatalError.fileKey: file,
@@ -80,7 +171,7 @@ struct CrashlyticsNonFatalError: LocalizedError {
         ]
     }
 
-    func asNSError(domain: String) -> NSError {
+    public func asNSError(domain: String) -> NSError {
         NSError(domain: domain, code: code, userInfo: userInfo)
     }
 }
@@ -96,29 +187,83 @@ extension CrashlyticsNonFatalError {
 /// Assert-like helper that reports a non-fatal issue to Crashlytics when `condition` is false.
 /// If the environment variable `ASSERT_NON_FATAL_CRASHLYTICS` is present, an assertionFailure
 /// will also be triggered (primarily useful during local development/CI).
-func nonFatalCrashlytics(_ condition: @autoclosure () -> Bool,
-                         _ message: @autoclosure () -> String,
-                         domain: CrashlyticsDomain = .tribuneru,
-                         file: StaticString = #fileID,
-                         function: StaticString = #function,
-                         line: UInt = #line,
-                         code: UInt? = 0) {
+public func nonFatalCrashlytics(
+    _ condition: @autoclosure () -> Bool,
+    _ message: @autoclosure () -> String,
+    domain: CrashlyticsDomain? = nil,
+    file: StaticString = #fileID,
+    function: StaticString = #function,
+    line: UInt = #line,
+    code: Int = 0
+) {
     let passed = condition()
     if passed { return }
 
-    if ProcessInfo.processInfo.environment["ASSERT_NON_FATAL_CRASHLYTICS"] != nil {
+    let assertionEnvironmentVariable = CrashlyticsManager.shared.configuration.assertionEnvironmentVariable
+    if ProcessInfo.processInfo.environment[assertionEnvironmentVariable] != nil {
         // We already know the condition failed, so call assertionFailure directly.
         assertionFailure(message())
     }
 
-    CrashlyticsManager.reportNonFatal(
-        error: CrashlyticsNonFatalError(message(), "\(file)", "\(function)", line, Int(code ?? 0)),
-        domain: domain.rawValue
+    CrashlyticsManager.shared.reportNonFatal(
+        error: CrashlyticsNonFatalError(message(), file: file, function: function, line: line, code: code),
+        domain: domain
     )
 }
 
 /// Namespaces the crash reporting domain for easier categorization in Crashlytics.
-enum CrashlyticsDomain: String {
-    case tribuneru
+public struct CrashlyticsDomain: Hashable, RawRepresentable, ExpressibleByStringLiteral {
+    public let rawValue: String
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public init(_ rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public init(stringLiteral value: StringLiteralType) {
+        self.rawValue = value
+    }
 }
 
+public extension CrashlyticsDomain {
+    static let `default`: CrashlyticsDomain = .init(
+        rawValue: Bundle.main.bundleIdentifier ?? "crashlytics.manager.spm"
+    )
+}
+
+private struct NoopCrashlyticsBackend: CrashlyticsBackend {
+    func log(_ message: String) {}
+    func record(error: NSError) {}
+    func setUserID(_ userID: String) {}
+    func setCustomValue(_ value: Any?, forKey key: String) {}
+    func setCrashlyticsCollectionEnabled(_ enabled: Bool) {}
+}
+
+#if canImport(FirebaseCrashlytics)
+private struct FirebaseCrashlyticsBackend: CrashlyticsBackend {
+    private let crashlytics = Crashlytics.crashlytics()
+
+    func log(_ message: String) {
+        crashlytics.log(message)
+    }
+
+    func record(error: NSError) {
+        crashlytics.record(error: error)
+    }
+
+    func setUserID(_ userID: String) {
+        crashlytics.setUserID(userID)
+    }
+
+    func setCustomValue(_ value: Any?, forKey key: String) {
+        crashlytics.setCustomValue(value, forKey: key)
+    }
+
+    func setCrashlyticsCollectionEnabled(_ enabled: Bool) {
+        crashlytics.setCrashlyticsCollectionEnabled(enabled)
+    }
+}
+#endif
