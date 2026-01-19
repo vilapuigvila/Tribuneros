@@ -79,7 +79,7 @@
          <EnvironmentVariable
             key = "ASSERT_NON_FATAL_CRASHLYTICS"
             value = "YES"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
       </EnvironmentVariables>
    </LaunchAction>

@@ -26,6 +26,7 @@ struct TribunerosApp: App {
     
     init() {
         CrashlyticsManager.shared.configure()
+        CrashlyticsHelper.send(false, "testng", domain: .cyclocross)
     }
     
     var body: some Scene {
@@ -33,5 +34,20 @@ struct TribunerosApp: App {
             TabBarView()
         }
         .modelContainer(sharedModelContainer)
+    }
+}
+
+extension CrashlyticsDomain {
+    static let races = CrashlyticsDomain("races")
+    static let cyclocross = CrashlyticsDomain("cyclocross")
+}
+
+struct CrashlyticsHelper {
+    static func send(
+        _ condition: @autoclosure () -> Bool,
+        _ message: @autoclosure () -> String,
+        domain: CrashlyticsDomain,
+    ) {
+        nonFatalCrashlytics(condition(), message(), domain: domain)
     }
 }
