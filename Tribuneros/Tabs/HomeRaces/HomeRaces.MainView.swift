@@ -536,16 +536,19 @@ private struct RaceResultCard: View {
                 Spacer(minLength: 0)
             }
 
-            VStack(spacing: 6) {
-                ForEach(Array(race.podium.prefix(3).enumerated()), id: \.element.id) { index, winner in
-                    PodiumRow(
-                        position: "\(index + 1)",
-                        countryCode: winner.countryCode,
-                        name: winner.name,
-                        time: winner.time,
-                        spoilersEnabled: spoilersEnabled
-                    )
+            if spoilersEnabled {
+                VStack(spacing: 6) {
+                    ForEach(Array(race.podium.prefix(3).enumerated()), id: \.element.id) { index, winner in
+                        PodiumRow(
+                            position: "\(index + 1)",
+                            countryCode: winner.countryCode,
+                            name: winner.name,
+                            time: winner.time,
+                            spoilersEnabled: spoilersEnabled
+                        )
+                    }
                 }
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
         .padding(12)
@@ -555,6 +558,7 @@ private struct RaceResultCard: View {
                 .stroke(Color.tribuneru(.white(level: 0.12)), lineWidth: 1)
         )
         .cornerRadius(14)
+        .animation(.easeInOut(duration: 0.3), value: spoilersEnabled)
     }
 
     private struct PodiumRow: View {
@@ -667,8 +671,40 @@ private struct TomorrowTimelineRow: View {
 
 // MARK: - Previews -
 
-#Preview("Loaded") {
-    let nextToFinish: [HomeRaces.Representable.RaceNext] = [
+private struct HomeRacesLoadedPreview: View {
+    @State private var spoilerToday = true
+    @State private var spoilerYesterday = true
+
+    var body: some View {
+        HomeRaces.MainView(state: .loaded(representable)) { action in
+            switch action {
+            case .spoilerModeResultToday:
+                spoilerToday.toggle()
+            case .spoilerModeResultYesterday:
+                spoilerYesterday.toggle()
+            default:
+                break
+            }
+        }
+    }
+
+    private var representable: HomeRaces.Representable {
+        HomeRaces.Representable(
+            sections: HomeRaces.Representable.Section(
+                title: "",
+                spoilerMode: .init(
+                    isSpoilerModeResultsToday: spoilerToday,
+                    isSpoilerModeResultsYesterday: spoilerYesterday
+                ),
+                nextToFinish: nextToFinish,
+                racesFinished: todayFinished,
+                yesterdayResults: yesterdayResults,
+                tomorrowRaces: tomorrowRaces
+            )
+        )
+    }
+
+    private let nextToFinish: [HomeRaces.Representable.RaceNext] = [
         HomeRaces.Representable.RaceNext(
             eta: "14:00",
             duration: "2H",
@@ -710,7 +746,7 @@ private struct TomorrowTimelineRow: View {
             flagCode: "it"
         )
     ]
-    let todayFinished: [HomeRaces.Representable.RaceFinished] = [
+    private let todayFinished: [HomeRaces.Representable.RaceFinished] = [
         HomeRaces.Representable.RaceFinished(
             race: "Paris-Nice",
             raceDetails: "General classification",
@@ -745,7 +781,7 @@ private struct TomorrowTimelineRow: View {
             isCancel: false
         )
     ]
-    let yesterdayResults: [HomeRaces.Representable.RaceFinished] = [
+    private let yesterdayResults: [HomeRaces.Representable.RaceFinished] = [
         HomeRaces.Representable.RaceFinished(
             race: "Tirreno Adriatico etapa 2",
             raceDetails: "General classification",
@@ -780,7 +816,7 @@ private struct TomorrowTimelineRow: View {
             isCancel: false
         )
     ]
-    let tomorrowRaces = [
+    private let tomorrowRaces = [
         HomeRaces.Representable.RaceTomorrow(
             start: "11:10",
             eta: "15:45",
@@ -800,22 +836,10 @@ private struct TomorrowTimelineRow: View {
             url: nil
         )
     ]
-    let repre = HomeRaces.Representable(
-        sections: HomeRaces.Representable.Section(
-            title: "",
-            spoilerMode: .init(
-                isSpoilerModeResultsToday: true,
-                isSpoilerModeResultsYesterday: true
-            ),
-            nextToFinish: nextToFinish,
-            racesFinished: todayFinished,
-            yesterdayResults: yesterdayResults,
-            tomorrowRaces: tomorrowRaces
-        )
-    )
-    HomeRaces.MainView(state: .loaded(repre)) { _ in
-        
-    }
+}
+
+#Preview("Loaded") {
+    HomeRacesLoadedPreview()
 }
 
 
