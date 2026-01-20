@@ -43,15 +43,16 @@ struct LoaderView: View {
             .shadow(color: Color.accentColor.opacity(0.35), radius: 12)
             .onAppear { rotate = true }
 
-            Text(title)
+            TribuneruText(content: title, style: .size14WeightRegular)
                 .font(.body)
                 .bold()
+                .lineLimit(nil)
                 .multilineTextAlignment(.center)
 
             if let subtitle {
-                Text(subtitle)
+                TribuneruText(content: subtitle, style: .size12WeightRegular, color: .secondary)
                     .font(.footnote)
-                    .foregroundColor(.secondary)
+                    .lineLimit(nil)
                     .multilineTextAlignment(.center)
             }
         }

@@ -29,9 +29,8 @@ struct HeaderRaceCardView: View {
     private func buildTitleNextToFinishCardView() -> some View {
         VStack {
             HStack {
-                Text(title)
+                TribuneruText(content: title, style: .size16WeightBold, color: .white)
                     .font(.system(size: 16, weight: .bold, design: .default))
-                    .foregroundColor(.white) // avvp color
                 Spacer()
                 
                 if let spoilerModeAction {
@@ -59,9 +58,8 @@ struct HeaderRaceCardView: View {
 //            withAnimation(.spring(response: 0.65, dampingFraction: 0.75)) {            }
         } label: {
             HStack(spacing: 4) {
-                Text(title)
+                TribuneruText(content: title, style: .size12WeightRegular, color: .gray)
                     .font(.system(size: 11, weight: .bold, design: .monospaced))
-                    .foregroundStyle(.gray)
                     .padding(.all, 8)
                     .overlay(
                         RoundedRectangle(cornerRadius: 5)

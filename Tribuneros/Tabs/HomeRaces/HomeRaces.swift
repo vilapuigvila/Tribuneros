@@ -46,14 +46,16 @@ struct LoadingViewContainer<R: DecoupledView & View>: View {
         Group {
             switch representable {
             case .idle:
-                Text("Hello, World!")
+                TribuneruText(content: "Hello, World!", style: .size14WeightRegular)
+                    .font(.body)
             case .loading:
                 ProgressView()
             case .loaded(let representable):
                 R(representable: representable) { action(.content($0)) }
             case .error(let errorView):
                 VStack {
-                    Text(errorView.title)
+                    TribuneruText(content: errorView.title, style: .size14WeightRegular)
+                        .font(.body)
                         .onTapGesture {
                             action(.retry)
                         }
@@ -203,8 +205,10 @@ struct DemoContentView: View, DecoupledView {
     
     var body: some View {
         VStack {
-            Text(representable.title)
-            Text(representable.username)
+            TribuneruText(content: representable.title, style: .size14WeightRegular)
+                .font(.body)
+            TribuneruText(content: representable.username, style: .size14WeightRegular)
+                .font(.body)
             
             Button("Edit") {
                 action(.edit)

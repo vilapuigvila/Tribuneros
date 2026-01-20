@@ -39,8 +39,7 @@ struct EmptyResultsCardView: View {
             Spacer()
 
             GeometryReader { geo in
-                Text(info)
-                    .tribuneruStyle(.size14LightMonospaced)
+                TribuneruText(content: info, style: .size14LightMonospaced)
                     .padding(12)
                     .offset(x: textOffset)
                     .onAppear {

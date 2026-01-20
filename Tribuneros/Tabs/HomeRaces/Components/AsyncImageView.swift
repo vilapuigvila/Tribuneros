@@ -99,7 +99,8 @@ struct AsyncImageView: View {
             )
             .frame(width: 75)
 
-            Text("Loading...")
+            TribuneruText(content: "Loading...", style: .size14WeightRegular)
+                .font(.body)
             Spacer()
         }
         .padding()

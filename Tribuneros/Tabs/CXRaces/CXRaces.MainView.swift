@@ -22,11 +22,13 @@ extension CXRaces {
             Group {
                 switch state {
                 case .idle:
-                    Text("idle ...")
+                    TribuneruText(content: "idle ...", style: .size14WeightRegular)
+                        .font(.body)
                 case .loading:
                     LoaderView(title: "Requesting latest results..")
                 case .error(let error):
-                    Text("Error: \(error.localizedDescription)")
+                    TribuneruText(content: "Error: \(error.localizedDescription)", style: .size14WeightRegular)
+                        .font(.body)
                 case .loaded(let representable):
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 16) {

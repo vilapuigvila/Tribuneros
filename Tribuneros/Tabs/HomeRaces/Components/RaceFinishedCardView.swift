@@ -65,10 +65,9 @@ struct RaceFinishedCardView: View {
     private func buildPodiumInfo(podium: Podium, width: CGFloat) -> some View {
         HStack {
             /// Name
-            Text(podium.name)
+            TribuneruText(content: podium.name, style: .size14WeightSemiBold, color: .white)
                 .lineLimit(1)
                 .font(.system(size: Sizes.fontSizeLabelsInfo, weight: .bold, design: .monospaced))
-                .foregroundColor(.white) // avvp color
                 .frame(width: width * (podium.team.isEmpty ? 0.7 : 0.65), alignment: .leading)
                 .debugBackground()
             
@@ -76,10 +75,9 @@ struct RaceFinishedCardView: View {
             
             /// Team
             if !podium.team.isEmpty {
-                Text(podium.team)
+                TribuneruText(content: podium.team, style: .size12WeightRegular, color: .white)
                     .lineLimit(1)
                     .font(.system(size: Sizes.fontSizeLabelsInfo-1, weight: .semibold, design: .monospaced))
-                    .foregroundColor(.white) // avvp color
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .debugBackground()
                 
@@ -87,10 +85,9 @@ struct RaceFinishedCardView: View {
             }
             
             /// Time
-            Text(podium.time)
+            TribuneruText(content: podium.time, style: .size12WeightRegular, color: .white)
                 .lineLimit(1)
                 .font(.system(size: Sizes.fontSizeLabelsInfo-1, weight: .regular, design: .monospaced))
-                .foregroundColor(.white) // avvp color
                 .frame(maxWidth: .infinity, alignment: podium.team.isEmpty ? .trailing : .leading)
                 .debugBackground()
         }
@@ -98,10 +95,9 @@ struct RaceFinishedCardView: View {
     
     private func buildPositionAndFlag(position: String, countryCode: String) -> some View {
         HStack(spacing: 2) {
-            Text(position)
+            TribuneruText(content: position, style: .size12WeightRegular, color: .white)
                 .lineLimit(1)
                 .font(.system(size: Sizes.fontSizeLabelsInfo, weight: .regular, design: .monospaced))
-                .foregroundColor(.white) // avvp color
                 .debugBackground(color: .red, opacity: 0.3)
             CachedImageView(imageUrl: URL(string: "https://flagcdn.com/w40/\(countryCode).png")!)
 //            AsyncImageView(url: URL(string: "https://flagcdn.com/w40/\(countryCode).png")!)

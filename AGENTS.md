@@ -34,21 +34,4 @@
 - Firebase configuration lives in `Tribuneros/GoogleService-Info.plist`; avoid committing environment-specific secrets or credentials.
 - Useful debug flags: `MOCKING=1` (mock data) and `DEBUG_BACKGROUND=1` (highlight view backgrounds in Debug).
 
-## Text in SwiftUI
-- Not use Text("")
-- Use TribuneruText()
 
-# Colors
-- use `Color.tribuneru(.somecase)`
-
-## Images
-- For urls use `CachedImageView(imageUrl: <someOptionalURL>, cornerRadius: 1)`
-
-# Style argument naming
-- more than one argument write in multiline style:
-    `SomeStructOrClass(
-         arg1: <>,
-         arg1: <>,
-         arg2: <>,
-         and so on
-     )`

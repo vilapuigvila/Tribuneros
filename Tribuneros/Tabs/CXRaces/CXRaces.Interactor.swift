@@ -96,13 +96,5 @@ extension CXRaces {
                 }
             }
         }
-        /*
-        private func requestLatestResults() async throws -> DTO.CX24Homepage {
-            try await Requester.getCxEvents()
-        }
-
-        private func requestCalendarEvents() async throws -> [DTO.CXCalendarEvent] {
-            try await Requester.getCxAllCalendarEvents()
-        }*/
     }
 }

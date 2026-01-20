@@ -1,0 +1,33 @@
+{
+  "configurations" : [
+    {
+      "id" : "9A482235-C017-4DAF-839C-34F028BE161E",
+      "name" : "Default",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Tribuneros.xcodeproj",
+      "identifier" : "50B365762D6489EF000DA4AC",
+      "name" : "Tribuneros"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "skippedTests" : [
+        "TribunerosTests",
+        "TribunerosTests\/testExample()"
+      ],
+      "target" : {
+        "containerPath" : "container:Tribuneros.xcodeproj",
+        "identifier" : "50BEF7D1A40147509E2CE915",
+        "name" : "TribunerosTests"
+      }
+    }
+  ],
+  "version" : 1
+}

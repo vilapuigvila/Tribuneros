@@ -17,9 +17,17 @@ struct ContentView: View {
             List {
                 ForEach(items) { item in
                     NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
+                        TribuneruText(
+                            content: "Item at \(item.timestamp.formatted(Date.FormatStyle(date: .numeric, time: .standard)))",
+                            style: .size14WeightRegular
+                        )
+                        .font(.body)
                     } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+                        TribuneruText(
+                            content: item.timestamp.formatted(Date.FormatStyle(date: .numeric, time: .standard)),
+                            style: .size14WeightRegular
+                        )
+                        .font(.body)
                     }
                 }
                 .onDelete(perform: deleteItems)
@@ -35,7 +43,8 @@ struct ContentView: View {
                 }
             }
         } detail: {
-            Text("Select an item")
+            TribuneruText(content: "Select an item", style: .size14WeightRegular)
+                .font(.body)
         }
     }
 

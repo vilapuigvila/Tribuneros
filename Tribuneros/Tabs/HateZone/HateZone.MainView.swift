@@ -89,9 +89,8 @@ extension HateZone {
                     List {
                         ForEach(representable, id: \.self) { item in
                             NavigationLink(destination: SafariView(url: item.url)) {
-                                Text(item.title)
+                                TribuneruText(content: item.title, style: .size20WeightBold, color: .white)
                                     .font(.system(size: 20, weight: .bold, design: .rounded))
-                                    .foregroundColor(.white)
                                     .padding()
                             }
                             .listRowBackground(Color.clear)

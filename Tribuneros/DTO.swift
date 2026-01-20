@@ -167,6 +167,7 @@ extension DTO {
             let team: String
             let time: String
             let countryFlagURL: URL?
+            let raceVideosURL: URL?
         }
 
         let sections: [Section]

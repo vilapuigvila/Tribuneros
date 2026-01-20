@@ -14,35 +14,56 @@ struct RaceDetailView: View {
     @State private var selectedCategory: Int = 0
     @State private var isLoading: Bool = true
     @State private var errorMessage: String?
+    @State private var videoSheet: VideoSheet?
     
+    init(
+        race: DTO.CX24Homepage.Race,
+        categoryResults: [String: [DTO.CX24Homepage.CategoryResult]] = [:]
+    ) {
+        self.race = race
+        _categoryResults = State(initialValue: categoryResults)
+        _isLoading = State(initialValue: categoryResults.isEmpty)
+    }
+
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                headerView
-                
-                if isLoading {
-                    LoaderView(title: "Loading results...")
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 40)
-                } else if let error = errorMessage {
-                    TribuneruText(
-                        content: "Error: \(error)",
-                        style: .size14WeightRegular,
-                        color: .red
-                    )
-                    .padding()
-                } else {
-                    categoryTabsView
-                    resultsListView
+        ZStack(alignment: .bottom) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    headerView
+                    
+                    if isLoading {
+                        LoaderView(title: "Loading results...")
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 40)
+                    } else if let error = errorMessage {
+                        TribuneruText(
+                            content: "Error: \(error)",
+                            style: .size14WeightRegular,
+                            color: .red
+                        )
+                        .padding()
+                    } else {
+                        categoryTabsView
+                        resultsListView
+                    }
+                    
+                    Spacer()
                 }
-                
-                Spacer()
+                .padding(8)
+                .padding(.bottom, 88)
             }
-            .padding(8)
+            
+            raceVideosFloatingButton
         }
         .background(.black)
         .preferredColorScheme(.dark)
+        .fullScreenCover(item: $videoSheet) { sheet in
+            YoutubeVideoView(url: sheet.url)
+        }
         .task {
+            if !categoryResults.isEmpty {
+                return
+            }
             isLoading = true
             errorMessage = nil
             do {
@@ -113,7 +134,7 @@ struct RaceDetailView: View {
             if selectedCategory < race.categories.count {
                 let category = race.categories[selectedCategory]
                 let results = categoryResults[category.title] ?? []
-                
+
                 if results.isEmpty {
                     TribuneruText(
                         content: "No results available",
@@ -183,6 +204,102 @@ struct RaceDetailView: View {
         .padding(.vertical, 8)
         .padding(.bottom, 4)
     }
+
+    private var raceVideosURL: URL? {
+        for results in categoryResults.values {
+            if let url = results.first?.raceVideosURL {
+                return url
+            }
+        }
+        return nil
+    }
+
+    private var raceVideosButtonState: (title: String, systemImage: String, url: URL?) {
+        if isLoading {
+            return (
+                title: "Loading race videos...",
+                systemImage: "video",
+                url: nil
+            )
+        }
+        
+        if errorMessage != nil {
+            return (
+                title: "Race videos unavailable",
+                systemImage: "video.slash",
+                url: nil
+            )
+        }
+        
+        if let videosURL = raceVideosURL {
+            return (
+                title: "Race videos",
+                systemImage: "play.rectangle.fill",
+                url: videosURL
+            )
+        }
+        
+        return (
+            title: "No race videos available",
+            systemImage: "video.slash",
+            url: nil
+        )
+    }
+    
+    private var raceVideosFloatingButton: some View {
+        let buttonState = raceVideosButtonState
+        let isEnabled = buttonState.url != nil
+        let textColor: Color = isEnabled
+            ? Color.tribuneru(.white(level: 1))
+            : Color.tribuneru(.gray)
+        let iconColor: Color = isEnabled
+            ? Color.tribuneru(
+                .green(
+                    brightness: 1,
+                    saturation: 1
+                )
+            )
+            : Color.tribuneru(.gray)
+        let backgroundOpacity: Double = isEnabled ? 0.9 : 0.4
+        
+        return Button {
+            guard let url = buttonState.url else { return }
+            videoSheet = VideoSheet(url: url)
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: buttonState.systemImage)
+                    .foregroundStyle(iconColor)
+                
+                TribuneruText(
+                    content: buttonState.title,
+                    style: .size14WeightRegular,
+                    color: textColor
+                )
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 12)
+            .background(
+                Color.tribuneru(
+                    .green(
+                        brightness: 0.5,
+                        saturation: 0.9
+                    )
+                )
+                .opacity(backgroundOpacity)
+            )
+            .cornerRadius(8)
+        }
+        .buttonStyle(.plain)
+        .disabled(!isEnabled)
+        .clipShape(Capsule())
+        .padding(16)
+        .padding(.bottom, 16)
+    }
+}
+
+private struct VideoSheet: Identifiable {
+    let id = UUID()
+    let url: URL
 }
 
 private struct CategoryTabButton: View {
@@ -263,6 +380,67 @@ private struct ResultRow: View {
 #if DEBUG
 
 #Preview("Race Detail") {
+    let mockResults: [String: [DTO.CX24Homepage.CategoryResult]] = [
+        "Men Elite": [
+            .init(
+                position: "1",
+                rider: "Eli Iserbyt",
+                age: "27",
+                team: "Pauwels Sauzen",
+                time: "1:00:12",
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+                raceVideosURL: URL(string: "https://www.youtube.com/watch?v=EShExWlESGs")
+            ),
+            .init(
+                position: "2",
+                rider: "Laurens Sweeck",
+                age: "31",
+                team: "Crelan-Corendon",
+                time: "+0:15",
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+                raceVideosURL: URL(string: "https://www.youtube.com/watch?v=EShExWlESGs")
+            ),
+            .init(
+                position: "3",
+                rider: "Michael Vanthourenhout",
+                age: "30",
+                team: "Pauwels Sauzen",
+                time: "+0:32",
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+                raceVideosURL: URL(string: "https://www.youtube.com/watch?v=EShExWlESGs")
+            )
+        ],
+        "Women Elite": [
+            .init(
+                position: "1",
+                rider: "Fem van Empel",
+                age: "23",
+                team: "Visma | Lease a Bike",
+                time: "49:22",
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png"),
+                raceVideosURL: URL(string: "https://www.youtube.com/watch?v=EShExWlESGs")
+            ),
+            .init(
+                position: "2",
+                rider: "Lucinda Brand",
+                age: "34",
+                team: "Baloise Trek",
+                time: "+0:12",
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png"),
+                raceVideosURL: URL(string: "https://www.youtube.com/watch?v=EShExWlESGs")
+            ),
+            .init(
+                position: "3",
+                rider: "Puck Pieterse",
+                age: "22",
+                team: "Fenix-Deceuninck",
+                time: "+0:20",
+                countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png"),
+                raceVideosURL: URL(string: "https://www.youtube.com/watch?v=EShExWlESGs")
+            )
+        ]
+    ]
+
     NavigationStack {
         RaceDetailView(
             race: .init(
@@ -286,7 +464,8 @@ private struct ResultRow: View {
                         podium: []
                     )
                 ]
-            )
+            ),
+            categoryResults: mockResults
         )
     }
 }

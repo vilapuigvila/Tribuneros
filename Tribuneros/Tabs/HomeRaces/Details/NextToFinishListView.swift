@@ -60,16 +60,15 @@ struct NextToFinishListView: View {
     }
     
     private func buildTextForRaceFinishedValue(_ text: String, width: CGFloat, fontSize: CGFloat = 14.0) -> some View {
-        Text(text)
+        TribuneruText(content: text, style: .size14WeightSemiBold)
             .font(.system(size: fontSize, weight: .bold, design: .default))
             .lineLimit(1)
             .frame(width: width, alignment: .leading)
     }
     
     private func buildTextForHeaderView(_ text: String, width: CGFloat) -> some View {
-        Text(text)
+        TribuneruText(content: text, style: .size14LightMonospaced, color: .gray)
             .font(.system(size: 14, weight: .regular, design: .monospaced))
-            .foregroundStyle(.gray)
             .frame(width: width, alignment: .leading)
     }
 }

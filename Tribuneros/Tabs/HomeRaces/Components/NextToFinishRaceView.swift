@@ -57,16 +57,19 @@ struct NextToFinishRaceView: View {
                         infoBtnOpacity = true
                     }
                 } label: {
-                    Text(isFullList ? "Show less" : "More info")
-                        .font(.system(size: 12, weight: .semibold, design: .default))
-                        .foregroundStyle(.link.opacity(0.8))
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 24)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 4)
-                                .stroke(Color.gray.opacity(0.6), lineWidth: 0.5)
-                                .opacity(infoBtnOpacity ? 1 : 0)
-                        )
+                    TribuneruText(
+                        content: isFullList ? "Show less" : "More info",
+                        style: .size12WeightRegular,
+                        color: .cyan.opacity(0.8)
+                    )
+                    .font(.system(size: 12, weight: .semibold, design: .default))
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 24)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(Color.gray.opacity(0.6), lineWidth: 0.5)
+                            .opacity(infoBtnOpacity ? 1 : 0)
+                    )
                 }
                 .buttonStyle(PlainButtonStyle())
                 .padding(.top, 18)
@@ -76,10 +79,9 @@ struct NextToFinishRaceView: View {
     }
     
     private func buildTextForHeaderView(_ text: String, width: CGFloat) -> some View {
-        Text(text)
+        TribuneruText(content: text, style: .size12WeightRegular, color: .gray)
             .font(.system(size: 11, weight: .regular, design: .monospaced))
             .background(.gray.opacity(0.2))
-            .foregroundStyle(.gray)
             .frame(width: width, alignment: .leading)
     }
         
@@ -98,7 +100,7 @@ struct NextToFinishRaceView: View {
     }
     
     private func buildTextForRaceFinishedValue(_ text: String, width: CGFloat) -> some View {
-        Text(text)
+        TribuneruText(content: text, style: .size14WeightSemiBold)
             .font(.system(size: 13, weight: .bold, design: .default))
             .lineLimit(1)
             .frame(width: width, alignment: .leading)
