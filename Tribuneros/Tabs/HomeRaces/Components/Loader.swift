@@ -50,7 +50,7 @@ struct LoaderView: View {
                 .multilineTextAlignment(.center)
 
             if let subtitle {
-                TribuneruText(content: subtitle, style: .size12WeightRegular, color: .secondary)
+                TribuneruText(content: subtitle, style: .size13WeightRegular, color: .secondary)
                     .font(.footnote)
                     .lineLimit(nil)
                     .multilineTextAlignment(.center)

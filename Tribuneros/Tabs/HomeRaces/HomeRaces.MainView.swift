@@ -153,7 +153,7 @@ extension HomeRaces {
                 VStack(alignment: .leading, spacing: 1) {
                     TribuneruText(
                         content: title,
-                        style: .size10WeightRegular,
+                        style: .size11WeightRegular,
                         color: .white.opacity(0.65)
                     )
                     TribuneruText(
@@ -259,7 +259,7 @@ extension HomeRaces {
             } label: {
                 TribuneruText(
                     content: title,
-                    style: .size12WeightRegular,
+                    style: .size13WeightRegular,
                     color: resultsSelection == selection ? .black : .white.opacity(0.85)
                 )
                 .padding(.vertical, 8)
@@ -304,7 +304,7 @@ extension HomeRaces {
                         .font(.system(size: 12, weight: .semibold, design: .default))
                     TribuneruText(
                         content: isOn ? "Spoilers on" : "Spoilers off",
-                        style: .size10WeightRegular,
+                        style: .size11WeightRegular,
                         color: isOn ? .black : .white.opacity(0.85)
                     )
                 }
@@ -360,7 +360,7 @@ extension HomeRaces {
                 )
                 TribuneruText(
                     content: subtitle,
-                    style: .size12WeightRegular,
+                    style: .size13WeightRegular,
                     color: .white.opacity(0.7)
                 )
             }
@@ -377,7 +377,7 @@ extension HomeRaces {
                     )
                     TribuneruText(
                         content: subtitle,
-                        style: .size12WeightRegular,
+                        style: .size13WeightRegular,
                         color: .white.opacity(0.7)
                     )
                 }
@@ -486,7 +486,7 @@ private struct NextToFinishRaceCard: View {
         var body: some View {
             TribuneruText(
                 content: text,
-                style: .size10WeightRegular,
+                style: .size11WeightRegular,
                 color: .white.opacity(0.85)
             )
             .padding(.vertical, 4)
@@ -527,7 +527,7 @@ private struct RaceResultCard: View {
                     )
                     TribuneruText(
                         content: race.raceDetails,
-                        style: .size12WeightRegular,
+                        style: .size13WeightRegular,
                         color: .white.opacity(0.7),
                         lineLimit: 2
                     )
@@ -586,7 +586,7 @@ private struct RaceResultCard: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     TribuneruText(
                         content: time,
-                        style: .size12WeightRegular,
+                        style: .size13WeightRegular,
                         color: .white.opacity(0.7)
                     )
                 } else {
@@ -596,7 +596,7 @@ private struct RaceResultCard: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     TribuneruText(
                         content: "hidden",
-                        style: .size12WeightRegular,
+                        style: .size13WeightRegular,
                         color: .white.opacity(0.55)
                     )
                 }
@@ -649,7 +649,7 @@ private struct TomorrowTimelineRow: View {
                 if !race.eta.isEmpty {
                     TribuneruText(
                         content: "ETA \(race.eta)",
-                        style: .size10WeightRegular,
+                        style: .size11WeightRegular,
                         color: Color.tribuneru(.green(brightness: 0.85, saturation: 0.8))
                     )
                 }

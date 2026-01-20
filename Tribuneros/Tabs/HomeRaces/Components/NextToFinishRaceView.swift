@@ -59,7 +59,7 @@ struct NextToFinishRaceView: View {
                 } label: {
                     TribuneruText(
                         content: isFullList ? "Show less" : "More info",
-                        style: .size12WeightRegular,
+                        style: .size13WeightRegular,
                         color: .cyan.opacity(0.8)
                     )
                     .font(.system(size: 12, weight: .semibold, design: .default))
@@ -79,7 +79,7 @@ struct NextToFinishRaceView: View {
     }
     
     private func buildTextForHeaderView(_ text: String, width: CGFloat) -> some View {
-        TribuneruText(content: text, style: .size12WeightRegular, color: .gray)
+        TribuneruText(content: text, style: .size13WeightRegular, color: .gray)
             .font(.system(size: 11, weight: .regular, design: .monospaced))
             .background(.gray.opacity(0.2))
             .frame(width: width, alignment: .leading)

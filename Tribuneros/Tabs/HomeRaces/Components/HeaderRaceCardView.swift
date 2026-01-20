@@ -58,7 +58,7 @@ struct HeaderRaceCardView: View {
 //            withAnimation(.spring(response: 0.65, dampingFraction: 0.75)) {            }
         } label: {
             HStack(spacing: 4) {
-                TribuneruText(content: title, style: .size12WeightRegular, color: .gray)
+                TribuneruText(content: title, style: .size13WeightRegular, color: .gray)
                     .font(.system(size: 11, weight: .bold, design: .monospaced))
                     .padding(.all, 8)
                     .overlay(

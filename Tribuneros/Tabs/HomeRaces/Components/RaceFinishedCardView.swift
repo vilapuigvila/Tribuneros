@@ -75,7 +75,7 @@ struct RaceFinishedCardView: View {
             
             /// Team
             if !podium.team.isEmpty {
-                TribuneruText(content: podium.team, style: .size12WeightRegular, color: .white)
+                TribuneruText(content: podium.team, style: .size13WeightRegular, color: .white)
                     .lineLimit(1)
                     .font(.system(size: Sizes.fontSizeLabelsInfo-1, weight: .semibold, design: .monospaced))
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -85,7 +85,7 @@ struct RaceFinishedCardView: View {
             }
             
             /// Time
-            TribuneruText(content: podium.time, style: .size12WeightRegular, color: .white)
+            TribuneruText(content: podium.time, style: .size13WeightRegular, color: .white)
                 .lineLimit(1)
                 .font(.system(size: Sizes.fontSizeLabelsInfo-1, weight: .regular, design: .monospaced))
                 .frame(maxWidth: .infinity, alignment: podium.team.isEmpty ? .trailing : .leading)
@@ -95,7 +95,7 @@ struct RaceFinishedCardView: View {
     
     private func buildPositionAndFlag(position: String, countryCode: String) -> some View {
         HStack(spacing: 2) {
-            TribuneruText(content: position, style: .size12WeightRegular, color: .white)
+            TribuneruText(content: position, style: .size13WeightRegular, color: .white)
                 .lineLimit(1)
                 .font(.system(size: Sizes.fontSizeLabelsInfo, weight: .regular, design: .monospaced))
                 .debugBackground(color: .red, opacity: 0.3)

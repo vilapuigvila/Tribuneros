@@ -47,7 +47,7 @@ struct NextToFinishRaceRow: View {
                 } else {
                     TribuneruText(
                         content: text,
-                        style: .size12WeightRegular
+                        style: .size13WeightRegular
                     )
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)

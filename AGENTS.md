@@ -34,4 +34,5 @@
 - Firebase configuration lives in `Tribuneros/GoogleService-Info.plist`; avoid committing environment-specific secrets or credentials.
 - Useful debug flags: `MOCKING=1` (mock data) and `DEBUG_BACKGROUND=1` (highlight view backgrounds in Debug).
 
-
+## Build
+- After making code changes, run: xcodebuild -project Tribuneros.xcodeproj -scheme Tribuneros -destination 'platform=iOS Simulator,name=iPhone 16e,OS=18.6' build

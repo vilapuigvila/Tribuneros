@@ -42,7 +42,7 @@ struct TomorrowRaceCardView: View {
                 Spacer()
                 
                 if races.count > 4 {
-                    TribuneruText(content: "+ info", style: .size10WeightRegular, color: .cyan)
+                    TribuneruText(content: "+ info", style: .size11WeightRegular, color: .cyan)
                         .font(.system(size: 9, weight: .bold, design: .default))
                         .frame(alignment: .bottomLeading)
                         .offset(y: -8)
@@ -56,7 +56,7 @@ struct TomorrowRaceCardView: View {
     }
     
     private func buildTextForHeaderView(_ text: String, width: CGFloat) -> some View {
-        TribuneruText(content: text, style: .size12WeightRegular, color: .gray)
+        TribuneruText(content: text, style: .size13WeightRegular, color: .gray)
             .font(.system(size: 11, weight: .regular, design: .monospaced))
             .frame(width: width, alignment: .leading)
 //            .background(.gray.opacity(0.1))
@@ -71,7 +71,7 @@ struct TomorrowRaceCardView: View {
     }
     
     private func buildTextForRaceFinishedValue(_ text: String, width: CGFloat) -> some View {
-        TribuneruText(content: text, style: .size12WeightRegular)
+        TribuneruText(content: text, style: .size13WeightRegular)
             .font(.system(size: 11, weight: .bold, design: .default))
             .lineLimit(1)
 //            .frame(maxWidth: .infinity, alignment: .leading)
