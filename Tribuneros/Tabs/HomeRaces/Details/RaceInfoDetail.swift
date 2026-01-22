@@ -22,6 +22,16 @@ struct NextToFinishRaceDetail: View {
 
     @State private var activeAlert: ActiveAlert?
     
+    init(
+        urlInfo: String,
+        raceInfo: DTO.RaceDetailInfo? = nil,
+        stageProfile: [DTO.StageProfile] = []
+    ) {
+        self.urlInfo = urlInfo
+        _raceInfo = State(initialValue: raceInfo)
+        _stageProfile = State(initialValue: stageProfile)
+    }
+    
     var body: some View {
         ZStack {
             Group {
@@ -42,6 +52,8 @@ struct NextToFinishRaceDetail: View {
         .animation(.easeInOut(duration: 0.75), value: (raceInfo != nil || isLoading))
         .background(Color.tribuneru(.greenCardBackground))
         .task {
+            guard !ProcessInfo.processInfo.isPreview else { return }
+            
             showLoader = false
             isLoading = true
             Task {
@@ -341,3 +353,31 @@ struct CyclistLoaderWithIcon: View {
         }
     }
 }
+
+#if DEBUG
+var raceInfo: DTO.RaceDetailInfo? = DTO.RaceDetailInfo(
+    title: "Tour du Lord — Stage 5",
+    date: "Apr 26, 2025",
+    startTime: "12:15",
+    classification: "Stage Race",
+    category: "UCI",
+    distance: "185.6 km",
+    departure: "Nice",
+    arrival: "Col du Something",
+    verticalMeters: "3,450 m",
+    profileURL: nil
+)
+
+var stageProfile: [DTO.StageProfile] = [
+    DTO.StageProfile(type: .profile, url: "https://example.com/profile.png"),
+    DTO.StageProfile(type: .climb, url: "https://example.com/climb.png")
+]
+
+#Preview("Loaded") {
+    NextToFinishRaceDetail(
+        urlInfo: "preview://race-detail",
+        raceInfo: raceInfo,
+        stageProfile: stageProfile
+    )
+}
+#endif
