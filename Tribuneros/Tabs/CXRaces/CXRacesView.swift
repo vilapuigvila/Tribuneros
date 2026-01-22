@@ -14,9 +14,6 @@ struct CXRacesRacesView: View {
         CXRaces.MainView(state: viewModel.stateView) {
             switch $0 {
             case .didAppeared:
-                guard viewModel.isRequiredRequestData else {
-                    return
-                }
                 viewModel.action(.didAppeared)
             default:
                 viewModel.action($0)

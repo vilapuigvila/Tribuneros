@@ -558,7 +558,7 @@ private struct RaceResultCard: View {
                 .stroke(Color.tribuneru(.white(level: 0.12)), lineWidth: 1)
         )
         .cornerRadius(14)
-        .animation(.easeInOut(duration: 0.3), value: spoilersEnabled)
+        .animation(.easeInOut(duration: 0.4), value: spoilersEnabled)
     }
 
     private struct PodiumRow: View {

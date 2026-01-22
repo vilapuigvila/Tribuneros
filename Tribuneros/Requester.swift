@@ -10,16 +10,20 @@ import Foundation
 import FoundationXML // Necessary for XML parsing on certain platforms
 #endif
 import `SwiftSoup` // Add SwiftSoup for HTML parsing
+import Alfy
 
 struct Requester {
     private static let baseURL = URL(string: "https://www.procyclingstats.com/")!
     private static let baseStringURL = "https://www.procyclingstats.com/"
+    static let cachedSession = CachedURLSession.shared
     
-    static func getLatestResults() async throws -> DTO.Home {
-        let url = URL(string: "https://www.procyclingstats.com/index.php")!
+    static func getLatestResults(for request: URLRequest) async throws -> DTO.Home {
 //        let url = URL(string: "https://www.procyclingstats.com/race/settimana-internazionale-coppi-e-bartali/2025/stage-3/info/profiles")!
+        
+//        let url = URL(string: "https://www.procyclingstats.com/index.php")!
+//        let request = URLRequest(url: url, timeoutInterval: 60*60)
         do {
-            let data = try await URLSession.shared.data(from: url).0
+            let data = try await cachedSession.data(for: request).0
             guard let htmlContent = String(data: data, encoding: .utf8) else {
                 throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
             }
@@ -45,6 +49,135 @@ struct Requester {
             throw NSError(domain: "Impossible parsing", code: 0, userInfo: nil)
         }
     }
+    
+    static func getNextToFinishRaceDetail(_ urlString: String) async throws -> DTO.RaceDetailInfo? {
+        let url = URL(string: urlString)!
+        let request = URLRequest(url: url, timeoutInterval: 60*60)
+        do {
+            let data = try await cachedSession.data(for: request).0
+            guard let htmlContent = String(data: data, encoding: .utf8) else {
+                throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
+            }
+            do {
+                let doc: Document = try SwiftSoup.parse(htmlContent)
+//                if let ul = try doc.select("ul.infolist").first() {
+                    var date: String = ""
+                    var startTime: String = ""
+                    var classification: String = ""
+                    var category: String = ""
+                    var distance: String = ""
+                    var departure: String = ""
+                    var arrival: String = ""
+                    var verticalMeters: String = ""
+                    
+                    let items = try doc.select("li")
+                    for item in items {
+                        let divs = try item.select("div")
+                        if divs.count >= 2 {
+                            let key = try divs[0].text().trimmingCharacters(in: .whitespacesAndNewlines)
+                            switch key {
+                            case _ where key.lowercased().contains("date"):
+                                date = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
+                            case _ where key.lowercased().contains("start time"):
+                                startTime = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
+                            case _ where key.lowercased().contains("classification"):
+                                classification = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
+                            case _ where key.lowercased().contains("category"):
+                                category = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
+                            case _ where key.lowercased().contains("distance"):
+                                distance = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
+                            case _ where key.lowercased().contains("departure"):
+                                departure = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
+                            case _ where key.lowercased().contains("arrival"):
+                                arrival = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
+                            case _ where key.lowercased().contains("vertical meters"):
+                                verticalMeters = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
+                            default: break
+                            }
+                        }
+                    }
+                    let title: String = {
+                        guard let metaDesc = try? doc.select("meta[name=description]").first(),
+                              let desc = try? metaDesc.attr("content")
+                        else {
+                            return ""
+                        }
+                        return desc
+                    }()
+                /*
+                    let imgURL: URL? = {
+                        guard let relativeURL: Element = try? doc.select("div.mt10 img").first(),
+                              let src: String = try? relativeURL.attr("src")
+                        else {
+                            return nil
+                        }
+                        return URL(string: "\(baseURL)\(src)")
+                    }()*/
+                    let raceInfo = DTO.RaceDetailInfo(
+                        title: title,
+                        date: date,
+                        startTime: startTime,
+                        classification: classification,
+                        category: category,
+                        distance: distance,
+                        departure: departure,
+                        arrival: arrival,
+                        verticalMeters: verticalMeters,
+                        profileURL: nil // imgURL
+                    )
+                    print("avpv [NETWORK] get next to finish race detail - \(raceInfo)")
+                    return raceInfo
+            /*    }
+            else {
+                    return nil
+                }*/
+            } catch {
+                print("avvp [NETWORK - ERROR] get next to finish race detail - \(error)")
+                return nil
+            }
+        } catch {
+            nonFatalCrashlytics(false, error.localizedDescription)
+            throw NSError(domain: "Impossible parsing", code: 0, userInfo: nil)
+        }
+    }
+    
+    static func getInfoProfiles(_ urlString: String) async throws -> [DTO.StageProfile] {
+        let url = URL(string: urlString + "/info/profiles")!
+        let request = URLRequest(url: url, timeoutInterval: 60*60)
+        do {
+            let data = try await cachedSession.data(for: request).0
+            guard let htmlContent = String(data: data, encoding: .utf8) else {
+                throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
+            }
+            let doc: Document = try SwiftSoup.parse(htmlContent)
+            let listItems: Elements = try doc.select("ul.list > li")
+            
+            let stageImages: [DTO.StageProfile] = try listItems.array().compactMap { li in
+                guard
+                    let type = try li.select("div.fs14.bold").first()?.text(),
+                    let img = try li.select("img").first()
+                else {
+                    return nil
+                }
+                let src = try img.attr("src")
+                if src.hasSuffix(".jpg") || src.hasSuffix(".png") {
+                    let fullUrl = src.hasPrefix("http") ? src : baseStringURL + src
+                    let imageType = DTO.StageProfile.ProfileImageType(rawValue: type)
+                    return DTO.StageProfile(type: imageType, url: fullUrl)
+                }
+                return nil
+            }
+            print("avpv [NETWORK] get stage profile info - \(dump(stageImages))")
+            return stageImages
+        } catch {
+            nonFatalCrashlytics(false, error.localizedDescription)
+            return []
+        }
+    }
+    
+    // ╔══════════════════════════════════════════════════════════════════════════════════╗
+    /* MARK: - Parsing */
+    // ╚══════════════════════════════════════════════════════════════════════════════════╝
     
     private static func parseNextToFinishResults(_ document: Document) -> [DTO.NextToFinishResult] {
         guard let table = try? document.select("table.hp-tbl1.next-to-finish").first(),
@@ -90,9 +223,9 @@ struct Requester {
         return DTO.NextToFinishResult.parse(cells: results)
     }
     
-    // MARK: - Parsing Function -
+    // MARK: - parseResultsToday -
 
-    static func parseResultsToday(from document: Document) -> [DTO.TodayResult] {
+    private static func parseResultsToday(from document: Document) -> [DTO.TodayResult] {
         var results = [DTO.TodayResult]()
         let baseUrl = "https://www.procyclingstats.com/"
         
@@ -200,7 +333,7 @@ struct Requester {
         return results
     }
     
-    static func parseResultsYesterday(_ document: Document) throws -> [DTO.TodayResult] {
+    private static func parseResultsYesterday(_ document: Document) throws -> [DTO.TodayResult] {
         var results = [DTO.TodayResult]()
         let baseUrl = "https://www.procyclingstats.com/"
 
@@ -345,15 +478,16 @@ struct Requester {
         }
     }
     
-    static func getTodayRaces(date: Date? = nil) async -> [TodaySectionModel] {
+    private static func getTodayRaces(date: Date? = nil) async -> [TodaySectionModel] {
 //        https://www.procyclingstats.com/index.php
         let url = URL(string: "https://www.procyclingstats.com/index.php")!
+        let request = URLRequest(url: url, timeoutInterval: 60*60)
 //        https://www.procyclingstats.com/races.php?date=2025-02-19&nation=&cat=&filter=Filter&p=uci&s=today
 //        let url = URL(string: "https://www.procyclingstats.com/calendar/uci/today")!
 //        let url = URL(string: "https://www.procyclingstats.com/races.php?date=2025-02-19&nation=&cat=&filter=Filter&p=uci&s=today")!
         var sections: [TodaySectionModel] = []
         do {
-            let data = try await URLSession.shared.data(from: url).0
+            let data = try await cachedSession.data(for: request).0
             guard let htmlContent = String(data: data, encoding: .utf8) else {
                 print("avvp [NETWORK] - error today races: invalid data encoding")
                 throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
@@ -448,7 +582,7 @@ struct Requester {
         return sections
     }
 
-    static func parseRacesTomorrow(from document: Document) -> [DTO.TomorrowRace] {
+    private static func parseRacesTomorrow(from document: Document) -> [DTO.TomorrowRace] {
         do {
             // Select the container that immediately follows the header "Races tomorrow"
             // Note: the header is <h3 class="info-title mb5">Races tomorrow</h3>
@@ -490,129 +624,6 @@ struct Requester {
         } catch {
             nonFatalCrashlytics(false, "Unexpected error parsing HTML document.")
             return []
-        }
-    }
-    
-    static func getInfoProfiles(_ urlString: String) async throws -> [DTO.StageProfile] {
-        let url = URL(string: urlString + "/info/profiles")!
-        do {
-            let data = try await URLSession.shared.data(from: url).0
-            guard let htmlContent = String(data: data, encoding: .utf8) else {
-                throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
-            }
-            let doc: Document = try SwiftSoup.parse(htmlContent)
-            let listItems: Elements = try doc.select("ul.list > li")
-            
-            let stageImages: [DTO.StageProfile] = try listItems.array().compactMap { li in
-                guard
-                    let type = try li.select("div.fs14.bold").first()?.text(),
-                    let img = try li.select("img").first()
-                else {
-                    return nil
-                }
-                let src = try img.attr("src")
-                if src.hasSuffix(".jpg") || src.hasSuffix(".png") {
-                    let fullUrl = src.hasPrefix("http") ? src : baseStringURL + src
-                    let imageType = DTO.StageProfile.ProfileImageType(rawValue: type)
-                    return DTO.StageProfile(type: imageType, url: fullUrl)
-                }
-                return nil
-            }
-            print("avpv [NETWORK] get stage profile info - \(dump(stageImages))")
-            return stageImages
-        } catch {
-            nonFatalCrashlytics(false, error.localizedDescription)
-            return []
-        }
-    }
-    
-    static func getNextToFinishRaceDetail(_ urlString: String) async throws -> DTO.RaceDetailInfo? {
-        let url = URL(string: urlString)!
-        do {
-            let data = try await URLSession.shared.data(from: url).0
-            guard let htmlContent = String(data: data, encoding: .utf8) else {
-                throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
-            }
-            do {
-                let doc: Document = try SwiftSoup.parse(htmlContent)
-//                if let ul = try doc.select("ul.infolist").first() {
-                    var date: String = ""
-                    var startTime: String = ""
-                    var classification: String = ""
-                    var category: String = ""
-                    var distance: String = ""
-                    var departure: String = ""
-                    var arrival: String = ""
-                    var verticalMeters: String = ""
-                    
-                    let items = try doc.select("li")
-                    for item in items {
-                        let divs = try item.select("div")
-                        if divs.count >= 2 {
-                            let key = try divs[0].text().trimmingCharacters(in: .whitespacesAndNewlines)
-                            switch key {
-                            case _ where key.lowercased().contains("date"):
-                                date = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
-                            case _ where key.lowercased().contains("start time"):
-                                startTime = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
-                            case _ where key.lowercased().contains("classification"):
-                                classification = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
-                            case _ where key.lowercased().contains("category"):
-                                category = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
-                            case _ where key.lowercased().contains("distance"):
-                                distance = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
-                            case _ where key.lowercased().contains("departure"):
-                                departure = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
-                            case _ where key.lowercased().contains("arrival"):
-                                arrival = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
-                            case _ where key.lowercased().contains("vertical meters"):
-                                verticalMeters = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
-                            default: break
-                            }
-                        }
-                    }
-                    let title: String = {
-                        guard let metaDesc = try? doc.select("meta[name=description]").first(),
-                              let desc = try? metaDesc.attr("content")
-                        else {
-                            return ""
-                        }
-                        return desc
-                    }()
-                /*
-                    let imgURL: URL? = {
-                        guard let relativeURL: Element = try? doc.select("div.mt10 img").first(),
-                              let src: String = try? relativeURL.attr("src")
-                        else {
-                            return nil
-                        }
-                        return URL(string: "\(baseURL)\(src)")
-                    }()*/
-                    let raceInfo = DTO.RaceDetailInfo(
-                        title: title,
-                        date: date,
-                        startTime: startTime,
-                        classification: classification,
-                        category: category,
-                        distance: distance,
-                        departure: departure,
-                        arrival: arrival,
-                        verticalMeters: verticalMeters,
-                        profileURL: nil // imgURL
-                    )
-                    print("avpv [NETWORK] get next to finish race detail - \(raceInfo)")
-                    return raceInfo
-            /*    }
-            else {
-                    return nil
-                }*/
-            } catch {
-                print("avvp [NETWORK - ERROR] get next to finish race detail - \(error)")
-                return nil
-            }
-        } catch {
-            nonFatalCrashlytics(false, error.localizedDescription)
-            throw NSError(domain: "Impossible parsing", code: 0, userInfo: nil)
         }
     }
 }

@@ -16,8 +16,19 @@
 		50F43D112DE89C5D006AE0A1 /* Alfy in Frameworks */ = {isa = PBXBuildFile; productRef = 50F43D102DE89C5D006AE0A1 /* Alfy */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		50BEF7D7A40147509E2CE916 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 50B3656F2D6489EF000DA4AC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 50B365762D6489EF000DA4AC;
+			remoteInfo = Tribuneros;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		50B365772D6489EF000DA4AC /* Tribuneros.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tribuneros.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		50BEF7D2A40147509E2CE915 /* TribunerosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TribunerosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -39,6 +50,11 @@
 			path = Tribuneros;
 			sourceTree = "<group>";
 		};
+		50BEF7D6A40147509E2CE915 /* TribunerosTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = TribunerosTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +72,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		50BEF7D3A40147509E2CE915 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -63,6 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				50B365792D6489EF000DA4AC /* Tribuneros */,
+				50BEF7D6A40147509E2CE915 /* TribunerosTests */,
 				50B365782D6489EF000DA4AC /* Products */,
 			);
 			sourceTree = "<group>";
@@ -71,6 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				50B365772D6489EF000DA4AC /* Tribuneros.app */,
+				50BEF7D2A40147509E2CE915 /* TribunerosTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -108,6 +133,27 @@
 			productReference = 50B365772D6489EF000DA4AC /* Tribuneros.app */;
 			productType = "com.apple.product-type.application";
 		};
+		50BEF7D1A40147509E2CE915 /* TribunerosTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 50BEF7D8A40147509E2CE915 /* Build configuration list for PBXNativeTarget "TribunerosTests" */;
+			buildPhases = (
+				50BEF7D5A40147509E2CE915 /* Sources */,
+				50BEF7D3A40147509E2CE915 /* Frameworks */,
+				50BEF7D4A40147509E2CE915 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				50BEF7D7A40147509E2CE915 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				50BEF7D6A40147509E2CE915 /* TribunerosTests */,
+			);
+			name = TribunerosTests;
+			productName = TribunerosTests;
+			productReference = 50BEF7D2A40147509E2CE915 /* TribunerosTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -119,6 +165,9 @@
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					50B365762D6489EF000DA4AC = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					50BEF7D1A40147509E2CE915 = {
 						CreatedOnToolsVersion = 16.2;
 					};
 				};
@@ -144,12 +193,20 @@
 			projectRoot = "";
 			targets = (
 				50B365762D6489EF000DA4AC /* Tribuneros */,
+				50BEF7D1A40147509E2CE915 /* TribunerosTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		50B365752D6489EF000DA4AC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		50BEF7D4A40147509E2CE915 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -194,7 +251,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		50BEF7D5A40147509E2CE915 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		50BEF7D7A40147509E2CE915 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 50B365762D6489EF000DA4AC /* Tribuneros */;
+			targetProxy = 50BEF7D7A40147509E2CE916 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		50B365852D6489F1000DA4AC /* Debug */ = {
@@ -385,6 +457,44 @@
 			};
 			name = Release;
 		};
+		50BEF7D9A40147509E2CE915 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = TribunerosTests;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.pskmoons.TribunerosTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tribuneros.app/Tribuneros";
+			};
+			name = Debug;
+		};
+		50BEF7DAA40147509E2CE915 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = TribunerosTests;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.pskmoons.TribunerosTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tribuneros.app/Tribuneros";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -402,6 +512,15 @@
 			buildConfigurations = (
 				50B365882D6489F1000DA4AC /* Debug */,
 				50B365892D6489F1000DA4AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		50BEF7D8A40147509E2CE915 /* Build configuration list for PBXNativeTarget "TribunerosTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				50BEF7D9A40147509E2CE915 /* Debug */,
+				50BEF7DAA40147509E2CE915 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

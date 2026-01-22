@@ -17,7 +17,7 @@ struct HomeRacesDomain: Equatable {
     let tomorrowRaces: [DTO.TomorrowRace]
     private(set) var isOnSpoilerModeResultsToday: Bool
     private(set) var isOnSpoilerModeResultsYesterday: Bool
-    let error: EquatableError?
+    private(set) var error: EquatableError?
     private(set) var loading: Bool
     
     static let empty: HomeRacesDomain = .init(
@@ -31,12 +31,19 @@ struct HomeRacesDomain: Equatable {
         loading: false
     )
     
-    func copy(loading: Bool? = nil, spoilerModeResultsToday: Bool? = nil, isOnSpoilerModeResultsYesterday: Bool? = nil) -> Self {
-        var copy = self
+    func copy(
+              loading: Bool? = nil,
+              spoilerModeResultsToday: Bool? = nil,
+              isOnSpoilerModeResultsYesterday: Bool? = nil,
+              error: EquatableError? = nil
+    ) -> Self {
+        HomeRacesDomain.init(nextToFinishRaces: self.nextToFinishRaces, todayRaces: self.todayRaces, yesterdayResults: self.yesterdayResults, tomorrowRaces: self.tomorrowRaces, isOnSpoilerModeResultsToday: spoilerModeResultsToday ?? self.isOnSpoilerModeResultsToday, isOnSpoilerModeResultsYesterday: isOnSpoilerModeResultsYesterday ?? self.isOnSpoilerModeResultsYesterday, error: error ?? self.error, loading: loading ?? self.loading)
+/*        var copy = self
         copy.loading = loading ?? self.loading
         copy.isOnSpoilerModeResultsToday = spoilerModeResultsToday ?? self.isOnSpoilerModeResultsToday
         copy.isOnSpoilerModeResultsYesterday = isOnSpoilerModeResultsYesterday ?? self.isOnSpoilerModeResultsYesterday
-        return copy
+        copy.error = error ?? self.error
+        return copy*/
     }
 }
 
@@ -50,6 +57,9 @@ protocol InteractorProtocol {
 }
 
 final class HomeRacesInteractorImpl: InteractorProtocol {
+    static let url = URL(string: "https://www.procyclingstats.com/index.php")!
+    static let request = URLRequest(url: url, timeoutInterval: 60*60)
+    
     typealias Domain = HomeRacesDomain
     typealias UseCase = HomeRaces.UseCase
     
@@ -80,18 +90,18 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
             subject.send(domain.copy(isOnSpoilerModeResultsYesterday: toggle))
         case .requestDayRaces(_):
             guard task == nil else { return }
-            let requestDate = Date()
-            guard requestThrottle.startRequestIfAllowed(at: requestDate) else { return }
             
             subject.send(domain.copy(loading: true))
             
             task = Task { [weak self] in
                 defer { self?.task = nil }
+                guard await CachedURLSession.shared.isCacheExpired(for: Self.url) || self?.domain == .empty else {
+                    self?.subject.send(self?.domain.copy(loading: false) ?? .empty)
+                    return
+                }
                 do {
-                    let result = try await Requester.getLatestResults()
+                    let result = try await Requester.getLatestResults(for: Self.request)
                     try Task.checkCancellation()
-                    
-                    self?.requestThrottle.registerOutcome(isFailure: false)
                     
                     self?.subject.send(
                         Domain(
@@ -107,26 +117,29 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                         )
                     )
                 } catch {
-                    self?.requestThrottle.registerOutcome(isFailure: true)
-                    
-                    self?.subject.send(
-                        Domain(
-                            nextToFinishRaces: [],
-                            todayRaces: [],
-                            yesterdayResults: [],
-                            tomorrowRaces: [],
-                            isOnSpoilerModeResultsToday: UserSettings.spoilerModeResultsToday ?? false,
-                            isOnSpoilerModeResultsYesterday: UserSettings.spoilerModeResultsYesterday ?? false,
-                            error: error.toEquatableError(),
-                            loading: false
-                        )
-                    )
+                    if Task.isCancelled {
+                        self?.publishSuccessWithCurrentDomain()
+                    } else {
+                        self?.publishFailure(error)
+                    }
                 }
             }
         case .cancelRequestStation:
             task?.cancel()
             task = nil
         }
+    }
+    
+    private func publishSuccessWithCurrentDomain() {
+        subject.send(
+            domain.copy(loading: false)
+        )
+    }
+    
+    private func publishFailure(_ error: Error) {
+        subject.send(
+            domain.copy(loading: false, error: error.toEquatableError())
+        )
     }
 }
 

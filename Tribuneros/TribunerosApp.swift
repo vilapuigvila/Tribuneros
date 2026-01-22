@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import Alfy
 
 @main
 struct TribunerosApp: App {
@@ -26,7 +27,7 @@ struct TribunerosApp: App {
     
     init() {
         CrashlyticsManager.shared.configure()
-        CrashlyticsHelper.send(false, "testng", domain: .cyclocross)
+        CachedURLSession.configure(cacheControlBehavior: .ignoreServer)
     }
     
     var body: some Scene {

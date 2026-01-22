@@ -30,6 +30,9 @@ extension CXRaces {
 
 extension CXRaces {
     final class InteractorImpl: InteractorProtocol {
+        private static let cxBaseURL = URL(string: "https://cyclocross24.com")!
+        private static let cxBaseURLRequest = URLRequest(url: cxBaseURL, timeoutInterval: 60*60)
+        
         typealias Domain = CXRaces.Domain
         
         var domain: CXRaces.Domain { subject.value }
@@ -38,7 +41,6 @@ extension CXRaces {
         var publisher: AnyPublisher<CXRaces.Domain, Never> {
             subject.eraseToAnyPublisher()
         }
-        
         private var task: Task<Void, Never>?
         
         func useCase(_ useCase: CXRaces.UseCase) {
@@ -63,10 +65,22 @@ extension CXRaces {
             )
             
             task = Task { [weak self] in
+                guard await CachedURLSession.shared.isCacheExpired(for: Self.cxBaseURL) || current == .empty else {
+                    self?.subject.send(
+                        .init(
+                            races: current.races,
+                            calendar: current.calendar,
+                            standings: current.standings,
+                            loading: false,
+                            error: nil
+                        )
+                    )
+                    return
+                }
                 guard let self else { return }
                 do {
                     async let calendarTask = Requester.getCxAllCalendarEvents()
-                    async let racesTask = Requester.getCxEvents()
+                    async let racesTask = Requester.getCxEvents(for: Self.cxBaseURLRequest)
                     async let standings = Requester.getCxStandings()
                     
                     let (racesResult, calendarResult, standingsResult) = try await (racesTask, calendarTask, standings)
