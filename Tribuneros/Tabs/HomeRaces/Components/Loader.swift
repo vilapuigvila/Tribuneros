@@ -22,15 +22,15 @@ struct LoaderView: View {
         VStack(spacing: 16) {
             ZStack {
                 Circle()
-                    .stroke(Color.white.opacity(0.08), lineWidth: 10)
+                    .stroke(Color.tribuneru(.vaporTextPrimary).opacity(0.08), lineWidth: 10)
                 Circle()
                     .trim(from: 0.15, to: 0.85)
                     .stroke(
                         AngularGradient(
                             colors: [
-                                Color.accentColor.opacity(0.9),
-                                Color.accentColor.opacity(0.2),
-                                Color.accentColor.opacity(0.9)
+                                Color.tribuneru(.vaporAccent).opacity(0.9),
+                                Color.tribuneru(.vaporAccent).opacity(0.2),
+                                Color.tribuneru(.vaporAccent).opacity(0.9)
                             ],
                             center: .center
                         ),
@@ -40,19 +40,25 @@ struct LoaderView: View {
                     .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: rotate)
             }
             .frame(width: 72, height: 72)
-            .shadow(color: Color.accentColor.opacity(0.35), radius: 12)
+            .shadow(color: Color.tribuneru(.vaporAccent).opacity(0.35), radius: 12)
             .onAppear { rotate = true }
 
-            Text(title)
-                .font(.body)
-                .bold()
-                .multilineTextAlignment(.center)
+            TribuneruText(
+                content: title,
+                style: .vaporRaceNameNext,
+                color: .tribuneru(.vaporTextPrimary),
+                lineLimit: 2
+            )
+            .multilineTextAlignment(.center)
 
             if let subtitle {
-                Text(subtitle)
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
+                TribuneruText(
+                    content: subtitle,
+                    style: .vaporMeta,
+                    color: .tribuneru(.vaporTextSecondary),
+                    lineLimit: 2
+                )
+                .multilineTextAlignment(.center)
             }
         }
         .padding(24)

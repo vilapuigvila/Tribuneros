@@ -114,8 +114,8 @@ private struct CustomTabBar: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            TribunerosDivider(height: 0.5, color: .white.opacity(0.1))
-            
+            TribunerosDivider(height: 0.5, color: .tribuneru(.vaporTextPrimary).opacity(0.10))
+
             HStack {
                 TabBarButton(
                     title: "Today Races",
@@ -149,7 +149,7 @@ private struct CustomTabBar: View {
             .padding(.horizontal, 24)
             .padding(.top, 10)
             .padding(.bottom, 10)
-            .background(Color.black.opacity(0.95))
+            .background(Color.tribuneru(.vaporPageBackground).opacity(0.95))
         }
     }
 }
@@ -180,11 +180,13 @@ private struct TabBarButton: View {
             VStack(spacing: 6) {
                 icon
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(isSelected ? .cyan : .gray)
-                Text(title)
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundColor(isSelected ? .cyan : .gray)
-                    .lineLimit(1)
+                    .foregroundColor(isSelected ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary))
+                TribuneruText(
+                    content: title,
+                    style: .vaporTabLabel,
+                    color: isSelected ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary),
+                    lineLimit: 1
+                )
             }
             .frame(minWidth: 72)
             .contentShape(Rectangle())

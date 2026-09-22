@@ -79,25 +79,37 @@ extension HateZone {
     struct MainView: View {
         let representable: [HateZone.Representable]
         @State private var webView: WKWebView = WKWebView()
-        
+
         var body: some View {
             NavigationView {
                 ZStack {
-                    Color.black
+                    Color.tribuneru(.vaporPageBackground)
                         .ignoresSafeArea()
-                    
+
                     List {
                         ForEach(representable, id: \.self) { item in
                             NavigationLink(destination: SafariView(url: item.url)) {
-                                Text(item.title)
-                                    .font(.system(size: 20, weight: .bold, design: .rounded))
-                                    .foregroundColor(.white)
-                                    .padding()
+                                HStack(spacing: 12) {
+                                    TribuneruText(
+                                        content: item.title,
+                                        style: .vaporListTitle,
+                                        color: .tribuneru(.vaporTextPrimary)
+                                    )
+                                    Spacer(minLength: 0)
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 13, weight: .semibold))
+                                        .foregroundColor(.tribuneru(.vaporTextSecondary))
+                                }
+                                .padding(16)
+                                .background(Color.tribuneru(.vaporCardSurface))
+                                .cornerRadius(8)
                             }
+                            .listRowInsets(.init(top: 6, leading: 16, bottom: 6, trailing: 16))
                             .listRowBackground(Color.clear)
                         }
                     }
                     .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
                     .background(Color.clear)
                 }
                 .navigationTitle("Hate Zone")

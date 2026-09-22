@@ -56,7 +56,7 @@ struct TribuneruText: View {
             "SpaceGrotesk-Regular"
         case .vaporRaceNameTomorrow:
             "SpaceGrotesk-Medium"
-        case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporCountdown, .vaporTabLabel:
+        case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporCountdown, .vaporTabLabel, .vaporListTitle:
             "SpaceGrotesk-SemiBold"
         case .vaporSpoilerChip:
             "SpaceMono-Bold"
@@ -89,6 +89,7 @@ struct TribuneruText: View {
         case .vaporCountdown: 11
         case .vaporMeta: 11
         case .vaporTabLabel: 11
+        case .vaporListTitle: 18
         }
     }
     private var weight: Font.Weight {
@@ -106,7 +107,7 @@ struct TribuneruText: View {
         case .vaporScreenTitle, .vaporSectionTitle, .vaporSpoilerChip,
              .vaporETANext, .vaporStartTimeTomorrow:
             .bold
-        case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporCountdown, .vaporTabLabel:
+        case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporCountdown, .vaporTabLabel, .vaporListTitle:
             .semibold
         case .vaporRaceNameTomorrow:
             .medium
@@ -169,6 +170,9 @@ extension TribuneruText {
         case vaporCountdown
         case vaporMeta
         case vaporTabLabel
+        /// A list row's title — Hate Zone's link rows. Not part of the
+        /// original Home ramp, added when Vapor rolled out to other tabs.
+        case vaporListTitle
     }
 }
 

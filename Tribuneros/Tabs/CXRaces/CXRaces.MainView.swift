@@ -22,35 +22,65 @@ extension CXRaces {
             Group {
                 switch state {
                 case .idle:
-                    Text("idle ...")
+                    TribuneruText(content: "idle ...", style: .vaporMeta, color: .tribuneru(.vaporTextSecondary))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.tribuneru(.vaporPageBackground))
                 case .loading:
-                    LoaderView(title: "Requesting latest results..")
+                    VStack {
+                        LoaderView(title: "Requesting latest results..")
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.tribuneru(.vaporPageBackground))
                 case .error(let error):
-                    Text("Error: \(error.localizedDescription)")
+                    VStack(spacing: 20) {
+                        Spacer(minLength: safeAreaInsets.top + 20)
+                        ErrorCardView.generic(
+                            message: error.localizedDescription,
+                            showTryAgainButton: true
+                        ) {
+                            action(.didAppeared)
+                        }
+                        Spacer(minLength: safeAreaInsets.bottom + 20)
+                    }
+                    .padding(.horizontal)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.tribuneru(.vaporPageBackground))
                 case .loaded(let representable):
                     ScrollView {
-                        LazyVGrid(columns: columns, spacing: 16) {
+                        LazyVGrid(columns: columns, spacing: 20) {
                             /// calendar
-                            CalendarView(representable: representable) {
-                                action(.didTapOnNextRaces)
+                            VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
+                                VaporSectionHeader(title: "Next races")
+                            } content: {
+                                CalendarView(representable: representable) {
+                                    action(.didTapOnNextRaces)
+                                }
                             }
-                            
+
                             /// latests results
-                            LatestResultsView(races: representable.races) {
-                                action(.didTapOnLatestResults)
+                            VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
+                                VaporSectionHeader(title: "Latest results")
+                            } content: {
+                                LatestResultsView(races: representable.races) {
+                                    action(.didTapOnLatestResults)
+                                }
                             }
 
                             /// standings
-                            CyclocrossStandingsSectionView(standings: representable.standings) {
-                                action(.didTapOnStandings)
+                            VaporPanel(panelColor: .tribuneru(.vaporPanelYesterday)) {
+                                VaporSectionHeader(title: "Standings")
+                            } content: {
+                                CyclocrossStandingsSectionView(standings: representable.standings) {
+                                    action(.didTapOnStandings)
+                                }
                             }
-                            
+
                             Color.clear
                                 .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
                         }
                         .padding()
                     }
-                    .background(.black)
+                    .background(Color.tribuneru(.vaporPageBackground))
                 }
             }
             .preferredColorScheme(.dark)

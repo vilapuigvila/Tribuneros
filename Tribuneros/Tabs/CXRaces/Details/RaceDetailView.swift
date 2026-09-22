@@ -38,7 +38,7 @@ struct RaceDetailView: View {
                     } else if let error = errorMessage {
                         TribuneruText(
                             content: "Error: \(error)",
-                            style: .size14WeightRegular,
+                            style: .vaporMeta,
                             color: .red
                         )
                         .padding()
@@ -46,16 +46,16 @@ struct RaceDetailView: View {
                         categoryTabsView
                         resultsListView
                     }
-                    
+
                     Spacer()
                 }
                 .padding(8)
                 .padding(.bottom, 88)
             }
-            
+
             raceVideosFloatingButton
         }
-        .background(.black)
+        .background(Color.tribuneru(.vaporPageBackground))
         .preferredColorScheme(.dark)
         .fullScreenCover(item: $videoSheet) { sheet in
             YoutubeVideoView(url: sheet.url)
@@ -78,39 +78,42 @@ struct RaceDetailView: View {
     private var headerView: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 10) {
-                CachedImageView(imageUrl: race.countryFlagURL, cornerRadius: 1)
-                    .frame(width: 20)
-                
+                VaporFlagView(url: race.countryFlagURL)
+
                 TribuneruText(
                     content: race.title,
-                    style: .size16WeightSemiBold
+                    style: .vaporSectionTitle,
+                    color: .tribuneru(.vaporTextPrimary),
+                    lineLimit: 2
                 )
             }
-            
+
             HStack(spacing: 10) {
                 HStack(spacing: 6) {
                     Image(systemName: "calendar")
-                        .font(.system(size: 14, weight: .regular))
-                        .foregroundColor(.gray)
+                        .font(.system(size: 12, weight: .regular))
+                        .foregroundColor(.tribuneru(.vaporTextSecondary))
                     TribuneruText(
                         content: race.date,
-                        style: .size14WeightRegular,
-                        color: .gray
+                        style: .vaporMeta,
+                        color: .tribuneru(.vaporTextSecondary)
                     )
                 }
-                
+
                 HStack(spacing: 6) {
                     Image(systemName: "mappin.and.ellipse")
-                        .font(.system(size: 14, weight: .regular))
-                        .foregroundColor(.gray)
+                        .font(.system(size: 12, weight: .regular))
+                        .foregroundColor(.tribuneru(.vaporTextSecondary))
                     TribuneruText(
                         content: race.location,
-                        style: .size14WeightRegular,
-                        color: .gray
+                        style: .vaporMeta,
+                        color: .tribuneru(.vaporTextSecondary)
                     )
                 }
             }
         }
+        .padding(.horizontal, 8)
+        .padding(.top, 8)
     }
     
     private var categoryTabsView: some View {
@@ -138,21 +141,21 @@ struct RaceDetailView: View {
                 if results.isEmpty {
                     TribuneruText(
                         content: "No results available",
-                        style: .size14WeightRegular,
-                        color: .gray
+                        style: .vaporMeta,
+                        color: .tribuneru(.vaporTextSecondary)
                     )
                     .padding(.top, 20)
                 } else {
                     resultsHeaderRow
-                    
+
                     ForEach(results.indices, id: \.self) { index in
                         ResultRow(result: results[index])
                             .frame(height: 64)
-                        
+
                         if index < results.count - 1 {
                             TribunerosDivider(
                                 height: 1,
-                                color: .gray.opacity(0.2)
+                                color: .tribuneru(.vaporTextSecondary).opacity(0.2)
                             )
                         }
                     }
@@ -160,44 +163,44 @@ struct RaceDetailView: View {
             }
         }
         .padding(12)
-        .background(Color.tribuneru(.greenCardBackground))
+        .background(Color.tribuneru(.vaporCardSurface))
         .cornerRadius(8)
     }
-    
+
     private var resultsHeaderRow: some View {
         HStack(spacing: 0) {
             TribuneruText(
                 content: "#",
-                style: .size12WeightRegular,
-                color: .gray
+                style: .vaporMeta,
+                color: .tribuneru(.vaporTextSecondary)
             )
             .frame(width: 16, alignment: .leading)
-            
+
             TribuneruText(
                 content: "Rider",
-                style: .size12WeightRegular,
-                color: .gray
+                style: .vaporMeta,
+                color: .tribuneru(.vaporTextSecondary)
             )
             .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             TribuneruText(
                 content: "Age",
-                style: .size12WeightRegular,
-                color: .gray
+                style: .vaporMeta,
+                color: .tribuneru(.vaporTextSecondary)
             )
             .frame(width: 40, alignment: .center)
-            
+
             TribuneruText(
                 content: "Team",
-                style: .size12WeightRegular,
-                color: .gray
+                style: .vaporMeta,
+                color: .tribuneru(.vaporTextSecondary)
             )
             .frame(width: 92, alignment: .leading)
-            
+
             TribuneruText(
                 content: "Time",
-                style: .size12WeightRegular,
-                color: .gray
+                style: .vaporMeta,
+                color: .tribuneru(.vaporTextSecondary)
             )
             .frame(width: 48, alignment: .trailing)
         }
@@ -250,18 +253,13 @@ struct RaceDetailView: View {
         let buttonState = raceVideosButtonState
         let isEnabled = buttonState.url != nil
         let textColor: Color = isEnabled
-            ? Color.tribuneru(.white(level: 1))
-            : Color.tribuneru(.gray)
-        let iconColor: Color = isEnabled
-            ? Color.tribuneru(
-                .green(
-                    brightness: 1,
-                    saturation: 1
-                )
-            )
-            : Color.tribuneru(.gray)
-        let backgroundOpacity: Double = isEnabled ? 0.9 : 0.4
-        
+            ? Color.tribuneru(.vaporPageBackground)
+            : Color.tribuneru(.vaporTextSecondary)
+        let iconColor: Color = textColor
+        let backgroundColor: Color = isEnabled
+            ? Color.tribuneru(.vaporAccent)
+            : Color.tribuneru(.vaporCardSurface)
+
         return Button {
             guard let url = buttonState.url else { return }
             videoSheet = VideoSheet(url: url)
@@ -269,24 +267,16 @@ struct RaceDetailView: View {
             HStack(spacing: 8) {
                 Image(systemName: buttonState.systemImage)
                     .foregroundStyle(iconColor)
-                
+
                 TribuneruText(
                     content: buttonState.title,
-                    style: .size14WeightRegular,
+                    style: .vaporRaceNameNext,
                     color: textColor
                 )
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 12)
-            .background(
-                Color.tribuneru(
-                    .green(
-                        brightness: 0.5,
-                        saturation: 0.9
-                    )
-                )
-                .opacity(backgroundOpacity)
-            )
+            .background(backgroundColor)
             .cornerRadius(8)
         }
         .buttonStyle(.plain)
@@ -311,18 +301,18 @@ private struct CategoryTabButton: View {
         Button(action: action) {
             TribuneruText(
                 content: title,
-                style: .size14WeightSemiBold,
-                color: isSelected ? .black : .white
+                style: .vaporSpoilerChip,
+                color: isSelected ? .tribuneru(.vaporPageBackground) : .tribuneru(.vaporTextSecondary)
             )
             .padding(.horizontal, 20)
             .padding(.vertical, 10)
             .background(
                 isSelected
-                ? Color.tribuneru(.green(brightness: 0.5))
-                : Color.tribuneru(.greenCardBackground)
+                ? Color.tribuneru(.vaporAccent)
+                : Color.tribuneru(.vaporCardSurface)
             )
         }
-        .cornerRadius(2.5)
+        .cornerRadius(6)
     }
 }
 
@@ -333,43 +323,44 @@ private struct ResultRow: View {
         HStack(spacing: 0) {
             TribuneruText(
                 content: result.position,
-                style: .size12WeightRegular
+                style: .vaporFinishTime,
+                color: .tribuneru(.vaporTextPrimary)
             )
             .frame(width: 16, alignment: .leading)
-            
+
             HStack(spacing: 6) {
                 if let flagURL = result.countryFlagURL {
-                    CachedImageView(imageUrl: flagURL, cornerRadius: 1)
-                        .frame(width: 16)
+                    VaporFlagView(url: flagURL)
                 }
-                
+
                 TribuneruText(
                     content: result.rider,
-                    style: .size12WeightRegular,
+                    style: .vaporRaceNameResult,
+                    color: .tribuneru(.vaporTextPrimary),
                     lineLimit: 1
                 )
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             TribuneruText(
                 content: result.age,
-                style: .size12WeightRegular,
-                color: .gray
+                style: .vaporFinishTime,
+                color: .tribuneru(.vaporTextSecondary)
             )
             .frame(width: 40, alignment: .center)
-            
+
             TribuneruText(
                 content: result.team,
-                style: .size12WeightRegular,
-                color: .gray,
+                style: .vaporMeta,
+                color: .tribuneru(.vaporTextSecondary),
                 lineLimit: 1
             )
             .frame(width: 92, alignment: .leading)
-            
+
             TribuneruText(
                 content: result.time,
-                style: .size12WeightRegular,
-                color: .gray
+                style: .vaporFinishTime,
+                color: .tribuneru(.vaporTextSecondary)
             )
             .frame(width: 48, alignment: .trailing)
         }

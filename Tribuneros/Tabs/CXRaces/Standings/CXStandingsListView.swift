@@ -15,13 +15,13 @@ struct CXStandingsListView: View {
             if standings.items.isEmpty {
                 TribuneruText(
                     content: "No standings found.",
-                    style: .size14WeightRegular,
-                    color: .gray,
+                    style: .vaporMeta,
+                    color: .tribuneru(.vaporTextSecondary),
                     lineLimit: 2
                 )
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(12)
-                .background(Color.tribuneru(.greenCardBackground))
+                .background(Color.tribuneru(.vaporCardSurface))
                 .cornerRadius(8)
                 .listRowInsets(.init(top: 8, leading: 16, bottom: 8, trailing: 16))
                 .listRowBackground(Color.clear)
@@ -35,7 +35,7 @@ struct CXStandingsListView: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(.black)
+        .background(Color.tribuneru(.vaporPageBackground))
         .preferredColorScheme(.dark)
     }
 }
@@ -45,48 +45,33 @@ struct CyclocrossStandingsCardView: View {
     let onTap: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VaporCard {
             HStack(spacing: 10) {
                 StandingsLogoView(logoURL: item.logoURL)
                     .frame(width: 24, height: 24)
 
                 TribuneruText(
                     content: item.title,
-                    style: .size16WeightSemiBold,
+                    style: .vaporRaceNameNext,
+                    color: .tribuneru(.vaporTextPrimary),
                     lineLimit: 2
                 )
                 Spacer(minLength: 0)
             }
 
             if let firstCategory = item.categories.first {
-                EmptyView()
                 StandingsCategorySummaryView(category: firstCategory)
             } else {
                 TribuneruText(
                     content: "No categories found.",
-                    style: .size12WeightRegular,
-                    color: .gray,
+                    style: .vaporMeta,
+                    color: .tribuneru(.vaporTextSecondary),
                     lineLimit: 2
                 )
             }
 
-            HStack(spacing: 6) {
-                Spacer(minLength: 0)
-                TribuneruText(
-                    content: "more info..",
-                    style: .size12WeightRegular,
-                    color: .cyan,
-                    lineLimit: 1
-                )
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.cyan)
-            }
-            .padding(.top, 2)
+            VaporMoreInfoLink()
         }
-        .padding(12)
-        .background(Color.tribuneru(.greenCardBackground))
-        .cornerRadius(8)
         .onTapGesture {
             onTap()
         }
@@ -99,7 +84,7 @@ private struct StandingsItemView: View {
     @State private var selectedCategoryIndex: Int = 0
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VaporCard {
             HStack(spacing: 10) {
                 StandingsLogoView(logoURL: item.logoURL)
                     .frame(width: 28, height: 28)
@@ -107,15 +92,16 @@ private struct StandingsItemView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     TribuneruText(
                         content: item.title,
-                        style: .size16WeightSemiBold,
+                        style: .vaporRaceNameNext,
+                        color: .tribuneru(.vaporTextPrimary),
                         lineLimit: 1
                     )
                     .truncationMode(.tail)
 
                     TribuneruText(
                         content: item.categories.isEmpty ? "No categories" : "\(item.categories.count) categories",
-                        style: .size12WeightRegular,
-                        color: .gray
+                        style: .vaporMeta,
+                        color: .tribuneru(.vaporTextSecondary)
                     )
                 }
                 .layoutPriority(1)
@@ -135,8 +121,8 @@ private struct StandingsItemView: View {
             if item.categories.isEmpty {
                 TribuneruText(
                     content: "No categories found for this standings item.",
-                    style: .size14WeightRegular,
-                    color: .gray,
+                    style: .vaporMeta,
+                    color: .tribuneru(.vaporTextSecondary),
                     lineLimit: 2
                 )
             } else {
@@ -146,9 +132,6 @@ private struct StandingsItemView: View {
                 )
             }
         }
-        .padding(12)
-        .background(Color.tribuneru(.greenCardBackground))
-        .cornerRadius(8)
     }
 }
 
@@ -163,11 +146,11 @@ private struct StandingsLogoView: View {
                 Image(systemName: "trophy")
                     .resizable()
                     .scaledToFit()
-                    .foregroundColor(.gray)
+                    .foregroundColor(.tribuneru(.vaporTextSecondary))
                     .padding(4)
             }
         }
-        .background(Color.black.opacity(0.25))
+        .background(Color.tribuneru(.vaporPageBackground).opacity(0.6))
         .cornerRadius(6)
     }
 }
@@ -179,17 +162,17 @@ private struct StandingsLeaderRowView: View {
         HStack(spacing: 10) {
             TribuneruText(
                 content: "\(leader.position)",
-                style: .size12WeightRegular,
-                color: .gray
+                style: .vaporFinishTime,
+                color: .tribuneru(.vaporTextSecondary)
             )
             .frame(width: 18, alignment: .leading)
 
-            CachedImageView(imageUrl: leader.countryFlagURL, cornerRadius: 1)
-                .frame(width: 16, height: 16)
+            VaporFlagView(url: leader.countryFlagURL)
 
             TribuneruText(
                 content: leader.rider,
-                style: .size12WeightRegular,
+                style: .vaporRaceNameResult,
+                color: .tribuneru(.vaporTextPrimary),
                 lineLimit: 1
             )
 
@@ -197,8 +180,8 @@ private struct StandingsLeaderRowView: View {
 
             TribuneruText(
                 content: leader.points,
-                style: .size12WeightRegular,
-                color: .gray,
+                style: .vaporFinishTime,
+                color: .tribuneru(.vaporTextSecondary),
                 lineLimit: 1
             )
         }
@@ -249,7 +232,7 @@ private struct StandingsTabsView: View {
         static let paddingV: CGFloat = 10
         static let paddingH: CGFloat = 12
         static let spacing: CGFloat = 8
-        static let cornerRadius: CGFloat = 2
+        static let cornerRadius: CGFloat = 6
     }
 
     let categories: [DTO.CXStandings.Category]
@@ -265,8 +248,8 @@ private struct StandingsTabsView: View {
                     } label: {
                         TribuneruText(
                             content: category.title.uppercased(),
-                            style: .size14WeightSemiBold,
-                            color: .white,
+                            style: .vaporSpoilerChip,
+                            color: isSelected(idx) ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary),
                             lineLimit: 1
                         )
                         .padding(.vertical, UI.paddingV)
@@ -274,8 +257,7 @@ private struct StandingsTabsView: View {
                         .frame(maxWidth: .infinity)
                         .background(
                             isSelected(idx)
-                            ?
-                            Color.tribuneru(.greenSoft) : Color.tribuneru(.gray).opacity(0.15)
+                            ? Color.tribuneru(.vaporAccent).opacity(0.16) : Color.tribuneru(.vaporTextSecondary).opacity(0.12)
                         )
                         .cornerRadius(UI.cornerRadius)
                     }
@@ -301,12 +283,13 @@ private struct StandingsLeadersTableView: View {
                 StandingsLeaderTableRowView(leader: leader)
 
                 if idx < category.leaders.count - 1 {
-                    TribunerosDivider()
+                    TribunerosDivider(height: 0.5, color: .tribuneru(.vaporTextSecondary).opacity(0.2))
                 }
             }
         }
-        .background(Color.tribuneru(.greenCardBackground))
-        .cornerRadius(2)
+        .padding(.horizontal, 4)
+        .background(Color.tribuneru(.vaporCardSurface))
+        .cornerRadius(6)
     }
 }
 
@@ -317,21 +300,17 @@ private struct StandingsLeaderTableRowView: View {
         HStack(spacing: 10) {
             TribuneruText(
                 content: "\(leader.position)",
-                style: .size12WeightRegular,
-                color: .white.opacity(0.9)
+                style: .vaporFinishTime,
+                color: .tribuneru(.vaporTextSecondary)
             )
                 .frame(width: 18, alignment: .leading)
 
-            CachedImageView(
-                imageUrl: leader.countryFlagURL,
-                cornerRadius: 1
-            )
-            .frame(width: 18, height: 18)
+            VaporFlagView(url: leader.countryFlagURL)
 
             TribuneruText(
                 content: leader.rider,
-                style: .size12WeightRegular,
-                color: .white,
+                style: .vaporRaceNameResult,
+                color: .tribuneru(.vaporTextPrimary),
                 lineLimit: 1
             )
 
@@ -339,13 +318,13 @@ private struct StandingsLeaderTableRowView: View {
 
             TribuneruText(
                 content: leader.points,
-                style: .size12WeightRegular,
-                color: .white.opacity(0.85),
+                style: .vaporFinishTime,
+                color: .tribuneru(.vaporTextSecondary),
                 lineLimit: 1
             )
         }
         .padding(.vertical, 8)
-        .padding(.horizontal, 12)
+        .padding(.horizontal, 8)
         .contentShape(Rectangle())
     }
 }
@@ -357,8 +336,8 @@ private struct StandingsCategorySummaryView: View {
         VStack(alignment: .leading, spacing: 8) {
             TribuneruText(
                 content: category.title.uppercased(),
-                style: .size12WeightRegular,
-                color: .gray
+                style: .vaporMeta,
+                color: .tribuneru(.vaporTextSecondary)
             )
 
             let leaders = Array(category.leaders.prefix(3))
@@ -381,7 +360,7 @@ private struct StandingsCategorySummaryView: View {
 #Preview("CX Standings card") {
     CyclocrossStandingsCardView(item: CXRaces.Representable.mock.standings.items[0]) { }
         .padding()
-        .background(.black)
+        .background(Color.tribuneru(.vaporPageBackground))
         .preferredColorScheme(.dark)
 }
 

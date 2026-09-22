@@ -32,31 +32,33 @@ struct CXAllRacesView: View {
                             action(event.raceURL ?? event.resultsURL ?? event.websiteURL)
                         } label: {
                             HStack(spacing: 12) {
-                                TribuneruText(content: event.date, style: .size14WeightRegular)
-                                    .frame(width: 84, alignment: .leading)
-                                
-                                CachedImageView(
-                                    imageUrl: event.flagURL,
-                                    cornerRadius: 1
+                                TribuneruText(
+                                    content: event.date,
+                                    style: .vaporMeta,
+                                    color: .tribuneru(.vaporTextSecondary)
                                 )
-                                .frame(width: 24)
-                                
+                                .frame(width: 84, alignment: .leading)
+
+                                VaporFlagView(url: event.flagURL)
+
                                 VStack(alignment: .leading, spacing: 2) {
                                     TribuneruText(
                                         content: event.race,
-                                        style: .size14WeightRegular
+                                        style: .vaporRaceNameNext,
+                                        color: .tribuneru(.vaporTextPrimary),
+                                        lineLimit: 2
                                     )
                                     if event.isCancelled {
                                         TribuneruText(
                                             content: "Cancelled",
-                                            style: .size12WeightRegular,
+                                            style: .vaporMeta,
                                             color: .red
                                         )
                                     } else if !event.winnerName.isEmpty {
                                         TribuneruText(
                                             content: event.winnerName,
-                                            style: .size12WeightRegular,
-                                            color: .gray
+                                            style: .vaporMeta,
+                                            color: .tribuneru(.vaporTextSecondary)
                                         )
                                     }
                                 }
@@ -67,7 +69,7 @@ struct CXAllRacesView: View {
                         .buttonStyle(.plain)
                         .id(idx)
                         .listRowInsets(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
-                        .listRowBackground(Color.gray.opacity(0.1))
+                        .listRowBackground(Color.tribuneru(.vaporCardSurface))
                     }
                 }
                 .onAppear {
@@ -80,7 +82,7 @@ struct CXAllRacesView: View {
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
-                .background(Color.tribuneru(.greenCardBackground))
+                .background(Color.tribuneru(.vaporPageBackground))
                 .environment(\.defaultMinListRowHeight, UI.rowHeight)
                 .preferredColorScheme(.dark)
                 .simultaneousGesture(
@@ -99,21 +101,16 @@ struct CXAllRacesView: View {
                     Button(action: { scrollToToday(proxy) }) {
                         HStack(spacing: 8) {
                             Image(systemName: "calendar.circle.fill")
-                                .foregroundStyle(
-                                    Color.tribuneru(.green(brightness: 1, saturation: 1))
-                                )
+                                .foregroundStyle(Color.tribuneru(.vaporPageBackground))
                             TribuneruText(
                                 content: "Today Races",
-                                style: .size14WeightRegular
+                                style: .vaporRaceNameNext,
+                                color: .tribuneru(.vaporPageBackground)
                             )
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 12)
-                        .background(
-                            Color.tribuneru(.green(brightness: 0.5, saturation: 0.9)).opacity(0.9)
-                        )
-                        .cornerRadius(8)
-//                        .background(Color.tribuneru(.black).opacity(0.75))
+                        .background(Color.tribuneru(.vaporAccent))
                         .cornerRadius(8)
                     }
                     .clipShape(Capsule())
