@@ -162,4 +162,42 @@ final class RequesterHomeParsingTests: XCTestCase {
         XCTAssertTrue(result.isLive)
         XCTAssertEqual(result.racePath, "race/world-championships-itt-u23/2026/result/live")
     }
+
+    // MARK: - Live network (hits the real procyclingstats.com site)
+
+    /// Hits https://www.procyclingstats.com/index.php directly through the same
+    /// `Service.getLatestResults()` path the app uses in production, instead of the
+    /// pinned `pcs_real.html` fixture — catches a live markup change even before the
+    /// fixture is re-captured. Live content varies by time of day (any one section can
+    /// legitimately be empty), so this only checks structural shape, never exact values.
+    func testGetLatestResultsParsesRealWebsite() async throws {
+        let result = try await Service.getLatestResults()
+
+        XCTAssertFalse(
+            result.nextToFinish.isEmpty
+                && result.today.isEmpty
+                && result.yesterdayResults.isEmpty
+                && result.tomorrowRaces.isEmpty
+                && result.liveStats.isEmpty,
+            "Expected at least one non-empty section from the live homepage"
+        )
+
+        for race in result.nextToFinish {
+            XCTAssertFalse(race.name.isEmpty)
+            XCTAssertTrue(matchesTime(race.eta), "Unexpected eta shape: \(race.eta)")
+            XCTAssertTrue(race.urlPath.hasPrefix("https://www.procyclingstats.com/"))
+        }
+        for race in result.yesterdayResults {
+            XCTAssertFalse(race.raceName.isEmpty)
+            XCTAssertEqual(race.podium.count, 3, "Expected a 3-entry podium for a finished race")
+        }
+        for race in result.tomorrowRaces {
+            XCTAssertFalse(race.raceName.isEmpty)
+            XCTAssertTrue(matchesTime(race.startTime), "Unexpected startTime shape: \(race.startTime)")
+        }
+        for race in result.liveStats {
+            XCTAssertFalse(race.raceName.isEmpty)
+            XCTAssertFalse(race.racePath.isEmpty)
+        }
+    }
 }
