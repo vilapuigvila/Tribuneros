@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C375BA7B0C0AD17B7BF98FF /* Alfy in Frameworks */ = {isa = PBXBuildFile; productRef = 50F43D102DE89C5D006AE0A1 /* Alfy */; };
 		500388222E740ED40041E747 /* FirebaseAppDistribution-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 500388212E740ED40041E747 /* FirebaseAppDistribution-Beta */; };
 		500388242E740ED40041E747 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 500388232E740ED40041E747 /* FirebaseCrashlytics */; };
 		500388262E740ED40041E747 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 500388252E740ED40041E747 /* FirebaseRemoteConfig */; };
@@ -15,6 +16,7 @@
 		50788AC62DD1FDE40051A80F /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 50788AC52DD1FDE40051A80F /* SwiftSoup */; };
 		50F43D112DE89C5D006AE0A1 /* Alfy in Frameworks */ = {isa = PBXBuildFile; productRef = 50F43D102DE89C5D006AE0A1 /* Alfy */; };
 		BAA4F0FFFAF548939DFADEBF /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C205F805B0E4AD58CAB2421 /* XCTest.framework */; };
+		FE1D638995513D8B7C5FAFDB /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 50788AC52DD1FDE40051A80F /* SwiftSoup */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +68,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				BAA4F0FFFAF548939DFADEBF /* XCTest.framework in Frameworks */,
+				4C375BA7B0C0AD17B7BF98FF /* Alfy in Frameworks */,
+				FE1D638995513D8B7C5FAFDB /* SwiftSoup in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -163,6 +167,10 @@
 				1978850CA7AA48E28B85AD7F /* TribunerosTests */,
 			);
 			name = TribunerosTests;
+			packageProductDependencies = (
+				50F43D102DE89C5D006AE0A1 /* Alfy */,
+				50788AC52DD1FDE40051A80F /* SwiftSoup */,
+			);
 			productName = TribunerosTests;
 			productReference = 164972F03AB24484BD25113B /* TribunerosTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";

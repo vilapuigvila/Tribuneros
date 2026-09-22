@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Alfy
 #if canImport(FoundationXML)
 import FoundationXML // Necessary for XML parsing on certain platforms
 #endif
@@ -14,32 +15,49 @@ import `SwiftSoup` // Add SwiftSoup for HTML parsing
 struct Service {
     private static let baseURL = URL(string: "https://www.procyclingstats.com/")!
     private static let baseStringURL = "https://www.procyclingstats.com/"
+    private static let requester = Requester.self
     
     static func getLatestResults() async throws -> DTO.Home {
-        let url = URL(string: "https://www.procyclingstats.com/index.php")!
+        let url = "https://www.procyclingstats.com/index.php"
 //        let url = URL(string: "https://www.procyclingstats.com/race/settimana-internazionale-coppi-e-bartali/2025/stage-3/info/profiles")!
         do {
-            let data = try await URLSession.shared.data(from: url).0
+            let (data, _) = try await Requester
+                .makeRequest(url)
+                .ttl(60)
+                .cacheControlBehavior(.ignoreServer)
+                .send()
             guard let htmlContent = String(data: data, encoding: .utf8) else {
                 throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
             }
-            
+
             let document = try SwiftSoup.parse(htmlContent)
             let nextToFinishResults = parseNextToFinishResults(document)
             let todayResults = parseResultsToday(from: document)
             let yesterdayResults = try parseResultsYesterday(document)
-            
+
             let tomorrowRaces = parseRacesTomorrow(from: document)
-            
+            let liveStatsRaces = parseLiveStats(document)
+
             return DTO.Home(
                 nextToFinish: nextToFinishResults,
                 today: todayResults,
                 yesterdayResults: yesterdayResults,
-                tomorrowRaces: tomorrowRaces
+                tomorrowRaces: tomorrowRaces,
+                liveStats: liveStatsRaces
             )
-            
+
         } catch {
-            if (error as NSError).code != -1009 {
+            var shouldLog = true
+
+            if let reqError = error as? Requester.ErrorReason {
+                if case .noInternetConnection = reqError {
+                    shouldLog = false
+                }
+            } else if (error as NSError).code == -1009 {
+                shouldLog = false
+            }
+
+            if shouldLog {
                 nonFatalCrashlytics(false, error.localizedDescription)
             }
             throw NSError(domain: "Impossible parsing", code: 0, userInfo: nil)
@@ -47,9 +65,6 @@ struct Service {
     }
     
     static func parseNextToFinishResults(_ document: Document) -> [DTO.NextToFinishResult] {
-        // Anchor on the "Next to finish" heading and walk to its following table: the races-tomorrow
-        // table now shares the same classes (basic hp-next-to-finish), so selecting by class alone
-        // would cross-contaminate the two sections.
         guard let heading = try? document.select("h4:contains(Next to finish)").first(),
               let table = try? heading.nextElementSibling(),
               table.tagName() == "table",
@@ -102,18 +117,10 @@ struct Service {
         let baseUrl = "https://www.procyclingstats.com/"
         
         do {
-            // Anchor on the "Results today" heading (div.h4bar > h4). A "No results (yet)." span
-            // can sit between the heading and the ul.hp2-results, so this is not an adjacent
-            // sibling — use a general sibling combinator instead.
             guard let resultsList = try document.select("div.h4bar:has(h4:contains(Results today)) ~ ul.hp2-results").first() else {
                 print("avvp [NETWORK] - empty today results")
                 return results
             }
-
-            // Only the ul's own direct <li class="race"> children belong to "today": when there
-            // are no results yet, PCS leaves this <ul> unclosed in the markup, so the "Results
-            // yesterday" heading and list end up nested inside it. A descendant selector here
-            // would wrongly pull in yesterday's races.
             let raceItems = resultsList.children().array().filter { $0.tagName() == "li" && $0.hasClass("race") }
             for race in raceItems {
                 // 1. Extract race details from the div with inline style containing "calc(100% - 95px)"
@@ -460,10 +467,6 @@ struct Service {
 
     static func parseRacesTomorrow(from document: Document) -> [DTO.TomorrowRace] {
         do {
-            // Anchor on the "Races tomorrow" heading (div.h4line > h4) and walk to the following
-            // div holding the table.
-            // Note: the "Next to finish" table now shares the same classes (basic
-            // hp-next-to-finish), so selecting by class alone would cross-contaminate the sections.
             guard let container = try document.select("div.h4line:has(h4:contains(Races tomorrow)) + div").first() else {
 //                nonFatalCrashlytics(false, "Races tomorrow section not found")
                 return []
@@ -503,6 +506,46 @@ struct Service {
         }
     }
     
+    static func parseLiveStats(_ document: Document) -> [DTO.LiveStatsRace] {
+        guard let list = try? document.select("ul.hp3-livestats").first() else {
+            return []
+        }
+        let items = (try? list.select("li").array()) ?? []
+        guard !items.isEmpty else {
+            return []
+        }
+
+        return items.compactMap { li -> DTO.LiveStatsRace? in
+            guard let anchor = try? li.select("a").first(),
+                  let racePath = try? anchor.attr("href"),
+                  !racePath.isEmpty
+            else {
+                nonFatalCrashlytics(false, "LiveStats <li> missing its race link/href")
+                return nil
+            }
+
+            let statusSpan = try? anchor.select("span.status").first()
+            let status = (try? statusSpan?.text()) ?? ""
+            let isLive = statusSpan?.hasClass("live") ?? false
+
+            let raceName = (try? anchor.select("span.title").first()?.text()) ?? ""
+
+            let ridersText = (try? anchor.select("div.togo > span").first()?.text()) ?? ""
+            let ridersCount = Int(ridersText)
+
+            let url = URL(string: baseStringURL + racePath)
+
+            return DTO.LiveStatsRace(
+                status: status,
+                isLive: isLive,
+                raceName: raceName,
+                ridersCount: ridersCount,
+                racePath: racePath,
+                url: url
+            )
+        }
+    }
+
     static func getInfoProfiles(_ urlString: String) async throws -> [DTO.StageProfile] {
         let url = URL(string: urlString + "/info/profiles")!
         do {
