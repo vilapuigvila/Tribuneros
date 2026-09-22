@@ -12,7 +12,7 @@ final class RequesterCxTests: XCTestCase {
 
         while Date() < deadline {
             attempt += 1
-            lastURL = await Requester.getYoutubeRaceURL(raceURL)
+            lastURL = await Service.getYoutubeRaceURL(raceURL)
             if let lastURL {
                 XCTAssertTrue(lastURL.absoluteString.contains("youtube.com/watch"))
                 return

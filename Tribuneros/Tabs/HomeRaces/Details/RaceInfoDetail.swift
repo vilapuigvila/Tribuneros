@@ -51,8 +51,8 @@ struct NextToFinishRaceDetail: View {
                 }
             }
             do {
-                async let raceInfoTask = Requester.getNextToFinishRaceDetail(urlInfo)
-                async let stageProfileTask = Requester.getInfoProfiles(urlInfo)
+                async let raceInfoTask = Service.getNextToFinishRaceDetail(urlInfo)
+                async let stageProfileTask = Service.getInfoProfiles(urlInfo)
 
                 let (_raceInfo, _stageProfile) = try await (raceInfoTask, stageProfileTask)
                 raceInfo = _raceInfo

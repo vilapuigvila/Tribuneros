@@ -21,12 +21,52 @@ struct TribuneruText: View {
     }
 
     var body: some View {
-        Text(content)
+        let text = Text(content)
             .lineLimit(lineLimit)
-            .font(.system(size: size, weight: weight, design: design))
+            .font(resolvedFont)
+            .tracking(tracking)
             .foregroundColor(color)
+        if isTabularNumeric {
+            text.monospacedDigit()
+        } else {
+            text
+        }
     }
-    
+
+    /// Fixed point size — matches the app's existing `.system(size:...)` usage,
+    /// which does not scale with Dynamic Type.
+    private var resolvedFont: Font {
+        if let fontName {
+            return .custom(fontName, fixedSize: size)
+        }
+        return .system(size: size, weight: weight, design: design)
+    }
+
+    /// The bundled PostScript name to use, or `nil` to fall back to the system font.
+    /// See `Fonts/` and `Info.plist`'s `UIAppFonts` for the six installed weights.
+    private var fontName: String? {
+        switch style {
+        case .size20WeightBold, .size16WeightBold, .size16WeightSemiBold,
+             .size14WeightSemiBold, .size14WeightRegular, .size14LightMonospaced,
+             .size12WeightRegular, .size10WeightRegular:
+            nil
+        case .vaporScreenTitle, .vaporSectionTitle:
+            "SpaceGrotesk-Bold"
+        case .vaporScreenDate, .vaporMeta:
+            "SpaceGrotesk-Regular"
+        case .vaporRaceNameTomorrow:
+            "SpaceGrotesk-Medium"
+        case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporCountdown, .vaporTabLabel:
+            "SpaceGrotesk-SemiBold"
+        case .vaporSpoilerChip:
+            "SpaceMono-Bold"
+        case .vaporETANext, .vaporStartTimeTomorrow:
+            "SpaceMono-Bold"
+        case .vaporFinishTime, .vaporETALine:
+            "SpaceMono-Regular"
+        }
+    }
+
     private var size: CGFloat {
         switch style {
         case .size20WeightBold: 20
@@ -36,6 +76,19 @@ struct TribuneruText: View {
         case .size14LightMonospaced: 14
         case .size12WeightRegular: 12
         case .size10WeightRegular: 10
+        case .vaporScreenTitle: 24
+        case .vaporScreenDate: 12
+        case .vaporSectionTitle: 30
+        case .vaporSpoilerChip: 11
+        case .vaporRaceNameNext, .vaporWinnerName: 14
+        case .vaporRaceNameResult, .vaporRaceNameTomorrow: 13
+        case .vaporETANext: 20
+        case .vaporStartTimeTomorrow: 18
+        case .vaporFinishTime: 12
+        case .vaporETALine: 11
+        case .vaporCountdown: 11
+        case .vaporMeta: 11
+        case .vaporTabLabel: 11
         }
     }
     private var weight: Font.Weight {
@@ -48,12 +101,42 @@ struct TribuneruText: View {
         case .size14LightMonospaced: .light
         case .size12WeightRegular: .regular
         case .size10WeightRegular: .regular
+        // Weight for the vapor cases is baked into the loaded font file
+        // (see `fontName`); this value is unused but kept exhaustive.
+        case .vaporScreenTitle, .vaporSectionTitle, .vaporSpoilerChip,
+             .vaporETANext, .vaporStartTimeTomorrow:
+            .bold
+        case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporCountdown, .vaporTabLabel:
+            .semibold
+        case .vaporRaceNameTomorrow:
+            .medium
+        case .vaporScreenDate, .vaporMeta, .vaporFinishTime, .vaporETALine:
+            .regular
         }
     }
     private var design: Font.Design {
         switch style {
         case .size14LightMonospaced: .monospaced
         default: .default
+        }
+    }
+    private var tracking: CGFloat {
+        switch style {
+        case .vaporScreenTitle: -0.4
+        case .vaporSectionTitle: -0.8
+        case .vaporETANext: -0.5
+        case .vaporStartTimeTomorrow: -0.4
+        default: 0
+        }
+    }
+    /// Space Mono is monospaced by construction; this also asks the system
+    /// font (if ever substituted) to keep digits tabular.
+    private var isTabularNumeric: Bool {
+        switch style {
+        case .vaporETANext, .vaporStartTimeTomorrow, .vaporFinishTime, .vaporETALine:
+            true
+        default:
+            false
         }
     }
 }
@@ -68,6 +151,24 @@ extension TribuneruText {
         case size14LightMonospaced
         case size12WeightRegular
         case size10WeightRegular
+
+        // MARK: - Vapor (Home "Panel" redesign) -
+        // Space Grotesk / Space Mono. See `agent-doc/home_redesign_spec.md` §2.
+        case vaporScreenTitle
+        case vaporScreenDate
+        case vaporSectionTitle
+        case vaporSpoilerChip
+        case vaporRaceNameNext
+        case vaporRaceNameResult
+        case vaporRaceNameTomorrow
+        case vaporWinnerName
+        case vaporETANext
+        case vaporStartTimeTomorrow
+        case vaporFinishTime
+        case vaporETALine
+        case vaporCountdown
+        case vaporMeta
+        case vaporTabLabel
     }
 }
 

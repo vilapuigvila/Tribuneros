@@ -84,17 +84,18 @@ enum HomeRaces {
         
         var result: Representable {
             guard case .loaded(let result) = self else {
-                return .init(sections: .init(title: "", spoilerMode: .empty, nextToFinish: [], racesFinished: [], yesterdayResults: [], tomorrowRaces: []))
+                return .init(sections: .init(title: "", spoilerMode: .empty, liveStats: [], nextToFinish: [], racesFinished: [], yesterdayResults: [], tomorrowRaces: []))
             }
             return result
         }
     }
-    
+
     struct Representable {
         struct Section: Identifiable {
             let id = UUID()
             let title: String
             let spoilerMode: SpoilerMode
+            let liveStats: [LiveRace]
             let nextToFinish: [RaceNext]
             let racesFinished: [RaceFinished]
             let yesterdayResults: [RaceFinished]
@@ -132,10 +133,20 @@ enum HomeRaces {
         }
         struct RaceTomorrow: Identifiable {
             let id = UUID()
-            
+
             let start: String
             let eta: String
             let name: String
+            let url: URL?
+        }
+        struct LiveRace: Identifiable {
+            let id = UUID()
+
+            let status: String
+            let isLive: Bool
+            let raceName: String
+            let ridersCount: Int?
+            let racePath: String
             let url: URL?
         }
         let sections: Section

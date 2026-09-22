@@ -13,6 +13,16 @@ enum DTO {
         let today: [TodayResult]
         let yesterdayResults: [TodayResult]
         let tomorrowRaces: [TomorrowRace]
+        let liveStats: [LiveStatsRace]
+    }
+
+    struct LiveStatsRace: Codable, Equatable {
+        let status: String        // "live"
+        let isLive: Bool          // span.status class list contains "live"
+        let raceName: String
+        let ridersCount: Int?     // nil when the span isn't a number
+        let racePath: String      // relative href, stored verbatim
+        let url: URL?             // baseURL + racePath
     }
     
     struct NextToFinishResult: Codable, Equatable {
@@ -26,16 +36,23 @@ enum DTO {
         let flagCode: String
         
         static func parse(cells: [[String]]) -> [NextToFinishResult] {
-            cells.compactMap {
-                NextToFinishResult(
-                    eta: $0[1],
-                    duration: $0[2],
-                    name: $0[3],
-                    category: $0[4],
-                    raceType: $0[5],
-                    distance: $0[6],
-                    urlPath: $0[7],
-                    flagCode: $0[8])
+            // New "Next to finish" row layout has 6 <td> (icon, ETA, duration, race, Cat, Class)
+            // plus the appended url and flag code, so 8 entries at indices 0...7 — there is no
+            // distance column any more, so that field is fed "".
+            cells.compactMap { row in
+                guard row.count >= 8 else {
+                    nonFatalCrashlytics(false, "NextToFinishResult row has \(row.count) cells, expected at least 8")
+                    return nil
+                }
+                return NextToFinishResult(
+                    eta: row[1],
+                    duration: row[2],
+                    name: row[3],
+                    category: row[4],
+                    raceType: row[5],
+                    distance: "",
+                    urlPath: row[6],
+                    flagCode: row[7])
             }
         }
     }

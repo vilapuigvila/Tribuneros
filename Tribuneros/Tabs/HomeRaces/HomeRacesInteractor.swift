@@ -15,16 +15,18 @@ struct HomeRacesDomain: Equatable {
     let todayRaces: [DTO.TodayResult]
     let yesterdayResults: [DTO.TodayResult]
     let tomorrowRaces: [DTO.TomorrowRace]
+    let liveStatsRaces: [DTO.LiveStatsRace]
     private(set) var isOnSpoilerModeResultsToday: Bool
     private(set) var isOnSpoilerModeResultsYesterday: Bool
     let error: EquatableError?
     private(set) var loading: Bool
-    
+
     static let empty: HomeRacesDomain = .init(
         nextToFinishRaces: [],
         todayRaces: [],
         yesterdayResults: [],
         tomorrowRaces: [],
+        liveStatsRaces: [],
         isOnSpoilerModeResultsToday: false,
         isOnSpoilerModeResultsYesterday: false,
         error: nil,
@@ -81,14 +83,14 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
         case .requestDayRaces(_):
             guard task == nil else { return }
             let requestDate = Date()
-            guard requestThrottle.startRequestIfAllowed(at: requestDate) else { return }
+//            guard requestThrottle.startRequestIfAllowed(at: requestDate) else { return }
             
             subject.send(domain.copy(loading: true))
             
             task = Task { [weak self] in
                 defer { self?.task = nil }
                 do {
-                    let result = try await Requester.getLatestResults()
+                    let result = try await Service.getLatestResults()
                     try Task.checkCancellation()
                     
                     self?.requestThrottle.registerOutcome(isFailure: false)
@@ -99,22 +101,24 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                             todayRaces: result.today,
                             yesterdayResults: result.yesterdayResults,
                             tomorrowRaces: result.tomorrowRaces,
+                            liveStatsRaces: result.liveStats,
                             isOnSpoilerModeResultsToday: UserSettings.spoilerModeResultsToday ?? false,
                             isOnSpoilerModeResultsYesterday: UserSettings.spoilerModeResultsYesterday ?? false,
-                            error: (result.nextToFinish.isEmpty && result.today.isEmpty && result.yesterdayResults.isEmpty && result.tomorrowRaces.isEmpty) ?
+                            error: (result.nextToFinish.isEmpty && result.today.isEmpty && result.yesterdayResults.isEmpty && result.tomorrowRaces.isEmpty && result.liveStats.isEmpty) ?
                                 HomeRaces.ErrorReason.emptyResponse.toEquatableError() : nil,
                             loading: false
                         )
                     )
                 } catch {
                     self?.requestThrottle.registerOutcome(isFailure: true)
-                    
+
                     self?.subject.send(
                         Domain(
                             nextToFinishRaces: [],
                             todayRaces: [],
                             yesterdayResults: [],
                             tomorrowRaces: [],
+                            liveStatsRaces: [],
                             isOnSpoilerModeResultsToday: UserSettings.spoilerModeResultsToday ?? false,
                             isOnSpoilerModeResultsYesterday: UserSettings.spoilerModeResultsYesterday ?? false,
                             error: error.toEquatableError(),

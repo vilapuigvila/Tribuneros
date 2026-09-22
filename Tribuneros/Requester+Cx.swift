@@ -11,7 +11,7 @@ import FoundationXML // Necessary for XML parsing on certain platforms
 #endif
 import `SwiftSoup` // Add SwiftSoup for HTML parsing
 
-extension Requester {
+extension Service {
     private static let cx24BaseURL = URL(string: "https://cyclocross24.com")!
     
     static func getCxEvents() async throws -> DTO.CX24Homepage {

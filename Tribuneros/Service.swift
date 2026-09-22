@@ -11,7 +11,7 @@ import FoundationXML // Necessary for XML parsing on certain platforms
 #endif
 import `SwiftSoup` // Add SwiftSoup for HTML parsing
 
-struct Requester {
+struct Service {
     private static let baseURL = URL(string: "https://www.procyclingstats.com/")!
     private static let baseStringURL = "https://www.procyclingstats.com/"
     
@@ -46,8 +46,13 @@ struct Requester {
         }
     }
     
-    private static func parseNextToFinishResults(_ document: Document) -> [DTO.NextToFinishResult] {
-        guard let table = try? document.select("table.hp-tbl1.next-to-finish").first(),
+    static func parseNextToFinishResults(_ document: Document) -> [DTO.NextToFinishResult] {
+        // Anchor on the "Next to finish" heading and walk to its following table: the races-tomorrow
+        // table now shares the same classes (basic hp-next-to-finish), so selecting by class alone
+        // would cross-contaminate the two sections.
+        guard let heading = try? document.select("h4:contains(Next to finish)").first(),
+              let table = try? heading.nextElementSibling(),
+              table.tagName() == "table",
               let tbody = try? table.select("tbody").first(),
               let rows = try? tbody.select("tr")
         else {
@@ -97,14 +102,19 @@ struct Requester {
         let baseUrl = "https://www.procyclingstats.com/"
         
         do {
-            // First, select the "Results yesterday" header and get the next <ul> with class "hp2-results"
-            guard let resultsList = try document.select("h3.black-info-title:contains(Results today) + ul.hp2-results").first() else {
+            // Anchor on the "Results today" heading (div.h4bar > h4). A "No results (yet)." span
+            // can sit between the heading and the ul.hp2-results, so this is not an adjacent
+            // sibling — use a general sibling combinator instead.
+            guard let resultsList = try document.select("div.h4bar:has(h4:contains(Results today)) ~ ul.hp2-results").first() else {
                 print("avvp [NETWORK] - empty today results")
                 return results
             }
-            
-            // Loop over each race item (each <li> with class "race")
-            let raceItems = try resultsList.select("li.race").array()
+
+            // Only the ul's own direct <li class="race"> children belong to "today": when there
+            // are no results yet, PCS leaves this <ul> unclosed in the markup, so the "Results
+            // yesterday" heading and list end up nested inside it. A descendant selector here
+            // would wrongly pull in yesterday's races.
+            let raceItems = resultsList.children().array().filter { $0.tagName() == "li" && $0.hasClass("race") }
             for race in raceItems {
                 // 1. Extract race details from the div with inline style containing "calc(100% - 95px)"
                 let detailsDiv = try race.select("div").filter { element in
@@ -206,7 +216,7 @@ struct Requester {
 
        do {
            // Use an adjacent-sibling CSS selector to get the <ul> with results that immediately follows the header:
-           guard let resultsUl = try document.select("h3.black-info-title:contains(Results yesterday) + ul.hp2-results").first() else {
+           guard let resultsUl = try document.select("div.h4bar:has(h4:contains(Results yesterday)) + ul.hp2-results").first() else {
                print("avvp [NETWORK] - empty yesterday results")
                return results
            }
@@ -450,37 +460,37 @@ struct Requester {
 
     static func parseRacesTomorrow(from document: Document) -> [DTO.TomorrowRace] {
         do {
-            // Select the container that immediately follows the header "Races tomorrow"
-            // Note: the header is <h3 class="info-title mb5">Races tomorrow</h3>
-            guard let container = try document.select("h3.info-title:contains(Races tomorrow) + span.table-cont").first() else {
+            // Anchor on the "Races tomorrow" heading (div.h4line > h4) and walk to the following
+            // div holding the table.
+            // Note: the "Next to finish" table now shares the same classes (basic
+            // hp-next-to-finish), so selecting by class alone would cross-contaminate the sections.
+            guard let container = try document.select("div.h4line:has(h4:contains(Races tomorrow)) + div").first() else {
 //                nonFatalCrashlytics(false, "Races tomorrow section not found")
                 return []
             }
-            
-            // Find the table with class "hp-tbl1 tomorrow" within the container
-            guard let table = try container.select("table.hp-tbl1.tomorrow").first() else {
+
+            // Find the table with class "basic hp-next-to-finish" within the container
+            guard let table = try container.select("table.basic.hp-next-to-finish").first() else {
                 nonFatalCrashlytics(false, "Races tomorrow section not found")
                 return []
             }
-            
+
             // Loop over each row in the table body
             var tomorrowRaces: [DTO.TomorrowRace] = []
             let rows = try table.select("tbody > tr").array()
             for row in rows {
-                // Get start time from the first <td> (using the text in the span with class "cet_time")
-                let startTD = try row.select("td.fs12.start").first()
-                let startTime = try startTD?.select("span.cet_time").text() ?? ""
-                
-                // The race name cell is the third td (after the start and the icon cell)
+                // New row layout: 0 start time (plain text) · 1 profile icon · 2 race · 3 ETA (plain text)
                 let cells = try row.select("td").array()
-                let raceCell = cells.count >= 3 ? cells[2] : nil
-                let raceName = try raceCell?.select("a").text() ?? ""
-                let raceRelativeURL = try raceCell?.select("a").attr("href") ?? ""
-                let raceURL = URL(string: Requester.baseURL.absoluteString + raceRelativeURL)
-                
-                // Get ETA from the last cell (td.fs12.eta)
-                let etaTD = try row.select("td.fs12.eta").first()
-                let eta = try etaTD?.select("span.cet_time").text() ?? ""
+                guard cells.count >= 4 else { continue }
+
+                let startTime = (try? cells[0].text()) ?? ""
+
+                let raceCell = cells[2]
+                let raceName = (try? raceCell.select("a").text()) ?? ""
+                let raceRelativeURL = (try? raceCell.select("a").attr("href")) ?? ""
+                let raceURL = URL(string: Service.baseURL.absoluteString + raceRelativeURL)
+
+                let eta = (try? cells[3].text()) ?? ""
                 tomorrowRaces.append(
                     DTO.TomorrowRace(
                         startTime: startTime,

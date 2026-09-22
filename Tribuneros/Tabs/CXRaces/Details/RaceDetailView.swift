@@ -67,7 +67,7 @@ struct RaceDetailView: View {
             isLoading = true
             errorMessage = nil
             do {
-                categoryResults = try await Requester.getCxRaceCategoryResults(race)
+                categoryResults = try await Service.getCxRaceCategoryResults(race)
             } catch {
                 errorMessage = error.localizedDescription
             }

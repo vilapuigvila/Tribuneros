@@ -65,9 +65,9 @@ extension CXRaces {
             task = Task { [weak self] in
                 guard let self else { return }
                 do {
-                    async let calendarTask = Requester.getCxAllCalendarEvents()
-                    async let racesTask = Requester.getCxEvents()
-                    async let standings = Requester.getCxStandings()
+                    async let calendarTask = Service.getCxAllCalendarEvents()
+                    async let racesTask = Service.getCxEvents()
+                    async let standings = Service.getCxStandings()
                     
                     let (racesResult, calendarResult, standingsResult) = try await (racesTask, calendarTask, standings)
                     try Task.checkCancellation()

@@ -29,6 +29,7 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
             .publisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] domain in
+//                self?.stateView = .loaded(.mockFull) // "avpv" change it
                 self?.stateView = self?.mapToHomeRacesState(domain) ?? .idle
             }
             .store(in: &cancellables)
@@ -80,6 +81,7 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
                         sections: .init(
                             title: "",
                             spoilerMode: spoilerMode(domain),
+                            liveStats: liveStats(domain),
                             nextToFinish: nextToFinish(domain),
                             racesFinished: todayRaces(domain),
                             yesterdayResults: yesterdayResults(domain),
@@ -102,6 +104,19 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
         )
     }
     
+    private func liveStats(_ domain: HomeRacesDomain) -> [HomeRaces.Representable.LiveRace] {
+        domain.liveStatsRaces.map {
+            HomeRaces.Representable.LiveRace(
+                status: $0.status,
+                isLive: $0.isLive,
+                raceName: $0.raceName,
+                ridersCount: $0.ridersCount,
+                racePath: $0.racePath,
+                url: $0.url
+            )
+        }
+    }
+
     private func tomorrowRaces(_ domain: HomeRacesDomain) -> [HomeRaces.Representable.RaceTomorrow] {
         domain.tomorrowRaces.map {
             HomeRaces.Representable.RaceTomorrow(start: $0.startTime, eta: $0.eta, name: $0.raceName, url: $0.relativeUrl)

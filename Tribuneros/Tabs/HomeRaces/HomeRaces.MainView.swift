@@ -40,7 +40,7 @@ extension HomeRaces {
 //        @State private var didRequestOnAppear = false
         
         private let heightCardView: Double = 100
-        private let spacingRows: Double = 16
+        private let spacingRows: Double = 20
         private let columns = [
             GridItem(.flexible(), spacing: 0)
         ]
@@ -61,12 +61,15 @@ extension HomeRaces {
                         )
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(.black)
+                    .background(Color.tribuneru(.vaporPageBackground))
                 case .loaded(let representable):
 //                    NavigationStack {
                         ScrollView {
                             LazyVGrid(columns: columns, spacing: spacingRows) {
-                                
+
+                                /// - LiveStats -
+                                buildLiveStatsView(representable)
+
                                 /// - Next to Finish -
                                 buildNextToFinishView(representable)
                                 
@@ -84,7 +87,7 @@ extension HomeRaces {
                             }
                             .padding()
                     }
-                    .background(.black)
+                    .background(Color.tribuneru(.vaporPageBackground))
                     
                 case .error(let errorView):
                     VStack(spacing: 20) {
@@ -117,73 +120,127 @@ extension HomeRaces {
             }
         }
         
+        /// "No live race right now" is the normal state (most days), not an
+        /// error like an empty "Next to finish"/"Results"/"Tomorrow" section —
+        /// so unlike `buildNoResultsCardView`'s siblings below, an empty list
+        /// here renders nothing at all rather than an `EmptyResultsCardView`.
+        @ViewBuilder
+        private func buildLiveStatsView(_ representable: Representable) -> some View {
+            if !representable.sections.liveStats.isEmpty {
+                VaporSectionPanel(panelColor: .tribuneru(.vaporPanelLive)) {
+                    VaporSectionHeader(title: "LiveStats", showsLiveDot: true)
+                } content: {
+                    ForEach(representable.sections.liveStats) { race in
+                        VaporLiveStatsCard(race: race)
+                    }
+                }
+            }
+        }
+
         private func buildTomorrowRaces(_ representable: Representable) -> some View {
             Group {
                 if representable.sections.tomorrowRaces.isEmpty {
-                    buildNoResultsCardView("Races tomorrow", info: "No Races", delaySlideInfo: 0)
+                    buildNoResultsCardView(
+                        "Races tomorrow", info: "No Races", delaySlideInfo: 0,
+                        panelColor: .tribuneru(.vaporPanelTomorrow)
+                    )
                 } else {
-                    TomorrowRaceCardView(races: representable.sections.tomorrowRaces)
-                        .background(Color.green.opacity(0.2))
-                        .cornerRadius(8)
+                    VaporSectionPanel(panelColor: .tribuneru(.vaporPanelTomorrow)) {
+                        VaporSectionHeader(title: "Races tomorrow")
+                    } content: {
+                        ForEach(representable.sections.tomorrowRaces) { race in
+                            VaporTomorrowCard(race: race)
+                        }
+                    }
                 }
             }
         }
-        
+
         private func buildNextToFinishView(_ representable: Representable) -> some View {
             Group {
                 if representable.sections.nextToFinish.isEmpty {
-                    buildNoResultsCardView("Next to fihish", info: "No info yet", delaySlideInfo: 2)
+                    buildNoResultsCardView(
+                        "Next to fihish", info: "No info yet", delaySlideInfo: 2,
+                        panelColor: .tribuneru(.vaporPanelRacing)
+                    )
                 } else {
-                    NextToFinishRaceView(races: representable.sections.nextToFinish) { index in
-                        action(.navigate(.nextToFinishRace(index: index)))
+                    VaporSectionPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
+                        VaporSectionHeader(title: "Next to finish", showsLiveDot: true)
+                    } content: {
+                        ForEach(Array(representable.sections.nextToFinish.enumerated()), id: \.element.id) { index, race in
+                            VaporNextToFinishCard(race: race)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                    action(.navigate(.nextToFinishRace(index: index)))
+                                }
+                        }
                     }
-                    .background(Color.tribuneru(.greenCardBackground))
-                    .cornerRadius(8)
                 }
             }
         }
-        
+
         private func buildResultsTodayView(_ representable: Representable) -> some View {
             Group {
                 if representable.sections.racesFinished.isEmpty {
-                    buildNoResultsCardView("Results today", info: "No Info yet", delaySlideInfo: 4)
+                    buildNoResultsCardView(
+                        "Results today", info: "No Info yet", delaySlideInfo: 4,
+                        panelColor: .tribuneru(.vaporPanelToday)
+                    )
                 } else {
-                    RaceFinishedCardView(
-                        title: "Results today",
-                        races: representable.sections.racesFinished,
-                        isSpoilerModeOnSubject: .init(representable.sections.spoilerMode.isSpoilerModeResultsToday)
+                    VaporSectionPanel(
+                        panelColor: .tribuneru(.vaporPanelToday),
+                        contentHidden: !representable.sections.spoilerMode.isSpoilerModeResultsToday
                     ) {
-                        action(.spoilerModeResultToday)
+                        VaporSectionHeader(title: "Results today") {
+                            VaporSpoilerChip(
+                                isSpoilerModeOn: representable.sections.spoilerMode.isSpoilerModeResultsToday
+                            ) {
+                                action(.spoilerModeResultToday)
+                            }
+                        }
+                    } content: {
+                        ForEach(representable.sections.racesFinished) { race in
+                            VaporResultCard(race: race)
+                        }
                     }
-                    .background(Color.tribuneru(.greenCardBackground))
-                    .cornerRadius(8)
                 }
             }
         }
-        
+
         @ViewBuilder
         private func buildResultsYesterdayView(_ representable: Representable) -> some View {
             if representable.sections.yesterdayResults.isEmpty {
-                buildNoResultsCardView("Results yesterday", info: "No Races", delaySlideInfo: 6)
+                buildNoResultsCardView(
+                    "Results yesterday", info: "No Races", delaySlideInfo: 6,
+                    panelColor: .tribuneru(.vaporPanelYesterday)
+                )
             } else {
-                RaceFinishedCardView(
-                    title: "Results Yesterday",
-                    races: representable.sections.yesterdayResults,
-                    isSpoilerModeOnSubject: .init(representable.sections.spoilerMode.isSpoilerModeResultsYesterday)
+                VaporSectionPanel(
+                    panelColor: .tribuneru(.vaporPanelYesterday),
+                    contentHidden: !representable.sections.spoilerMode.isSpoilerModeResultsYesterday
                 ) {
-                    action(.spoilerModeResultYesterday)
+                    VaporSectionHeader(title: "Results yesterday") {
+                        VaporSpoilerChip(
+                            isSpoilerModeOn: representable.sections.spoilerMode.isSpoilerModeResultsYesterday
+                        ) {
+                            action(.spoilerModeResultYesterday)
+                        }
+                    }
+                } content: {
+                    ForEach(representable.sections.yesterdayResults) { race in
+                        VaporResultCard(race: race)
+                    }
                 }
-                .background(Color.tribuneru(.greenCardBackground))
-                .cornerRadius(8)
             }
         }
-        
-        private func buildNoResultsCardView(_ race: String, info: String, delaySlideInfo: Double) -> some View {
+
+        private func buildNoResultsCardView(_ race: String, info: String, delaySlideInfo: Double, panelColor: Color) -> some View {
             EmptyResultsCardView(title: "\(race)", info: info, delaySlideInfo: delaySlideInfo)
                 .frame(height: heightCardView)
                 .frame(maxWidth: .infinity)
-                .background(Color.tribuneru(.blueMissingInfoBackground))
-                .cornerRadius(8)
+                .background(panelColor)
+                .cornerRadius(20)
         }
     }
 }
@@ -276,6 +333,7 @@ extension HomeRaces {
         sections: HomeRaces.Representable.Section(
             title: "",
             spoilerMode: .empty,
+            liveStats: [],
             nextToFinish: [], // nextToFinish,
             racesFinished: todayFinished,
             yesterdayResults: yesterdayResults,
