@@ -142,6 +142,49 @@ extension DTO {
     }
 }
 
+// MARK: - Paddock -
+
+extension DTO {
+    struct Paddock: Equatable, Sendable {
+        let transfers: [Transfer]
+        let programUpdates: [ProgramUpdate]
+        let birthdays: [Birthday]
+    }
+
+    struct PressLink: Equatable, Sendable {
+        let name: String?
+        let url: URL
+    }
+
+    struct RiderLink: Equatable, Sendable {
+        let name: String
+        let url: URL?
+        let countryCode: String
+    }
+
+    struct Transfer: Equatable, Sendable {
+        let date: String          // "20/09", no year
+        let rider: RiderLink
+        let teamName: String
+    }
+
+    struct ProgramUpdate: Equatable, Sendable {
+        struct Change: Equatable, Sendable {
+            let isAdded: Bool
+            let raceName: String
+        }
+
+        let timeAgo: String       // "15m", "16h"
+        let rider: RiderLink
+        let changes: [Change]
+    }
+
+    struct Birthday: Equatable, Sendable {
+        let rider: RiderLink
+        let age: String
+    }
+}
+
 // MARK: - CX -
 
 extension DTO {

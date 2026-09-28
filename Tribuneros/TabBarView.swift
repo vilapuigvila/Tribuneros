@@ -9,33 +9,27 @@ import SwiftUI
 import UIKit
 
 enum Tab {
-    case home, hateZone, cxZone
+    case home, paddock, cxZone
 }
 
 struct TabBarView: View {
-    
+
     @State private var selectedTab: Tab = .home
     @StateObject private var homeRouter: Router
     @StateObject private var cxRouter: Router
-    
+    @StateObject private var paddockRouter: Router
+
     let homeRacesViewModel: HomeRacesViewModel<HomeRacesInteractorImpl>
     let cxRacesViewModel: CXRaces.ViewModel<CXRaces.InteractorImpl>
-    
-    
-    static let hateZoneRepresentable: [HateZone.Representable] = [
-        .init(title: "Ciclismo 2005", url: URL(string: "http://ciclismo2005.com")),
-        .init(title: "Escape Collective", url: URL(string: "https://escapecollective.com")),
-        .init(title: "Cycling News", url: URL(string: "https://www.cyclingnews.com")),
-        .init(title: "Cycling Update", url: URL(string: "https://cyclinguptodate.com")),
-        .init(title: "Ciclismo al dia", url: URL(string: "https://ciclismoaldia.es")),
-        .init(title: "Joan Seguidor", url: URL(string: "https://joanseguidor.com"))
-    ]
-    
+    let paddockViewModel: Paddock.ViewModel<Paddock.InteractorImpl>
+
     init() {
         let homeRouter = Router()
         let cxRouter = Router()
+        let paddockRouter = Router()
         _homeRouter = StateObject(wrappedValue: homeRouter)
         _cxRouter = StateObject(wrappedValue: cxRouter)
+        _paddockRouter = StateObject(wrappedValue: paddockRouter)
         homeRacesViewModel = HomeRacesViewModel(
             interactor: HomeRacesInteractorImpl(),
             router: homeRouter
@@ -43,6 +37,10 @@ struct TabBarView: View {
         cxRacesViewModel = CXRaces.ViewModel(
             router: cxRouter,
             interactor: CXRaces.InteractorImpl()
+        )
+        paddockViewModel = Paddock.ViewModel(
+            router: paddockRouter,
+            interactor: Paddock.InteractorImpl()
         )
     }
     
@@ -62,10 +60,12 @@ struct TabBarView: View {
             }
             .tag(Tab.cxZone)
             
-            // Hate zone -
-            
-            HateZoneView(representable: Self.hateZoneRepresentable)
-                .tag(Tab.hateZone)
+            // Paddock -
+
+            NavigationStack(path: $paddockRouter.navPath) {
+                PaddockView(viewModel: paddockViewModel)
+            }
+            .tag(Tab.paddock)
         }
         .toolbar(.hidden, for: .tabBar)
         .safeAreaInset(edge: .bottom) {
@@ -82,6 +82,9 @@ struct TabBarView: View {
             if tab == .home {
                 refreshHomeRacesIfNeeded()
             }
+            if tab == .paddock {
+                paddockViewModel.action(.didRequestRefresh)
+            }
             popToRoot(for: tab)
         } else {
             selectedTab = tab
@@ -92,8 +95,8 @@ struct TabBarView: View {
         switch tab {
         case .home:
             homeRouter.popToRoot()
-        case .hateZone:
-            break
+        case .paddock:
+            paddockRouter.popToRoot()
         case .cxZone:
             cxRouter.popToRoot()
         }
@@ -139,11 +142,11 @@ private struct CustomTabBar: View {
                 Spacer(minLength: 0)
                 
                 TabBarButton(
-                    title: "Hate Zone",
-                    systemImage: "wrongwaysign.fill",
-                    isSelected: selectedTab == .hateZone
+                    title: "Paddock",
+                    systemImage: "megaphone.fill",
+                    isSelected: selectedTab == .paddock
                 ) {
-                    onTabTap(.hateZone)
+                    onTabTap(.paddock)
                 }
             }
             .padding(.horizontal, 24)

@@ -6,9 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Tribuneros is an iOS/SwiftUI app showing public cycling results and calendars, scraped from
 third-party sites, as three tabs: Today Races (`HomeRaces`, from procyclingstats.com), CX Zone
-(`CXRaces`, cyclocross, from cyclocross24.com), and Hate Zone (a list of external cycling-news
-webviews). Road racing is scraped on the device; the CX lists are scraped server-side by a
-Firebase Cloud Function and read from Firestore (see "Data sources" below).
+(`CXRaces`, cyclocross, from cyclocross24.com), and Paddock (`Paddock`: a feed of transfers, top
+riders' race-program changes and birthdays from the PCS homepage, under a strip of cycling-news
+sites listed in Firebase Remote Config). Road racing is scraped on the device; the CX lists are
+scraped server-side by a Firebase Cloud Function and read from Firestore (see "Data sources" below).
 
 ## Build, test, and run
 
@@ -58,7 +59,8 @@ Every tab follows the same shape, split across `<Feature>.swift` (namespace enum
 `ViewState` / `Representable`), `<Feature>.Interactor.swift` (`Domain` struct + `UseCase` enum +
 `InteractorImpl`), and `<Feature>.ViewModel.swift`:
 
-- `InteractorImpl` (in `HomeRacesInteractor.swift` / `CXRaces.Interactor.swift`) owns a
+- `InteractorImpl` (in `HomeRacesInteractor.swift` / `CXRaces.Interactor.swift` /
+  `Paddock.Interactor.swift`) owns a
   `CurrentValueSubject<Domain, Never>`, runs network calls in a cancellable `Task`, and exposes
   `useCase(_:)` as its only mutation entry point.
 - `ViewModel<Interactor: InteractorProtocol>` (generic over the shared `InteractorProtocol`,
@@ -69,9 +71,7 @@ Every tab follows the same shape, split across `<Feature>.swift` (namespace enum
 - Navigation: each tab has its own `Router` (`Router.swift`, `ObservableObject` wrapping a
   `NavigationPath`), created once in `TabBarView.init()` and threaded into that tab's
   `NavigationStack`. `Router.Destination` is a single enum shared across tabs (`detail`,
-  `cxZone`, `nextToFinishRace`).
-- `HateZone` doesn't follow this pattern — it's a static list of external URLs rendered as
-  webviews, no interactor/view model.
+  `cxZone`, `nextToFinishRace`, and `web(URL)`, which opens any link in `Helpers/SafariView.swift`).
 
 When adding a new tab or reworking one of these, match this Domain/UseCase/Interactor/ViewModel
 split rather than putting networking or state directly in a View.
@@ -81,8 +81,10 @@ split rather than putting networking or state directly in a View.
 Both sites are scraped with hand-written CSS selectors (no JSON API). `DTO.swift` holds the parsed
 wire models; interactors map `DTO` → per-feature `Domain`, and view models map `Domain` →
 `Representable`. Don't reuse `DTO` types directly in views. All networking lives on the `Service`
-struct: `Service.swift` (PCS) plus the `extension Service` in `Requester+Cx.swift` (CX) — the
-filename predates the `Requester` → `Service` rename, which freed the name for Alfy's `Requester`.
+struct: `Service.swift` (PCS), `Service+Paddock.swift` (the Paddock feed's PCS sections),
+`Service+RemoteConfig.swift` (the press list) and the `extension Service` in `Requester+Cx.swift`
+(CX) — that filename predates the `Requester` → `Service` rename, which freed the name for Alfy's
+`Requester`.
 
 **ProCyclingStats stays on the device — don't move it server-side.** PCS sits behind a Cloudflare
 bot challenge: Node/curl requests get HTTP 403 with a "Just a moment..." page, while iOS's
@@ -91,9 +93,10 @@ bot challenge: Node/curl requests get HTTP 403 with a "Just a moment..." page, w
 
 - Test PCS fetches with `URLSession` (e.g. a `swift` script), never curl — a curl 403 is not what
   the app sees.
-- `getLatestResults()` goes through Alfy's `Requester` builder (60s TTL cache, ignoring server
-  cache headers). It doesn't validate HTTP status, and parsers return `[]` rather than throwing, so
-  if Cloudflare ever does challenge the app, the symptom is empty sections, not an error.
+- `getHomepageDocument()`, shared by `getLatestResults()` and `getPaddock()`, goes through Alfy's
+  `Requester` builder (60s TTL cache, ignoring server cache headers), so opening Paddock right after
+  Today Races is a cache hit. It doesn't validate HTTP status, and parsers return `[]` rather than
+  throwing, so if Cloudflare ever does challenge the app, the symptom is empty sections, not an error.
 - Offline is kept out of Crashlytics by matching both URLSession's `-1009` and Alfy's
   `Requester.ErrorReason.noInternetConnection`.
 - `HomeRacesInteractorImpl` uses Alfy's `RequestThrottleController` (60s minimum interval, 2 extra
@@ -101,6 +104,16 @@ bot challenge: Node/curl requests get HTTP 403 with a "Just a moment..." page, w
 - The homepage parsers anchor on section heading text (`h4`), not table classes: the
   "Next to finish" and "Races tomorrow" tables share the same class. The "Results today" `<ul>` is
   left unclosed by PCS when empty, so only its direct `<li class="race">` children count.
+- Paddock reads three more homepage sections: "Latest transfers", "Recent top riders program
+  updates" and "Birthdays". Program-update times are relative ("16h") and transfer dates have no
+  year ("20/09"); `Paddock.InteractorImpl` resolves both against the fetch time, and the feed
+  groups by calendar day. An empty program-updates list is normal — PCS often has none.
+
+**The Paddock press list comes from Firebase Remote Config**, key `press_urls`: a JSON array whose
+entries are either a URL string or a `{"Name": "url"}` object (the console currently uses the
+object form). Non-http(s) entries are dropped. The in-app default (the six original sites) covers
+first launch and offline; DEBUG builds fetch with a 0s minimum interval, release keeps the 12h
+default.
 
 **CX lists come from Firestore.** The `scrapeCx` scheduled function (`functions/src/index.ts`,
 daily at 23:00 Europe/Madrid) scrapes cyclocross24.com with cheerio (`functions/src/cx.ts`, a port of the old

@@ -24,6 +24,7 @@ final class Router: ObservableObject {
         case nextToFinishRace(index: Int)
         case detail(Detail)
         case cxZone(CXZone)
+        case web(URL)
     }
     
     @Published var navPath = NavigationPath()

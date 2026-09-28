@@ -14,23 +14,14 @@ import `SwiftSoup` // Add SwiftSoup for HTML parsing
 
 struct Service {
     private static let baseURL = URL(string: "https://www.procyclingstats.com/")!
-    private static let baseStringURL = "https://www.procyclingstats.com/"
+    static let baseStringURL = "https://www.procyclingstats.com/"
+    static let homepageURL = "https://www.procyclingstats.com/index.php"
     private static let requester = Requester.self
-    
+
     static func getLatestResults() async throws -> DTO.Home {
-        let url = "https://www.procyclingstats.com/index.php"
 //        let url = URL(string: "https://www.procyclingstats.com/race/settimana-internazionale-coppi-e-bartali/2025/stage-3/info/profiles")!
         do {
-            let (data, _) = try await Requester
-                .makeRequest(url)
-                .ttl(60)
-                .cacheControlBehavior(.ignoreServer)
-                .send()
-            guard let htmlContent = String(data: data, encoding: .utf8) else {
-                throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
-            }
-
-            let document = try SwiftSoup.parse(htmlContent)
+            let document = try await getHomepageDocument()
             let nextToFinishResults = parseNextToFinishResults(document)
             let todayResults = parseResultsToday(from: document)
             let yesterdayResults = try parseResultsYesterday(document)
@@ -47,21 +38,30 @@ struct Service {
             )
 
         } catch {
-            var shouldLog = true
-
-            if let reqError = error as? Requester.ErrorReason {
-                if case .noInternetConnection = reqError {
-                    shouldLog = false
-                }
-            } else if (error as NSError).code == -1009 {
-                shouldLog = false
-            }
-
-            if shouldLog {
+            if !isOffline(error) {
                 nonFatalCrashlytics(false, error.localizedDescription)
             }
             throw NSError(domain: "Impossible parsing", code: 0, userInfo: nil)
         }
+    }
+
+    static func getHomepageDocument() async throws -> Document {
+        let (data, _) = try await Requester
+            .makeRequest(homepageURL)
+            .ttl(60)
+            .cacheControlBehavior(.ignoreServer)
+            .send()
+        guard let htmlContent = String(data: data, encoding: .utf8) else {
+            throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
+        }
+        return try SwiftSoup.parse(htmlContent)
+    }
+
+    static func isOffline(_ error: Error) -> Bool {
+        if let reason = error as? Requester.ErrorReason, case .noInternetConnection = reason {
+            return true
+        }
+        return (error as NSError).code == -1009
     }
     
     static func parseNextToFinishResults(_ document: Document) -> [DTO.NextToFinishResult] {

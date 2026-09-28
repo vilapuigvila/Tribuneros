@@ -52,17 +52,17 @@ struct TribuneruText: View {
             nil
         case .vaporScreenTitle, .vaporSectionTitle:
             "SpaceGrotesk-Bold"
-        case .vaporScreenDate, .vaporMeta:
+        case .vaporScreenDate, .vaporMeta, .vaporFeedDetail:
             "SpaceGrotesk-Regular"
         case .vaporRaceNameTomorrow:
             "SpaceGrotesk-Medium"
-        case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporCountdown, .vaporTabLabel, .vaporListTitle:
+        case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporCountdown, .vaporTabLabel, .vaporPressName:
             "SpaceGrotesk-SemiBold"
-        case .vaporSpoilerChip:
+        case .vaporSpoilerChip, .vaporFeedTag, .vaporChangeSign, .vaporAge:
             "SpaceMono-Bold"
         case .vaporETANext, .vaporStartTimeTomorrow:
             "SpaceMono-Bold"
-        case .vaporFinishTime, .vaporETALine:
+        case .vaporFinishTime, .vaporETALine, .vaporMonoMeta, .vaporGroupLabel:
             "SpaceMono-Regular"
         }
     }
@@ -89,7 +89,12 @@ struct TribuneruText: View {
         case .vaporCountdown: 11
         case .vaporMeta: 11
         case .vaporTabLabel: 11
-        case .vaporListTitle: 18
+        case .vaporPressName: 13
+        case .vaporFeedDetail: 12
+        case .vaporFeedTag: 10
+        case .vaporMonoMeta, .vaporGroupLabel: 11
+        case .vaporChangeSign: 12
+        case .vaporAge: 14
         }
     }
     private var weight: Font.Weight {
@@ -105,13 +110,15 @@ struct TribuneruText: View {
         // Weight for the vapor cases is baked into the loaded font file
         // (see `fontName`); this value is unused but kept exhaustive.
         case .vaporScreenTitle, .vaporSectionTitle, .vaporSpoilerChip,
-             .vaporETANext, .vaporStartTimeTomorrow:
+             .vaporETANext, .vaporStartTimeTomorrow,
+             .vaporFeedTag, .vaporChangeSign, .vaporAge:
             .bold
-        case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporCountdown, .vaporTabLabel, .vaporListTitle:
+        case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporCountdown, .vaporTabLabel, .vaporPressName:
             .semibold
         case .vaporRaceNameTomorrow:
             .medium
-        case .vaporScreenDate, .vaporMeta, .vaporFinishTime, .vaporETALine:
+        case .vaporScreenDate, .vaporMeta, .vaporFinishTime, .vaporETALine,
+             .vaporFeedDetail, .vaporMonoMeta, .vaporGroupLabel:
             .regular
         }
     }
@@ -127,6 +134,8 @@ struct TribuneruText: View {
         case .vaporSectionTitle: -0.8
         case .vaporETANext: -0.5
         case .vaporStartTimeTomorrow: -0.4
+        case .vaporFeedTag: 0.8
+        case .vaporGroupLabel: 0.66
         default: 0
         }
     }
@@ -134,7 +143,8 @@ struct TribuneruText: View {
     /// font (if ever substituted) to keep digits tabular.
     private var isTabularNumeric: Bool {
         switch style {
-        case .vaporETANext, .vaporStartTimeTomorrow, .vaporFinishTime, .vaporETALine:
+        case .vaporETANext, .vaporStartTimeTomorrow, .vaporFinishTime, .vaporETALine,
+             .vaporMonoMeta, .vaporAge:
             true
         default:
             false
@@ -170,9 +180,15 @@ extension TribuneruText {
         case vaporCountdown
         case vaporMeta
         case vaporTabLabel
-        /// A list row's title — Hate Zone's link rows. Not part of the
-        /// original Home ramp, added when Vapor rolled out to other tabs.
-        case vaporListTitle
+
+        // MARK: - Vapor (Paddock) -
+        case vaporPressName
+        case vaporFeedDetail
+        case vaporFeedTag
+        case vaporMonoMeta
+        case vaporGroupLabel
+        case vaporChangeSign
+        case vaporAge
     }
 }
 

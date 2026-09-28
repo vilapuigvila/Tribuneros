@@ -5,7 +5,7 @@
 //  The "Vapor" redesign, originally Home-only: each section (Next to
 //  finish, Results today/yesterday, Races tomorrow) is one rounded,
 //  coloured panel holding a large title and a 2-column grid of race cards.
-//  Also rolled out to CX Zone and Hate Zone — see `VaporPanel` below for
+//  Also rolled out to CX Zone and Paddock — see `VaporPanel` below for
 //  the freeform (non-grid) variant those use.
 //
 //  See `agent-doc/home_redesign_spec.md` for the full spec this implements.

@@ -47,6 +47,8 @@ extension Color {
             Color(hex: 0x150E1E)
         case .vaporPanelLive:
             Color(hex: 0x1A0B10)
+        case .vaporNegative:
+            Color(hex: 0xFB7185)
         }
     }
 
@@ -75,6 +77,7 @@ extension Color {
         /// cards on it. See `agent-doc/home_redesign_spec.md` §1 and §8 (the
         /// section→colour mapping is a free choice).
         case vaporPanelLive
+        case vaporNegative
     }
 }
 

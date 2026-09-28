@@ -3,7 +3,7 @@
 ## Project Structure & Module Organization
 - `Tribuneros.xcodeproj/`: Xcode project (includes Swift Package dependencies).
 - `Tribuneros/`: main iOS app source.
-  - `Tabs/`: feature areas (for example `HomeRaces/`, `HateZone/`) with subfolders like `Components/` and `Details/`.
+  - `Tabs/`: feature areas (for example `HomeRaces/`, `Paddock/`) with subfolders like `Components/` and `Details/`.
   - `Helpers/`: shared utilities (for example Crashlytics setup, preferences).
   - `Styling/`: reusable UI styling primitives.
   - `Assets.xcassets/` and `Preview Content/`: app/preview assets.

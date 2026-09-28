@@ -10,7 +10,7 @@ import SwiftUI
 
 /// Card shape shared by all three — a rounded `cardSurface` box with 12pt
 /// padding and 10pt internal spacing. Also reused outside Home (CX Zone,
-/// Hate Zone) as the common Vapor card shape — see `VaporPanel` in
+/// Paddock) as the common Vapor card shape — see `VaporPanel` in
 /// `VaporSectionPanel.swift`.
 struct VaporCard<Content: View>: View {
     var spacing: CGFloat = 10

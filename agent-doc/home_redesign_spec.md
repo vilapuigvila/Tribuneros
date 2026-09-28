@@ -5,7 +5,7 @@ Source of truth for the visual design: the **Panel** artboard on the
 `Tribuneros Air Sections` canvas.
 
 This replaces the current black / green-tint look on that screen only.
-`CXRaces` and `HateZone` are untouched until we decide to roll it out.
+The other tabs are untouched until we decide to roll it out.
 
 ---
 
@@ -184,7 +184,7 @@ case .panelYesterday:  Color(hex: 0x0E0F22)
 case .panelTomorrow:   Color(hex: 0x150E1E)
 ```
 
-Keep the existing green cases until CX and Hate Zone are migrated too.
+Keep the existing green cases until the other tabs are migrated too.
 
 ---
 
@@ -232,7 +232,7 @@ Keep the existing green cases until CX and Hate Zone are migrated too.
 - Padding: 10 top, 24 horizontal, 22 bottom
 - Item: icon 20pt (1.7pt stroke), 6pt gap, 11pt SemiBold label, min width 72
 - Active `accent`, inactive `textSecondary`
-- The bicycle / no-entry icons stay as they are today
+- The bicycle / megaphone icons stay as they are today
 
 ---
 

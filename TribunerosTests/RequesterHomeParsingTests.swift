@@ -163,6 +163,51 @@ final class RequesterHomeParsingTests: XCTestCase {
         XCTAssertEqual(result.racePath, "race/world-championships-itt-u23/2026/result/live")
     }
 
+    // MARK: - Paddock
+
+    func testTransfersParseRealMarkup() throws {
+        let document = try loadFixtureDocument()
+        let transfers = Service.parseTransfers(document)
+
+        XCTAssertFalse(transfers.isEmpty, "Expected at least one 'latest transfers' entry")
+        for transfer in transfers {
+            XCTAssertNotNil(transfer.date.range(of: "^\\d{2}/\\d{2}$", options: .regularExpression), "Unexpected date: \(transfer.date)")
+            XCTAssertFalse(transfer.rider.name.isEmpty)
+            XCTAssertTrue(matchesTwoLetterCode(transfer.rider.countryCode), "Unexpected flag: \(transfer.rider.countryCode)")
+            XCTAssertTrue(transfer.rider.url?.absoluteString.hasPrefix("https://www.procyclingstats.com/rider/") == true)
+            XCTAssertFalse(transfer.teamName.isEmpty)
+        }
+    }
+
+    func testProgramUpdatesParseRealMarkup() throws {
+        let document = try loadFixtureDocument()
+        let updates = Service.parseProgramUpdates(document)
+
+        XCTAssertFalse(updates.isEmpty, "Expected at least one 'program updates' entry")
+        for update in updates {
+            XCTAssertNotNil(update.timeAgo.range(of: "^\\d+[mhd]$", options: .regularExpression), "Unexpected time: \(update.timeAgo)")
+            XCTAssertFalse(update.rider.name.isEmpty)
+            XCTAssertTrue(update.rider.url?.absoluteString.hasPrefix("https://www.procyclingstats.com/rider/") == true)
+            XCTAssertFalse(update.changes.isEmpty)
+        }
+        let changes = updates.flatMap(\.changes)
+        XCTAssertTrue(changes.allSatisfy { !$0.raceName.hasPrefix("+") && !$0.raceName.hasPrefix("-") }, "Race names must come from the title, not the code")
+        XCTAssertTrue(changes.contains { $0.isAdded }, "The fixture has added races")
+        XCTAssertTrue(changes.contains { !$0.isAdded }, "The fixture has dropped races")
+    }
+
+    func testBirthdaysParseRealMarkup() throws {
+        let document = try loadFixtureDocument()
+        let birthdays = Service.parseBirthdays(document)
+
+        XCTAssertFalse(birthdays.isEmpty, "Expected at least one birthday")
+        for birthday in birthdays {
+            XCTAssertFalse(birthday.rider.name.isEmpty)
+            XCTAssertTrue(matchesTwoLetterCode(birthday.rider.countryCode), "Unexpected flag: \(birthday.rider.countryCode)")
+            XCTAssertNotNil(Int(birthday.age), "Unexpected age: \(birthday.age)")
+        }
+    }
+
     // MARK: - Live network (hits the real procyclingstats.com site)
 
     /// Hits https://www.procyclingstats.com/index.php directly through the same
