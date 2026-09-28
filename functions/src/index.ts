@@ -1,32 +1,57 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
 import {setGlobalOptions} from "firebase-functions";
-// import {onRequest} from "firebase-functions/https";
-// import * as logger from "firebase-functions/logger";
+import * as logger from "firebase-functions/logger";
+import {onSchedule} from "firebase-functions/v2/scheduler";
+import {initializeApp} from "firebase-admin/app";
+import {FieldValue, getFirestore, type Firestore} from "firebase-admin/firestore";
+import {loadHomepageDocument, parseHomepage, scrapeCalendar, scrapeStandings} from "./cx";
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
+initializeApp();
 
-// For cost control, you can set the maximum number of containers that can be
-// running at the same time. This helps mitigate the impact of unexpected
-// traffic spikes by instead downgrading performance. This limit is a
-// per-function limit. You can override the limit for each function using the
-// `maxInstances` option in the function's options, e.g.
-// `onRequest({ maxInstances: 5 }, (req, res) => { ... })`.
-// NOTE: setGlobalOptions does not apply to functions using the v1 API. V1
-// functions should each use functions.runWith({ maxInstances: 10 }) instead.
-// In the v1 API, each function can only serve one request per container, so
-// this will be the maximum concurrent request count.
-setGlobalOptions({maxInstances: 10});
+setGlobalOptions({region: "europe-west1", maxInstances: 10});
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+type Outcome = PromiseSettledResult<object>;
+
+async function store(db: Firestore, path: string, outcome: Outcome, isEmpty: (value: object) => boolean): Promise<boolean> {
+  if (outcome.status === "rejected") {
+    logger.error(`${path}: scrape failed, keeping previous data`, outcome.reason);
+    return false;
+  }
+  if (isEmpty(outcome.value)) {
+    logger.error(`${path}: scrape returned no data, keeping previous data`);
+    return false;
+  }
+  await db.doc(path).set({...outcome.value, updatedAt: FieldValue.serverTimestamp()});
+  logger.info(`${path}: updated`);
+  return true;
+}
+
+export async function runCxScrape(db: Firestore): Promise<void> {
+  const homepageDocument = loadHomepageDocument();
+  const [homepage, calendar, standings] = await Promise.allSettled([
+    homepageDocument.then(parseHomepage),
+    scrapeCalendar(),
+    homepageDocument.then(scrapeStandings),
+  ]);
+
+  const stored = await Promise.all([
+    store(db, "cx/homepage", homepage, (value) => (value as {sections: unknown[]}).sections.length === 0),
+    store(db, "cx/calendar", calendar, (value) => (value as {events: unknown[]}).events.length === 0),
+    store(db, "cx/standings", standings, (value) => (value as {items: unknown[]}).items.length === 0),
+  ]);
+
+  if (!stored.some(Boolean)) {
+    throw new Error("Every CX scrape failed; nothing was updated");
+  }
+}
+
+export const scrapeCx = onSchedule(
+  {
+    schedule: "every day 23:00",
+    timeZone: "Europe/Madrid",
+    timeoutSeconds: 120,
+    memory: "256MiB",
+  },
+  async () => {
+    await runCxScrape(getFirestore());
+  }
+);

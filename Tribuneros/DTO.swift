@@ -145,13 +145,13 @@ extension DTO {
 // MARK: - CX -
 
 extension DTO {
-    struct CX24Homepage: Equatable, Sendable {
-        struct Section: Equatable, Sendable, Hashable {
+    struct CX24Homepage: Equatable, Sendable, Decodable {
+        struct Section: Equatable, Sendable, Hashable, Decodable {
             let title: String
             let races: [Race]
         }
 
-        struct Race: Equatable, Sendable, Hashable {
+        struct Race: Equatable, Sendable, Hashable, Decodable {
             let title: String
             let country: String
             let countryFlagURL: URL?
@@ -161,14 +161,14 @@ extension DTO {
             let categories: [Category]
         }
 
-        struct Category: Equatable, Sendable, Hashable {
+        struct Category: Equatable, Sendable, Hashable, Decodable {
             let title: String
             let categoryURL: URL?
             let winnerImageURL: URL?
             let podium: [Podium]
         }
 
-        struct Podium: Equatable, Sendable, Hashable {
+        struct Podium: Equatable, Sendable, Hashable, Decodable {
             let position: Int
             let rider: String
             let riderURL: URL?
@@ -190,8 +190,8 @@ extension DTO {
         let sections: [Section]
     }
 
-    struct CXStandings: Equatable, Sendable {
-        struct Leader: Equatable, Sendable, Hashable {
+    struct CXStandings: Equatable, Sendable, Decodable {
+        struct Leader: Equatable, Sendable, Hashable, Decodable {
             let position: Int
             let rider: String
             let riderURL: URL?
@@ -199,14 +199,14 @@ extension DTO {
             let points: String
         }
 
-        struct Category: Equatable, Sendable, Hashable {
+        struct Category: Equatable, Sendable, Hashable, Decodable {
             let title: String
             let url: URL?
             let leaders: [Leader]
             let leaderImageURL: URL?
         }
 
-        struct Item: Equatable, Sendable, Hashable {
+        struct Item: Equatable, Sendable, Hashable, Decodable {
             let title: String
             let url: URL?
             let logoURL: URL?
@@ -216,7 +216,7 @@ extension DTO {
         let items: [Item]
     }
     
-    struct CXCalendarEvent: Equatable, Sendable {
+    struct CXCalendarEvent: Equatable, Sendable, Decodable {
         let date: String
         let race: String
         let raceClass: String

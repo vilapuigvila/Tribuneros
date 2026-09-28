@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Written only by the scrapeCx Cloud Function (the Admin SDK bypasses rules).
+    match /cx/{document} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

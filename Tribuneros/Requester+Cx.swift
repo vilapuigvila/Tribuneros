@@ -10,85 +10,45 @@ import Foundation
 import FoundationXML // Necessary for XML parsing on certain platforms
 #endif
 import `SwiftSoup` // Add SwiftSoup for HTML parsing
+import FirebaseFirestore
 
 extension Service {
     private static let cx24BaseURL = URL(string: "https://cyclocross24.com")!
     
     static func getCxEvents() async throws -> DTO.CX24Homepage {
-        do {
-            let data = try await URLSession.shared.data(from: cx24BaseURL).0
-            guard let htmlContent = String(data: data, encoding: .utf8) else {
-                throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
-            }
-            let document = try SwiftSoup.parse(htmlContent)
-            let cx = try parseCx24Homepage(document)
-            return cx
-        } catch {
-            if (error as NSError).code != -1009 {
-                nonFatalCrashlytics(false, error.localizedDescription)
-            }
-            throw error
-        }
+        try await readCxDocument("homepage", as: DTO.CX24Homepage.self)
     }
 
     static func getCxStandings() async throws -> DTO.CXStandings {
-        do {
-            let data = try await URLSession.shared.data(from: cx24BaseURL).0
-            guard let htmlContent = String(data: data, encoding: .utf8) else {
-                throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
-            }
-            let document = try SwiftSoup.parse(htmlContent)
-            let base = try parseCx24StandingsLinks(document)
+        try await readCxDocument("standings", as: DTO.CXStandings.self)
+    }
 
-            var items = base.items
-            await withTaskGroup(of: (Int, DTO.CXStandings.Item).self) { group in
-                for (idx, item) in items.enumerated() {
-                    guard let url = item.url else { continue }
-                    group.addTask {
-                        do {
-                            return (
-                                idx,
-                                try await enrichStandingsItem(item, url: url, includeLeaderImage: idx == 0)
-                            )
-                        } catch {
-                            nonFatalCrashlytics(false, error.localizedDescription)
-                            return (idx, item)
-                        }
-                    }
-                }
+    static func getCxAllCalendarEvents() async throws -> [DTO.CXCalendarEvent] {
+        try await readCxDocument("calendar", as: CalendarDocument.self).events
+    }
 
-                for await (idx, updated) in group {
-                    items[idx] = updated
-                }
-            }
+    private struct CalendarDocument: Decodable {
+        let events: [DTO.CXCalendarEvent]
+    }
 
-            return DTO.CXStandings(items: items)
-        } catch {
-            if (error as NSError).code != -1009 {
-                nonFatalCrashlytics(false, error.localizedDescription)
-            }
-            throw error
-        }
+    private static func _readCxDocument<D: Decodable>(_ name: String, as type: D.Type) async throws -> D {
+        try await Firestore.firestore()
+            .collection("cx")
+            .document(name)
+            .getDocument()
+            .data(as: type)
     }
     
-    static func getCxAllCalendarEvents(season: String = "2025-2026", category: String = "ME") async throws -> [DTO.CXCalendarEvent] {
-        let url = URL(string: "https://cyclocross24.com/calendar/\(season)/\(category)/")!
-        do {
-            let data = try await URLSession.shared.data(from: url).0
-            guard let htmlContent = String(data: data, encoding: .utf8) else {
-                throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
-            }
-            let document = try SwiftSoup.parse(htmlContent)
-            let calendar = try parseCx24CalendarEvents(document)
-            return calendar
-        } catch {
-            if (error as NSError).code != -1009 {
-                nonFatalCrashlytics(false, error.localizedDescription)
-            }
-            throw error
+    private static func readCxDocument<D: Decodable>(_ name: String, as type: D.Type) async throws -> D {
+        let ref = Firestore.firestore().collection("cx").document(name)
+        if let cached = try? await ref.getDocument(source: .cache),
+           let updatedAt = cached.get("updatedAt") as? Timestamp,
+           Date().timeIntervalSince(updatedAt.dateValue()) < 24 * 60 * 60 {
+            return try cached.data(as: type)
         }
+        return try await ref.getDocument().data(as: type)
     }
-
+    
     private static func extractFirstYouTubeVideoID(from html: String) -> String? {
         let patterns = [
             "\"videoId\":\"([a-zA-Z0-9_-]{11})\"",
@@ -226,388 +186,6 @@ extension Service {
         return allResults
     }
     
-    private static func parseCx24Homepage(_ document: Document) throws -> DTO.CX24Homepage {
-        let sectionElements = try document.select("div.raceday:has(div.race_block)").array()
-        let sections: [DTO.CX24Homepage.Section] = try sectionElements.map { sectionEl in
-            let title = try sectionEl.select(".fp_title").first()?.text() ?? ""
-            let raceBlocks = try sectionEl.select("div.race_block").array()
-            let races: [DTO.CX24Homepage.Race] = try raceBlocks.compactMap { raceBlockEl in
-                try parseCx24RaceBlock(raceBlockEl)
-            }
-            return DTO.CX24Homepage.Section(title: title, races: races)
-        }
-        
-        return DTO.CX24Homepage(sections: sections)
-    }
-
-    private static func parseCx24StandingsLinks(_ document: Document) throws -> DTO.CXStandings {
-        let footerLinks = try document
-            .select("ul:has(li.footer_title:matchesOwn((?i)^Standings$)) a[href]")
-            .array()
-
-        let links = footerLinks.isEmpty
-            ? try document.select("a[href^=/uciranking/], a[href^=/standings/]").array()
-            : footerLinks
-
-        var seenTitles = Set<String>()
-        let items: [DTO.CXStandings.Item] = try links.compactMap { anchor in
-            let title = try anchor.text().trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !title.isEmpty, seenTitles.insert(title).inserted else { return nil }
-            let href = try anchor.attr("href")
-            return DTO.CXStandings.Item(title: title, url: cx24AbsoluteURL(href), logoURL: nil, categories: [])
-        }
-
-        func score(_ item: DTO.CXStandings.Item) -> Int {
-            guard let path = item.url?.path.lowercased() else { return 1 }
-            return path.contains("uciranking") ? 0 : 1
-        }
-
-        let orderedItems = items
-            .enumerated()
-            .sorted { lhs, rhs in
-                let l = score(lhs.element)
-                let r = score(rhs.element)
-                if l != r { return l < r }
-                return lhs.offset < rhs.offset
-            }
-            .map(\.element)
-
-        return DTO.CXStandings(items: orderedItems)
-    }
-
-    private static func enrichStandingsItem(
-        _ item: DTO.CXStandings.Item,
-        url: URL,
-        includeLeaderImage: Bool
-    ) async throws -> DTO.CXStandings.Item {
-        let data = try await URLSession.shared.data(from: url).0
-        guard let htmlContent = String(data: data, encoding: .utf8) else {
-            throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
-        }
-        let document = try SwiftSoup.parse(htmlContent)
-
-        let normalizedTitle = normalizedStandingsTitle((try? document.select("h1.main_title").first()?.text()) ?? item.title)
-        let logoURL = parseStandingsLogo(document)
-            ?? (url.path.contains("uciranking") ? cx24AbsoluteURL("/images/flag/32/UCI.png") : nil)
-
-        let (categoriesBaseAll, selectedIndexAll) = try parseStandingsCategories(document)
-        let categoriesBase = Array(categoriesBaseAll.prefix(3))
-        let selectedIndex = min(selectedIndexAll, max(0, categoriesBase.count - 1))
-        let currentLeaders = try parseStandingsLeaders(document)
-
-        var categories: [DTO.CXStandings.Category] = []
-        categories.reserveCapacity(categoriesBase.count)
-
-        for (idx, baseCategory) in categoriesBase.enumerated() {
-            if idx == selectedIndex {
-                categories.append(
-                    .init(
-                        title: baseCategory.title,
-                        url: baseCategory.url,
-                        leaders: currentLeaders,
-                        leaderImageURL: nil
-                    )
-                )
-            } else if let categoryURL = baseCategory.url {
-                do {
-                    let data = try await URLSession.shared.data(from: categoryURL).0
-                    guard let html = String(data: data, encoding: .utf8) else {
-                        throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
-                    }
-                    let doc = try SwiftSoup.parse(html)
-                    let leaders = try parseStandingsLeaders(doc)
-                    categories.append(.init(title: baseCategory.title, url: baseCategory.url, leaders: leaders, leaderImageURL: nil))
-                } catch {
-                    categories.append(.init(title: baseCategory.title, url: baseCategory.url, leaders: [], leaderImageURL: nil))
-                    nonFatalCrashlytics(false, error.localizedDescription)
-                }
-            } else {
-                categories.append(.init(title: baseCategory.title, url: baseCategory.url, leaders: [], leaderImageURL: nil))
-            }
-        }
-
-        if includeLeaderImage, !categories.isEmpty {
-            var selected = categories[selectedIndex]
-            if let riderURL = selected.leaders.first?.riderURL {
-                selected = .init(
-                    title: selected.title,
-                    url: selected.url,
-                    leaders: selected.leaders,
-                    leaderImageURL: try? await fetchRiderAvatarURL(riderURL)
-                )
-                categories[selectedIndex] = selected
-            }
-        }
-
-        return .init(
-            title: normalizedTitle,
-            url: item.url,
-            logoURL: logoURL ?? item.logoURL,
-            categories: categories
-        )
-    }
-
-    private static func normalizedStandingsTitle(_ raw: String) -> String {
-        var title = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-        if let beforeDash = title.components(separatedBy: " - ").first {
-            title = beforeDash
-        }
-        if let yearRange = title.range(
-            of: "\\b\\d{4}\\s*[-–]\\s*\\d{4}\\b",
-            options: .regularExpression
-        ) {
-            title.removeSubrange(yearRange)
-        }
-        title = title
-            .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        return title
-    }
-
-    private static func parseStandingsLogo(_ document: Document) -> URL? {
-        let logo = (try? document.select("div.standings_logo img").first())
-            ?? (try? document.select(".rid_land img.flag").first())
-        let src = (try? logo?.attr("data-src")) ?? (try? logo?.attr("src"))
-        return cx24AbsoluteURL(src ?? "")
-    }
-
-    private static func parseStandingsCategories(_ document: Document) throws -> (categories: [(title: String, url: URL?)], selectedIndex: Int) {
-        let tabEls = try document.select("a.cx-cat[href]").array()
-        if !tabEls.isEmpty {
-            var categories: [(String, URL?)] = []
-            categories.reserveCapacity(tabEls.count)
-
-            var selectedIndex = 0
-            for (idx, el) in tabEls.enumerated() {
-                let title = try el.text().trimmingCharacters(in: .whitespacesAndNewlines)
-                let href = try el.attr("href")
-                categories.append((title, cx24AbsoluteURL(href)))
-                let className = (try? el.attr("class")) ?? ""
-                if className.contains("c10") && className.contains("t10") {
-                    selectedIndex = idx
-                }
-            }
-            return (categories, selectedIndex)
-        }
-
-        let optionEls = try document.select("select[name=cat] option[value]").array()
-        var categories: [(String, URL?)] = []
-        categories.reserveCapacity(optionEls.count)
-
-        var selectedIndex = 0
-        for (idx, el) in optionEls.enumerated() {
-            let title = try el.text().trimmingCharacters(in: .whitespacesAndNewlines)
-            let href = try el.attr("value")
-            categories.append((title, cx24AbsoluteURL(href)))
-            if el.hasAttr("selected") {
-                selectedIndex = idx
-            }
-        }
-        return (categories, selectedIndex)
-    }
-
-    private static func parseStandingsLeaders(_ document: Document) throws -> [DTO.CXStandings.Leader] {
-        let rows = try document.select("tr.r1_row").array()
-        guard !rows.isEmpty else { return [] }
-
-        let topRows = Array(rows.prefix(5))
-        return try topRows.compactMap { row in
-            if let positionText = try row.select("td.r1_uci_position").first()?.text(),
-               let position = Int(positionText.trimmingCharacters(in: .whitespacesAndNewlines))
-            {
-                let riderAnchor = try row.select("a.rurl").first()
-                let rider = try riderAnchor?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                let riderURL = cx24AbsoluteURL(try riderAnchor?.attr("href") ?? "")
-
-                let flagImg = try row.select("img.flag").first()
-                let flagURL = cx24AbsoluteURL(try flagImg?.attr("src") ?? "")
-
-                let points = try row.select("td.r1_uci_points").first()?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                guard !rider.isEmpty else { return nil }
-
-                return DTO.CXStandings.Leader(
-                    position: position,
-                    rider: rider,
-                    riderURL: riderURL,
-                    countryFlagURL: flagURL,
-                    points: points
-                )
-            } else if let positionText = try row.select("td.stand_position, td.cx24_column.stand_position").first()?.text(),
-                      let position = Int(positionText.trimmingCharacters(in: .whitespacesAndNewlines))
-            {
-                let riderAnchor = try row.select("a.rurl").first()
-                let rider = try riderAnchor?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                let riderURL = cx24AbsoluteURL(try riderAnchor?.attr("href") ?? "")
-
-                let flagImg = try row.select("img.flag").first()
-                let flagURL = cx24AbsoluteURL(try flagImg?.attr("src") ?? "")
-
-                let points = try row.select("td.stand_points, td.cx24_column.stand_points").first()?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                guard !rider.isEmpty else { return nil }
-
-                return DTO.CXStandings.Leader(
-                    position: position,
-                    rider: rider,
-                    riderURL: riderURL,
-                    countryFlagURL: flagURL,
-                    points: points
-                )
-            }
-            return nil
-        }
-    }
-
-    private static func fetchRiderAvatarURL(_ riderURL: URL) async throws -> URL? {
-        let data = try await URLSession.shared.data(from: riderURL).0
-        guard let htmlContent = String(data: data, encoding: .utf8) else {
-            throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
-        }
-        let document = try SwiftSoup.parse(htmlContent)
-        let img = try document.select("img.rider-avatar__image").first()
-            ?? (try document.select("img[src*=/images/rider/]").first())
-        let src = try img?.attr("src") ?? ""
-        return cx24AbsoluteURL(src)
-    }
-    
-    private static func parseCx24RaceBlock(_ raceBlock: Element) throws -> DTO.CX24Homepage.Race? {
-        guard let raceInfo = try raceBlock.select("div.race_info").first() else {
-            return nil
-        }
-        
-        let title = try raceInfo.select("h3.h3").first()?.text() ?? ""
-        
-        let flagImg = try raceInfo.select("div.race_info_left img.flag").first()
-        let country = try flagImg?.attr("title") ?? ""
-        let countryFlagURL = cx24AbsoluteURL(try flagImg?.attr("src") ?? "")
-        
-        let infoText = try raceInfo.select("div.race_info_bar").first()?.text() ?? ""
-        let tokens = infoText.split(whereSeparator: \.isWhitespace).map(String.init)
-        let date = tokens.prefix(3).joined(separator: " ")
-        let location = tokens.dropFirst(3).joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        let racePath = try raceInfo.select("a[href^=/race/]").first()?.attr("href") ?? ""
-        let raceURL = cx24AbsoluteURL(racePath)
-        
-        let categoryEls = try raceBlock.select("div.race_category").array()
-        let categories = try categoryEls.map { try parseCx24Category($0) }
-        
-        return DTO.CX24Homepage.Race(
-            title: title,
-            country: country,
-            countryFlagURL: countryFlagURL,
-            date: date,
-            location: location,
-            raceURL: raceURL,
-            categories: categories
-        )
-    }
-    
-    private static func parseCx24Category(_ category: Element) throws -> DTO.CX24Homepage.Category {
-        let categoryAnchor = try category.select("div.fp_category > a").first()
-        let rawTitle = categoryAnchor?.ownText() ?? ""
-        let title = rawTitle.trimmingCharacters(in: .whitespacesAndNewlines)
-        let categoryURL = cx24AbsoluteURL(try categoryAnchor?.attr("href") ?? "")
-        
-        let winnerImageURL = cx24AbsoluteURL(try category.select("img.fp_image_winner").first()?.attr("src") ?? "")
-        
-        let podiumRows = try category.select("div.fp_rider_bar").array().prefix(3)
-        let podium: [DTO.CX24Homepage.Podium] = try podiumRows.map { row in
-            let positionText = try row.select("div.fp_result").first()?.text() ?? ""
-            let position = Int(positionText.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
-            
-            let riderAnchor = try row.select("div.fp_rider a").first()
-            let riderName = try riderAnchor?.text() ?? ""
-            let riderURL = cx24AbsoluteURL(try riderAnchor?.attr("href") ?? "")
-            
-            let riderFlagImg = try row.select("div.fp_flag img.flag").first()
-            let riderCountry = try riderFlagImg?.attr("title") ?? ""
-            let riderFlagURL = cx24AbsoluteURL(try riderFlagImg?.attr("src") ?? "")
-            
-            let time = try row.select("div.fp_time").first()?.text() ?? ""
-            
-            return DTO.CX24Homepage.Podium(
-                position: position,
-                rider: riderName,
-                riderURL: riderURL,
-                country: riderCountry,
-                countryFlagURL: riderFlagURL,
-                time: time
-            )
-        }
-        
-        return DTO.CX24Homepage.Category(
-            title: title,
-            categoryURL: categoryURL,
-            winnerImageURL: winnerImageURL,
-            podium: podium
-        )
-    }
-    
-    private static func parseCx24CalendarEvents(_ document: Document) throws -> [DTO.CXCalendarEvent] {
-        try document
-            .select("tr.r1_row.ri_calendar")
-            .array()
-            .compactMap { row -> DTO.CXCalendarEvent? in
-                let isCancelled = row.hasClass("race_cancelled") || ((try? row.select("div.cancel").first()) != nil)
-
-                let date = try row.select("td.r1_cal_date").first()?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                let raceTd = try row.select("td.r1_cal_rider").first()
-                let raceAnchor = try raceTd?.select("a[href^=/race/]").first()
-                let race = try raceAnchor?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-
-                let racePath = try raceAnchor?.attr("href") ?? ""
-                let raceURL = cx24AbsoluteURL(racePath)
-                let raceSlug = cx24RaceCode(fromRacePath: racePath)
-
-                let className = try row.select("td.r1_cal_class").first()?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-
-                let flagImg = try raceTd?.select("img.flag").first()
-                let flagURL = cx24AbsoluteURL(try flagImg?.attr("src") ?? "")
-                let raceCountry = (try flagImg?.attr("title"))?.trimmingCharacters(in: .whitespacesAndNewlines)
-
-                let winnerTd = try row.select("td.r1_cal_winner").first()
-                let resultsAnchor = try winnerTd?.select("a[title=Results][href^=/race/]").first()
-                    ?? winnerTd?.select("a[href^=/race/]").first()
-                let resultsPath = try resultsAnchor?.attr("href") ?? ""
-                let resultsURL = cx24AbsoluteURL(resultsPath)
-                let raceID = cx24RaceID(fromRacePath: resultsPath)
-
-                let videoPath = try row.select("td.r1_cal_yt a[href$=#video]").first()?.attr("href") ?? ""
-                let videoURL = cx24AbsoluteURL(videoPath)
-
-                let websiteHref = try row.select("td.r1_cal_web a[href]").first()?.attr("href") ?? ""
-                let websiteURL = cx24AbsoluteURL(websiteHref)
-
-                let winnerAnchor = try winnerTd?.select("a.rurl[href^=/rider/]").first()
-                let winner = try winnerAnchor?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                let winnerURL = cx24AbsoluteURL(try winnerAnchor?.attr("href") ?? "")
-
-                let winnerFlagImg = try winnerTd?.select("img.flag").first()
-                let winnerCountry = (try winnerFlagImg?.attr("title"))?.trimmingCharacters(in: .whitespacesAndNewlines)
-                let winnerFlagURL = cx24AbsoluteURL(try winnerFlagImg?.attr("src") ?? "")
-                guard !date.isEmpty, !race.isEmpty else { return nil }
-                
-                return DTO.CXCalendarEvent(
-                    date: date,
-                    race: race,
-                    raceClass: className,
-                    flagURL: flagURL,
-                    winnerName: winner,
-                    isCancelled: isCancelled,
-                    raceID: raceID,
-                    raceSlug: raceSlug,
-                    raceURL: raceURL,
-                    resultsURL: resultsURL,
-                    videoURL: videoURL,
-                    websiteURL: websiteURL,
-                    raceCountry: raceCountry,
-                    winnerURL: winnerURL,
-                    winnerCountry: winnerCountry,
-                    winnerFlagURL: winnerFlagURL
-                )
-            }
-    }
-    
     private static func parseCx24CategoryResults(
         _ document: Document,
         raceVideosURL: URL?
@@ -698,18 +276,5 @@ extension Service {
             return url
         }
         return URL(string: trimmed, relativeTo: cx24BaseURL)?.absoluteURL
-    }
-
-    private static func cx24RaceCode(fromRacePath href: String) -> String? {
-        let trimmed = href.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
-        let components = trimmed.split(separator: "/", omittingEmptySubsequences: true)
-        guard components.count >= 2, components[0] == "race" else { return nil }
-        return String(components[1])
-    }
-
-    private static func cx24RaceID(fromRacePath href: String) -> Int? {
-        guard let code = cx24RaceCode(fromRacePath: href) else { return nil }
-        return Int(code)
     }
 }

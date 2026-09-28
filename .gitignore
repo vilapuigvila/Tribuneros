@@ -75,3 +75,9 @@ iOSInjectionProject/
 # End of https://www.toptal.com/developers/gitignore/api/swift
 
 Breakpoints_v2.xcbkptlist
+
+# Firebase CLI / emulator logs
+firebase-debug.log
+firebase-debug.*.log
+firestore-debug.log
+ui-debug.log

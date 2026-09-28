@@ -4,25 +4,51 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-Tribuneros is an iOS/SwiftUI app that scrapes public cycling results/calendars from third-party
-sites (no backend of its own) and presents them as three tabs: Today Races (`HomeRaces`),
-CX Zone (`CXRaces`, cyclocross), and Hate Zone (a list of external cycling-news webviews).
+Tribuneros is an iOS/SwiftUI app showing public cycling results and calendars, scraped from
+third-party sites, as three tabs: Today Races (`HomeRaces`, from procyclingstats.com), CX Zone
+(`CXRaces`, cyclocross, from cyclocross24.com), and Hate Zone (a list of external cycling-news
+webviews). Road racing is scraped on the device; the CX lists are scraped server-side by a
+Firebase Cloud Function and read from Firestore (see "Data sources" below).
 
 ## Build, test, and run
 
+### iOS app
+
 - Open in Xcode: `open Tribuneros.xcodeproj` — scheme `Tribuneros`, iOS 18+ simulator.
-- CLI build: `xcodebuild -project Tribuneros.xcodeproj -scheme Tribuneros -destination 'platform=iOS Simulator,name=iPhone 15' build`
-- Run all tests: `xcodebuild -project Tribuneros.xcodeproj -scheme Tribuneros -destination 'platform=iOS Simulator,name=iPhone 15' test`
+- CLI build: `xcodebuild -project Tribuneros.xcodeproj -scheme Tribuneros -destination 'generic/platform=iOS Simulator' build`
+- Run tests: `xcodebuild -project Tribuneros.xcodeproj -scheme Tribuneros -destination 'platform=iOS Simulator,name=iPhone 17' test`
 - Run a single test: add `-only-testing:TribunerosTests/<TestClass>/<testMethod>` to the `test` invocation above.
 - Test plan (`Tribuneros/Tribuneros.xctestplan`) skips the placeholder `TribunerosTests.testExample`.
 - If Swift Package resolution breaks: Xcode → File → Packages → Reset Package Caches, then clear DerivedData.
 - Debug-only launch env flags: `MOCKING=1` (forces mock data via `isMockingEnabled`, see `RaceFinishedCardView.swift`) and `DEBUG_BACKGROUND=1` (highlights view backgrounds via `.debugBackground()`).
 
-### Tests hit live network
+### Tests
 
-`TribunerosTests/RequesterCxTests.swift` calls `Requester.getYoutubeRaceURL` against the real
-`cyclocross24.com`/YouTube and retries for up to 10s — it is slow and flaky by nature, not a sign
-your change broke something. There is no mocked HTTP layer for the scraping code.
+- `RequesterHomeParsingTests` parses the saved PCS homepage fixture `TribunerosTests/pcs_real.html`,
+  so a PCS markup change fails loudly instead of silently producing empty sections. When PCS
+  redesigns, re-capture the fixture (with `URLSession`, not curl — see below) and update the parsers
+  and assertions together.
+- Two tests hit the live network and are slow/flaky by nature, not a sign your change broke
+  something: `RequesterHomeParsingTests.testGetLatestResultsParsesRealWebsite` (PCS) and
+  `RequesterCxTests` (cyclocross24.com + YouTube, retries for up to 10s).
+- The `TribunerosTests` target links `Alfy` and `SwiftSoup` explicitly. **Don't link
+  `FirebaseFirestore` into it**: sharing the Firestore package between the app and test targets
+  fails at link time (missing gRPC/abseil symbols). If a test needs Firestore, call app-target code
+  that wraps it.
+
+### Firebase backend (`functions/`)
+
+TypeScript Cloud Functions for Firebase project `tribunerus-4a0ee` (`.firebaserc`), region
+`europe-west1`, Node 22 runtime (`functions/package.json` → `engines`). Run these from the repo
+root with Node 22 on PATH — the Homebrew `node@22` install is first on PATH in this machine's shell.
+
+- Build: `npm --prefix functions run build`
+- Local emulators (Functions + Firestore + UI on :4000): `firebase emulators:start`. Always run
+  Firestore in the emulator when testing locally — the functions emulator alone writes to the
+  **production** database.
+- Deploy: `firebase deploy --only functions,firestore:rules` — the user deploys; it changes the
+  live project and isn't something to run on your own.
+- Logs: `firebase functions:log --only scrapeCx`
 
 ## Architecture
 
@@ -50,27 +76,67 @@ Every tab follows the same shape, split across `<Feature>.swift` (namespace enum
 When adding a new tab or reworking one of these, match this Domain/UseCase/Interactor/ViewModel
 split rather than putting networking or state directly in a View.
 
-### Data flow: scraping, not a REST API
+### Data sources
 
-`Requester.swift` (procyclingstats.com) and `Requester+Cx.swift` (cyclocross24.com) fetch raw HTML
-with `URLSession` and parse it with SwiftSoup using hand-written CSS selectors — there is no JSON
-API. Parsing failures are swallowed and reported via `nonFatalCrashlytics`/Crashlytics rather than
-propagated, so a source site's markup change tends to fail silently (empty sections) rather than
-crash. `DTO.swift` holds the parsed wire models; interactors map `DTO` → per-feature `Domain`, and
-view models map `Domain` → `Representable` for the view. Don't reuse `DTO` types directly in views.
+Both sites are scraped with hand-written CSS selectors (no JSON API). `DTO.swift` holds the parsed
+wire models; interactors map `DTO` → per-feature `Domain`, and view models map `Domain` →
+`Representable`. Don't reuse `DTO` types directly in views. All networking lives on the `Service`
+struct: `Service.swift` (PCS) plus the `extension Service` in `Requester+Cx.swift` (CX) — the
+filename predates the `Requester` → `Service` rename, which freed the name for Alfy's `Requester`.
 
-`HomeRacesInteractorImpl` and `CXRaces.InteractorImpl` share a `RequestThrottleController`
-(minimum interval + limited extra retries after failures) to avoid hammering the source site on
-every tab reselect/pull-to-refresh.
+**ProCyclingStats stays on the device — don't move it server-side.** PCS sits behind a Cloudflare
+bot challenge: Node/curl requests get HTTP 403 with a "Just a moment..." page, while iOS's
+`URLSession` passes. A Cloud Function version won't work, and working around the challenge
+(headless browser, TLS-fingerprint spoofing) was deliberately ruled out. Consequences:
+
+- Test PCS fetches with `URLSession` (e.g. a `swift` script), never curl — a curl 403 is not what
+  the app sees.
+- `getLatestResults()` goes through Alfy's `Requester` builder (60s TTL cache, ignoring server
+  cache headers). It doesn't validate HTTP status, and parsers return `[]` rather than throwing, so
+  if Cloudflare ever does challenge the app, the symptom is empty sections, not an error.
+- Offline is kept out of Crashlytics by matching both URLSession's `-1009` and Alfy's
+  `Requester.ErrorReason.noInternetConnection`.
+- `HomeRacesInteractorImpl` uses Alfy's `RequestThrottleController` (60s minimum interval, 2 extra
+  attempts after a failure) so tab reselects don't hammer PCS.
+- The homepage parsers anchor on section heading text (`h4`), not table classes: the
+  "Next to finish" and "Races tomorrow" tables share the same class. The "Results today" `<ul>` is
+  left unclosed by PCS when empty, so only its direct `<li class="race">` children count.
+
+**CX lists come from Firestore.** The `scrapeCx` scheduled function (`functions/src/index.ts`,
+daily at 23:00 Europe/Madrid) scrapes cyclocross24.com with cheerio (`functions/src/cx.ts`, a port of the old
+Swift parsers) and writes three documents: `cx/homepage`, `cx/calendar`, `cx/standings`, each with
+an `updatedAt` timestamp. `Service.getCxEvents()` / `getCxAllCalendarEvents()` / `getCxStandings()`
+just read and decode those documents, so the TypeScript field names must stay identical to the
+Swift DTOs (all `Decodable`). Server-side behaviour to preserve:
+
+- A failed or empty scrape keeps the previous document instead of overwriting it with nothing.
+- cyclocross24 answers bursts with HTTP 429, so all requests are spaced 750 ms apart with
+  `Retry-After`-aware retries. A full run takes ~25s against a 120s timeout.
+- The calendar season is derived from the date (from July onward, the next season), not hardcoded.
+- Firestore rules (`firestore.rules`): `cx/*` is publicly readable and never client-writable. Only
+  the function writes, through the Admin SDK, which bypasses rules.
+
+Race detail results (`getCxRaceCategoryResults`) and the YouTube lookup are still fetched on the
+device, on demand, when a race is opened.
 
 ### `Alfy`: sibling shared package
 
 `Alfy` (SPM dependency, `https://github.com/vilapuigvila/Alfy.git`, same author, checked out
-locally at `../Alfy`) supplies cross-project infra: `RequestThrottleController`, `EquatableError`,
-the `UserDefault` property-wrapper pattern used in `UserPreferences.swift`, and other
-network/cache/db helpers. If a type used in this repo (e.g. `RequestThrottleController`) can't be
-found under `Tribuneros/`, look in the `Alfy` package rather than assuming it's missing — and if
-it needs a behavior change, that change likely belongs in the `Alfy` repo, not here.
+locally at `../Alfy`) supplies cross-project infra: `Requester` (networking over the
+`CachedURLSession` actor), `RequestThrottleController`, `EquatableError`, `NetworkStatusMonitor`,
+the `UserDefault` property-wrapper pattern used in `UserPreferences.swift`, and other helpers. If a
+type used in this repo can't be found under `Tribuneros/`, look in `Alfy` rather than assuming it's
+missing — and if it needs a behavior change, that change likely belongs in the `Alfy` repo.
+
+Alfy's `Requester` notes:
+
+- Every method is `static`; to hold it as a value, use `Requester.self` (a bare `Requester`
+  doesn't compile, and an instance can't call anything).
+- It always adds `Content-Type: application/json`, even to GETs. Harmless for PCS (tested).
+- Caching is per URL, but the TTL is only per-request through the builder:
+  `Requester.makeRequest(url).ttl(…).send()`. The plain `Requester.request(url)` falls back to
+  `URLRequest`'s default 60s timeout as the TTL, since `CachedURLSession` reuses `timeoutInterval`
+  as the cache duration.
 
 ### Styling conventions (enforced, see `agent-doc/ux_style.md`)
 
@@ -85,18 +151,20 @@ it needs a behavior change, that change likely belongs in the `Alfy` repo, not h
   `AsyncImage` — `AsyncImageView.swift` is an older hand-rolled loader kept only where already used.
 - Calls with more than one argument are formatted multiline (one arg per line).
 
+### "Vapor" design system
+
+The dark, blue-grey "Vapor" look now covers all three tabs and the tab bar. Its tokens are the
+`vapor*` cases in `Color.Palette` and `TribuneruText.Style` (Space Grotesk / Space Mono fonts,
+bundled under `Tribuneros/Fonts/` and listed in `Info.plist`). `agent-doc/home_redesign_spec.md` is
+its source-of-truth spec — palette, type ramp, geometry, and the rule that a section panel is
+always darker than the cards on it. Use the `vapor*` tokens for new UI; the older green palette
+cases remain only for code that hasn't been migrated.
+
 ### Crash reporting instead of throwing
 
 `Helpers/CrashlyticsManager.swift` centralizes non-fatal error reporting. Use the free function
 `nonFatalCrashlytics(condition, message, domain:)` (assert-like: reports when `condition` is
 false) at call sites instead of adding new error-throwing paths — this is the existing pattern for
 "this shouldn't happen but don't crash the app" cases (missing HTML nodes, unreachable switch
-branches, etc.).
-
-### In-progress home screen redesign ("Vapor")
-
-`agent-doc/home_redesign_spec.md` is the source-of-truth spec for an in-progress restyle of the
-`HomeRaces` tab only (`CXRaces`/`HateZone` are untouched). It explains the `vapor*` prefixed cases
-in `Color.Palette` and `TribuneruText.Style`, and the `Vapor*` component files under
-`Tabs/HomeRaces/Components/` — read it before changing home-screen styling so new work matches the
-palette/type-ramp/geometry rules it defines rather than introducing a third convention.
+branches, etc.). Firebase itself is configured through `CrashlyticsManager.configure()` at app
+launch, which is also what makes Firestore usable.
