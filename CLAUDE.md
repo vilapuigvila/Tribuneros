@@ -21,7 +21,7 @@ scraped server-side by a Firebase Cloud Function and read from Firestore (see "D
 - Run a single test: add `-only-testing:TribunerosTests/<TestClass>/<testMethod>` to the `test` invocation above.
 - Test plan (`Tribuneros/Tribuneros.xctestplan`) skips the placeholder `TribunerosTests.testExample`.
 - If Swift Package resolution breaks: Xcode → File → Packages → Reset Package Caches, then clear DerivedData.
-- Debug-only launch env flags: `MOCKING=1` (forces mock data via `isMockingEnabled`, see `RaceFinishedCardView.swift`), `DEBUG_BACKGROUND=1` (highlights view backgrounds via `.debugBackground()`) and `FIREBASE_EMULATOR=1` (Firestore and `cxDetail` on the local emulators, see `Service.useFirebaseEmulatorIfEnabled()`; seed `cx/*` by calling `runCxScrape` with `FIRESTORE_EMULATOR_HOST` set). From the CLI: `SIMCTL_CHILD_FIREBASE_EMULATOR=1 xcrun simctl launch <device> com.pskmoons.Tribuneros`.
+- Debug-only launch env flags: `HOME_MOCK=live|later|one|empty` (or a `homeMock` launch argument, which is what the Maestro flows pass) replaces the PCS fetch with fixed Today Races data, see `HomeRaces.MockScenario.swift`; `MOCKING=1` alone means `live`. `DEBUG_BACKGROUND=1` (highlights view backgrounds via `.debugBackground()`) and `FIREBASE_EMULATOR=1` (Firestore and `cxDetail` on the local emulators, see `Service.useFirebaseEmulatorIfEnabled()`; seed `cx/*` by calling `runCxScrape` with `FIRESTORE_EMULATOR_HOST` set). From the CLI: `SIMCTL_CHILD_FIREBASE_EMULATOR=1 xcrun simctl launch <device> com.pskmoons.Tribuneros`.
 
 ### Tests
 
@@ -29,6 +29,13 @@ scraped server-side by a Firebase Cloud Function and read from Firestore (see "D
   so a PCS markup change fails loudly instead of silently producing empty sections. When PCS
   redesigns, re-capture the fixture (with `URLSession`, not curl — see below) and update the parsers
   and assertions together.
+- `HomeTodayRacesTests` covers what Today Races derives from "Next to finish": stage titles, finish
+  times (including a finish after midnight), ordering, the LIVE join with LiveStats, and the view
+  model mapping. Its dates are built with `Calendar.current`, so it doesn't depend on the time zone.
+- UI flows are Maestro files in `.maestro/` (`maestro test --include-tags home .maestro`, against a
+  Debug build installed on the booted simulator). `today-races.yaml` reads the live PCS page; the
+  other `today-races-*.yaml` flows pick a `homeMock` scenario. The folder is ignored by the global
+  gitignore on this machine, so the flows stay local unless force-added.
 - Two tests hit the live network and are slow/flaky by nature, not a sign your change broke
   something: `RequesterHomeParsingTests.testGetLatestResultsParsesRealWebsite` (PCS) and
   `RequesterCxTests` (cyclocross24.com + YouTube, retries for up to 10s).
@@ -73,7 +80,8 @@ Every tab follows the same shape, split across `<Feature>.swift` (namespace enum
 - Navigation: each tab has its own `Router` (`Router.swift`, `ObservableObject` wrapping a
   `NavigationPath`), created once in `TabBarView.init()` and threaded into that tab's
   `NavigationStack`. `Router.Destination` is a single enum shared across tabs (`detail`,
-  `cxZone`, `nextToFinishRace`, and `web(URL)`, which opens any link in `Helpers/SafariView.swift`).
+  `cxZone`, `nextToFinishRace`, `todayRaces`, `yesterdayResults`, and `web(URL)`, which opens any link
+  in `Helpers/SafariView.swift`).
 
 When adding a new tab or reworking one of these, match this Domain/UseCase/Interactor/ViewModel
 split rather than putting networking or state directly in a View.
@@ -117,6 +125,34 @@ bot challenge: Node/curl requests get HTTP 403 with a "Just a moment..." page, w
   `strong` or `.bold` followed by their value) and covered only by synthetic HTML in
   `PaddockTests`; capture a real rider page with `URLSession` to tighten it. Birthday rows still
   open the PCS page in Safari.
+
+**The Today Races screen** (`HomeRaces.MainView`) is one scroll: a header (bicycle, "Races", the
+date; the navigation bar is hidden on this root and `StatusBarScrim` fades content under the status
+bar), then four sections:
+
+- **Today** (`TodayHeroCard`): the first "Next to finish" race as a hero card, or a resting night
+  scene (`TodayEmptyCard`) when the list is empty. "See all", only with more than one race, pushes
+  `TodayRacesListView`. `HomeRaces.TodayRaces.build` turns the DTOs into `RaceNext` values:
+  ordered by finish time (the ETA, today; an ETA hours in the past that PCS still counts hours to go
+  for rolls over to tomorrow), ties keep the page order, WorldTour no longer goes first. A race is
+  `isLive` (red LIVE tag, otherwise the grey TODAY one) when LiveStats lists it as live: its `/live`
+  path is the race path plus `/live`, or the titles match. LiveStats is empty on most days (the
+  fixture's list is), so TODAY is the common tag; the old LiveStats cards are gone. A " - S2"
+  suffix on the name is the stage (`title` / `stageLabel`); without one it reads "One-day race". The
+  "in 2h 14m" text is computed from the ETA and refreshed by `TimelineView(.everyMinute)`.
+- **Results today** and **Yesterday**: the title, a `VaporSpoilerChip` under it, then highlight
+  cards / one card of rows. Spoilers default off and fold the content away (one setting each, in
+  `UserSettings`). Yesterday previews 3 rows; its "See all" pushes `YesterdayResultsListView`
+  behind the same chip. Cards and rows open the race's PCS results page in Safari
+  (`DTO.TodayResult.raceURL`). Both results parsers split the title (`<b>`) from the route and
+  distance (`<span>`).
+- **History**: a placeholder banner (`HistoryBanner`) with an inert "See all" until there is data.
+
+"Races tomorrow" is no longer drawn (it is still parsed). The generic paintings (`RaceArtView`, the
+vector assets `RaceArtDay`, `RaceArtNight` and `RaceArtBanner`) stand in wherever PCS has no
+image: a winner photo that is missing or fails to load falls back to the day painting
+(`CachedImageView(fallback: .raceArt)`). PCS answers 403 to image requests without a Referer and a
+browser User-Agent, so `CachedImageView` adds both for PCS URLs (`Service.addPCSImageHeaders`).
 
 **The Paddock press list comes from Firebase Remote Config**, key `press_urls`: a JSON array whose
 entries are either a URL string or a `{"Name": "url"}` object (the console currently uses the
@@ -241,7 +277,10 @@ The dark, blue-grey "Vapor" look now covers all three tabs and the tab bar. Its 
 bundled under `Tribuneros/Fonts/` and listed in `Info.plist`). `agent-doc/home_redesign_spec.md` is
 its source-of-truth spec — palette, type ramp, geometry, and the rule that a section panel is
 always darker than the cards on it. Use the `vapor*` tokens for new UI; the older green palette
-cases remain only for code that hasn't been migrated.
+cases remain only for code that hasn't been migrated. The Today Races tab no longer uses the panel
+layout (see "The Today Races screen" above): it is built from the same tokens, with the extra
+`vaporLiveRed` / `vaporTagNeutral*` tag colors and the `vaporHeading`..`vaporBannerSubtitle` text
+styles; the panel spec still describes CX Zone and Paddock.
 
 ### Crash reporting instead of throwing
 

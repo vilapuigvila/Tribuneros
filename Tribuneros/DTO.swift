@@ -72,6 +72,7 @@ enum DTO {
         }
         let raceName: String
         let raceDetails: String
+        let raceURL: URL?
         let winner: URL?
         let podium: [Winner]
         let additionalDetails: [AdditionalDetails]

@@ -53,10 +53,10 @@ extension HomeRaces.Representable {
 extension HomeRaces.Representable.RaceNext {
     static var mockFullList: [HomeRaces.Representable.RaceNext] {
         [
-            .init(eta: "16:58", duration: "6h 48m", name: "Milano–Sanremo", category: "UCI", raceType: "1.UWT", distance: "288", urlPath: nil, flagCode: "it"),
-            .init(eta: "17:05", duration: "4h 21m", name: "Volta a Catalunya", category: "UCI", raceType: "2.UWT", distance: "142", urlPath: nil, flagCode: "es"),
-            .init(eta: "17:20", duration: "4h 02m", name: "Gran Premio Industria", category: "UCI", raceType: "1.1", distance: "165", urlPath: nil, flagCode: "it"),
-            .init(eta: "17:45", duration: "3h 24m", name: "Trofeo Alfredo Binda", category: "UCI", raceType: "1.WWT", distance: "132", urlPath: nil, flagCode: "it")
+            .init(eta: "16:42", duration: "2h", name: "CRO Race - S1", category: "ME", raceType: "2.1", distance: "", urlPath: nil, flagCode: "hr", isLive: true),
+            .init(eta: "17:20", duration: "2h", name: "Chrono des Nations", category: "ME", raceType: "1.1", distance: "", urlPath: nil, flagCode: "fr", isLive: false),
+            .init(eta: "18:05", duration: "3h", name: "Coppa Bernocchi", category: "ME", raceType: "1.1", distance: "", urlPath: nil, flagCode: "it", isLive: true),
+            .init(eta: "21:35", duration: "7h", name: "GP de Montréal", category: "ME", raceType: "1.UWT", distance: "", urlPath: nil, flagCode: "ca", isLive: false)
         ]
     }
 }
@@ -160,7 +160,7 @@ private struct HomeRacesMockHarness: View {
             case .spoilerModeResultYesterday:
                 isSpoilerModeResultsYesterday.toggle()
                 rebuild()
-            case .onAppear, .onDisappear, .navigate:
+            case .onAppear, .onDisappear, .navigate, .openLink:
                 break
             }
         }

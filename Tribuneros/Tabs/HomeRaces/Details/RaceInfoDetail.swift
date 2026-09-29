@@ -271,13 +271,8 @@ struct NextToFinishRaceDetail: View {
 
     private func loadImage(_ url: URL, type: ImageType) async -> ProfileImage? {
         do {
-            // PCS answers 403 to image requests without a Referer and a browser User-Agent.
             var request = URLRequest(url: url)
-            request.setValue(Service.baseStringURL, forHTTPHeaderField: "Referer")
-            request.setValue(
-                "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)",
-                forHTTPHeaderField: "User-Agent"
-            )
+            Service.addPCSImageHeaders(to: &request)
             let (data, _) = try await URLSession.shared.data(for: request)
             return UIImage(data: data).map { ProfileImage(type: type, image: $0) }
         } catch {

@@ -28,6 +28,8 @@ final class Router: ObservableObject {
         }
         
         case nextToFinishRace(index: Int)
+        case todayRaces
+        case yesterdayResults
         case detail(Detail)
         case cxZone(CXZone)
         case paddockRider(Paddock.RiderContext)

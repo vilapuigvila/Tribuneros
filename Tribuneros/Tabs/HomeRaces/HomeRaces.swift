@@ -118,10 +118,11 @@ enum HomeRaces {
             let winnerImgURL: URL?
             let podium: [Winner]
             let isCancel: Bool
+            var raceURL: URL? = nil
         }
         struct RaceNext: Identifiable {
             let id = UUID()
-            
+
             let eta: String
             let duration: String
             let name: String
@@ -130,6 +131,7 @@ enum HomeRaces {
             let distance: String
             let urlPath: String?
             let flagCode: String
+            var isLive: Bool = false
         }
         struct RaceTomorrow: Identifiable {
             let id = UUID()
@@ -152,7 +154,7 @@ enum HomeRaces {
         let sections: Section
 
         /// Stand-ins shaped like a real page, drawn redacted while it loads. Spoiler mode is on
-        /// so the result panels show their cards; the live section is left out, as it is most days.
+        /// so the result sections show their cards.
         static let placeholders = Representable(
             sections: Section(
                 title: "",
@@ -161,10 +163,10 @@ enum HomeRaces {
                     isSpoilerModeResultsYesterday: true
                 ),
                 liveStats: [],
-                nextToFinish: (1...4).map { _ in
+                nextToFinish: (1...2).map { _ in
                     RaceNext(
                         eta: "00:00",
-                        duration: "0H",
+                        duration: "-",
                         name: "Race name placeholder",
                         category: "UCI",
                         raceType: "1.UWT",
@@ -222,13 +224,15 @@ enum HomeRaces {
         case spoilerModeResultToday
         case spoilerModeResultYesterday
         case navigate(Navigate)
+        case openLink(URL)
     }
-    
+
     enum Navigate: Hashable, Sendable {
         enum Detail: Hashable, Sendable {
             case race(name: String?)
         }
         case nextToFinishRace(index: Int)
+        case todayRaces
         case todayResults
         case yesterdayResults
         case tomorrowRaces

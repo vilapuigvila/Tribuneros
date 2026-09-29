@@ -18,6 +18,16 @@ struct Service {
     static let homepageURL = "https://www.procyclingstats.com/index.php"
     private static let requester = Requester.self
 
+    /// PCS answers 403 to image requests without a Referer and a browser User-Agent.
+    static func addPCSImageHeaders(to request: inout URLRequest) {
+        guard request.url?.host?.hasSuffix("procyclingstats.com") == true else { return }
+        request.setValue(baseStringURL, forHTTPHeaderField: "Referer")
+        request.setValue(
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)",
+            forHTTPHeaderField: "User-Agent"
+        )
+    }
+
     static func getLatestResults() async throws -> DTO.Home {
 //        let url = URL(string: "https://www.procyclingstats.com/race/settimana-internazionale-coppi-e-bartali/2025/stage-3/info/profiles")!
         do {
@@ -112,6 +122,11 @@ struct Service {
     
     // MARK: - Parsing Function -
 
+    private static func raceURL(_ link: Element?, baseUrl: String) -> URL? {
+        guard let href = try? link?.attr("href"), !href.isEmpty else { return nil }
+        return URL(string: baseUrl + href)
+    }
+
     static func parseResultsToday(from document: Document) -> [DTO.TodayResult] {
         var results = [DTO.TodayResult]()
         let baseUrl = "https://www.procyclingstats.com/"
@@ -127,8 +142,11 @@ struct Service {
                 let detailsDiv = try race.select("div").filter { element in
                     try element.hasAttr("style") && element.attr("style").contains("calc(100% - 95px)")
                 }.first
-                let raceDetails = try detailsDiv?.text() ?? ""
-                
+                let raceLink = try detailsDiv?.select("a").first()
+                let raceTitle = try raceLink?.select("b").text() ?? ""
+                let raceSummary = try raceLink?.select("span").text() ?? ""
+                let raceFullText = try detailsDiv?.text() ?? ""
+
                 // 2. Extract winner image URL from the first <div class="winner-img">
                 var winnerURL: URL? = nil
                 if let winnerImgDiv = try race.select("div.winner-img").first() {
@@ -203,8 +221,9 @@ struct Service {
                 
                 // 5. Create the TodayResult DTO and append to our results
                 let resultDTO = DTO.TodayResult(
-                    raceName: raceDetails,
-                    raceDetails: "",
+                    raceName: raceTitle.isEmpty ? raceFullText : raceTitle,
+                    raceDetails: raceSummary,
+                    raceURL: raceURL(raceLink, baseUrl: baseUrl),
                     winner: winnerURL,
                     podium: podiumWinners,
                     additionalDetails: additionalDetails
@@ -237,9 +256,10 @@ struct Service {
                }.first
                
                /// Volta Ciclista a Catalunya (2.UWT)
-               let raceTitle = try detailsDiv?.select("a").first()?.select("b").text()
-               let raceDetails = try detailsDiv?.select("a").first()?.select("span").text()
-               
+               let raceLink = try detailsDiv?.select("a").first()
+               let raceTitle = try raceLink?.select("b").text()
+               let raceDetails = try raceLink?.select("span").text()
+
 //               let raceDetails = try detailsDiv?.text()
                
                // 2. Get the winner image URL from the <div class="winner-img"> inside the first <a>.
@@ -321,6 +341,7 @@ struct Service {
                let resultDTO = DTO.TodayResult(
                 raceName: raceTitle.debugOptional,
                 raceDetails: raceDetails.debugOptional,
+                raceURL: raceURL(raceLink, baseUrl: baseUrl),
                 winner: raceWinnerUrl,
                 podium: podiumWinners,
                 additionalDetails: additionalDetails

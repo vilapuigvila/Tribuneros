@@ -32,6 +32,6 @@
 
 ## Security & Configuration Tips
 - Firebase configuration lives in `Tribuneros/GoogleService-Info.plist`; avoid committing environment-specific secrets or credentials.
-- Useful debug flags: `MOCKING=1` (mock data) and `DEBUG_BACKGROUND=1` (highlight view backgrounds in Debug).
+- Useful debug flags: `HOME_MOCK=live|later|one|empty` (fixed Today Races data), `MOCKING=1` (same as `live`) and `DEBUG_BACKGROUND=1` (highlight view backgrounds in Debug).
 
 

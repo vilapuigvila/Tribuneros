@@ -61,6 +61,12 @@ final class RequesterHomeParsingTests: XCTestCase {
                 && result.podium.allSatisfy { !$0.name.isEmpty && !$0.time.isEmpty }
         }
         XCTAssertNotNil(match, "Expected a race with non-empty name, winner image and a 3-entry podium. Got: \(results)")
+
+        let linked = results.first { result in
+            result.raceURL?.absoluteString.hasPrefix("https://www.procyclingstats.com/race/") == true
+                && !result.raceDetails.isEmpty
+        }
+        XCTAssertNotNil(linked, "Expected a race with its results link and route details. Got: \(results)")
     }
 
     // MARK: - Races tomorrow
@@ -114,7 +120,9 @@ final class RequesterHomeParsingTests: XCTestCase {
 
         XCTAssertEqual(results.count, 1)
         let result = try XCTUnwrap(results.first)
-        XCTAssertFalse(result.raceName.isEmpty)
+        XCTAssertEqual(result.raceName, "Test Race (1.1)")
+        XCTAssertEqual(result.raceDetails, "Test City - Test City (100km)")
+        XCTAssertEqual(result.raceURL, URL(string: "https://www.procyclingstats.com/race/test-race/2026/result"))
         XCTAssertNotNil(result.winner)
         XCTAssertEqual(result.podium.count, 3)
         XCTAssertTrue(result.podium.allSatisfy { !$0.name.isEmpty && !$0.time.isEmpty })

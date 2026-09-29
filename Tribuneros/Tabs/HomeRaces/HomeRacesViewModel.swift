@@ -45,10 +45,16 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
             interactor.useCase(.spoilerModeResultToday)
         case .spoilerModeResultYesterday:
             interactor.useCase(.spoilerModeResultYesterday)
+        case .openLink(let url):
+            router.routeTo(.web(url))
         case .navigate(let destiantion):
             switch destiantion {
             case .nextToFinishRace(let index):
                 router.routeTo(.nextToFinishRace(index: index))
+            case .todayRaces:
+                router.routeTo(.todayRaces)
+            case .yesterdayResults:
+                router.routeTo(.yesterdayResults)
             case .detail:
                 nonFatalCrashlytics(false, "can't navigate to detail")
                 break
@@ -67,7 +73,9 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
     }
     
     private func mapToHomeRacesState(_ domain: HomeRacesDomain) -> HomeRaces.ViewState {
-        if domain.loading {
+        if domain == .empty {
+            return .idle
+        } else if domain.loading {
             return .loading
         } else {
             if let error = domain.error {
@@ -133,35 +141,23 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
                     HomeRaces.Representable.RaceFinished.Winner(
                         position: $0.position,
                         flag: $0.flag,
-                        countryCode: $0.countryCode ?? "ad",
+                        countryCode: $0.countryCode ?? "",
                         name: $0.name,
                         team: $0.team,
                         time: $0.time
                     )
                 },
-                isCancel: false
+                isCancel: false,
+                raceURL: race.raceURL
             )
         }
     }
-    
+
     private func nextToFinish(_ domain: HomeRacesDomain) -> [HomeRaces.Representable.RaceNext] {
-        guard !domain.nextToFinishRaces.isEmpty else {
-            return isMockingEnabled ? HomeRaces.Representable.RaceNext.mockList : []
-        }
-        let nextToFinish = domain.nextToFinishRaces.map {
-            HomeRaces.Representable.RaceNext(
-                eta: $0.eta,
-                duration: $0.duration,
-                name: $0.name,
-                category: $0.category,
-                raceType: $0.raceType,
-                distance: $0.distance,
-                urlPath: $0.urlPath.isEmpty ? nil : $0.urlPath,
-                flagCode: $0.flagCode
-            )
-        }
-        return nextToFinish.filter { $0.raceType.contains("UWT") } +
-               nextToFinish.filter { !$0.raceType.contains("UWT") }
+        HomeRaces.TodayRaces.build(
+            nextToFinish: domain.nextToFinishRaces,
+            liveStats: domain.liveStatsRaces
+        )
     }
     
     private func yesterdayResults(_ domain: HomeRacesDomain) -> [HomeRaces.Representable.RaceFinished] {
@@ -172,7 +168,7 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
                 HomeRaces.Representable.RaceFinished.Winner(
                     position: $0.position,
                     flag: $0.flag,
-                    countryCode: $0.countryCode ?? "ad",
+                    countryCode: $0.countryCode ?? "",
                     name: $0.name,
                     team: $0.team,
                     time: $0.time
@@ -187,10 +183,11 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
         return domain.yesterdayResults.map { race in
             HomeRaces.Representable.RaceFinished(
                 race: race.raceName,
-                raceDetails: race.raceDetails.isEmpty ? "No info.." : race.raceDetails,
+                raceDetails: race.raceDetails,
                 winnerImgURL: race.winner,
                 podium: ensurePodiumCount(race.podium),
-                isCancel: false
+                isCancel: false,
+                raceURL: race.raceURL
             )
         }
     }

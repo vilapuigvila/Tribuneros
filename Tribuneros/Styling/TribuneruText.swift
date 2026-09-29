@@ -64,6 +64,16 @@ struct TribuneruText: View {
             "SpaceMono-Bold"
         case .vaporFinishTime, .vaporETALine, .vaporMonoMeta, .vaporGroupLabel:
             "SpaceMono-Regular"
+        case .vaporHeading, .vaporHeroTitle, .vaporTag, .vaporTagSmall, .vaporResultTitle, .vaporBannerTitle:
+            "SpaceGrotesk-Bold"
+        case .vaporHeroSubtitle:
+            "SpaceGrotesk-Medium"
+        case .vaporLink, .vaporRowTitle, .vaporRowCountdown:
+            "SpaceGrotesk-SemiBold"
+        case .vaporRowMeta, .vaporBannerSubtitle:
+            "SpaceGrotesk-Regular"
+        case .vaporPill, .vaporStatTime, .vaporRowTime, .vaporResultTime:
+            "SpaceMono-Bold"
         }
     }
 
@@ -95,6 +105,22 @@ struct TribuneruText: View {
         case .vaporMonoMeta, .vaporGroupLabel: 11
         case .vaporChangeSign: 12
         case .vaporAge: 14
+        case .vaporHeading: 22
+        case .vaporHeroTitle: 26
+        case .vaporHeroSubtitle: 13
+        case .vaporTag: 12
+        case .vaporTagSmall: 11
+        case .vaporPill: 13
+        case .vaporStatTime: 15
+        case .vaporLink: 14
+        case .vaporRowTitle: 16
+        case .vaporRowMeta: 12
+        case .vaporRowCountdown: 12
+        case .vaporRowTime: 18
+        case .vaporResultTitle: 15
+        case .vaporResultTime: 12
+        case .vaporBannerTitle: 18
+        case .vaporBannerSubtitle: 13
         }
     }
     private var weight: Font.Weight {
@@ -111,14 +137,18 @@ struct TribuneruText: View {
         // (see `fontName`); this value is unused but kept exhaustive.
         case .vaporScreenTitle, .vaporSectionTitle, .vaporSpoilerChip,
              .vaporETANext, .vaporStartTimeTomorrow,
-             .vaporFeedTag, .vaporChangeSign, .vaporAge:
+             .vaporFeedTag, .vaporChangeSign, .vaporAge,
+             .vaporHeading, .vaporHeroTitle, .vaporTag, .vaporTagSmall, .vaporPill, .vaporStatTime,
+             .vaporRowTime, .vaporResultTitle, .vaporResultTime, .vaporBannerTitle:
             .bold
-        case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporCountdown, .vaporTabLabel, .vaporPressName:
+        case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporCountdown, .vaporTabLabel, .vaporPressName,
+             .vaporLink, .vaporRowTitle, .vaporRowCountdown:
             .semibold
-        case .vaporRaceNameTomorrow:
+        case .vaporRaceNameTomorrow, .vaporHeroSubtitle:
             .medium
         case .vaporScreenDate, .vaporMeta, .vaporFinishTime, .vaporETALine,
-             .vaporFeedDetail, .vaporMonoMeta, .vaporGroupLabel:
+             .vaporFeedDetail, .vaporMonoMeta, .vaporGroupLabel,
+             .vaporRowMeta, .vaporBannerSubtitle:
             .regular
         }
     }
@@ -136,6 +166,10 @@ struct TribuneruText: View {
         case .vaporStartTimeTomorrow: -0.4
         case .vaporFeedTag: 0.8
         case .vaporGroupLabel: 0.66
+        case .vaporHeading: -0.4
+        case .vaporHeroTitle: -0.6
+        case .vaporTag: 0.9
+        case .vaporTagSmall: 0.7
         default: 0
         }
     }
@@ -144,7 +178,8 @@ struct TribuneruText: View {
     private var isTabularNumeric: Bool {
         switch style {
         case .vaporETANext, .vaporStartTimeTomorrow, .vaporFinishTime, .vaporETALine,
-             .vaporMonoMeta, .vaporAge:
+             .vaporMonoMeta, .vaporAge, .vaporPill, .vaporStatTime, .vaporRowTime, .vaporResultTime,
+             .vaporRowCountdown:
             true
         default:
             false
@@ -189,6 +224,24 @@ extension TribuneruText {
         case vaporGroupLabel
         case vaporChangeSign
         case vaporAge
+
+        // MARK: - Vapor (Today races redesign) -
+        case vaporHeading
+        case vaporLink
+        case vaporHeroTitle
+        case vaporHeroSubtitle
+        case vaporTag
+        case vaporTagSmall
+        case vaporPill
+        case vaporStatTime
+        case vaporRowTitle
+        case vaporRowMeta
+        case vaporRowCountdown
+        case vaporRowTime
+        case vaporResultTitle
+        case vaporResultTime
+        case vaporBannerTitle
+        case vaporBannerSubtitle
     }
 }
 

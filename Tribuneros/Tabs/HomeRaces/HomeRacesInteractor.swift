@@ -82,6 +82,17 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
             subject.send(domain.copy(isOnSpoilerModeResultsYesterday: toggle))
         case .requestDayRaces(_):
             guard task == nil else { return }
+            #if DEBUG
+            if let scenario = HomeRaces.MockScenario.current {
+                subject.send(
+                    scenario.domain(
+                        isOnSpoilerModeResultsToday: UserSettings.spoilerModeResultsToday ?? false,
+                        isOnSpoilerModeResultsYesterday: UserSettings.spoilerModeResultsYesterday ?? false
+                    )
+                )
+                return
+            }
+            #endif
             let requestDate = Date()
 //            guard requestThrottle.startRequestIfAllowed(at: requestDate) else { return }
             

@@ -49,6 +49,16 @@ extension Color {
             Color(hex: 0x1A0B10)
         case .vaporNegative:
             Color(hex: 0xFB7185)
+        case .vaporLiveRed:
+            Color(hex: 0xE11D48)
+        case .vaporTagNeutral:
+            Color(hex: 0x263049)
+        case .vaporTagNeutralText:
+            Color(hex: 0xD3DCE8)
+        case .vaporTagNeutralDot:
+            Color(hex: 0xAEB9C8)
+        case .vaporTextMuted:
+            Color(hex: 0xB7C2CF)
         }
     }
 
@@ -78,6 +88,13 @@ extension Color {
         /// section→colour mapping is a free choice).
         case vaporPanelLive
         case vaporNegative
+        /// The LIVE tag; red on purpose, unlike the green `vaporLive` dot.
+        case vaporLiveRed
+        /// The grey TODAY / NO RACES tag: fill, text and hollow dot.
+        case vaporTagNeutral
+        case vaporTagNeutralText
+        case vaporTagNeutralDot
+        case vaporTextMuted
     }
 }
 
