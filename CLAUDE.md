@@ -116,7 +116,8 @@ first launch and offline; DEBUG builds fetch with a 0s minimum interval, release
 default. Paddock shows the press panel without waiting for the fetch: `requestPress()` first
 publishes `Service.cachedPressLinks()` (the last activated value, or the default), then refreshes
 it. Until any list is known (`Domain.press == nil`, `ViewState.press == .loading`) the panel shows
-redacted placeholder cards; an empty list hides it.
+redacted placeholder cards; an empty list hides it. The feed does the same while it loads (`Feed.loading` draws
+`Section.placeholders` redacted, under the still-usable filter chips).
 
 **CX lists come from Firestore.** The `scrapeCx` scheduled function (`functions/src/index.ts`,
 daily at 23:00 Europe/Madrid) scrapes cyclocross24.com with cheerio (`functions/src/cx.ts`, a port of the old

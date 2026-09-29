@@ -112,7 +112,12 @@ extension Paddock {
         private var content: some View {
             switch feed {
             case .loading:
-                LoaderView(title: "Loading the paddock…")
+                ForEach(Section.placeholders) { section in
+                    FeedSectionView(section: section) { _ in }
+                }
+                .redacted(reason: .placeholder)
+                .disabled(true)
+                .accessibilityLabel("Loading the paddock")
             case .empty:
                 message("Nothing new in the paddock.")
             case .error:

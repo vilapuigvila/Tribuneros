@@ -83,6 +83,66 @@ extension Paddock {
         var id: String { title }
         let title: String
         let cards: [Card]
+
+        /// Stand-ins shaped like a real feed, drawn redacted while it loads.
+        static let placeholders: [Section] = {
+            let rider = Rider(
+                name: "RIDER Name",
+                countryCode: "",
+                url: nil
+            )
+            return [
+                .init(
+                    title: "Today",
+                    cards: [
+                        .transfer(
+                            .init(
+                                id: "placeholder-transfer-1",
+                                date: "00/00",
+                                rider: rider,
+                                teamName: "Team name placeholder"
+                            )
+                        ),
+                        .program(
+                            .init(
+                                id: "placeholder-program",
+                                timeAgo: "0h",
+                                rider: rider,
+                                changes: [
+                                    .init(
+                                        isAdded: true,
+                                        raceName: "Race name placeholder"
+                                    )
+                                ]
+                            )
+                        ),
+                        .birthdays(
+                            .init(
+                                id: "placeholder-birthdays",
+                                entries: [
+                                    .init(
+                                        rider: rider,
+                                        age: "00"
+                                    ),
+                                    .init(
+                                        rider: rider,
+                                        age: "00"
+                                    )
+                                ]
+                            )
+                        ),
+                        .transfer(
+                            .init(
+                                id: "placeholder-transfer-2",
+                                date: "00/00",
+                                rider: rider,
+                                teamName: "Team name placeholder"
+                            )
+                        )
+                    ]
+                )
+            ]
+        }()
     }
 
     enum Card: Identifiable, Equatable {
