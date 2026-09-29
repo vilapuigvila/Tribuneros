@@ -154,27 +154,21 @@ extension Service {
         if let raceURL = race.raceURL {
             raceVideosURL = await getYoutubeRaceURL(raceURL)
         }
-        
+
         await withTaskGroup(of: (String, [DTO.CX24Homepage.CategoryResult]?).self) { group in
             for category in race.categories {
                 guard let categoryURL = category.categoryURL else { continue }
-                
+
                 group.addTask {
-                    do {
-                        let data = try await URLSession.shared.data(from: categoryURL).0
-                        guard let htmlContent = String(data: data, encoding: .utf8) else {
-                            throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
-                        }
-                        let document = try SwiftSoup.parse(htmlContent)
-                        let results = try parseCx24CategoryResults(
-                            document,
-                            raceVideosURL: raceVideosURL
-                        )
-                        return (category.title, results)
-                    } catch {
-                        nonFatalCrashlytics(false, "Failed to fetch category results: \(error.localizedDescription)")
-                        return (category.title, nil)
-                    }
+                    let results = await getCxDetail(
+                        .results,
+                        url: categoryURL,
+                        as: ResultsDocument.self
+                    )?.results
+                    return (
+                        category.title,
+                        results?.map { $0.with(raceVideosURL: raceVideosURL) }
+                    )
                 }
             }
             for await (categoryTitle, results) in group {
@@ -185,52 +179,7 @@ extension Service {
         }
         return allResults
     }
-    
-    private static func parseCx24CategoryResults(
-        _ document: Document,
-        raceVideosURL: URL?
-    ) throws -> [DTO.CX24Homepage.CategoryResult] {
-        // Try different selectors - the site might use different classes
-        var rows = try document.select("tr.r1_row").array()
-        
-        // If no r1_row found, try generic table rows
-        if rows.isEmpty {
-            rows = try document.select("table tr").array()
-        }
-        
-        return try rows.compactMap { row -> DTO.CX24Homepage.CategoryResult? in
-            let cells = try row.select("td").array()
-            guard cells.count >= 5 else { return nil }
-            
-            let position = try cells[0].text().trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !position.isEmpty, Int(position) != nil else { return nil }
-            
-            let riderCell = cells[1]
-            let rider = try riderCell.select("a").first()?.text().trimmingCharacters(in: .whitespacesAndNewlines)
-                ?? riderCell.text().trimmingCharacters(in: .whitespacesAndNewlines)
-            
-            let riderURL = cx24AbsoluteURL(try riderCell.select("a[href*=/rider/]").first()?.attr("href") ?? "")
-            let flagImg = try riderCell.select("img.flag").first()
-            let countryFlagURL = cx24AbsoluteURL(try flagImg?.attr("src") ?? "")
-            
-            let age = try cells[2].text().trimmingCharacters(in: .whitespacesAndNewlines)
-            let team = try cells[3].text().trimmingCharacters(in: .whitespacesAndNewlines)
-            let time = try cells[4].text().trimmingCharacters(in: .whitespacesAndNewlines)
-            
-            guard !rider.isEmpty else { return nil }
-            
-            return DTO.CX24Homepage.CategoryResult(
-                position: position,
-                rider: rider,
-                age: age,
-                team: team,
-                time: time,
-                countryFlagURL: countryFlagURL,
-                raceVideosURL: raceVideosURL,
-                riderURL: riderURL
-            )
-        }
-    }
+
 /*
     private static func parseCx24RaceVideosURL(_ document: Document) throws -> URL? {
         let directLink = try document
@@ -273,98 +222,27 @@ extension Service {
     /// Loads what the calendar-event detail shows beyond the Firestore calendar row: the race
     /// page (history of winners), and, from race day on, the Men Elite results and a video.
     static func getCxEventDetail(_ event: DTO.CXCalendarEvent, hasStarted: Bool) async -> DTO.CXEventDetail {
-        async let page = fetchCxRacePage(event.raceURL)
+        async let page = getCxDetail(
+            .race,
+            url: event.raceURL,
+            as: DTO.CXRacePage.self
+        )
         async let results = fetchCxEventResults(hasStarted ? event.resultsURL : nil)
         async let video = fetchCxEventVideo(hasStarted && event.videoURL != nil ? event.resultsURL : nil)
         return await .init(page: page, results: results, videoURL: video)
     }
 
-    private static func fetchCxRacePage(_ url: URL?) async -> DTO.CXRacePage? {
-        guard let url else { return nil }
-        do {
-            return try parseCx24RacePage(try await fetchCx24Document(url))
-        } catch {
-            reportCxDetailError(error, "Failed to fetch race page")
-            return nil
-        }
-    }
-
     private static func fetchCxEventResults(_ url: URL?) async -> [DTO.CX24Homepage.CategoryResult] {
-        guard let url else { return [] }
-        do {
-            return try parseCx24CategoryResults(try await fetchCx24Document(url), raceVideosURL: nil)
-        } catch {
-            reportCxDetailError(error, "Failed to fetch event results")
-            return []
-        }
+        await getCxDetail(
+            .results,
+            url: url,
+            as: ResultsDocument.self
+        )?.results ?? []
     }
 
     private static func fetchCxEventVideo(_ url: URL?) async -> URL? {
         guard let url else { return nil }
         return await getYoutubeRaceURL(url)
-    }
-
-    private static func fetchCx24Document(_ url: URL) async throws -> Document {
-        let request = URLRequest(
-            url: url,
-            cachePolicy: .useProtocolCachePolicy,
-            timeoutInterval: 30
-        )
-        let data = try await URLSession.shared.data(for: request).0
-        return try SwiftSoup.parse(String(decoding: data, as: UTF8.self))
-    }
-
-    private static func reportCxDetailError(_ error: Error, _ message: String) {
-        guard !Task.isCancelled, (error as NSError).code != -1009 else { return }
-        nonFatalCrashlytics(
-            false,
-            "\(message): \(error.localizedDescription)"
-        )
-    }
-
-    /// Best-effort parse of a race page (`/race/<slug>/`). The page layout isn't pinned by a
-    /// fixture, so this anchors on what every edition row must contain rather than on table
-    /// classes: a link to a rider and a season year. Rows without both are ignored, which also
-    /// skips any per-edition results table (riders but no year).
-    static func parseCx24RacePage(_ document: Document) throws -> DTO.CXRacePage {
-        let heading = try document.select("h1.main_title").first() ?? document.select("h1").first()
-        let title = try heading?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        let summary = try document
-            .select("meta[name=description]")
-            .first()?
-            .attr("content")
-            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-
-        var seen = Set<String>()
-        var winners: [DTO.CXRacePage.PastWinner] = []
-        for row in try document.select("tr").array() {
-            guard let riderAnchor = try row.select("a[href*=/rider/]").first() else { continue }
-            let rider = try riderAnchor.text().trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !rider.isEmpty, let year = cx24SeasonYear(in: try row.text()) else { continue }
-            guard seen.insert("\(year)|\(rider)").inserted else { continue }
-
-            let resultsHref = try row
-                .select("a[href*=/race/]")
-                .array()
-                .map { try $0.attr("href") }
-                .first { cx24ResultsID(in: $0) != nil }
-
-            winners.append(
-                .init(
-                    year: year,
-                    rider: rider,
-                    riderURL: cx24AbsoluteURL(try riderAnchor.attr("href")),
-                    countryFlagURL: cx24AbsoluteURL(try row.select("img.flag").first()?.attr("src") ?? ""),
-                    resultsURL: resultsHref.flatMap { cx24AbsoluteURL($0) }
-                )
-            )
-        }
-
-        return .init(
-            title: title,
-            summary: summary,
-            pastWinners: winners.sorted { $0.year > $1.year }
-        )
     }
 
     // MARK: - Rider page -
@@ -381,94 +259,166 @@ extension Service {
     }
 
     static func getCxRiderPage(_ riderURL: URL?) async -> DTO.CXRiderPage? {
-        guard let riderURL else { return nil }
-        do {
-            return try parseCx24RiderPage(try await fetchCx24Document(riderURL))
-        } catch {
-            reportCxDetailError(error, "Failed to fetch rider page")
-            return nil
-        }
-    }
-
-    /// Best-effort parse of a rider page (`/rider/<slug>/`). Only the avatar selector is known
-    /// to be stable (the Cloud Function's standings scrape uses it too); facts and results key on
-    /// row shapes: a facts row is a short label/value pair, a results row links to a race and
-    /// holds a date.
-    static func parseCx24RiderPage(_ document: Document) throws -> DTO.CXRiderPage {
-        let heading = try document.select("h1.main_title").first() ?? document.select("h1").first()
-        let name = try heading?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        let avatar = try document.select("img.rider-avatar__image").first()
-            ?? document.select("img[src*=/images/rider/]").first()
-        let avatarURL = cx24AbsoluteURL(try avatar?.attr("src") ?? "")
-
-        var facts: [DTO.CXRiderPage.Fact] = []
-        var seenLabels = Set<String>()
-        func addFact(_ label: String, _ value: String) {
-            let label = label
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-                .trimmingCharacters(in: CharacterSet(charactersIn: ":"))
-            let value = value.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !label.isEmpty, label.count <= 30, Int(label) == nil,
-                  !value.isEmpty, value.count <= 60,
-                  seenLabels.insert(label.lowercased()).inserted else { return }
-            facts.append(.init(label: label, value: value))
-        }
-
-        for term in try document.select("dl dt").array() {
-            addFact(try term.text(), try term.nextElementSibling()?.text() ?? "")
-        }
-
-        var results: [DTO.CXRiderPage.Result] = []
-        for row in try document.select("tr").array() {
-            let cells = try row.select("td, th").array()
-            if let raceAnchor = try row.select("a[href*=/race/]").first() {
-                let text = try row.text()
-                guard let dateRange = text.range(
-                    of: #"\b\d{1,2}[-./]\d{1,2}[-./]\d{4}\b"#,
-                    options: .regularExpression
-                ) else { continue }
-                let race = try raceAnchor.text().trimmingCharacters(in: .whitespacesAndNewlines)
-                guard !race.isEmpty else { continue }
-                let position = try cells
-                    .map { try $0.text().trimmingCharacters(in: CharacterSet(charactersIn: ". ")) }
-                    .first { !$0.isEmpty && $0.count <= 3 && Int($0) != nil } ?? "-"
-                results.append(
-                    .init(
-                        date: String(text[dateRange]),
-                        race: race,
-                        position: position,
-                        raceURL: cx24AbsoluteURL(try raceAnchor.attr("href"))
-                    )
-                )
-            } else if cells.count == 2, try row.select("a[href*=/rider/]").first() == nil {
-                addFact(try cells[0].text(), try cells[1].text())
-            }
-        }
-
-        return .init(
-            name: name,
-            avatarURL: avatarURL,
-            facts: Array(facts.prefix(8)),
-            results: Array(results.prefix(10))
+        await getCxDetail(
+            .rider,
+            url: riderURL,
+            as: DTO.CXRiderPage.self
         )
     }
 
-    /// The first plausible season year (1950–2099) in a row's text, e.g. "2025" out of
-    /// "04-01-2025" or "2024-2025".
-    private static func cx24SeasonYear(in text: String) -> String? {
-        guard let range = text.range(of: #"\b(19[5-9]\d|20\d{2})\b"#, options: .regularExpression) else {
-            return nil
+    // MARK: - Detail page cache -
+
+    /// A cyclocross24 page parsed and cached in Firestore by the `cxDetail` Cloud Function.
+    enum CxDetailKind: String {
+        case rider, race, results
+
+        var collection: String {
+            switch self {
+            case .rider: "cxRiders"
+            case .race: "cxRaces"
+            case .results: "cxResults"
+            }
         }
-        return String(text[range])
+
+        /// Mirrors the function's refresh policy; `nil` means a stored copy never goes stale.
+        var maxAge: TimeInterval? {
+            switch self {
+            case .rider: 24 * 60 * 60
+            case .race: 7 * 24 * 60 * 60
+            case .results: nil
+            }
+        }
+
+        /// The document id for a cyclocross24 link: the slug of `/rider/<slug>/` or `/race/<slug>/`,
+        /// or the number of a results page, `/race/<id>/`. Anything else has no cached page.
+        func id(for url: URL?) -> String? {
+            guard let url, url.host()?.hasSuffix("cyclocross24.com") == true else { return nil }
+            let components = url.path().split(separator: "/").map(String.init)
+            guard components.count >= 2,
+                  components[1].wholeMatch(of: /[a-z0-9-]{1,100}/) != nil else { return nil }
+            let id = components[1]
+            let isNumeric = id.wholeMatch(of: /[0-9]{1,9}/) != nil
+            switch self {
+            case .rider: return components[0] == "rider" ? id : nil
+            case .race: return components[0] == "race" && !isNumeric ? id : nil
+            case .results: return components[0] == "race" && isNumeric ? id : nil
+            }
+        }
+
+        func isFresh(updatedAt: Date?, now: Date = Date()) -> Bool {
+            guard let updatedAt else { return false }
+            guard let maxAge else { return true }
+            return now.timeIntervalSince(updatedAt) < maxAge
+        }
     }
 
-    /// Results pages are `/race/<numeric id>/`; race pages are `/race/<slug>/`.
-    private static func cx24ResultsID(in href: String) -> Int? {
-        let components = (URL(string: href)?.path ?? href)
-            .split(separator: "/")
-            .map(String.init)
-        guard components.count >= 2, components[0] == "race" else { return nil }
-        return Int(components[1])
+    private struct ResultsDocument: Decodable {
+        let results: [DTO.CX24Homepage.CategoryResult]
+    }
+
+    /// Reads the cached page from Firestore. A missing copy is built by `cxDetail`; a stale one is
+    /// returned at once while `cxDetail` refreshes it for next time.
+    private static func getCxDetail<D: Decodable>(
+        _ kind: CxDetailKind,
+        url: URL?,
+        as type: D.Type
+    ) async -> D? {
+        guard let id = kind.id(for: url) else { return nil }
+        let ref = Firestore.firestore().collection(kind.collection).document(id)
+
+        var cached: D?
+        do {
+            var snapshot = try? await ref.getDocument(source: .cache)
+            if snapshot?.exists != true || !kind.isFresh(updatedAt: snapshot?.cxUpdatedAt) {
+                snapshot = try await ref.getDocument()
+            }
+            if let snapshot, snapshot.exists {
+                cached = try snapshot.data(as: type)
+                if kind.isFresh(updatedAt: snapshot.cxUpdatedAt) {
+                    return cached
+                }
+            }
+        } catch {
+            reportCxDetailError(error, "Failed to read \(kind.collection)/\(id)")
+        }
+
+        if let cached {
+            Task.detached(priority: .background) {
+                _ = try? await requestCxDetail(kind, id: id)
+            }
+            return cached
+        }
+        do {
+            return try JSONDecoder().decode(type, from: try await requestCxDetail(kind, id: id))
+        } catch CxDetailError.unavailable {
+            // cyclocross24 has no such page (yet), e.g. results before the race ends; logged server-side.
+            return nil
+        } catch {
+            reportCxDetailError(error, "cxDetail \(kind.rawValue)/\(id) failed")
+            return nil
+        }
+    }
+
+    private enum CxDetailError: Error {
+        case unavailable
+        case status(Int)
+    }
+
+    private static func requestCxDetail(_ kind: CxDetailKind, id: String) async throws -> Data {
+        var components = URLComponents(url: cxDetailURL, resolvingAgainstBaseURL: false)
+        components?.queryItems = [
+            URLQueryItem(name: "kind", value: kind.rawValue),
+            URLQueryItem(name: "id", value: id)
+        ]
+        guard let url = components?.url else { throw URLError(.badURL) }
+        let (data, response) = try await URLSession.shared.data(from: url)
+        switch (response as? HTTPURLResponse)?.statusCode {
+        case 200: return data
+        case 502: throw CxDetailError.unavailable
+        case let status: throw CxDetailError.status(status ?? 0)
+        }
+    }
+
+    private static var cxDetailURL: URL {
+        #if DEBUG
+        if isFirebaseEmulatorEnabled {
+            return URL(string: "http://127.0.0.1:5001/tribunerus-4a0ee/europe-west1/cxDetail")!
+        }
+        #endif
+        return URL(string: "https://europe-west1-tribunerus-4a0ee.cloudfunctions.net/cxDetail")!
+    }
+
+    private static func reportCxDetailError(_ error: Error, _ message: String) {
+        let nsError = error as NSError
+        let isOffline = nsError.code == NSURLErrorNotConnectedToInternet
+            || (nsError.domain == FirestoreErrorDomain && nsError.code == FirestoreErrorCode.unavailable.rawValue)
+        guard !Task.isCancelled, !isOffline else { return }
+        nonFatalCrashlytics(
+            false,
+            "\(message): \(error.localizedDescription)"
+        )
+    }
+
+    // MARK: - Local emulators -
+
+    /// DEBUG runs launched with `FIREBASE_EMULATOR=1` read Firestore and call `cxDetail` on the local
+    /// Firebase emulators (`firebase emulators:start`) instead of the live project.
+    static let isFirebaseEmulatorEnabled: Bool = {
+        #if DEBUG
+        ProcessInfo.processInfo.environment["FIREBASE_EMULATOR"] == "1"
+        #else
+        false
+        #endif
+    }()
+
+    /// Must run before anything else touches Firestore.
+    static func useFirebaseEmulatorIfEnabled() {
+        guard isFirebaseEmulatorEnabled else { return }
+        let settings = Firestore.firestore().settings
+        settings.host = "127.0.0.1:8080"
+        settings.isSSLEnabled = false
+        settings.cacheSettings = MemoryCacheSettings()
+        Firestore.firestore().settings = settings
     }
 
     private static func cx24AbsoluteURL(_ href: String) -> URL? {
@@ -481,5 +431,26 @@ extension Service {
             return url
         }
         return URL(string: trimmed, relativeTo: cx24BaseURL)?.absoluteURL
+    }
+}
+
+private extension DocumentSnapshot {
+    var cxUpdatedAt: Date? {
+        (get("updatedAt") as? Timestamp)?.dateValue()
+    }
+}
+
+private extension DTO.CX24Homepage.CategoryResult {
+    func with(raceVideosURL: URL?) -> Self {
+        .init(
+            position: position,
+            rider: rider,
+            age: age,
+            team: team,
+            time: time,
+            countryFlagURL: countryFlagURL,
+            raceVideosURL: raceVideosURL,
+            riderURL: riderURL
+        )
     }
 }

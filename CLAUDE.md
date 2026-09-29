@@ -21,7 +21,7 @@ scraped server-side by a Firebase Cloud Function and read from Firestore (see "D
 - Run a single test: add `-only-testing:TribunerosTests/<TestClass>/<testMethod>` to the `test` invocation above.
 - Test plan (`Tribuneros/Tribuneros.xctestplan`) skips the placeholder `TribunerosTests.testExample`.
 - If Swift Package resolution breaks: Xcode → File → Packages → Reset Package Caches, then clear DerivedData.
-- Debug-only launch env flags: `MOCKING=1` (forces mock data via `isMockingEnabled`, see `RaceFinishedCardView.swift`) and `DEBUG_BACKGROUND=1` (highlights view backgrounds via `.debugBackground()`).
+- Debug-only launch env flags: `MOCKING=1` (forces mock data via `isMockingEnabled`, see `RaceFinishedCardView.swift`), `DEBUG_BACKGROUND=1` (highlights view backgrounds via `.debugBackground()`) and `FIREBASE_EMULATOR=1` (Firestore and `cxDetail` on the local emulators, see `Service.useFirebaseEmulatorIfEnabled()`; seed `cx/*` by calling `runCxScrape` with `FIRESTORE_EMULATOR_HOST` set). From the CLI: `SIMCTL_CHILD_FIREBASE_EMULATOR=1 xcrun simctl launch <device> com.pskmoons.Tribuneros`.
 
 ### Tests
 
@@ -144,32 +144,30 @@ Swift DTOs (all `Decodable`). Server-side behaviour to preserve:
 - Every function module imports `functions/src/options.ts` first: `setGlobalOptions` (region
   `europe-west1`) only applies to functions defined after it runs.
 
-**`cxDetail` (HTTP, on demand) caches detail pages**, not yet called by the app:
+**CX detail pages come from `cxDetail`** (HTTP, on demand):
 `GET …/cxDetail?kind=rider|race|results&id=<slug or results id>` serves `cxRiders/{slug}` (fresh for
 24h), `cxRaces/{slug}` (7 days) or `cxResults/{id}` (forever once non-empty), scraping and storing on
 a miss or stale entry, and falling back to the stale copy if the scrape fails. Ids are validated as
 plain slugs so it can't be pointed at other URLs; `maxInstances: 2` keeps the per-instance 750 ms
-spacing meaningful. Same rules as `cx/*`.
-
-Race detail results (`getCxRaceCategoryResults`) and the YouTube lookup are still fetched on the
-device, on demand, when a race is opened.
+spacing meaningful. Same rules as `cx/*`. On the app side, `Service.getCxDetail` reads the Firestore
+document (cache first), calls the function on a miss, and on a stale copy returns it while a
+background call refreshes it; `Service.CxDetailKind` mirrors the id rules and freshness windows, so
+change both sides together. The parsers live only in `functions/src/cx.ts`; the rider, race
+(calendar and latest-results) and results screens all read through this cache. Only the YouTube
+lookup (`getYoutubeRaceURL`: race page, then YouTube search) still scrapes on the device.
 
 The "All races" calendar has a search bar (`CXRaces.calendarEvent(_:matches:)`: every word must
 appear, case- and accent-insensitively, in the race name, country, winner, UCI class or series)
 and series filter chips (`CXRaces.RaceSeries`, inferred from the race name and UCI class since
 cyclocross24 has no series field); the two combine, and chip counts follow the search. A row opens
 `CXEventDetailView`.
-`Service.getCxEventDetail` fills it on demand, on the device: the race page's history of winners
-(`parseCx24RacePage`, best-effort: it keys on rows holding a rider link and a year, not on table
-classes, and is covered only by synthetic HTML in `CXEventDetailTests`), plus the Men Elite results
-and video once the race day has come. Its "Winner" row opens `CXWinnerDetailView` (built from `CXRaces.Winner`); each "Past
+`Service.getCxEventDetail` fills it on demand: the race page's Men Elite history of winners
+(`cxRaces`), plus the Men Elite results (`cxResults`) and video once the race day has come. Its "Winner" row opens `CXWinnerDetailView` (built from `CXRaces.Winner`); each "Past
 winners" row opens `CXRiderDetailView` with `RiderContext.win` (a Victory panel whose race card
 opens that edition; its time/age tiles and the team come from that edition's results page,
 `RiderContext.winResultsURL`, loaded with the rider page through `Service.getCxWinnerDetail`). `CXWinnerDetailView` shows race facts and the winner's results row (time, team, age, fetched
 from that edition's results page when not already loaded) plus their rider page via
-`Service.getCxWinnerDetail`
-(`parseCx24RiderPage`: the `img.rider-avatar__image` avatar selector is shared with the Cloud
-Function; facts and recent results are best-effort, like the race page). The winner screen's "Victory" card
+`Service.getCxWinnerDetail` (`cxRiders`). The winner screen's "Victory" card
 pops back when that edition is the race it was opened from (the route carries it:
 `winnerDetail(_:from:)`), otherwise it opens the winning edition (`CXRaces.Winner.raceEvent`; for a past winner, the race with that
 year, winner and results link) and a recent-results row (on any rider screen) resolves its race via `CXRaces.calendarEvent(for:in:)`: this season's calendar entry

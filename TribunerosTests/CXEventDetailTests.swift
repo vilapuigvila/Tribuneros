@@ -6,7 +6,6 @@
 //
 
 import XCTest
-import SwiftSoup
 @testable import Tribuneros
 
 final class CXEventDetailTests: XCTestCase {
@@ -434,82 +433,69 @@ final class CXEventDetailTests: XCTestCase {
         XCTAssertTrue(event.winnerName.isEmpty)
     }
 
-    // MARK: - Race page parsing -
+    // MARK: - Detail page cache -
 
-    func testRacePageParsesWinnersByYear() throws {
-        let html = """
-        <html>
-          <head><meta name="description" content="Beach cyclocross in Middelkerke."></head>
-          <body>
-            <h1 class="main_title">Middelkerke</h1>
-            <table>
-              <tr><th>Year</th><th>Winner</th></tr>
-              <tr class="r1_row">
-                <td>2024</td>
-                <td><img class="flag" src="/images/flag/32/Belgium.png"><a class="rurl" href="/rider/eli-iserbyt/">ISERBYT Eli</a></td>
-                <td><a href="/race/17001/">Results</a></td>
-              </tr>
-              <tr class="r1_row">
-                <td>03-01-2025</td>
-                <td><img class="flag" src="/images/flag/32/Netherlands.png"><a class="rurl" href="/rider/mathieu-van-der-poel/">VAN DER POEL Mathieu</a></td>
-                <td><a href="/race/middelkerke/">Race</a><a href="/race/18001/">Results</a></td>
-              </tr>
-            </table>
-            <table>
-              <tr class="r1_row"><td>1</td><td><a href="/rider/no-year/">NO YEAR Rider</a></td><td>27</td></tr>
-            </table>
-          </body>
-        </html>
-        """
+    func testDetailKindTakesItsIdFromTheCyclocross24Link() {
+        func url(_ string: String) -> URL? { URL(string: string) }
 
-        let page = try Service.parseCx24RacePage(SwiftSoup.parse(html))
+        XCTAssertEqual(Service.CxDetailKind.rider.id(for: url("https://cyclocross24.com/rider/wout-van-aert/")), "wout-van-aert")
+        XCTAssertEqual(Service.CxDetailKind.race.id(for: url("https://cyclocross24.com/race/koksijde/")), "koksijde")
+        XCTAssertEqual(Service.CxDetailKind.results.id(for: url("https://cyclocross24.com/race/18209/")), "18209")
+        XCTAssertEqual(Service.CxDetailKind.results.id(for: url("https://cyclocross24.com/race/17924/#video")), "17924")
 
-        XCTAssertEqual(page.title, "Middelkerke")
-        XCTAssertEqual(page.summary, "Beach cyclocross in Middelkerke.")
-        XCTAssertEqual(page.pastWinners.map(\.year), ["2025", "2024"])
-        XCTAssertEqual(page.pastWinners.first?.rider, "VAN DER POEL Mathieu")
-        XCTAssertEqual(page.pastWinners.first?.resultsURL?.absoluteString, "https://cyclocross24.com/race/18001/")
-        XCTAssertEqual(page.pastWinners.first?.riderURL?.absoluteString, "https://cyclocross24.com/rider/mathieu-van-der-poel/")
-        XCTAssertEqual(page.pastWinners.first?.countryFlagURL?.absoluteString, "https://cyclocross24.com/images/flag/32/Netherlands.png")
+        // A results page isn't a race page and vice versa.
+        XCTAssertNil(Service.CxDetailKind.race.id(for: url("https://cyclocross24.com/race/18209/")))
+        XCTAssertNil(Service.CxDetailKind.results.id(for: url("https://cyclocross24.com/race/koksijde/")))
+        XCTAssertNil(Service.CxDetailKind.rider.id(for: url("https://cyclocross24.com/race/koksijde/")))
+        // Other sites, odd slugs and missing links have no cached page.
+        XCTAssertNil(Service.CxDetailKind.rider.id(for: url("https://www.procyclingstats.com/rider/wout-van-aert")))
+        XCTAssertNil(Service.CxDetailKind.rider.id(for: url("https://cyclocross24.com/rider/Wout_Van_Aert/")))
+        XCTAssertNil(Service.CxDetailKind.results.id(for: url("https://cyclocross24.com/race/-1/")))
+        XCTAssertNil(Service.CxDetailKind.rider.id(for: url("https://cyclocross24.com/rider/")))
+        XCTAssertNil(Service.CxDetailKind.rider.id(for: nil))
     }
 
-    func testRacePageWithoutEditionsIsEmpty() throws {
-        let page = try Service.parseCx24RacePage(SwiftSoup.parse("<html><body><h1>Race</h1></body></html>"))
+    func testDetailKindFreshnessMatchesTheFunction() {
+        let now = Date(timeIntervalSince1970: 1_790_000_000)
+        func hoursAgo(_ hours: Double) -> Date { now.addingTimeInterval(-hours * 3600) }
 
-        XCTAssertEqual(page.title, "Race")
-        XCTAssertTrue(page.summary.isEmpty)
-        XCTAssertTrue(page.pastWinners.isEmpty)
+        XCTAssertTrue(Service.CxDetailKind.rider.isFresh(updatedAt: hoursAgo(23), now: now))
+        XCTAssertFalse(Service.CxDetailKind.rider.isFresh(updatedAt: hoursAgo(25), now: now))
+        XCTAssertTrue(Service.CxDetailKind.race.isFresh(updatedAt: hoursAgo(6 * 24), now: now))
+        XCTAssertFalse(Service.CxDetailKind.race.isFresh(updatedAt: hoursAgo(8 * 24), now: now))
+        XCTAssertTrue(Service.CxDetailKind.results.isFresh(updatedAt: hoursAgo(10_000), now: now))
+        XCTAssertFalse(Service.CxDetailKind.results.isFresh(updatedAt: nil, now: now))
     }
 
-    // MARK: - Rider page parsing -
+    /// Payloads shaped like the `cxDetail` function's output (see `functions/src/cx.ts`): the field
+    /// names are the contract between the two sides.
+    func testDetailPagesDecodeFromTheFunctionPayload() throws {
+        let rider = try JSONDecoder().decode(DTO.CXRiderPage.self, from: Data("""
+        {"name":"Wout van Aert","avatarURL":"https://cyclocross24.com/images/rider/wout-van-aert-zG2.png",
+         "facts":[{"label":"Team","value":"Visma - Lease a Bike"}],
+         "results":[{"date":"29-12-2025","race":"X2O Trofee Loenhout - Azencross","position":"10",
+                     "raceURL":"https://cyclocross24.com/race/17944/"}],
+         "updatedAt":"2026-09-29T12:50:37.754Z"}
+        """.utf8))
+        XCTAssertEqual(rider.team, "Visma - Lease a Bike")
+        XCTAssertEqual(rider.results.first?.raceURL?.absoluteString, "https://cyclocross24.com/race/17944/")
 
-    func testRiderPageParsesAvatarFactsAndResults() throws {
-        let html = """
-        <html><body>
-          <h1 class="main_title">Mathieu van der Poel</h1>
-          <img class="rider-avatar__image" src="/images/rider/mathieu-van-der-poel-kL0.png">
-          <dl><dt>Date of birth:</dt><dd>19 January 1995</dd></dl>
-          <table>
-            <tr><td>Team</td><td>Alpecin - Deceuninck</td></tr>
-            <tr><td>1</td><td><a href="/rider/other-rider/">OTHER Rider</a></td></tr>
-          </table>
-          <table>
-            <tr><th>Date</th><th>Race</th><th>Pos</th></tr>
-            <tr><td>04-01-2026</td><td><a href="/race/18001/">X2O Trofee Middelkerke</a></td><td>1</td></tr>
-            <tr><td>28-12-2025</td><td><a href="/race/17990/">UCI World Cup Dendermonde</a></td><td>2.</td></tr>
-          </table>
-        </body></html>
-        """
+        let race = try JSONDecoder().decode(DTO.CXRacePage.self, from: Data("""
+        {"title":"UCI World Cup Koksijde 2026","summary":"",
+         "pastWinners":[{"year":"2025","rider":"VAN DER POEL Mathieu",
+                         "riderURL":"https://cyclocross24.com/rider/mathieu-van-der-poel/",
+                         "countryFlagURL":null,"resultsURL":"https://cyclocross24.com/race/17924/"}],
+         "updatedAt":null}
+        """.utf8))
+        XCTAssertEqual(race.pastWinners.first?.year, "2025")
+        XCTAssertNil(race.pastWinners.first?.countryFlagURL)
 
-        let page = try Service.parseCx24RiderPage(SwiftSoup.parse(html))
-
-        XCTAssertEqual(page.name, "Mathieu van der Poel")
-        XCTAssertEqual(page.avatarURL?.absoluteString, "https://cyclocross24.com/images/rider/mathieu-van-der-poel-kL0.png")
-        XCTAssertEqual(page.facts.map(\.label), ["Date of birth", "Team"])
-        XCTAssertEqual(page.facts.last?.value, "Alpecin - Deceuninck")
-        XCTAssertEqual(page.results.map(\.position), ["1", "2"])
-        XCTAssertEqual(page.results.first?.date, "04-01-2026")
-        XCTAssertEqual(page.results.first?.race, "X2O Trofee Middelkerke")
-        XCTAssertEqual(page.results.first?.raceURL?.absoluteString, "https://cyclocross24.com/race/18001/")
+        let result = try JSONDecoder().decode(DTO.CX24Homepage.CategoryResult.self, from: Data("""
+        {"position":"1","rider":"JANSSEN Wout","age":"24","team":"","time":"1:00:17",
+         "countryFlagURL":"https://cyclocross24.com/images/flag/32/Belgium.png",
+         "riderURL":"https://cyclocross24.com/rider/wout-janssen/"}
+        """.utf8))
+        XCTAssertEqual(result.riderURL?.absoluteString, "https://cyclocross24.com/rider/wout-janssen/")
+        XCTAssertNil(result.raceVideosURL)
     }
 }

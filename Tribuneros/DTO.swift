@@ -229,7 +229,7 @@ extension DTO {
             let time: String
         }
         
-        struct CategoryResult: Equatable, Sendable, Hashable {
+        struct CategoryResult: Equatable, Sendable, Hashable, Decodable {
             let position: String
             let rider: String
             let age: String
@@ -294,8 +294,8 @@ extension DTO {
 
     /// What the on-device scrape of a race's cyclocross24 page (`/race/<slug>/`) yields.
     /// Every field is optional/empty-able: the page is parsed best-effort.
-    struct CXRacePage: Equatable, Sendable {
-        struct PastWinner: Equatable, Sendable, Hashable {
+    struct CXRacePage: Equatable, Sendable, Decodable {
+        struct PastWinner: Equatable, Sendable, Hashable, Decodable {
             let year: String
             let rider: String
             let riderURL: URL?
@@ -328,14 +328,14 @@ extension DTO {
         let result: CX24Homepage.CategoryResult?
     }
 
-    /// Best-effort scrape of a rider's cyclocross24 page (`/rider/<slug>/`).
-    struct CXRiderPage: Equatable, Sendable {
-        struct Fact: Equatable, Sendable, Hashable {
+    /// A rider's cyclocross24 page (`/rider/<slug>/`), parsed by the `cxDetail` Cloud Function.
+    struct CXRiderPage: Equatable, Sendable, Decodable {
+        struct Fact: Equatable, Sendable, Hashable, Decodable {
             let label: String
             let value: String
         }
 
-        struct Result: Equatable, Sendable, Hashable {
+        struct Result: Equatable, Sendable, Hashable, Decodable {
             let date: String
             let race: String
             let position: String
