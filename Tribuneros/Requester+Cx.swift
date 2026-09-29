@@ -266,6 +266,123 @@ extension Service {
         return cx24AbsoluteURL(href)
     }*/
 
+    // MARK: - Calendar event detail -
+
+    /// Loads what the calendar-event detail shows beyond the Firestore calendar row: the race
+    /// page (history of winners), and, from race day on, the Men Elite results and a video.
+    static func getCxEventDetail(_ event: DTO.CXCalendarEvent, hasStarted: Bool) async -> DTO.CXEventDetail {
+        async let page = fetchCxRacePage(event.raceURL)
+        async let results = fetchCxEventResults(hasStarted ? event.resultsURL : nil)
+        async let video = fetchCxEventVideo(hasStarted && event.videoURL != nil ? event.resultsURL : nil)
+        return await .init(page: page, results: results, videoURL: video)
+    }
+
+    private static func fetchCxRacePage(_ url: URL?) async -> DTO.CXRacePage? {
+        guard let url else { return nil }
+        do {
+            return try parseCx24RacePage(try await fetchCx24Document(url))
+        } catch {
+            reportCxDetailError(error, "Failed to fetch race page")
+            return nil
+        }
+    }
+
+    private static func fetchCxEventResults(_ url: URL?) async -> [DTO.CX24Homepage.CategoryResult] {
+        guard let url else { return [] }
+        do {
+            return try parseCx24CategoryResults(try await fetchCx24Document(url), raceVideosURL: nil)
+        } catch {
+            reportCxDetailError(error, "Failed to fetch event results")
+            return []
+        }
+    }
+
+    private static func fetchCxEventVideo(_ url: URL?) async -> URL? {
+        guard let url else { return nil }
+        return await getYoutubeRaceURL(url)
+    }
+
+    private static func fetchCx24Document(_ url: URL) async throws -> Document {
+        let request = URLRequest(
+            url: url,
+            cachePolicy: .useProtocolCachePolicy,
+            timeoutInterval: 30
+        )
+        let data = try await URLSession.shared.data(for: request).0
+        return try SwiftSoup.parse(String(decoding: data, as: UTF8.self))
+    }
+
+    private static func reportCxDetailError(_ error: Error, _ message: String) {
+        guard !Task.isCancelled, (error as NSError).code != -1009 else { return }
+        nonFatalCrashlytics(
+            false,
+            "\(message): \(error.localizedDescription)"
+        )
+    }
+
+    /// Best-effort parse of a race page (`/race/<slug>/`). The page layout isn't pinned by a
+    /// fixture, so this anchors on what every edition row must contain rather than on table
+    /// classes: a link to a rider and a season year. Rows without both are ignored, which also
+    /// skips any per-edition results table (riders but no year).
+    static func parseCx24RacePage(_ document: Document) throws -> DTO.CXRacePage {
+        let heading = try document.select("h1.main_title").first() ?? document.select("h1").first()
+        let title = try heading?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let summary = try document
+            .select("meta[name=description]")
+            .first()?
+            .attr("content")
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+
+        var seen = Set<String>()
+        var winners: [DTO.CXRacePage.PastWinner] = []
+        for row in try document.select("tr").array() {
+            guard let riderAnchor = try row.select("a[href*=/rider/]").first() else { continue }
+            let rider = try riderAnchor.text().trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !rider.isEmpty, let year = cx24SeasonYear(in: try row.text()) else { continue }
+            guard seen.insert("\(year)|\(rider)").inserted else { continue }
+
+            let resultsHref = try row
+                .select("a[href*=/race/]")
+                .array()
+                .map { try $0.attr("href") }
+                .first { cx24ResultsID(in: $0) != nil }
+
+            winners.append(
+                .init(
+                    year: year,
+                    rider: rider,
+                    riderURL: cx24AbsoluteURL(try riderAnchor.attr("href")),
+                    countryFlagURL: cx24AbsoluteURL(try row.select("img.flag").first()?.attr("src") ?? ""),
+                    resultsURL: resultsHref.flatMap { cx24AbsoluteURL($0) }
+                )
+            )
+        }
+
+        return .init(
+            title: title,
+            summary: summary,
+            pastWinners: winners.sorted { $0.year > $1.year }
+        )
+    }
+
+    /// The first plausible season year (1950–2099) in a row's text, e.g. "2025" out of
+    /// "04-01-2025" or "2024-2025".
+    private static func cx24SeasonYear(in text: String) -> String? {
+        guard let range = text.range(of: #"\b(19[5-9]\d|20\d{2})\b"#, options: .regularExpression) else {
+            return nil
+        }
+        return String(text[range])
+    }
+
+    /// Results pages are `/race/<numeric id>/`; race pages are `/race/<slug>/`.
+    private static func cx24ResultsID(in href: String) -> Int? {
+        let components = (URL(string: href)?.path ?? href)
+            .split(separator: "/")
+            .map(String.init)
+        guard components.count >= 2, components[0] == "race" else { return nil }
+        return Int(components[1])
+    }
+
     private static func cx24AbsoluteURL(_ href: String) -> URL? {
         let trimmed = href.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }

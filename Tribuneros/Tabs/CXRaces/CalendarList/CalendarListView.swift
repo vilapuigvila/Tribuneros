@@ -16,7 +16,9 @@ struct CXAllRacesView: View {
     }
     
     let events: [DTO.CXCalendarEvent]
-    let action: (URL?) -> Void
+    let action: (DTO.CXCalendarEvent) -> Void
+    /// `nil` shows every race.
+    @State private var selectedSeries: CXRaces.RaceSeries?
     @State private var didAutoScrollToToday = false
     @State private var showTodayButton = false
     @State private var isScrolling = false
@@ -25,77 +27,90 @@ struct CXAllRacesView: View {
     var body: some View {
         ScrollViewReader { proxy in
             ZStack(alignment: .bottomTrailing) {
-                List {
-                    ForEach(events.indices, id: \.self) { idx in
-                        let event = events[idx]
-                        Button {
-                            action(event.raceURL ?? event.resultsURL ?? event.websiteURL)
-                        } label: {
-                            HStack(spacing: 12) {
-                                TribuneruText(
-                                    content: event.date,
-                                    style: .vaporMeta,
-                                    color: .tribuneru(.vaporTextSecondary)
-                                )
-                                .frame(width: 84, alignment: .leading)
-
-                                VaporFlagView(url: event.flagURL)
-
-                                VStack(alignment: .leading, spacing: 2) {
+                VStack(spacing: 0) {
+                    seriesFilterBar
+                    List {
+                        ForEach(filteredEvents.indices, id: \.self) { idx in
+                            let event = filteredEvents[idx]
+                            Button {
+                                action(event)
+                            } label: {
+                                HStack(spacing: 12) {
                                     TribuneruText(
-                                        content: event.race,
-                                        style: .vaporRaceNameNext,
-                                        color: .tribuneru(.vaporTextPrimary),
-                                        lineLimit: 2
+                                        content: event.date,
+                                        style: .vaporMeta,
+                                        color: .tribuneru(.vaporTextSecondary)
                                     )
-                                    if event.isCancelled {
+                                    .frame(width: 84, alignment: .leading)
+
+                                    VaporFlagView(url: event.flagURL)
+
+                                    VStack(alignment: .leading, spacing: 2) {
                                         TribuneruText(
-                                            content: "Cancelled",
-                                            style: .vaporMeta,
-                                            color: .red
+                                            content: event.race,
+                                            style: .vaporRaceNameNext,
+                                            color: .tribuneru(.vaporTextPrimary),
+                                            lineLimit: 2
                                         )
-                                    } else if !event.winnerName.isEmpty {
-                                        TribuneruText(
-                                            content: event.winnerName,
-                                            style: .vaporMeta,
-                                            color: .tribuneru(.vaporTextSecondary)
-                                        )
+                                        if event.isCancelled {
+                                            TribuneruText(
+                                                content: "Cancelled",
+                                                style: .vaporMeta,
+                                                color: .tribuneru(.vaporNegative)
+                                            )
+                                        } else if !event.winnerName.isEmpty {
+                                            TribuneruText(
+                                                content: event.winnerName,
+                                                style: .vaporMeta,
+                                                color: .tribuneru(.vaporTextSecondary)
+                                            )
+                                        }
                                     }
+
+                                    Spacer(minLength: 0)
+
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 11, weight: .semibold))
+                                        .foregroundColor(.tribuneru(.vaporTextSecondary))
                                 }
+                                .frame(height: UI.rowHeight)
+                                .contentShape(Rectangle())
                             }
-                            .frame(height: UI.rowHeight)
-                            .contentShape(Rectangle())
+                            .buttonStyle(.plain)
+                            .id(idx)
+                            .listRowInsets(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
+                            .listRowBackground(Color.tribuneru(.vaporCardSurface))
                         }
-                        .buttonStyle(.plain)
-                        .id(idx)
-                        .listRowInsets(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
-                        .listRowBackground(Color.tribuneru(.vaporCardSurface))
                     }
+                    .onAppear {
+                        guard !didAutoScrollToToday else { return }
+                        scrollToToday(proxy)
+                    }
+                    .onChange(of: events) {
+                        guard !didAutoScrollToToday else { return }
+                        scrollToToday(proxy)
+                    }
+                    .onChange(of: selectedSeries) {
+                        scrollToToday(proxy)
+                    }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .background(Color.tribuneru(.vaporPageBackground))
+                    .environment(\.defaultMinListRowHeight, UI.rowHeight)
+                    .preferredColorScheme(.dark)
+                    .simultaneousGesture(
+                        DragGesture()
+                            .onChanged { _ in
+                                isScrolling = true
+                                showTodayButton = false
+                                scrollTimer?.invalidate()
+                            }
+                            .onEnded { _ in
+                                startShowButtonTimer()
+                            }
+                    )
                 }
-                .onAppear {
-                    guard !didAutoScrollToToday else { return }
-                    scrollToToday(proxy)
-                }
-                .onChange(of: events) {
-                    guard !didAutoScrollToToday else { return }
-                    scrollToToday(proxy)
-                }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden)
                 .background(Color.tribuneru(.vaporPageBackground))
-                .environment(\.defaultMinListRowHeight, UI.rowHeight)
-                .preferredColorScheme(.dark)
-                .simultaneousGesture(
-                    DragGesture()
-                        .onChanged { _ in
-                            isScrolling = true
-                            showTodayButton = false
-                            scrollTimer?.invalidate()
-                        }
-                        .onEnded { _ in
-                            startShowButtonTimer()
-                        }
-                )
                 
                 if showTodayButton {
                     Button(action: { scrollToToday(proxy) }) {
@@ -122,18 +137,54 @@ struct CXAllRacesView: View {
         }
     }
     
+    private var filteredEvents: [DTO.CXCalendarEvent] {
+        guard let selectedSeries else { return events }
+        return events.filter { $0.series == selectedSeries }
+    }
+
+    private var seriesCounts: [CXRaces.RaceSeries: Int] {
+        Dictionary(grouping: events, by: \.series).mapValues(\.count)
+    }
+
+    private var seriesFilterBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                CXSeriesFilterChip(
+                    title: "All",
+                    count: events.count,
+                    isSelected: selectedSeries == nil
+                ) {
+                    selectedSeries = nil
+                }
+                // Only the series present in this season's calendar get a chip.
+                let counts = seriesCounts
+                ForEach(CXRaces.RaceSeries.allCases.filter { counts[$0] != nil }) { series in
+                    CXSeriesFilterChip(
+                        title: series.title,
+                        count: counts[series] ?? 0,
+                        isSelected: selectedSeries == series
+                    ) {
+                        selectedSeries = selectedSeries == series ? nil : series
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+        }
+    }
+
     private var todayIndex: Int? {
         let calendar = Calendar.current
         let startOfToday = calendar.startOfDay(for: Date())
         
-        if let todayIdx = events.firstIndex(where: { event in
+        if let todayIdx = filteredEvents.firstIndex(where: { event in
             guard let date = event.eventDate else { return false }
             return calendar.isDateInToday(date)
         }) {
             return todayIdx
         }
         
-        return events.firstIndex { event in
+        return filteredEvents.firstIndex { event in
             guard let date = event.eventDate else { return false }
             return date >= startOfToday
         }
@@ -160,6 +211,41 @@ struct CXAllRacesView: View {
                 showTodayButton = todayIndex != nil
             }
         }
+    }
+}
+
+private struct CXSeriesFilterChip: View {
+    let title: String
+    let count: Int
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                TribuneruText(
+                    content: title.uppercased(),
+                    style: .vaporSpoilerChip,
+                    color: isSelected ? .tribuneru(.vaporPageBackground) : .tribuneru(.vaporTextPrimary),
+                    lineLimit: 1
+                )
+                TribuneruText(
+                    content: "\(count)",
+                    style: .vaporMonoMeta,
+                    color: isSelected ? .tribuneru(.vaporPageBackground) : .tribuneru(.vaporTextSecondary),
+                    lineLimit: 1
+                )
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(
+                isSelected
+                ? Color.tribuneru(.vaporAccent)
+                : Color.tribuneru(.vaporCardSurface)
+            )
+            .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
     }
 }
 

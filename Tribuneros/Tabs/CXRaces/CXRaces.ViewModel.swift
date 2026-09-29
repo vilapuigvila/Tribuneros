@@ -42,9 +42,10 @@ extension CXRaces {
                 router.routeTo(.cxZone(.allRaces))
             case .didTapOnLatestResults:
                 router.routeTo(.cxZone(.latestResults))
-            case .didTapOnRace(let url):
-                guard let url else { return }
-                router.routeTo(.detail(.race(urlInfo: url.absoluteString)))
+            case .didTapOnCalendarEvent(let event):
+                router.routeTo(.cxZone(.eventDetail(event)))
+            case .didTapOnLink(let url):
+                router.routeTo(.web(url))
             case .didTapOnRaceDetail(let race):
                 router.routeTo(.cxZone(.raceDetail(race)))
             case .didTapOnStandings:
