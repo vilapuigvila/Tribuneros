@@ -18,6 +18,8 @@ struct CXEventDetailView: View {
 
     let event: DTO.CXCalendarEvent
     let openURL: (URL) -> Void
+    /// Fetches the on-demand part of the screen; injectable so previews never hit the network.
+    private let loadDetail: (DTO.CXCalendarEvent, Bool) async -> DTO.CXEventDetail
 
     @State private var detail: DTO.CXEventDetail
     @State private var isLoading: Bool
@@ -26,10 +28,17 @@ struct CXEventDetailView: View {
     init(
         event: DTO.CXCalendarEvent,
         detail: DTO.CXEventDetail? = nil,
+        loadDetail: @escaping (DTO.CXCalendarEvent, Bool) async -> DTO.CXEventDetail = {
+            await Service.getCxEventDetail(
+                $0,
+                hasStarted: $1
+            )
+        },
         openURL: @escaping (URL) -> Void
     ) {
         self.event = event
         self.openURL = openURL
+        self.loadDetail = loadDetail
         _detail = State(initialValue: detail ?? .empty)
         _isLoading = State(initialValue: detail == nil)
     }
@@ -72,9 +81,9 @@ struct CXEventDetailView: View {
         }
         .task {
             guard isLoading else { return }
-            detail = await Service.getCxEventDetail(
+            detail = await loadDetail(
                 event,
-                hasStarted: status.hasStarted
+                status.hasStarted
             )
             isLoading = false
         }
@@ -553,48 +562,78 @@ private extension CXEventDetailView {
 
 #if DEBUG
 
+// MARK: - Mocks -
+
+private extension DTO.CXCalendarEvent {
+    /// Middelkerke, `daysFromToday` away from now so the status and countdown stay meaningful.
+    static func mockMiddelkerke(
+        daysFromToday: Int,
+        winnerName: String = "",
+        isCancelled: Bool = false
+    ) -> Self {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd-MM-yyyy"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        let date = Calendar.current.date(byAdding: .day, value: daysFromToday, to: Date()) ?? Date()
+        let hasWinner = !winnerName.isEmpty
+
+        return .init(
+            date: formatter.string(from: date),
+            race: "X2O Badkamers Trofee - Middelkerke",
+            raceClass: "C1",
+            flagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+            winnerName: winnerName,
+            isCancelled: isCancelled,
+            raceID: 18001,
+            raceSlug: "middelkerke",
+            raceURL: URL(string: "https://cyclocross24.com/race/middelkerke/"),
+            resultsURL: URL(string: "https://cyclocross24.com/race/18001/"),
+            videoURL: hasWinner ? URL(string: "https://cyclocross24.com/race/18001/#video") : nil,
+            websiteURL: URL(string: "https://www.trofee-veldrijden.be"),
+            raceCountry: "Belgium",
+            winnerURL: hasWinner ? URL(string: "https://cyclocross24.com/rider/mathieu-van-der-poel/") : nil,
+            winnerCountry: hasWinner ? "Netherlands" : nil,
+            winnerFlagURL: hasWinner ? URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png") : nil
+        )
+    }
+}
+
+private extension DTO.CXRacePage {
+    static var mockMiddelkerke: Self {
+        .init(
+            title: "Middelkerke",
+            summary: "Cyclocross race on the beach and dunes of Middelkerke, Belgium.",
+            pastWinners: [
+                .init(
+                    year: "2025",
+                    rider: "VAN DER POEL Mathieu",
+                    riderURL: nil,
+                    countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png"),
+                    resultsURL: nil
+                ),
+                .init(
+                    year: "2024",
+                    rider: "ISERBYT Eli",
+                    riderURL: nil,
+                    countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+                    resultsURL: nil
+                )
+            ]
+        )
+    }
+}
+
+// MARK: - Previews -
+
 #Preview("CX Event Detail - finished") {
     NavigationStack {
         CXEventDetailView(
-            event: .init(
-                date: "04-01-2026",
-                race: "X2O Badkamers Trofee - Middelkerke",
-                raceClass: "C1",
-                flagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
-                winnerName: "VAN DER POEL Mathieu",
-                isCancelled: false,
-                raceID: 18001,
-                raceSlug: "middelkerke",
-                raceURL: URL(string: "https://cyclocross24.com/race/middelkerke/"),
-                resultsURL: URL(string: "https://cyclocross24.com/race/18001/"),
-                videoURL: URL(string: "https://cyclocross24.com/race/18001/#video"),
-                websiteURL: URL(string: "https://www.trofee-veldrijden.be"),
-                raceCountry: "Belgium",
-                winnerURL: URL(string: "https://cyclocross24.com/rider/mathieu-van-der-poel/"),
-                winnerCountry: "Netherlands",
-                winnerFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png")
+            event: .mockMiddelkerke(
+                daysFromToday: -3,
+                winnerName: "VAN DER POEL Mathieu"
             ),
             detail: .init(
-                page: .init(
-                    title: "Middelkerke",
-                    summary: "Cyclocross race on the beach and dunes of Middelkerke, Belgium.",
-                    pastWinners: [
-                        .init(
-                            year: "2025",
-                            rider: "VAN DER POEL Mathieu",
-                            riderURL: nil,
-                            countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png"),
-                            resultsURL: nil
-                        ),
-                        .init(
-                            year: "2024",
-                            rider: "ISERBYT Eli",
-                            riderURL: nil,
-                            countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
-                            resultsURL: nil
-                        )
-                    ]
-                ),
+                page: .mockMiddelkerke,
                 results: [
                     .init(
                         position: "1",
@@ -617,6 +656,48 @@ private extension CXEventDetailView {
                 ],
                 videoURL: URL(string: "https://www.youtube.com/watch?v=EShExWlESGs")
             )
+        ) { _ in }
+    }
+}
+
+#Preview("CX Event Detail - upcoming") {
+    NavigationStack {
+        CXEventDetailView(
+            event: .mockMiddelkerke(daysFromToday: 5),
+            detail: .init(
+                page: .mockMiddelkerke,
+                results: [],
+                videoURL: nil
+            )
+        ) { _ in }
+    }
+}
+
+#Preview("CX Event Detail - cancelled") {
+    NavigationStack {
+        CXEventDetailView(
+            event: .mockMiddelkerke(
+                daysFromToday: 5,
+                isCancelled: true
+            ),
+            detail: .init(
+                page: .mockMiddelkerke,
+                results: [],
+                videoURL: nil
+            )
+        ) { _ in }
+    }
+}
+
+#Preview("CX Event Detail - loading") {
+    NavigationStack {
+        CXEventDetailView(
+            event: .mockMiddelkerke(daysFromToday: 5),
+            loadDetail: { _, _ in
+                // Never finishes, so the preview stays on the loader.
+                try? await Task.sleep(for: .seconds(3600))
+                return .empty
+            }
         ) { _ in }
     }
 }
