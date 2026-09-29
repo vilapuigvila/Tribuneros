@@ -6,5 +6,19 @@ service cloud.firestore {
       allow read: if true;
       allow write: if false;
     }
+
+    // Detail-page cache, written only by the cxDetail Cloud Function.
+    match /cxRiders/{rider} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /cxRaces/{race} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /cxResults/{results} {
+      allow read: if true;
+      allow write: if false;
+    }
   }
 }

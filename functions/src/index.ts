@@ -1,13 +1,13 @@
-import {setGlobalOptions} from "firebase-functions";
+import "./options";
 import * as logger from "firebase-functions/logger";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {initializeApp} from "firebase-admin/app";
 import {FieldValue, getFirestore, type Firestore} from "firebase-admin/firestore";
 import {loadHomepageDocument, parseHomepage, scrapeCalendar, scrapeStandings} from "./cx";
 
-initializeApp();
+export {cxDetail} from "./cxDetail";
 
-setGlobalOptions({region: "europe-west1", maxInstances: 10});
+initializeApp();
 
 type Outcome = PromiseSettledResult<object>;
 

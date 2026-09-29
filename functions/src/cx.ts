@@ -619,3 +619,15 @@ export function parseCategoryResults($: CheerioAPI): CategoryResult[] {
     .get()
     .filter((result): result is CategoryResult => result !== null);
 }
+
+export async function scrapeRacePage(slug: string): Promise<RacePage> {
+  return parseRacePage(await fetchDocument(`${BASE_URL}/race/${slug}/`));
+}
+
+export async function scrapeRiderPage(slug: string): Promise<RiderPage> {
+  return parseRiderPage(await fetchDocument(`${BASE_URL}/rider/${slug}/`));
+}
+
+export async function scrapeCategoryResults(id: string): Promise<CategoryResult[]> {
+  return parseCategoryResults(await fetchDocument(`${BASE_URL}/race/${id}/`));
+}

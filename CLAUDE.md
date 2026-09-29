@@ -44,6 +44,8 @@ TypeScript Cloud Functions for Firebase project `tribunerus-4a0ee` (`.firebaserc
 root with Node 22 on PATH — the Homebrew `node@22` install is first on PATH in this machine's shell.
 
 - Build: `npm --prefix functions run build`
+- Test: `npm --prefix functions test` (Node's built-in runner; parser tests read real cyclocross24
+  pages saved in `functions/test/fixtures/`; re-capture them when the site changes).
 - Local emulators (Functions + Firestore + UI on :4000): `firebase emulators:start`. Always run
   Firestore in the emulator when testing locally — the functions emulator alone writes to the
   **production** database.
@@ -139,6 +141,15 @@ Swift DTOs (all `Decodable`). Server-side behaviour to preserve:
 - The calendar season is derived from the date (from July onward, the next season), not hardcoded.
 - Firestore rules (`firestore.rules`): `cx/*` is publicly readable and never client-writable. Only
   the function writes, through the Admin SDK, which bypasses rules.
+- Every function module imports `functions/src/options.ts` first: `setGlobalOptions` (region
+  `europe-west1`) only applies to functions defined after it runs.
+
+**`cxDetail` (HTTP, on demand) caches detail pages**, not yet called by the app:
+`GET …/cxDetail?kind=rider|race|results&id=<slug or results id>` serves `cxRiders/{slug}` (fresh for
+24h), `cxRaces/{slug}` (7 days) or `cxResults/{id}` (forever once non-empty), scraping and storing on
+a miss or stale entry, and falling back to the stale copy if the scrape fails. Ids are validated as
+plain slugs so it can't be pointed at other URLs; `maxInstances: 2` keeps the per-instance 750 ms
+spacing meaningful. Same rules as `cx/*`.
 
 Race detail results (`getCxRaceCategoryResults`) and the YouTube lookup are still fetched on the
 device, on demand, when a race is opened.
