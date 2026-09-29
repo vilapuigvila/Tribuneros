@@ -157,6 +157,8 @@ extension CXRaces {
         let resultsURL: URL?
         /// The winner's results row (time, team, age), when the caller already has it.
         let result: DTO.CX24Homepage.CategoryResult?
+        /// The winning edition as a calendar event, to open it in `CXEventDetailView`.
+        let raceEvent: DTO.CXCalendarEvent
 
         init(
             event: DTO.CXCalendarEvent,
@@ -173,6 +175,7 @@ extension CXRaces {
             dateText = event.eventDate.map { WinnerDate.formatter.string(from: $0) } ?? event.date
             resultsURL = event.resultsURL
             self.result = result
+            raceEvent = event
         }
 
         init(
@@ -190,6 +193,30 @@ extension CXRaces {
             dateText = pastWinner.year
             resultsURL = pastWinner.resultsURL
             result = nil
+            // Same race, that edition's winner and results. Only the year is known, so the detail
+            // shows it as the date; the winner name marks the edition as finished.
+            let resultsID = pastWinner.resultsURL?.path
+                .split(separator: "/")
+                .last
+                .flatMap { Int($0) }
+            raceEvent = .init(
+                date: pastWinner.year,
+                race: event.race,
+                raceClass: event.raceClass,
+                flagURL: event.flagURL,
+                winnerName: pastWinner.rider,
+                isCancelled: false,
+                raceID: resultsID,
+                raceSlug: event.raceSlug,
+                raceURL: event.raceURL,
+                resultsURL: pastWinner.resultsURL,
+                videoURL: nil,
+                websiteURL: event.websiteURL,
+                raceCountry: event.raceCountry,
+                winnerURL: pastWinner.riderURL,
+                winnerCountry: nil,
+                winnerFlagURL: pastWinner.countryFlagURL
+            )
         }
     }
 

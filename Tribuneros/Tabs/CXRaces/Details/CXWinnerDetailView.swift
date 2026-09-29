@@ -15,6 +15,8 @@ import SwiftUI
 struct CXWinnerDetailView: View {
     let winner: CXRaces.Winner
     let openURL: (URL) -> Void
+    /// Opens the winning race (the "Victory" card) as a native race detail.
+    private let openRace: (DTO.CXCalendarEvent) -> Void
     /// Opens a "Recent results" row as a native race detail.
     private let openRaceResult: (DTO.CXRiderPage.Result) -> Void
     /// Fetches the rider page and missing results row; injectable so previews never hit the network.
@@ -33,11 +35,13 @@ struct CXWinnerDetailView: View {
                 resultsURL: $0.result == nil ? $0.resultsURL : nil
             )
         },
+        openRace: @escaping (DTO.CXCalendarEvent) -> Void = { _ in },
         openRaceResult: @escaping (DTO.CXRiderPage.Result) -> Void = { _ in },
         openURL: @escaping (URL) -> Void
     ) {
         self.winner = winner
         self.openURL = openURL
+        self.openRace = openRace
         self.openRaceResult = openRaceResult
         self.loadDetail = loadDetail
         _page = State(initialValue: page)
@@ -165,25 +169,39 @@ struct CXWinnerDetailView: View {
             VaporSectionHeader(title: "Victory")
         } content: {
             VStack(alignment: .leading, spacing: 10) {
-                VaporCard(spacing: 4) {
-                    TribuneruText(
-                        content: winner.race,
-                        style: .vaporRaceNameNext,
-                        color: .tribuneru(.vaporTextPrimary),
-                        lineLimit: 2
-                    )
-                    HStack(spacing: 6) {
-                        VaporFlagView(url: winner.raceFlagURL)
-                        TribuneruText(
-                            content: [winner.dateText, winner.raceClass]
-                                .filter { !$0.isEmpty }
-                                .joined(separator: " · "),
-                            style: .vaporMeta,
-                            color: .tribuneru(.vaporTextSecondary),
-                            lineLimit: 1
-                        )
+                Button {
+                    openRace(winner.raceEvent)
+                } label: {
+                    VaporCard {
+                        HStack(spacing: 10) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                TribuneruText(
+                                    content: winner.race,
+                                    style: .vaporRaceNameNext,
+                                    color: .tribuneru(.vaporTextPrimary),
+                                    lineLimit: 2
+                                )
+                                HStack(spacing: 6) {
+                                    VaporFlagView(url: winner.raceFlagURL)
+                                    TribuneruText(
+                                        content: [winner.dateText, winner.raceClass]
+                                            .filter { !$0.isEmpty }
+                                            .joined(separator: " · "),
+                                        style: .vaporMeta,
+                                        color: .tribuneru(.vaporTextSecondary),
+                                        lineLimit: 1
+                                    )
+                                }
+                            }
+                            Spacer(minLength: 0)
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundColor(.tribuneru(.vaporTextSecondary))
+                        }
                     }
+                    .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
 
                 if !stats.isEmpty {
                     HStack(spacing: 10) {

@@ -66,6 +66,16 @@ final class CXEventDetailTests: XCTestCase {
         // The past edition's results, not this season's.
         XCTAssertEqual(winner.resultsURL, pastWinner.resultsURL)
         XCTAssertEqual(winner.riderURL, pastWinner.riderURL)
+        // Opening the race from the winner screen shows that edition, not this season's.
+        XCTAssertEqual(winner.raceEvent.date, "2024")
+        XCTAssertEqual(winner.raceEvent.winnerName, "ISERBYT Eli")
+        XCTAssertEqual(winner.raceEvent.resultsURL, pastWinner.resultsURL)
+        XCTAssertEqual(winner.raceEvent.raceID, 17001)
+        XCTAssertEqual(winner.raceEvent.raceURL, event.raceURL)
+        XCTAssertEqual(
+            CXRaces.Winner(event: event, result: nil).raceEvent,
+            event
+        )
     }
 
     // MARK: - Rider result → calendar event -
