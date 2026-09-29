@@ -31,16 +31,16 @@ struct CXRacesRacesView: View {
                 CXEventDetailView(
                     event: event,
                     openWinner: { winner in
-                        viewModel.action(.didTapOnWinner(winner))
+                        viewModel.action(.didTapOnWinner(winner, from: event))
                     }
                 ) { url in
                     viewModel.action(.didTapOnLink(url))
                 }
-            case .cxZone(.winnerDetail(let winner)):
+            case .cxZone(.winnerDetail(let winner, let from)):
                 CXWinnerDetailView(
                     winner: winner,
                     openRace: { event in
-                        viewModel.action(.didTapOnCalendarEvent(event))
+                        viewModel.action(.didTapOnWinnerRace(event, openedFrom: from))
                     },
                     openRaceResult: { result in
                         viewModel.action(.didTapOnRiderResult(result))

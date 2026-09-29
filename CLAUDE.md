@@ -143,7 +143,8 @@ from that edition's results page when not already loaded) plus their rider page 
 `Service.getCxWinnerDetail`
 (`parseCx24RiderPage`: the `img.rider-avatar__image` avatar selector is shared with the Cloud
 Function; facts and recent results are best-effort, like the race page). The winner screen's "Victory" card
-opens the winning edition (`CXRaces.Winner.raceEvent`; for a past winner, the race with that
+pops back when that edition is the race it was opened from (the route carries it:
+`winnerDetail(_:from:)`), otherwise it opens the winning edition (`CXRaces.Winner.raceEvent`; for a past winner, the race with that
 year, winner and results link) and a recent-results row opens `CXEventDetailView` again, via `CXRaces.calendarEvent(for:in:)`: this season's calendar entry
 when one matches, else a minimal event built from the row (the detail then takes its winner from
 the loaded results).

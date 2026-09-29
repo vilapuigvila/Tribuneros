@@ -17,7 +17,8 @@ extension CXRaces {
         case didTapOnLatestResults
         case didTapOnCalendarEvent(DTO.CXCalendarEvent)
         case didTapOnLink(URL)
-        case didTapOnWinner(CXRaces.Winner)
+        case didTapOnWinner(CXRaces.Winner, from: DTO.CXCalendarEvent)
+        case didTapOnWinnerRace(DTO.CXCalendarEvent, openedFrom: DTO.CXCalendarEvent)
         case didTapOnRiderResult(DTO.CXRiderPage.Result)
         case didTapOnRaceDetail(DTO.CX24Homepage.Race)
         case didTapOnStandings
