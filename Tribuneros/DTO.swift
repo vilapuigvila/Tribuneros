@@ -259,7 +259,7 @@ extension DTO {
         let items: [Item]
     }
     
-    struct CXCalendarEvent: Equatable, Sendable, Decodable {
+    struct CXCalendarEvent: Equatable, Sendable, Hashable, Decodable {
         let date: String
         let race: String
         let raceClass: String
@@ -279,5 +279,34 @@ extension DTO {
         let winnerURL: URL?
         let winnerCountry: String?
         let winnerFlagURL: URL?
+    }
+
+    /// What the on-device scrape of a race's cyclocross24 page (`/race/<slug>/`) yields.
+    /// Every field is optional/empty-able: the page is parsed best-effort.
+    struct CXRacePage: Equatable, Sendable {
+        struct PastWinner: Equatable, Sendable, Hashable {
+            let year: String
+            let rider: String
+            let riderURL: URL?
+            let countryFlagURL: URL?
+            let resultsURL: URL?
+        }
+
+        let title: String
+        let summary: String
+        let pastWinners: [PastWinner]
+    }
+
+    /// Everything the CX calendar-event detail screen loads on demand, on top of the
+    /// `CXCalendarEvent` it was opened with. Each part is fetched independently, so any of
+    /// them can come back empty without failing the others.
+    struct CXEventDetail: Equatable, Sendable {
+        let page: CXRacePage?
+        let results: [CX24Homepage.CategoryResult]
+        let videoURL: URL?
+
+        static var empty: CXEventDetail {
+            .init(page: nil, results: [], videoURL: nil)
+        }
     }
 }

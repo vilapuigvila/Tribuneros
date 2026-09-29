@@ -23,10 +23,14 @@ struct CXRacesRacesView: View {
             let _ = print("avvp [Navigation] - \(destination)")
             switch destination {
             case .cxZone(.allRaces):
-                CXAllRacesView(events: viewModel.stateView.result.calendarEvents) { url in
-                    viewModel.action(.didTapOnRace(url))
+                CXAllRacesView(events: viewModel.stateView.result.calendarEvents) { event in
+                    viewModel.action(.didTapOnCalendarEvent(event))
                 }
                 .navigationTitle("All races")
+            case .cxZone(.eventDetail(let event)):
+                CXEventDetailView(event: event) { url in
+                    viewModel.action(.didTapOnLink(url))
+                }
             case .cxZone(.latestResults):
                 LatestAllResultsView(races: viewModel.stateView.result.races) { race in
                     viewModel.action(.didTapOnRaceDetail(race))
@@ -40,6 +44,8 @@ struct CXRacesRacesView: View {
                     .navigationTitle("Standings")
             case .detail(.race(let urlInfo)):
                 SafariView(url: URL(string: urlInfo))
+            case .web(let url):
+                SafariView(url: url)
             default:
                 EmptyView()
             }
