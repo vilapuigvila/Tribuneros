@@ -19,6 +19,7 @@ struct CXAllRacesView: View {
     let action: (DTO.CXCalendarEvent) -> Void
     /// `nil` shows every race.
     @State private var selectedSeries: CXRaces.RaceSeries?
+    @State private var searchText = ""
     @State private var didAutoScrollToToday = false
     @State private var showTodayButton = false
     @State private var isScrolling = false
@@ -93,6 +94,19 @@ struct CXAllRacesView: View {
                     .onChange(of: selectedSeries) {
                         scrollToToday(proxy)
                     }
+                    .overlay {
+                        if filteredEvents.isEmpty && !events.isEmpty {
+                            TribuneruText(
+                                content: searchText.isEmpty
+                                    ? "No races in this series."
+                                    : "No races match \u{201C}\(searchText)\u{201D}.",
+                                style: .vaporMeta,
+                                color: .tribuneru(.vaporTextSecondary),
+                                lineLimit: 2
+                            )
+                            .padding(24)
+                        }
+                    }
                     .listStyle(.plain)
                     .scrollContentBackground(.hidden)
                     .background(Color.tribuneru(.vaporPageBackground))
@@ -135,15 +149,32 @@ struct CXAllRacesView: View {
                 }
             }
         }
+        .searchable(
+            text: $searchText,
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: "Race, country, winner..."
+        )
     }
     
+    /// Events matching the search text, before the series filter.
+    private var searchedEvents: [DTO.CXCalendarEvent] {
+        events.filter { CXRaces.calendarEvent($0, matches: searchText) }
+    }
+
     private var filteredEvents: [DTO.CXCalendarEvent] {
-        guard let selectedSeries else { return events }
-        return events.filter { $0.series == selectedSeries }
+        guard let selectedSeries else { return searchedEvents }
+        return searchedEvents.filter { $0.series == selectedSeries }
+    }
+
+    /// Chips are those of the whole season, so they don't jump around while typing; their
+    /// counts follow the search.
+    private var seasonSeries: [CXRaces.RaceSeries] {
+        let present = Set(events.map(\.series))
+        return CXRaces.RaceSeries.allCases.filter { present.contains($0) }
     }
 
     private var seriesCounts: [CXRaces.RaceSeries: Int] {
-        Dictionary(grouping: events, by: \.series).mapValues(\.count)
+        Dictionary(grouping: searchedEvents, by: \.series).mapValues(\.count)
     }
 
     private var seriesFilterBar: some View {
@@ -151,14 +182,14 @@ struct CXAllRacesView: View {
             HStack(spacing: 6) {
                 CXSeriesFilterChip(
                     title: "All",
-                    count: events.count,
+                    count: searchedEvents.count,
                     isSelected: selectedSeries == nil
                 ) {
                     selectedSeries = nil
                 }
                 // Only the series present in this season's calendar get a chip.
                 let counts = seriesCounts
-                ForEach(CXRaces.RaceSeries.allCases.filter { counts[$0] != nil }) { series in
+                ForEach(seasonSeries) { series in
                     CXSeriesFilterChip(
                         title: series.title,
                         count: counts[series] ?? 0,

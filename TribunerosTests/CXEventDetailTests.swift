@@ -26,6 +26,43 @@ final class CXEventDetailTests: XCTestCase {
         XCTAssertEqual(CXRaces.RaceSeries.of(race: "Cross4Life Copenhagen", raceClass: "C2", country: nil), .others)
     }
 
+    // MARK: - Calendar search -
+
+    func testCalendarSearchMatchesEveryWordAcrossFields() {
+        let event = DTO.CXCalendarEvent(
+            date: "01-02-2026",
+            race: "UCI World Championships Liévin",
+            raceClass: "CM",
+            flagURL: nil,
+            winnerName: "VAN DER POEL Mathieu",
+            isCancelled: false,
+            raceID: nil,
+            raceSlug: nil,
+            raceURL: nil,
+            resultsURL: nil,
+            videoURL: nil,
+            websiteURL: nil,
+            raceCountry: "France",
+            winnerURL: nil,
+            winnerCountry: nil,
+            winnerFlagURL: nil
+        )
+
+        XCTAssertTrue(CXRaces.calendarEvent(event, matches: ""))
+        XCTAssertTrue(CXRaces.calendarEvent(event, matches: "   "))
+        // Case- and accent-insensitive, on the race name.
+        XCTAssertTrue(CXRaces.calendarEvent(event, matches: "lievin"))
+        // Country, winner, class and series.
+        XCTAssertTrue(CXRaces.calendarEvent(event, matches: "france"))
+        XCTAssertTrue(CXRaces.calendarEvent(event, matches: "poel"))
+        XCTAssertTrue(CXRaces.calendarEvent(event, matches: "cm"))
+        XCTAssertTrue(CXRaces.calendarEvent(event, matches: "championships"))
+        // Every word must match, in any field and any order.
+        XCTAssertTrue(CXRaces.calendarEvent(event, matches: "poel france"))
+        XCTAssertFalse(CXRaces.calendarEvent(event, matches: "poel belgium"))
+        XCTAssertFalse(CXRaces.calendarEvent(event, matches: "koksijde"))
+    }
+
     // MARK: - Winner -
 
     func testPastWinnerBuildsWinnerForItsEdition() {

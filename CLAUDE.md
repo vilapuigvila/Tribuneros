@@ -132,8 +132,11 @@ Swift DTOs (all `Decodable`). Server-side behaviour to preserve:
 Race detail results (`getCxRaceCategoryResults`) and the YouTube lookup are still fetched on the
 device, on demand, when a race is opened.
 
-The "All races" calendar has series filter chips (`CXRaces.RaceSeries`, inferred from the race name
-and UCI class since cyclocross24 has no series field), and a row opens `CXEventDetailView`.
+The "All races" calendar has a search bar (`CXRaces.calendarEvent(_:matches:)`: every word must
+appear, case- and accent-insensitively, in the race name, country, winner, UCI class or series)
+and series filter chips (`CXRaces.RaceSeries`, inferred from the race name and UCI class since
+cyclocross24 has no series field); the two combine, and chip counts follow the search. A row opens
+`CXEventDetailView`.
 `Service.getCxEventDetail` fills it on demand, on the device: the race page's history of winners
 (`parseCx24RacePage`, best-effort: it keys on rows holding a rider link and a year, not on table
 classes, and is covered only by synthetic HTML in `CXEventDetailTests`), plus the Men Elite results

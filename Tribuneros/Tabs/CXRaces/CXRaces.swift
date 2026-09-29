@@ -128,6 +128,29 @@ extension CXRaces {
         }
     }
 
+    /// The "All races" search: every word of `query` must appear (ignoring case and accents) in
+    /// the race name, country, winner, UCI class or series. An empty query matches everything.
+    static func calendarEvent(
+        _ event: DTO.CXCalendarEvent,
+        matches query: String
+    ) -> Bool {
+        let terms = query.split(whereSeparator: \.isWhitespace)
+        guard !terms.isEmpty else { return true }
+        let searchable = [
+            event.race,
+            event.raceCountry ?? "",
+            event.winnerName,
+            event.raceClass,
+            event.series.title
+        ].joined(separator: " ")
+        return terms.allSatisfy { term in
+            searchable.range(
+                of: term,
+                options: [.caseInsensitive, .diacriticInsensitive]
+            ) != nil
+        }
+    }
+
     /// UCI class codes as shown on cyclocross24, spelled out for the detail screen.
     static func raceClassDescription(_ raceClass: String) -> String? {
         switch raceClass.uppercased().trimmingCharacters(in: .whitespaces) {
