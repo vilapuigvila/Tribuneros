@@ -62,10 +62,13 @@ struct CXWinnerDetailView: View {
                         .padding(.vertical, 24)
                 } else if let page {
                     if !page.facts.isEmpty {
-                        factsPanel(page.facts)
+                        CXRiderFactsPanel(facts: page.facts)
                     }
                     if !page.results.isEmpty {
-                        recentResultsPanel(page.results)
+                        CXRiderRecentResultsPanel(
+                            results: page.results,
+                            openResult: openRaceResult
+                        )
                     }
                 }
 
@@ -108,7 +111,7 @@ struct CXWinnerDetailView: View {
             }
         } content: {
             HStack(alignment: .center, spacing: 16) {
-                avatar
+                CXRiderAvatar(url: page?.avatarURL)
 
                 VStack(alignment: .leading, spacing: 6) {
                     TribuneruText(
@@ -137,29 +140,6 @@ struct CXWinnerDetailView: View {
                 }
             }
         }
-    }
-
-    private var avatar: some View {
-        Group {
-            if let avatarURL = page?.avatarURL {
-                CachedImageView(
-                    imageUrl: avatarURL,
-                    cornerRadius: 40
-                )
-                .scaledToFill()
-            } else {
-                Image(systemName: "person.fill")
-                    .font(.system(size: 32, weight: .regular))
-                    .foregroundColor(.tribuneru(.vaporTextSecondary))
-            }
-        }
-        .frame(width: 80, height: 80)
-        .background(Color.tribuneru(.vaporCardSurface))
-        .clipShape(Circle())
-        .overlay(
-            Circle()
-                .stroke(Color.tribuneru(.vaporAccent), lineWidth: 1.5)
-        )
     }
 
     // MARK: - Victory -
@@ -206,7 +186,7 @@ struct CXWinnerDetailView: View {
                 if !stats.isEmpty {
                     HStack(spacing: 10) {
                         ForEach(stats) { stat in
-                            StatTile(
+                            CXStatTile(
                                 label: stat.label,
                                 value: stat.value
                             )
@@ -229,89 +209,6 @@ struct CXWinnerDetailView: View {
         return stats
     }
 
-    // MARK: - Facts -
-
-    private func factsPanel(_ facts: [DTO.CXRiderPage.Fact]) -> some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelYesterday)) {
-            VaporSectionHeader(title: "Profile")
-        } content: {
-            VaporCard(spacing: 0) {
-                ForEach(facts.indices, id: \.self) { index in
-                    HStack(alignment: .firstTextBaseline, spacing: 10) {
-                        TribuneruText(
-                            content: facts[index].label,
-                            style: .vaporMeta,
-                            color: .tribuneru(.vaporTextSecondary),
-                            lineLimit: 1
-                        )
-                        .frame(width: 110, alignment: .leading)
-                        TribuneruText(
-                            content: facts[index].value,
-                            style: .vaporRaceNameResult,
-                            color: .tribuneru(.vaporTextPrimary),
-                            lineLimit: 2
-                        )
-                        Spacer(minLength: 0)
-                    }
-                    .padding(.vertical, 10)
-
-                    if index < facts.count - 1 {
-                        divider
-                    }
-                }
-            }
-        }
-    }
-
-    // MARK: - Recent results -
-
-    private func recentResultsPanel(_ results: [DTO.CXRiderPage.Result]) -> some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelTomorrow)) {
-            VaporSectionHeader(title: "Recent results")
-        } content: {
-            VaporCard(spacing: 0) {
-                ForEach(results.indices, id: \.self) { index in
-                    let item = results[index]
-                    Button {
-                        openRaceResult(item)
-                    } label: {
-                        HStack(spacing: 10) {
-                            PositionBadge(position: item.position)
-                            VStack(alignment: .leading, spacing: 2) {
-                                TribuneruText(
-                                    content: item.race,
-                                    style: .vaporRaceNameResult,
-                                    color: .tribuneru(.vaporTextPrimary),
-                                    lineLimit: 1
-                                )
-                                TribuneruText(
-                                    content: item.date,
-                                    style: .vaporMonoMeta,
-                                    color: .tribuneru(.vaporTextSecondary),
-                                    lineLimit: 1
-                                )
-                            }
-                            Spacer(minLength: 0)
-                            if item.raceURL != nil {
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 11, weight: .semibold))
-                                    .foregroundColor(.tribuneru(.vaporTextSecondary))
-                            }
-                        }
-                        .padding(.vertical, 8)
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(item.raceURL == nil)
-
-                    if index < results.count - 1 {
-                        divider
-                    }
-                }
-            }
-        }
-    }
-
     // MARK: - Helpers -
 
     private var riderName: String {
@@ -323,14 +220,7 @@ struct CXWinnerDetailView: View {
 
     /// Past winners carry no country, so fall back to a "Nationality" fact from the rider page.
     private var countryFact: String? {
-        page?.facts.first { $0.label.lowercased().contains("nationality") }?.value
-    }
-
-    private var divider: some View {
-        TribunerosDivider(
-            height: 0.5,
-            color: .tribuneru(.vaporTextSecondary).opacity(0.2)
-        )
+        page?.nationality
     }
 }
 
@@ -341,54 +231,6 @@ private struct Stat: Identifiable {
     let value: String
 
     var id: String { label }
-}
-
-private struct StatTile: View {
-    let label: String
-    let value: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            TribuneruText(
-                content: label.uppercased(),
-                style: .vaporGroupLabel,
-                color: .tribuneru(.vaporTextSecondary),
-                lineLimit: 1
-            )
-            TribuneruText(
-                content: value,
-                style: .vaporFinishTime,
-                color: .tribuneru(.vaporTextPrimary),
-                lineLimit: 1
-            )
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.tribuneru(.vaporCardSurface))
-        .cornerRadius(8)
-    }
-}
-
-/// Finishing position; wins are highlighted in the accent colour.
-private struct PositionBadge: View {
-    let position: String
-
-    var body: some View {
-        let isWin = position == "1"
-        TribuneruText(
-            content: position,
-            style: .vaporFinishTime,
-            color: isWin ? .tribuneru(.vaporPageBackground) : .tribuneru(.vaporTextPrimary),
-            lineLimit: 1
-        )
-        .frame(width: 30, height: 30)
-        .background(
-            isWin
-            ? Color.tribuneru(.vaporAccent)
-            : Color.tribuneru(.vaporPageBackground)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 6))
-    }
 }
 
 #if DEBUG

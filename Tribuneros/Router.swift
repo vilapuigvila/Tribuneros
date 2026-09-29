@@ -19,6 +19,7 @@ final class Router: ObservableObject {
             case latestResults
             case raceDetail(DTO.CX24Homepage.Race)
             case eventDetail(DTO.CXCalendarEvent)
+            case riderDetail(CXRaces.RiderStanding)
             /// `from` is the race detail the winner screen was opened from, so opening that same
             /// race again pops back instead of pushing a duplicate.
             case winnerDetail(CXRaces.Winner, from: DTO.CXCalendarEvent)

@@ -78,6 +78,67 @@ final class CXEventDetailTests: XCTestCase {
         )
     }
 
+    // MARK: - Rider standing -
+
+    func testRiderStandingCombinesLeaderCategoryAndRanking() {
+        let item = DTO.CXStandings.Item(
+            title: "UCI Ranking Cyclocross",
+            url: URL(string: "https://cyclocross24.com/uciranking/"),
+            logoURL: nil,
+            categories: []
+        )
+        let leader = DTO.CXStandings.Leader(
+            position: 2,
+            rider: "VAN DER POEL Mathieu",
+            riderURL: URL(string: "https://cyclocross24.com/rider/mathieu-van-der-poel/"),
+            countryFlagURL: nil,
+            points: "2040"
+        )
+        let withURL = DTO.CXStandings.Category(
+            title: "Men Elite",
+            url: URL(string: "https://cyclocross24.com/uciranking/2025-2026/ME/"),
+            leaders: [leader],
+            leaderImageURL: nil
+        )
+        let withoutURL = DTO.CXStandings.Category(
+            title: "Men Elite",
+            url: nil,
+            leaders: [leader],
+            leaderImageURL: nil
+        )
+
+        let standing = CXRaces.RiderStanding(leader: leader, category: withURL, item: item)
+
+        XCTAssertEqual(standing.rider, "VAN DER POEL Mathieu")
+        XCTAssertEqual(standing.riderURL, leader.riderURL)
+        XCTAssertEqual(standing.position, 2)
+        XCTAssertEqual(standing.points, "2040")
+        XCTAssertEqual(standing.rankingTitle, "UCI Ranking Cyclocross")
+        XCTAssertEqual(standing.category, "Men Elite")
+        XCTAssertEqual(standing.standingsURL, withURL.url)
+        // Without a category page, fall back to the ranking's.
+        XCTAssertEqual(
+            CXRaces.RiderStanding(leader: leader, category: withoutURL, item: item).standingsURL,
+            item.url
+        )
+    }
+
+    func testRiderPageFactLookup() {
+        let page = DTO.CXRiderPage(
+            name: "",
+            avatarURL: nil,
+            facts: [
+                .init(label: "Nationality", value: "Belgium"),
+                .init(label: "Current team", value: "Crelan - Corendon")
+            ],
+            results: []
+        )
+
+        XCTAssertEqual(page.nationality, "Belgium")
+        XCTAssertEqual(page.team, "Crelan - Corendon")
+        XCTAssertNil(page.fact(containing: "height"))
+    }
+
     // MARK: - Rider result → calendar event -
 
     private func calendarEvent(

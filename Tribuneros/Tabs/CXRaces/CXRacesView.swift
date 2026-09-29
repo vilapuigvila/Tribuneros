@@ -57,8 +57,19 @@ struct CXRacesRacesView: View {
                 RaceDetailView(race: race)
 //                    .navigationTitle("Race Details")
             case .cxZone(.standings):
-                CXStandingsListView(standings: viewModel.stateView.result.standings)
-                    .navigationTitle("Standings")
+                CXStandingsListView(standings: viewModel.stateView.result.standings) { standing in
+                    viewModel.action(.didTapOnStandingRider(standing))
+                }
+                .navigationTitle("Standings")
+            case .cxZone(.riderDetail(let standing)):
+                CXRiderDetailView(
+                    standing: standing,
+                    openRaceResult: { result in
+                        viewModel.action(.didTapOnRiderResult(result))
+                    }
+                ) { url in
+                    viewModel.action(.didTapOnLink(url))
+                }
             case .detail(.race(let urlInfo)):
                 SafariView(url: URL(string: urlInfo))
             case .web(let url):

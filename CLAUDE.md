@@ -149,6 +149,11 @@ year, winner and results link) and a recent-results row opens `CXEventDetailView
 when one matches, else a minimal event built from the row (the detail then takes its winner from
 the loaded results).
 
+Standings list rows open `CXRiderDetailView` (built from `CXRaces.RiderStanding`: ranking,
+category, position, points) with the same rider-page sections as the winner screen; those sections
+(`CXRiderAvatar`, `CXRiderFactsPanel`, `CXRiderRecentResultsPanel`, `CXStatTile`) live in
+`Details/CXRiderSections.swift`.
+
 ### `Alfy`: sibling shared package
 
 `Alfy` (SPM dependency, `https://github.com/vilapuigvila/Alfy.git`, same author, checked out

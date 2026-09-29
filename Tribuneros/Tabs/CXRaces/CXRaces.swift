@@ -20,6 +20,7 @@ extension CXRaces {
         case didTapOnWinner(CXRaces.Winner, from: DTO.CXCalendarEvent)
         case didTapOnWinnerRace(DTO.CXCalendarEvent, openedFrom: DTO.CXCalendarEvent)
         case didTapOnRiderResult(DTO.CXRiderPage.Result)
+        case didTapOnStandingRider(CXRaces.RiderStanding)
         case didTapOnRaceDetail(DTO.CX24Homepage.Race)
         case didTapOnStandings
     }
@@ -228,6 +229,41 @@ extension CXRaces {
             formatter.locale = Locale(identifier: "en_US_POSIX")
             return formatter
         }()
+    }
+}
+
+// MARK: - Rider standing -
+extension CXRaces {
+
+    /// A rider's place in one standings table (e.g. UCI Ranking, Men Elite), what the rider
+    /// screen opened from the Standings list shows alongside the rider page.
+    struct RiderStanding: Hashable {
+        let rider: String
+        let riderURL: URL?
+        let flagURL: URL?
+        let position: Int
+        let points: String
+        let rankingTitle: String
+        let rankingLogoURL: URL?
+        let category: String
+        /// The standings table itself (the category's page, else the ranking's).
+        let standingsURL: URL?
+
+        init(
+            leader: DTO.CXStandings.Leader,
+            category: DTO.CXStandings.Category,
+            item: DTO.CXStandings.Item
+        ) {
+            rider = leader.rider
+            riderURL = leader.riderURL
+            flagURL = leader.countryFlagURL
+            position = leader.position
+            points = leader.points
+            rankingTitle = item.title
+            rankingLogoURL = item.logoURL
+            self.category = category.title
+            standingsURL = category.url ?? item.url
+        }
     }
 }
 

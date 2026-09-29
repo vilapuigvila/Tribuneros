@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CXStandingsListView: View {
     let standings: DTO.CXStandings
+    var openRider: (CXRaces.RiderStanding) -> Void = { _ in }
 
     var body: some View {
         List {
@@ -27,9 +28,12 @@ struct CXStandingsListView: View {
                 .listRowBackground(Color.clear)
             } else {
                 ForEach(standings.items, id: \.self) { item in
-                    StandingsItemView(item: item)
-                        .listRowInsets(.init(top: 8, leading: 16, bottom: 8, trailing: 16))
-                        .listRowBackground(Color.clear)
+                    StandingsItemView(
+                        item: item,
+                        openRider: openRider
+                    )
+                    .listRowInsets(.init(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowBackground(Color.clear)
                 }
             }
         }
@@ -81,6 +85,7 @@ struct CyclocrossStandingsCardView: View {
 // MARK: - UCI Ranking Cx ... -
 private struct StandingsItemView: View {
     let item: DTO.CXStandings.Item
+    let openRider: (CXRaces.RiderStanding) -> Void
     @State private var selectedCategoryIndex: Int = 0
 
     var body: some View {
@@ -129,7 +134,15 @@ private struct StandingsItemView: View {
                 StandingsTabbedLeadersView(
                     categories: item.categories,
                     selectedCategoryIndex: $selectedCategoryIndex
-                )
+                ) { leader, category in
+                    openRider(
+                        CXRaces.RiderStanding(
+                            leader: leader,
+                            category: category,
+                            item: item
+                        )
+                    )
+                }
             }
         }
     }
@@ -192,6 +205,7 @@ private struct StandingsLeaderRowView: View {
 private struct StandingsTabbedLeadersView: View {
     let categories: [DTO.CXStandings.Category]
     @Binding var selectedCategoryIndex: Int
+    let openLeader: (DTO.CXStandings.Leader, DTO.CXStandings.Category) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -201,7 +215,12 @@ private struct StandingsTabbedLeadersView: View {
             )
 
             if let selectedCategory {
-                StandingsLeadersTableView(category: selectedCategory)
+                StandingsLeadersTableView(category: selectedCategory) { leader in
+                    openLeader(
+                        leader,
+                        selectedCategory
+                    )
+                }
             }
         }
         .onAppear {
@@ -275,12 +294,18 @@ private struct StandingsTabsView: View {
 
 private struct StandingsLeadersTableView: View {
     let category: DTO.CXStandings.Category
+    let openLeader: (DTO.CXStandings.Leader) -> Void
 
     var body: some View {
         VStack(spacing: 0) {
             ForEach(category.leaders.indices, id: \.self) { idx in
                 let leader = category.leaders[idx]
-                StandingsLeaderTableRowView(leader: leader)
+                Button {
+                    openLeader(leader)
+                } label: {
+                    StandingsLeaderTableRowView(leader: leader)
+                }
+                .buttonStyle(.plain)
 
                 if idx < category.leaders.count - 1 {
                     TribunerosDivider(height: 0.5, color: .tribuneru(.vaporTextSecondary).opacity(0.2))
@@ -322,6 +347,10 @@ private struct StandingsLeaderTableRowView: View {
                 color: .tribuneru(.vaporTextSecondary),
                 lineLimit: 1
             )
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundColor(.tribuneru(.vaporTextSecondary))
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 8)
