@@ -49,6 +49,8 @@ extension Paddock {
             case .didTapOnLink(let url):
                 guard let url else { return }
                 router.routeTo(.web(url))
+            case .didTapOnRider(let context):
+                router.routeTo(.paddockRider(context))
             }
         }
 

@@ -7,6 +7,8 @@
 
 import XCTest
 import Alfy
+import SwiftSoup
+import SwiftUI
 @testable import Tribuneros
 
 final class PaddockTests: XCTestCase {
@@ -231,5 +233,77 @@ final class PaddockTests: XCTestCase {
         let plain = Paddock.PressItem(link: .init(name: nil, url: URL(string: "https://www.cyclingnews.com")!))
         XCTAssertEqual(plain.name, "cyclingnews.com")
         XCTAssertNil(plain.domain)
+    }
+    // MARK: - Rider page
+
+    func testPCSRiderPageParsesInlineLabels() throws {
+        // Older PCS layout: bold labels inside one block, split by <br> and spans.
+        let html = """
+        <html><body>
+        <div class="page-title"><div class="main"><h1>Tadej  Pogačar</h1></div>
+        <div class="subtitle"><a href="team/uae-team-emirates-xrg-2026">UAE Team Emirates - XRG</a></div></div>
+        <div class="rdr-img-cont"><img src="images/riders/bp/aa/tadej-pogacar-2026.jpg"></div>
+        <div class="rdr-info-cont"><b>Date of birth:</b> 21st September 1998 (28)<br>
+        <b>Nationality:</b> <span class="flag si"></span> <a href="nation/slovenia">Slovenia</a><br>
+        <span><b>Weight:</b> 66 kg </span><span><b>Height:</b> 1.76 m</span>
+        <span class="mt5"><b>Place of birth:</b> <a href="location/komenda">Komenda</a></span></div>
+        </body></html>
+        """
+
+        let page = try XCTUnwrap(Service.parsePCSRiderPage(SwiftSoup.parse(html)))
+
+        XCTAssertEqual(page.name, "Tadej Pogačar")
+        XCTAssertEqual(page.team, "UAE Team Emirates - XRG")
+        XCTAssertEqual(page.imageURL, URL(string: "https://www.procyclingstats.com/images/riders/bp/aa/tadej-pogacar-2026.jpg"))
+        XCTAssertEqual(page.facts, [
+            .init(label: "Date of birth", value: "21st September 1998 (28)"),
+            .init(label: "Nationality", value: "Slovenia"),
+            .init(label: "Weight", value: "66 kg"),
+            .init(label: "Height", value: "1.76 m"),
+            .init(label: "Place of birth", value: "Komenda")
+        ])
+    }
+
+    func testPCSRiderPageParsesLabelValueRows() throws {
+        // List layout: a `.bold` label element next to its value element.
+        let html = """
+        <html><body><h1>Remco Evenepoel</h1>
+        <ul class="list"><li><div class="bold">Date of birth:</div><div>25th January 2000</div></li>
+        <li><div class="bold">Nationality:</div><div>Belgium</div></li>
+        <li><div class="bold">Notes</div><div>ignored: no colon</div></li></ul>
+        </body></html>
+        """
+
+        let page = try XCTUnwrap(Service.parsePCSRiderPage(SwiftSoup.parse(html)))
+
+        XCTAssertEqual(page.name, "Remco Evenepoel")
+        XCTAssertNil(page.team)
+        XCTAssertNil(page.imageURL)
+        XCTAssertEqual(page.facts, [
+            .init(label: "Date of birth", value: "25th January 2000"),
+            .init(label: "Nationality", value: "Belgium")
+        ])
+    }
+
+    func testPCSRiderPageWithoutNameIsNil() throws {
+        XCTAssertNil(Service.parsePCSRiderPage(try SwiftSoup.parse("<html><body><p>Just a moment...</p></body></html>")))
+    }
+
+    func testTransferAndProgramCardsOpenTheRiderScreen() {
+        let router = Router()
+        let viewModel = Paddock.ViewModel(
+            router: router,
+            interactor: Paddock.InteractorImpl()
+        )
+        let card = Paddock.TransferCard(
+            id: "t",
+            date: "20/09",
+            rider: .init(rider),
+            teamName: "Team A"
+        )
+
+        viewModel.action(.didTapOnRider(.transfer(card)))
+
+        XCTAssertEqual(router.navPath.count, 1)
     }
 }

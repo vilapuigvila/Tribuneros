@@ -30,6 +30,7 @@ final class Router: ObservableObject {
         case nextToFinishRace(index: Int)
         case detail(Detail)
         case cxZone(CXZone)
+        case paddockRider(Paddock.RiderContext)
         case web(URL)
     }
     

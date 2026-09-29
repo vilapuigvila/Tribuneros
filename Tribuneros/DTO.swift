@@ -183,6 +183,15 @@ extension DTO {
         let rider: RiderLink
         let age: String
     }
+
+    /// A PCS rider page (`rider/<slug>`), parsed best-effort for Paddock's rider screen.
+    /// Facts share the CX rider page's label/value type so the same profile panel renders both.
+    struct PCSRiderPage: Equatable, Sendable {
+        let name: String
+        let imageURL: URL?
+        let team: String?
+        let facts: [CXRiderPage.Fact]
+    }
 }
 
 // MARK: - CX -

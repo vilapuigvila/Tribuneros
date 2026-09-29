@@ -18,6 +18,10 @@ struct PaddockView: View {
             switch destination {
             case .web(let url):
                 SafariView(url: url)
+            case .paddockRider(let context):
+                Paddock.RiderDetailView(context: context) {
+                    viewModel.action(.didTapOnLink($0))
+                }
             default:
                 EmptyView()
             }

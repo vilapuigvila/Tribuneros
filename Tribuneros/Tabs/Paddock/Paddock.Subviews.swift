@@ -138,9 +138,10 @@ extension Paddock {
                     message("Nothing here for this filter.")
                 } else {
                     ForEach(sections) { section in
-                        FeedSectionView(section: section) {
-                            action(.didTapOnLink($0))
-                        }
+                        FeedSectionView(
+                            section: section,
+                            action: action
+                        )
                     }
                 }
             }
@@ -202,7 +203,7 @@ extension Paddock {
 
     private struct FeedSectionView: View {
         let section: Section
-        let onTap: (URL?) -> Void
+        let action: (Action) -> Void
 
         var body: some View {
             VStack(alignment: .leading, spacing: 10) {
@@ -214,20 +215,17 @@ extension Paddock {
                 ForEach(section.cards) { card in
                     switch card {
                     case .transfer(let transfer):
-                        TransferCardView(
-                            card: transfer,
-                            onTap: onTap
-                        )
+                        TransferCardView(card: transfer) {
+                            action(.didTapOnRider(.transfer(transfer)))
+                        }
                     case .program(let program):
-                        ProgramCardView(
-                            card: program,
-                            onTap: onTap
-                        )
+                        ProgramCardView(card: program) {
+                            action(.didTapOnRider(.program(program)))
+                        }
                     case .birthdays(let birthdays):
-                        BirthdaysCardView(
-                            card: birthdays,
-                            onTap: onTap
-                        )
+                        BirthdaysCardView(card: birthdays) {
+                            action(.didTapOnLink($0))
+                        }
                     }
                 }
             }
@@ -241,11 +239,11 @@ extension Paddock {
 
     private struct TransferCardView: View {
         let card: TransferCard
-        let onTap: (URL?) -> Void
+        let onTap: () -> Void
 
         var body: some View {
             Button {
-                onTap(card.rider.url)
+                onTap()
             } label: {
                 VaporCard(spacing: 8) {
                     Kicker(
@@ -272,11 +270,11 @@ extension Paddock {
 
     private struct ProgramCardView: View {
         let card: ProgramCard
-        let onTap: (URL?) -> Void
+        let onTap: () -> Void
 
         var body: some View {
             Button {
-                onTap(card.rider.url)
+                onTap()
             } label: {
                 VaporCard(spacing: 8) {
                     Kicker(

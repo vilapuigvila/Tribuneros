@@ -16,6 +16,8 @@ extension Paddock {
         case didRequestRefresh
         case didSelectFilter(Filter)
         case didTapOnLink(URL?)
+        /// Transfer and program cards open the native rider screen; birthday rows still open the web page.
+        case didTapOnRider(RiderContext)
     }
 
     enum Filter: CaseIterable, Sendable {
@@ -159,21 +161,34 @@ extension Paddock {
         }
     }
 
-    struct Rider: Equatable {
+    /// The feed card a rider screen was opened from; its data heads that screen.
+    enum RiderContext: Hashable {
+        case transfer(TransferCard)
+        case program(ProgramCard)
+
+        var rider: Rider {
+            switch self {
+            case .transfer(let card): card.rider
+            case .program(let card): card.rider
+            }
+        }
+    }
+
+    struct Rider: Hashable {
         let name: String
         let countryCode: String
         let url: URL?
     }
 
-    struct TransferCard: Equatable {
+    struct TransferCard: Hashable {
         let id: String
         let date: String
         let rider: Rider
         let teamName: String
     }
 
-    struct ProgramCard: Equatable {
-        struct Change: Equatable {
+    struct ProgramCard: Hashable {
+        struct Change: Hashable {
             let isAdded: Bool
             let raceName: String
         }

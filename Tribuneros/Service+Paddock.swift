@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftSoup
+import Alfy
 
 extension Service {
 
@@ -106,6 +107,104 @@ extension Service {
                 age: age
             )
         }
+    }
+
+    // MARK: - Rider page -
+
+    /// Fetches and parses a PCS rider page on demand; `nil` when it can't be loaded or parsed.
+    static func getPCSRiderPage(url: URL) async -> DTO.PCSRiderPage? {
+        do {
+            let (data, _) = try await Requester
+                .makeRequest(url.absoluteString)
+                .ttl(10 * 60)
+                .cacheControlBehavior(.ignoreServer)
+                .send()
+            guard let html = String(data: data, encoding: .utf8) else {
+                return nil
+            }
+            return parsePCSRiderPage(try SwiftSoup.parse(html))
+        } catch {
+            if !isOffline(error) {
+                nonFatalCrashlytics(false, "PCS rider page: \(error.localizedDescription)")
+            }
+            return nil
+        }
+    }
+
+    /// Best-effort: no real rider page could be captured when this was written, so it keys on
+    /// loose structure — the `h1` name, the first rider photo, a team link in the title block,
+    /// and "Label:" elements (`b`, `strong` or `.bold`) followed by their value — rather than on
+    /// exact classes. Covered only by synthetic HTML in `PaddockTests`.
+    static func parsePCSRiderPage(_ document: Document) -> DTO.PCSRiderPage? {
+        let name = collapsedWhitespace((try? document.select("h1").first()?.text()) ?? "")
+        guard !name.isEmpty else {
+            return nil
+        }
+        let imageSource = (try? document.select(".rdr-img-cont img, img[src*=images/riders/]").first()?.attr("src")) ?? ""
+        let team = (try? document.select(".page-title a[href^=team/], .rdr-info-cont a[href^=team/]").first()?.text())
+            .map(collapsedWhitespace)
+        let container = (try? document.select(".rdr-info-cont").first()) ?? document.body()
+        return DTO.PCSRiderPage(
+            name: name,
+            imageURL: imageSource.isEmpty ? nil : pcsAbsoluteURL(imageSource),
+            team: team?.isEmpty == false ? team : nil,
+            facts: container.map(parsePCSRiderFacts) ?? []
+        )
+    }
+
+    private static func parsePCSRiderFacts(_ container: Element) -> [DTO.CXRiderPage.Fact] {
+        let labels = ((try? container.select("b, strong, .bold").array()) ?? []).filter(isFactLabel)
+        var facts: [DTO.CXRiderPage.Fact] = []
+        for label in labels {
+            let title = collapsedWhitespace((try? label.text()) ?? "").dropLast()
+            // The value is whatever follows the label up to the next label or line break.
+            var value = ""
+            var node = label.nextSibling()
+            while let current = node {
+                if let element = current as? Element {
+                    if element.tagName() == "br" || isFactLabel(element) {
+                        break
+                    }
+                    value += " " + ((try? element.text()) ?? "")
+                } else if let text = current as? TextNode {
+                    value += " " + text.text()
+                }
+                node = current.nextSibling()
+            }
+            value = collapsedWhitespace(value)
+            guard !title.isEmpty,
+                  !value.isEmpty,
+                  value.count <= 80,
+                  !facts.contains(where: { $0.label == String(title) })
+            else {
+                continue
+            }
+            facts.append(.init(label: String(title), value: value))
+        }
+        return Array(facts.prefix(10))
+    }
+
+    private static func isFactLabel(_ element: Element) -> Bool {
+        let tag = element.tagName()
+        guard tag == "b" || tag == "strong" || element.hasClass("bold"),
+              let text = try? element.text()
+        else {
+            return false
+        }
+        let trimmed = collapsedWhitespace(text)
+        return trimmed.count > 1 && trimmed.count <= 30 && trimmed.hasSuffix(":")
+    }
+
+    private static func collapsedWhitespace(_ text: String) -> String {
+        text.split(whereSeparator: \.isWhitespace).joined(separator: " ")
+    }
+
+    private static func pcsAbsoluteURL(_ path: String) -> URL? {
+        if path.hasPrefix("http") {
+            return URL(string: path)
+        }
+        let relative = path.hasPrefix("/") ? String(path.dropFirst()) : path
+        return URL(string: baseStringURL + relative)
     }
 
     private static func parseRiderLink(_ element: Element) -> DTO.RiderLink? {
