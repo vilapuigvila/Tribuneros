@@ -9,240 +9,307 @@ import SwiftUI
 
 struct NextToFinishRaceDetail: View {
     private typealias ImageType = DTO.StageProfile.ProfileImageType
-    let urlInfo: String
-    
-    @State private var showZoom = false
-    @State private var raceInfo: DTO.RaceDetailInfo? = nil
-    @State private var profileImage: UIImage? = nil
-    @State private var profileImages: [(ImageType, UIImage)] = []
-    @State private var stageProfile: [DTO.StageProfile] = []
-    @State private var isLoading = true
-    /// The profile images download after the race info is in, so the box stays until they are.
-    @State private var isLoadingImages = true
 
-    @State private var activeAlert: ActiveAlert?
-    
+    private struct ProfileImage: Identifiable {
+        let type: ImageType
+        let image: UIImage
+        var id: String { "\(type.rawValue)-\(image.hashValue)" }
+    }
+
+    private struct InfoItem: Identifiable {
+        let systemImage: String
+        let title: String
+        let value: String
+        var id: String { title }
+    }
+
+    let urlInfo: String
+
+    @State private var raceInfo: DTO.RaceDetailInfo? = nil
+    @State private var profileImages: [ProfileImage] = []
+    @State private var zoomedImageID: String?
+    @State private var showZoom = false
+    @State private var isLoading = true
+    // The profile images download after the race info is in, so their placeholder stays until they are.
+    @State private var isLoadingImages = true
+    @State private var errorMessage: String?
+
     var body: some View {
-        ZStack {
-            Group {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
                 if isLoading {
-                    buildInfoView(.placeholder)
-                        .padding()
-                        .redacted(reason: .placeholder)
-                        .disabled(true)
-                        .accessibilityElement(children: .ignore)
-                        .accessibilityLabel("Loading the race")
-                        .transition(.opacity)
+                    VStack(alignment: .leading, spacing: 20) {
+                        infoPanel(.placeholder)
+                        profilePlaceholderPanel
+                    }
+                    .redacted(reason: .placeholder)
+                    .disabled(true)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("Loading the race")
                 } else if let raceInfo {
-                    buildInfoView(raceInfo)
-                        .padding()
-                        .transition(.opacity)
+                    infoPanel(raceInfo)
+                    if isLoadingImages {
+                        profilePlaceholderPanel
+                            .redacted(reason: .placeholder)
+                            .disabled(true)
+                            .accessibilityElement(children: .ignore)
+                            .accessibilityLabel("Loading the race profile")
+                    } else if !profileImages.isEmpty {
+                        profilePanel
+                    }
                 } else {
-                    EmptyView()
+                    unavailablePanel
                 }
             }
+            .padding()
+            .padding(.bottom, 40)
         }
-        .animation(.easeInOut(duration: 0.3), value: isLoading)
-        .background(Color.tribuneru(.greenCardBackground))
+        .background(Color.tribuneru(.vaporPageBackground))
+        .preferredColorScheme(.dark)
+        .navigationTitle("Race info")
+        .navigationBarTitleDisplayMode(.inline)
         .task {
             isLoading = true
             do {
                 async let raceInfoTask = Service.getNextToFinishRaceDetail(urlInfo)
                 async let stageProfileTask = Service.getInfoProfiles(urlInfo)
 
-                let (_raceInfo, _stageProfile) = try await (raceInfoTask, stageProfileTask)
-                raceInfo = _raceInfo
-                stageProfile = _stageProfile
-                
+                let (info, stageProfile) = try await (raceInfoTask, stageProfileTask)
+                raceInfo = info
                 isLoading = false
-                
-                await downloadAllProfilesImages()
-                isLoadingImages = false
 
+                await downloadProfileImages(stageProfile)
+                isLoadingImages = false
             } catch {
-                activeAlert = .error(error.localizedDescription)
+                errorMessage = error.localizedDescription
                 isLoading = false
                 isLoadingImages = false
                 nonFatalCrashlytics(false, error.localizedDescription)
             }
         }
-        .sheet(isPresented: $showZoom) {
-            NavigationView {
-                ZStack {
-                    Color.black.ignoresSafeArea()
-                    if !profileImages.isEmpty {
-                        TabView {
-                            if let image = profileImage {
-                                ZoomableMainScreen {
-                                    Image(uiImage: image)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                        .background(Color.black)
-                                }
-                            }
+        .sheet(isPresented: $showZoom) { zoomSheet }
+    }
 
-                            let climbs = profileImages.filter { $0.0 == .climb }
-                            ForEach(Array(climbs.enumerated()), id: \.offset) { _, climb in
-                                ZoomableMainScreen {
-                                    Image(uiImage: climb.1)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                        .background(Color.black)
-                                }
+    // MARK: - Info -
+
+    private func infoPanel(_ info: DTO.RaceDetailInfo) -> some View {
+        let items = infoItems(info)
+        let tags = [info.classification, info.category].filter { !$0.isEmpty }
+        return VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
+            VaporSectionHeader(title: "Race info")
+        } content: {
+            VStack(alignment: .leading, spacing: 12) {
+                if !tags.isEmpty {
+                    HStack(spacing: 6) {
+                        ForEach(tags, id: \.self) { CXDetailTag(title: $0) }
+                    }
+                }
+
+                if !info.title.isEmpty {
+                    VaporCard {
+                        TribuneruText(
+                            content: info.title,
+                            style: .vaporRaceNameNext,
+                            color: .tribuneru(.vaporTextPrimary),
+                            lineLimit: 4
+                        )
+                    }
+                }
+
+                if !items.isEmpty {
+                    VaporCard(spacing: 0) {
+                        ForEach(items) { item in
+                            InfoRow(item: item)
+                            if item.id != items.last?.id {
+                                TribunerosDivider()
                             }
                         }
-                        .tabViewStyle(.page)
-                        .indexViewStyle(.page(backgroundDisplayMode: .automatic))
-                    } else {
-                        EmptyView()
-                    }
-                }
-                .padding(.top, 4)
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Done") { showZoom = false }
-                            .bold()
-                            .foregroundColor(.white)
                     }
                 }
             }
-//           .presentationDetents([.fraction(0.9)])
-            .presentationDetents([.medium, .large])
-            .presentationDragIndicator(.visible)
         }
-        .alert(item: $activeAlert) { alert in
-            switch alert {
-            case .error(let message):
-                return Alert(
-                    title: Text("Error"),
-                    message: Text(message),
-                    dismissButton: .cancel(Text("OK"))
-                )
-            case .debug(let message):
-                return Alert(
-                    title: Text("DEBUG ERROR"),
-                    message: Text(message),
-                    dismissButton: .cancel(Text("OK"))
+    }
+
+    private var unavailablePanel: some View {
+        VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
+            VaporSectionHeader(title: "Race info")
+        } content: {
+            VaporCard {
+                TribuneruText(
+                    content: errorMessage ?? "No info available for this race yet.",
+                    style: .vaporMeta,
+                    color: .tribuneru(.vaporTextSecondary),
+                    lineLimit: 4
                 )
             }
         }
     }
-    
-    private func buildInfoView(_ raceInfo: DTO.RaceDetailInfo) -> some View {
-        let rows = rows(raceInfo)
-        return VStack(spacing: 12) {
-            TribuneruText(content: raceInfo.title, style: .size16WeightBold)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            TribunerosDivider()
-                .padding(.vertical, 4)
-            
-            ForEach(rows, id: \.title) { row in
-                HStack(spacing: 16) {
-                    TribuneruText(content: "\(row.title):", style: .size14WeightSemiBold)
-                        .minimumScaleFactor(0.6)
-                        .frame(width: UIScreen.main.bounds.width * 0.4, alignment: .leading)
-                        .debugBackground()
-                    
-                    TribuneruText(content: row.content ?? "–", style: .size14WeightRegular)
-                        .minimumScaleFactor(0.5)
-                    Spacer()
-                }
-            }
-            TribunerosDivider()
-            
-            TribuneruText(content: "Race Profile", style: .size14WeightSemiBold)
-                .padding(.top, 8)
 
-            if isLoading || isLoadingImages {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.tribuneru(.gray).opacity(0.3))
-                    .frame(height: 200)
-            } else if let profileImage {
-                Image(uiImage: profileImage)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 200)
-                    .cornerRadius(8)
-                    .onTapGesture {
+    private func infoItems(_ info: DTO.RaceDetailInfo) -> [InfoItem] {
+        let all = [
+            InfoItem(systemImage: "calendar", title: "Date", value: info.date),
+            InfoItem(systemImage: "clock", title: "Start time", value: info.startTime),
+            InfoItem(systemImage: "ruler", title: "Distance", value: info.distance),
+            InfoItem(systemImage: "mountain.2", title: "Vertical", value: info.verticalMeters.allSatisfy(\.isNumber) ? "\(info.verticalMeters) m" : info.verticalMeters),
+            InfoItem(systemImage: "flag", title: "Departure", value: info.departure),
+            InfoItem(systemImage: "flag.checkered", title: "Arrival", value: info.arrival)
+        ]
+        return all.filter { !$0.value.isEmpty }
+    }
+
+    // MARK: - Profile -
+
+    private var profilePanel: some View {
+        VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
+            VaporSectionHeader(title: "Race profile")
+        } content: {
+            VStack(spacing: 10) {
+                ForEach(profileImages) { profile in
+                    Button {
+                        zoomedImageID = profile.id
                         showZoom = true
+                    } label: {
+                        VaporCard {
+                            TribuneruText(
+                                content: profile.type.description.uppercased(),
+                                style: .vaporGroupLabel,
+                                color: .tribuneru(.vaporTextSecondary)
+                            )
+                            Image(uiImage: profile.image)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxWidth: .infinity)
+                                .cornerRadius(6)
+                        }
                     }
+                    .buttonStyle(.plain)
+                }
             }
-            Spacer()
         }
     }
-    
-    private func downloadAllProfilesImages() async {
-        let types: [ImageType] = [.climb, .profile, .profile, .finishProfile]
 
-        let allURLs: [(ImageType, URL)] = types.flatMap { type in
+    private var profilePlaceholderPanel: some View {
+        VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
+            VaporSectionHeader(title: "Race profile")
+        } content: {
+            VaporCard {
+                TribuneruText(
+                    content: "PROFILE",
+                    style: .vaporGroupLabel,
+                    color: .tribuneru(.vaporTextSecondary)
+                )
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(Color.tribuneru(.vaporTextSecondary))
+                    .frame(height: 200)
+            }
+        }
+    }
+
+    private var zoomSheet: some View {
+        NavigationView {
+            ZStack {
+                Color.tribuneru(.vaporPageBackground).ignoresSafeArea()
+                TabView(selection: $zoomedImageID) {
+                    ForEach(profileImages) { profile in
+                        ZoomableMainScreen {
+                            Image(uiImage: profile.image)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        }
+                        .tag(Optional(profile.id))
+                    }
+                }
+                .tabViewStyle(.page)
+                .indexViewStyle(.page(backgroundDisplayMode: .automatic))
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button {
+                        showZoom = false
+                    } label: {
+                        TribuneruText(
+                            content: "Done",
+                            style: .vaporRaceNameResult,
+                            color: .tribuneru(.vaporAccent)
+                        )
+                    }
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+    }
+
+    // MARK: - Images -
+
+    private func downloadProfileImages(_ stageProfile: [DTO.StageProfile]) async {
+        let order: [ImageType] = [.profile, .finishProfile, .climb, .map, .localCircut]
+        let wanted: [(ImageType, URL)] = order.flatMap { type in
             stageProfile
                 .filter { $0.type == type }
                 .compactMap { URL(string: $0.url).map { (type, $0) } }
         }
-        
-        guard !allURLs.isEmpty else {
-            activeAlert = .debug("No profile URLs found")
-            return
-        }
+        guard !wanted.isEmpty else { return }
 
-        var images: [(ImageType, UIImage)] = []
-        images.reserveCapacity(allURLs.count)
-
-        await withTaskGroup(of: (ImageType, UIImage)?.self) { group in
-            for tuple in allURLs {
+        var loaded: [Int: ProfileImage] = [:]
+        await withTaskGroup(of: (Int, ProfileImage?).self) { group in
+            for (index, item) in wanted.enumerated() {
                 group.addTask {
-                    await loadImage(tuple.1, key: tuple.0)
+                    (index, await loadImage(item.1, type: item.0))
                 }
             }
-            for await image in group {
-                if let img = image {
-                    images.append(img)
-                }
+            for await (index, image) in group {
+                loaded[index] = image
             }
         }
-        profileImage = images.first(where: { $0.0 == .profile })?.1
-        profileImages = images
+        // Keeps the fixed type order regardless of which download finished first.
+        profileImages = loaded.keys.sorted().compactMap { loaded[$0] }
     }
-    
-    private func loadImage(_ url: URL, key: ImageType) async -> (ImageType, UIImage)? {
+
+    private func loadImage(_ url: URL, type: ImageType) async -> ProfileImage? {
         do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            if let uiImage = UIImage(data: data) {
-                return (key, uiImage)
-            }
-            return nil
+            // PCS answers 403 to image requests without a Referer and a browser User-Agent.
+            var request = URLRequest(url: url)
+            request.setValue(Service.baseStringURL, forHTTPHeaderField: "Referer")
+            request.setValue(
+                "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)",
+                forHTTPHeaderField: "User-Agent"
+            )
+            let (data, _) = try await URLSession.shared.data(for: request)
+            return UIImage(data: data).map { ProfileImage(type: type, image: $0) }
         } catch {
             nonFatalCrashlytics(false, error.localizedDescription)
             return nil
         }
     }
-    
-    private func rows(_ raceInfo: DTO.RaceDetailInfo) -> [(title: String, content: String?)] {
-        [
-            ("Date",           raceInfo.date),
-            ("Start Time",     raceInfo.startTime),
-            ("Classification", raceInfo.classification),
-            ("Category",       raceInfo.category),
-            ("Distance",       raceInfo.distance),
-            ("Departure",      raceInfo.departure),
-            ("Arrival",        raceInfo.arrival),
-            ("Vertical Meters",raceInfo.verticalMeters)
-        ]
-    }
-    
-    private enum ActiveAlert: Identifiable {
-        case error(String)
-        case debug(String)
-        
-        var id: String {
-            switch self {
-            case .error: return "error"
-            case .debug: return "debug"
+
+    private struct InfoRow: View {
+        let item: InfoItem
+
+        var body: some View {
+            HStack(spacing: 10) {
+                Image(systemName: item.systemImage)
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundColor(.tribuneru(.vaporTextSecondary))
+                    .frame(width: 18)
+                TribuneruText(
+                    content: item.title,
+                    style: .vaporMeta,
+                    color: .tribuneru(.vaporTextSecondary)
+                )
+                .frame(width: 72, alignment: .leading)
+                TribuneruText(
+                    content: item.value,
+                    style: .vaporRaceNameResult,
+                    color: .tribuneru(.vaporTextPrimary),
+                    lineLimit: 2
+                )
+                Spacer(minLength: 0)
             }
+            .padding(.vertical, 10)
         }
     }
 }
@@ -316,7 +383,6 @@ struct ZoomableMainScreen<Content: View>: View {
         .ignoresSafeArea()
     }
 }
-
 
 extension DTO.RaceDetailInfo {
 
