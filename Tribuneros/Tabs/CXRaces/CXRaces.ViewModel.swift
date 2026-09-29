@@ -60,6 +60,8 @@ extension CXRaces {
                 router.routeTo(.cxZone(.riderDetail(.podium(podium))))
             case .didTapOnResultRider(let result):
                 router.routeTo(.cxZone(.riderDetail(.result(result))))
+            case .didTapOnPastWinnerRider(let winner):
+                router.routeTo(.cxZone(.riderDetail(.win(winner))))
             case .didTapOnRiderResult(let result, let rider):
                 let event = CXRaces.calendarEvent(
                     for: result,

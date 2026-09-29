@@ -76,6 +76,12 @@ final class CXEventDetailTests: XCTestCase {
             CXRaces.Winner(event: event, result: nil).raceEvent,
             event
         )
+        // The rider screen opened from a "Past winners" row.
+        let context = CXRaces.RiderContext.win(winner)
+        XCTAssertEqual(context.rider, "ISERBYT Eli")
+        XCTAssertEqual(context.riderURL, pastWinner.riderURL)
+        XCTAssertEqual(context.position, "1")
+        XCTAssertNil(context.team)
     }
 
     func testRecentResultWinBuildsWinnerForThatRace() {

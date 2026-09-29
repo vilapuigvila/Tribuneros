@@ -24,6 +24,7 @@ extension CXRaces {
         case didTapOnStandingRider(CXRaces.RiderStanding)
         case didTapOnPodiumRider(CXRaces.RiderPodium)
         case didTapOnResultRider(CXRaces.RiderResult)
+        case didTapOnPastWinnerRider(CXRaces.Winner)
         case didTapOnRaceDetail(DTO.CX24Homepage.Race)
         case didTapOnStandings
     }
@@ -380,12 +381,15 @@ extension CXRaces {
         case standing(RiderStanding)
         case podium(RiderPodium)
         case result(RiderResult)
+        /// A past edition's winner, from a race's "Past winners" list.
+        case win(Winner)
 
         var rider: String {
             switch self {
             case .standing(let standing): standing.rider
             case .podium(let podium): podium.rider
             case .result(let result): result.result.rider
+            case .win(let winner): winner.name
             }
         }
 
@@ -394,6 +398,7 @@ extension CXRaces {
             case .standing(let standing): standing.riderURL
             case .podium(let podium): podium.riderURL
             case .result(let result): result.result.riderURL
+            case .win(let winner): winner.riderURL
             }
         }
 
@@ -402,6 +407,7 @@ extension CXRaces {
             case .standing(let standing): standing.flagURL
             case .podium(let podium): podium.flagURL
             case .result(let result): result.result.countryFlagURL
+            case .win(let winner): winner.flagURL
             }
         }
 
@@ -410,6 +416,7 @@ extension CXRaces {
             case .standing(let standing): "\(standing.position)"
             case .podium(let podium): "\(podium.position)"
             case .result(let result): result.result.position
+            case .win: "1"
             }
         }
 
@@ -418,6 +425,7 @@ extension CXRaces {
             case .standing(let standing): standing.category
             case .podium(let podium): podium.category
             case .result(let result): result.category
+            case .win: "Men Elite"
             }
         }
 
@@ -426,13 +434,14 @@ extension CXRaces {
             switch self {
             case .standing, .result: nil
             case .podium(let podium): podium.country.isEmpty ? nil : podium.country
+            case .win(let winner): winner.country
             }
         }
 
         /// Known before the rider page loads: only results carry a team.
         var team: String? {
             switch self {
-            case .standing, .podium: nil
+            case .standing, .podium, .win: nil
             case .result(let result): result.result.team.isEmpty ? nil : result.result.team
             }
         }

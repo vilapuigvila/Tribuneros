@@ -18,8 +18,10 @@ struct CXEventDetailView: View {
 
     let event: DTO.CXCalendarEvent
     let openURL: (URL) -> Void
-    /// Opens the native winner screen, for this season's winner or a past edition's.
+    /// Opens the native winner screen for this season's winner.
     private let openWinner: (CXRaces.Winner) -> Void
+    /// Opens the rider screen for a "Past winners" row.
+    private let openPastWinner: (CXRaces.Winner) -> Void
     /// Opens the rider screen for a row of the results panel.
     private let openResultRider: (CXRaces.RiderResult) -> Void
     /// Fetches the on-demand part of the screen; injectable so previews never hit the network.
@@ -38,6 +40,7 @@ struct CXEventDetailView: View {
                 hasStarted: $1
             )
         },
+        openPastWinner: @escaping (CXRaces.Winner) -> Void = { _ in },
         openResultRider: @escaping (CXRaces.RiderResult) -> Void = { _ in },
         openWinner: @escaping (CXRaces.Winner) -> Void = { _ in },
         openURL: @escaping (URL) -> Void
@@ -46,6 +49,7 @@ struct CXEventDetailView: View {
         self.openURL = openURL
         self.openWinner = openWinner
         self.openResultRider = openResultRider
+        self.openPastWinner = openPastWinner
         self.loadDetail = loadDetail
         _detail = State(initialValue: detail ?? .empty)
         _isLoading = State(initialValue: detail == nil)
@@ -263,7 +267,7 @@ struct CXEventDetailView: View {
                 ForEach(winners.indices, id: \.self) { index in
                     let winner = winners[index]
                     Button {
-                        openWinner(
+                        openPastWinner(
                             CXRaces.Winner(
                                 event: event,
                                 pastWinner: winner

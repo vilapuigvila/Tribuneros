@@ -16,6 +16,8 @@ struct CXRiderDetailView: View {
     let openURL: (URL) -> Void
     /// Opens the podium's race results (`RaceDetailView`).
     private let openRace: (DTO.CX24Homepage.Race) -> Void
+    /// Opens a past win's edition (`CXEventDetailView`).
+    private let openEvent: (DTO.CXCalendarEvent) -> Void
     /// Opens a "Recent results" row as a native race detail.
     private let openRaceResult: (DTO.CXRiderPage.Result, CXRaces.RiderRef) -> Void
     /// Fetches the rider page; injectable so previews never hit the network.
@@ -31,12 +33,14 @@ struct CXRiderDetailView: View {
             await Service.getCxRiderPage($0)
         },
         openRace: @escaping (DTO.CX24Homepage.Race) -> Void = { _ in },
+        openEvent: @escaping (DTO.CXCalendarEvent) -> Void = { _ in },
         openRaceResult: @escaping (DTO.CXRiderPage.Result, CXRaces.RiderRef) -> Void = { _, _ in },
         openURL: @escaping (URL) -> Void
     ) {
         self.context = context
         self.openURL = openURL
         self.openRace = openRace
+        self.openEvent = openEvent
         self.openRaceResult = openRaceResult
         self.loadRiderPage = loadRiderPage
         _page = State(initialValue: page)
@@ -54,6 +58,8 @@ struct CXRiderDetailView: View {
                     podiumPanel(podium)
                 case .result(let result):
                     resultPanel(result)
+                case .win(let winner):
+                    winPanel(winner)
                 }
 
                 if isLoading {
@@ -314,6 +320,62 @@ struct CXRiderDetailView: View {
                             value: result.result.age
                         )
                     }
+                }
+            }
+        }
+    }
+
+    // MARK: - Win -
+
+    /// A past edition won by this rider; the race card opens that edition.
+    private func winPanel(_ winner: CXRaces.Winner) -> some View {
+        VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
+            VaporSectionHeader(title: "Victory")
+        } content: {
+            VStack(alignment: .leading, spacing: 10) {
+                Button {
+                    openEvent(winner.raceEvent)
+                } label: {
+                    VaporCard {
+                        HStack(spacing: 10) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                TribuneruText(
+                                    content: winner.race,
+                                    style: .vaporRaceNameNext,
+                                    color: .tribuneru(.vaporTextPrimary),
+                                    lineLimit: 2
+                                )
+                                HStack(spacing: 6) {
+                                    VaporFlagView(url: winner.raceFlagURL)
+                                    TribuneruText(
+                                        content: [winner.dateText, winner.raceClass]
+                                            .filter { !$0.isEmpty }
+                                            .joined(separator: " · "),
+                                        style: .vaporMeta,
+                                        color: .tribuneru(.vaporTextSecondary),
+                                        lineLimit: 1
+                                    )
+                                }
+                            }
+                            Spacer(minLength: 0)
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundColor(.tribuneru(.vaporTextSecondary))
+                        }
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+
+                HStack(spacing: 10) {
+                    CXStatTile(
+                        label: "Edition",
+                        value: winner.dateText
+                    )
+                    CXStatTile(
+                        label: "Series",
+                        value: winner.series.title
+                    )
                 }
             }
         }
