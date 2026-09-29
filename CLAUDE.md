@@ -148,7 +148,9 @@ Swift DTOs (all `Decodable`). Server-side behaviour to preserve:
 `GET …/cxDetail?kind=rider|race|results&id=<slug or results id>` serves `cxRiders/{slug}` (fresh for
 24h), `cxRaces/{slug}` (7 days) or `cxResults/{id}` (forever once non-empty), scraping and storing on
 a miss or stale entry, and falling back to the stale copy if the scrape fails. Ids are validated as
-plain slugs so it can't be pointed at other URLs; `maxInstances: 2` keeps the per-instance 750 ms
+plain slugs so it can't be pointed at other URLs; a page cyclocross24 doesn't have (404/410, or one that
+parses to nothing) is remembered for an hour in `cxMissing/{collection}_{id}` (function-only, no client
+access) so made-up names can't force a scrape per call, and other failures (429, 503) aren't remembered; `maxInstances: 2` keeps the per-instance 750 ms
 spacing meaningful. Same rules as `cx/*`. On the app side, `Service.getCxDetail` reads the Firestore
 document (cache first), calls the function on a miss, and on a stale copy returns it while a
 background call refreshes it; `Service.CxDetailKind` mirrors the id rules and freshness windows, so
@@ -225,6 +227,12 @@ Alfy's `Requester` notes:
   (`Tabs/HomeRaces/Components/RaceFinishedCardRow.swift`, wraps Kingfisher's `KFImage`), not
   `AsyncImage` — `AsyncImageView.swift` is an older hand-rolled loader kept only where already used.
 - Calls with more than one argument are formatted multiline (one arg per line).
+- Screens that wait for network data show redacted placeholders at once, not a spinner: stand-in
+  data shaped like real content (`static let placeholders`, see `Paddock.Section.placeholders`,
+  `CXRaces.Representable.placeholders`), drawn with the screen's own section components, then
+  `.redacted(reason: .placeholder)`, `.disabled(true)` and an accessibility label ("Loading the
+  rider"). No delay, no minimum display, no `ProgressView`. Parts already known when the screen
+  opens keep their real data; error states are unchanged.
 
 ### "Vapor" design system
 

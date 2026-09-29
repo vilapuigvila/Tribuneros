@@ -2,9 +2,19 @@ import "./options";
 import * as logger from "firebase-functions/logger";
 import {onRequest} from "firebase-functions/v2/https";
 import {Timestamp, getFirestore, type Firestore} from "firebase-admin/firestore";
-import {scrapeCategoryResults, scrapeRacePage, scrapeRiderPage} from "./cx";
+import {HttpStatusError, scrapeCategoryResults, scrapeRacePage, scrapeRiderPage} from "./cx";
 
 const HOUR_MS = 3_600_000;
+
+// Pages cyclocross24 doesn't have (or that parse to nothing, e.g. results before a race ends) are
+// remembered briefly, so a script asking for made-up names can't make every call scrape the site.
+// Kept in their own collection: the app reads cxRiders/cxRaces/cxResults directly and must only find pages there.
+const MISSING_COLLECTION = "cxMissing";
+export const MISSING_MAX_AGE_MS = HOUR_MS;
+
+export function isMissingError(error: unknown): boolean {
+  return error instanceof HttpStatusError && (error.status === 404 || error.status === 410);
+}
 
 export interface DetailKind {
   collection: string;
@@ -77,21 +87,37 @@ export async function loadDetail(db: Firestore, kind: DetailKind, id: string, no
     return {status: 200, body: responseBody(cached)};
   }
 
+  const missingRef = db.collection(MISSING_COLLECTION).doc(`${kind.collection}_${id}`);
+  if (!cached) {
+    const missing = (await missingRef.get()).data();
+    const missingAt = missing?.updatedAt instanceof Timestamp ? missing.updatedAt.toDate() : undefined;
+    if (isFresh(missingAt, MISSING_MAX_AGE_MS, now)) {
+      return {status: 502, body: {error: "cyclocross24 page unavailable"}};
+    }
+  }
+
   let scraped: object | null = null;
+  let isMissing = false;
   try {
     scraped = await kind.scrape(id);
+    isMissing = scraped === null;
   } catch (error) {
+    isMissing = isMissingError(error);
     logger.warn(`${kind.collection}/${id}: scrape failed`, error);
   }
 
   if (scraped) {
     const document = {...scraped, updatedAt: Timestamp.now()};
     await ref.set(document);
+    await missingRef.delete();
     return {status: 200, body: responseBody(document)};
   }
   if (cached) {
     logger.warn(`${kind.collection}/${id}: serving stale copy`);
     return {status: 200, body: responseBody(cached)};
+  }
+  if (isMissing) {
+    await missingRef.set({updatedAt: Timestamp.now()});
   }
   return {status: 502, body: {error: "cyclocross24 page unavailable"}};
 }

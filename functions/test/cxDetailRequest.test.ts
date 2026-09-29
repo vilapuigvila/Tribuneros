@@ -1,6 +1,7 @@
 import {test} from "node:test";
 import assert from "node:assert/strict";
-import {DETAIL_KINDS, detailKind, isFresh} from "../src/cxDetail";
+import {HttpStatusError} from "../src/cx";
+import {DETAIL_KINDS, MISSING_MAX_AGE_MS, detailKind, isFresh, isMissingError} from "../src/cxDetail";
 
 const HOUR_MS = 3_600_000;
 
@@ -36,4 +37,20 @@ test("freshness: riders expire after a day, races after a week, results never", 
   assert.equal(isFresh(ago(8 * 24), DETAIL_KINDS.race.maxAgeMs, now), false);
   assert.equal(isFresh(ago(10_000), DETAIL_KINDS.results.maxAgeMs, now), true);
   assert.equal(isFresh(undefined, DETAIL_KINDS.results.maxAgeMs, now), false);
+});
+
+test("missing pages: only a 404/410 counts, other failures aren't remembered", () => {
+  assert.equal(isMissingError(new HttpStatusError(404, "https://cyclocross24.com/rider/x/")), true);
+  assert.equal(isMissingError(new HttpStatusError(410, "https://cyclocross24.com/rider/x/")), true);
+  assert.equal(isMissingError(new HttpStatusError(429, "https://cyclocross24.com/rider/x/")), false);
+  assert.equal(isMissingError(new HttpStatusError(503, "https://cyclocross24.com/rider/x/")), false);
+  assert.equal(isMissingError(new Error("fetch failed")), false);
+  assert.equal(isMissingError(undefined), false);
+});
+
+test("missing pages: remembered for an hour", () => {
+  const now = new Date("2026-09-29T12:00:00Z");
+
+  assert.equal(isFresh(new Date(now.getTime() - 59 * 60_000), MISSING_MAX_AGE_MS, now), true);
+  assert.equal(isFresh(new Date(now.getTime() - 61 * 60_000), MISSING_MAX_AGE_MS, now), false);
 });

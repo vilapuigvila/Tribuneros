@@ -120,6 +120,12 @@ function retryDelayMs(response: Response, attempt: number): number {
   return 5_000 * attempt;
 }
 
+export class HttpStatusError extends Error {
+  constructor(readonly status: number, url: string) {
+    super(`GET ${url} failed with status ${status}`);
+  }
+}
+
 async function fetchDocument(url: string): Promise<CheerioAPI> {
   for (let attempt = 1; ; attempt++) {
     await waitForRequestSlot();
@@ -129,7 +135,7 @@ async function fetchDocument(url: string): Promise<CheerioAPI> {
     }
     const retryable = response.status === 429 || response.status === 503;
     if (!retryable || attempt >= MAX_ATTEMPTS) {
-      throw new Error(`GET ${url} failed with status ${response.status}`);
+      throw new HttpStatusError(response.status, url);
     }
     await sleep(retryDelayMs(response, attempt));
   }
