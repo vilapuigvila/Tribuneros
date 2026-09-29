@@ -61,7 +61,12 @@ extension CXRaces {
                             VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
                                 VaporSectionHeader(title: "Latest results")
                             } content: {
-                                LatestResultsView(races: representable.races) {
+                                LatestResultsView(
+                                    races: representable.races,
+                                    openRider: { podium in
+                                        action(.didTapOnPodiumRider(podium))
+                                    }
+                                ) {
                                     action(.didTapOnLatestResults)
                                 }
                             }

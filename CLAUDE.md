@@ -150,8 +150,11 @@ when one matches, else a minimal event built from the row (the detail then takes
 the loaded results).
 
 Standings list rows, and the leader rows on the CX Zone standings summary card (the rest of that
-card still opens the list), open `CXRiderDetailView` (built from `CXRaces.RiderStanding`: ranking,
-category, position, points) with the same rider-page sections as the winner screen; those sections
+card still opens the list), open `CXRiderDetailView` with `CXRaces.RiderContext.standing`
+(`RiderStanding`: ranking, category, position, points). Latest-results podium rows (home card and
+full list; the rest of each card still opens the list / the race) open it with `.podium`
+(`RiderPodium`: position, time, category and the race, whose card opens `RaceDetailView`). It shows
+the same rider-page sections as the winner screen; those sections
 (`CXRiderAvatar`, `CXRiderFactsPanel`, `CXRiderRecentResultsPanel`, `CXStatTile`) live in
 `Details/CXRiderSections.swift`.
 

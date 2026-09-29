@@ -123,6 +123,44 @@ final class CXEventDetailTests: XCTestCase {
         )
     }
 
+    func testRiderPodiumAndContextCarryTheRider() {
+        let podium = DTO.CX24Homepage.Podium(
+            position: 2,
+            rider: "DEL GROSSO Tibor",
+            riderURL: URL(string: "https://cyclocross24.com/rider/tibor-del-grosso/"),
+            country: "Netherlands",
+            countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png"),
+            time: "0:45"
+        )
+        let category = DTO.CX24Homepage.Category(
+            title: "Men Elite",
+            categoryURL: nil,
+            winnerImageURL: nil,
+            podium: [podium]
+        )
+        let race = DTO.CX24Homepage.Race(
+            title: "UCI World Cup Zonhoven (CDM)",
+            country: "Belgium",
+            countryFlagURL: nil,
+            date: "4 January 2026",
+            location: "Zonhoven, Belgium",
+            raceURL: nil,
+            categories: [category]
+        )
+
+        let riderPodium = CXRaces.RiderPodium(podium: podium, category: category, race: race)
+        let context = CXRaces.RiderContext.podium(riderPodium)
+
+        XCTAssertEqual(riderPodium.time, "0:45")
+        XCTAssertEqual(riderPodium.race, race)
+        XCTAssertEqual(context.rider, "DEL GROSSO Tibor")
+        XCTAssertEqual(context.riderURL, podium.riderURL)
+        XCTAssertEqual(context.flagURL, podium.countryFlagURL)
+        XCTAssertEqual(context.position, 2)
+        XCTAssertEqual(context.category, "Men Elite")
+        XCTAssertEqual(context.country, "Netherlands")
+    }
+
     func testRiderPageFactLookup() {
         let page = DTO.CXRiderPage(
             name: "",

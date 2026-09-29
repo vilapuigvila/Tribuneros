@@ -7,13 +7,15 @@
 
 import SwiftUI
 
-/// Native rider screen opened from a row of the Standings list. The standing itself (ranking,
-/// category, position, points) comes from the Firestore standings document; the photo, profile
-/// facts and recent results from the rider's cyclocross24 page, parsed best-effort on the device —
-/// each section hides when it comes back empty.
+/// Native rider screen opened from a standings row or a latest-results podium row. The context
+/// panel (the standing, or the podium result) comes from the Firestore documents; the photo,
+/// profile facts and recent results from the rider's cyclocross24 page, parsed best-effort on the
+/// device — each section hides when it comes back empty.
 struct CXRiderDetailView: View {
-    let standing: CXRaces.RiderStanding
+    let context: CXRaces.RiderContext
     let openURL: (URL) -> Void
+    /// Opens the podium's race results (`RaceDetailView`).
+    private let openRace: (DTO.CX24Homepage.Race) -> Void
     /// Opens a "Recent results" row as a native race detail.
     private let openRaceResult: (DTO.CXRiderPage.Result) -> Void
     /// Fetches the rider page; injectable so previews never hit the network.
@@ -23,27 +25,34 @@ struct CXRiderDetailView: View {
     @State private var isLoading: Bool
 
     init(
-        standing: CXRaces.RiderStanding,
+        context: CXRaces.RiderContext,
         page: DTO.CXRiderPage? = nil,
         loadRiderPage: @escaping (URL?) async -> DTO.CXRiderPage? = {
             await Service.getCxRiderPage($0)
         },
+        openRace: @escaping (DTO.CX24Homepage.Race) -> Void = { _ in },
         openRaceResult: @escaping (DTO.CXRiderPage.Result) -> Void = { _ in },
         openURL: @escaping (URL) -> Void
     ) {
-        self.standing = standing
+        self.context = context
         self.openURL = openURL
+        self.openRace = openRace
         self.openRaceResult = openRaceResult
         self.loadRiderPage = loadRiderPage
         _page = State(initialValue: page)
-        _isLoading = State(initialValue: page == nil && standing.riderURL != nil)
+        _isLoading = State(initialValue: page == nil && context.riderURL != nil)
     }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 profilePanel
-                standingPanel
+                switch context {
+                case .standing(let standing):
+                    standingPanel(standing)
+                case .podium(let podium):
+                    podiumPanel(podium)
+                }
 
                 if isLoading {
                     LoaderView(title: "Loading rider...")
@@ -61,7 +70,7 @@ struct CXRiderDetailView: View {
                     }
                 }
 
-                if let riderURL = standing.riderURL {
+                if let riderURL = context.riderURL {
                     Button {
                         openURL(riderURL)
                     } label: {
@@ -80,7 +89,7 @@ struct CXRiderDetailView: View {
         .navigationTitle("Rider")
         .task {
             guard isLoading else { return }
-            page = await loadRiderPage(standing.riderURL)
+            page = await loadRiderPage(context.riderURL)
             isLoading = false
         }
     }
@@ -91,10 +100,10 @@ struct CXRiderDetailView: View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
             HStack(spacing: 6) {
                 CXDetailTag(
-                    title: "#\(standing.position)",
-                    color: standing.position == 1 ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary)
+                    title: "#\(context.position)",
+                    color: context.position == 1 ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary)
                 )
-                CXDetailTag(title: standing.category)
+                CXDetailTag(title: context.category)
             }
         } content: {
             HStack(alignment: .center, spacing: 16) {
@@ -108,9 +117,9 @@ struct CXRiderDetailView: View {
                         lineLimit: 2
                     )
                     HStack(spacing: 8) {
-                        VaporFlagView(url: standing.flagURL)
+                        VaporFlagView(url: context.flagURL)
                         TribuneruText(
-                            content: page?.nationality ?? "-",
+                            content: page?.nationality ?? context.country ?? "-",
                             style: .vaporMeta,
                             color: .tribuneru(.vaporTextSecondary),
                             lineLimit: 1
@@ -131,7 +140,7 @@ struct CXRiderDetailView: View {
 
     // MARK: - Standing -
 
-    private var standingPanel: some View {
+    private func standingPanel(_ standing: CXRaces.RiderStanding) -> some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
             VaporSectionHeader(title: "Standing")
         } content: {
@@ -143,7 +152,7 @@ struct CXRiderDetailView: View {
                 } label: {
                     VaporCard {
                         HStack(spacing: 10) {
-                            rankingLogo
+                            rankingLogo(standing.rankingLogoURL)
                             VStack(alignment: .leading, spacing: 2) {
                                 TribuneruText(
                                     content: standing.rankingTitle,
@@ -185,9 +194,9 @@ struct CXRiderDetailView: View {
         }
     }
 
-    private var rankingLogo: some View {
+    private func rankingLogo(_ logoURL: URL?) -> some View {
         Group {
-            if let logoURL = standing.rankingLogoURL {
+            if let logoURL {
                 CachedImageView(
                     imageUrl: logoURL,
                     cornerRadius: 1
@@ -205,13 +214,68 @@ struct CXRiderDetailView: View {
         .cornerRadius(6)
     }
 
+    // MARK: - Podium -
+
+    private func podiumPanel(_ podium: CXRaces.RiderPodium) -> some View {
+        VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
+            VaporSectionHeader(title: "Result")
+        } content: {
+            VStack(alignment: .leading, spacing: 10) {
+                Button {
+                    openRace(podium.race)
+                } label: {
+                    VaporCard {
+                        HStack(spacing: 10) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                TribuneruText(
+                                    content: podium.race.title,
+                                    style: .vaporRaceNameNext,
+                                    color: .tribuneru(.vaporTextPrimary),
+                                    lineLimit: 2
+                                )
+                                HStack(spacing: 6) {
+                                    VaporFlagView(url: podium.race.countryFlagURL)
+                                    TribuneruText(
+                                        content: [podium.race.date, podium.race.location]
+                                            .filter { !$0.isEmpty }
+                                            .joined(separator: " · "),
+                                        style: .vaporMeta,
+                                        color: .tribuneru(.vaporTextSecondary),
+                                        lineLimit: 1
+                                    )
+                                }
+                            }
+                            Spacer(minLength: 0)
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundColor(.tribuneru(.vaporTextSecondary))
+                        }
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+
+                HStack(spacing: 10) {
+                    CXStatTile(
+                        label: "Position",
+                        value: "#\(podium.position)"
+                    )
+                    CXStatTile(
+                        label: "Time",
+                        value: podium.time.isEmpty ? "-" : podium.time
+                    )
+                }
+            }
+        }
+    }
+
     // MARK: - Helpers -
 
     private var riderName: String {
         if let name = page?.name, !name.isEmpty {
             return name
         }
-        return standing.rider
+        return context.rider
     }
 }
 
@@ -278,8 +342,43 @@ private extension DTO.CXRiderPage {
 #Preview("CX Rider - loaded") {
     NavigationStack {
         CXRiderDetailView(
-            standing: .mock,
+            context: .standing(.mock),
             page: .mockVanthourenhout
+        ) { _ in }
+    }
+}
+
+#Preview("CX Rider - podium") {
+    NavigationStack {
+        CXRiderDetailView(
+            context: .podium(
+                .init(
+                    podium: .init(
+                        position: 2,
+                        rider: "DEL GROSSO Tibor",
+                        riderURL: URL(string: "https://cyclocross24.com/rider/tibor-del-grosso/"),
+                        country: "Netherlands",
+                        countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png"),
+                        time: "0:45"
+                    ),
+                    category: .init(
+                        title: "Men Elite",
+                        categoryURL: nil,
+                        winnerImageURL: nil,
+                        podium: []
+                    ),
+                    race: .init(
+                        title: "UCI World Cup Zonhoven (CDM)",
+                        country: "Belgium",
+                        countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+                        date: "4 January 2026",
+                        location: "Zonhoven, Belgium",
+                        raceURL: nil,
+                        categories: []
+                    )
+                )
+            ),
+            loadRiderPage: { _ in nil }
         ) { _ in }
     }
 }
@@ -287,7 +386,7 @@ private extension DTO.CXRiderPage {
 #Preview("CX Rider - standings data only") {
     NavigationStack {
         CXRiderDetailView(
-            standing: .mock,
+            context: .standing(.mock),
             loadRiderPage: { _ in nil }
         ) { _ in }
     }
@@ -296,7 +395,7 @@ private extension DTO.CXRiderPage {
 #Preview("CX Rider - loading") {
     NavigationStack {
         CXRiderDetailView(
-            standing: .mock,
+            context: .standing(.mock),
             loadRiderPage: { _ in
                 // Never finishes, so the preview stays on the loader.
                 try? await Task.sleep(for: .seconds(3600))

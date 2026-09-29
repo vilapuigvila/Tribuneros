@@ -9,6 +9,8 @@ import SwiftUI
 
 struct LatestAllResultsView: View {
     let races: DTO.CX24Homepage
+    /// A podium row opens the rider screen; the rest of a race card opens the race (`action`).
+    var openRider: (CXRaces.RiderPodium) -> Void = { _ in }
     let action: (DTO.CX24Homepage.Race) -> Void
     
     var body: some View {
@@ -18,7 +20,10 @@ struct LatestAllResultsView: View {
                 Section {
                     ForEach(section.races.indices, id: \.self) { raceIndex in
                         let race = section.races[raceIndex]
-                        RaceRowView(race: race)
+                        RaceRowView(
+                            race: race,
+                            openRider: openRider
+                        )
                             .listRowInsets(.init(top: 8, leading: 16, bottom: 8, trailing: 16))
                             .listRowBackground(Color.clear)
                             .onTapGesture {
@@ -45,6 +50,7 @@ struct LatestAllResultsView: View {
 
 private struct RaceRowView: View {
     let race: DTO.CX24Homepage.Race
+    let openRider: (CXRaces.RiderPodium) -> Void
 
     var body: some View {
         VaporCard {
@@ -92,7 +98,15 @@ private struct RaceRowView: View {
             VStack(spacing: 12) {
                 ForEach(race.categories.prefix(2).indices, id: \.self) { idx in
                     let category = race.categories[idx]
-                    CategoryResultsView(category: category)
+                    CategoryResultsView(category: category) { podium in
+                        openRider(
+                            CXRaces.RiderPodium(
+                                podium: podium,
+                                category: category,
+                                race: race
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -101,6 +115,7 @@ private struct RaceRowView: View {
 
 private struct CategoryResultsView: View {
     let category: DTO.CX24Homepage.Category
+    let openPodium: (DTO.CX24Homepage.Podium) -> Void
 
     var body: some View {
         let podiums = Array(category.podium.prefix(3))
@@ -123,7 +138,14 @@ private struct CategoryResultsView: View {
                 VStack(spacing: 0) {
                     ForEach(podiums.indices, id: \.self) { idx in
                         let podium = podiums[idx]
-                        PodiumRow(podium: podium)
+                        // A button wins over the row's own tap gesture, so only the podium opens the rider.
+                        Button {
+                            openPodium(podium)
+                        } label: {
+                            PodiumRow(podium: podium)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
 
                         if idx < podiums.count - 1 {
                             TribunerosDivider(
@@ -167,6 +189,10 @@ private struct PodiumRow: View {
                 color: .tribuneru(.vaporTextSecondary),
                 lineLimit: 1
             )
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundColor(.tribuneru(.vaporTextSecondary))
         }
         .padding(.vertical, 6)
     }

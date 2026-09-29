@@ -49,7 +49,12 @@ struct CXRacesRacesView: View {
                     viewModel.action(.didTapOnLink(url))
                 }
             case .cxZone(.latestResults):
-                LatestAllResultsView(races: viewModel.stateView.result.races) { race in
+                LatestAllResultsView(
+                    races: viewModel.stateView.result.races,
+                    openRider: { podium in
+                        viewModel.action(.didTapOnPodiumRider(podium))
+                    }
+                ) { race in
                     viewModel.action(.didTapOnRaceDetail(race))
                 }
                 .navigationTitle("Latest results")
@@ -61,9 +66,12 @@ struct CXRacesRacesView: View {
                     viewModel.action(.didTapOnStandingRider(standing))
                 }
                 .navigationTitle("Standings")
-            case .cxZone(.riderDetail(let standing)):
+            case .cxZone(.riderDetail(let context)):
                 CXRiderDetailView(
-                    standing: standing,
+                    context: context,
+                    openRace: { race in
+                        viewModel.action(.didTapOnRaceDetail(race))
+                    },
                     openRaceResult: { result in
                         viewModel.action(.didTapOnRiderResult(result))
                     }

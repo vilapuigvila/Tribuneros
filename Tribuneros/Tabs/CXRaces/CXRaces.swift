@@ -21,6 +21,7 @@ extension CXRaces {
         case didTapOnWinnerRace(DTO.CXCalendarEvent, openedFrom: DTO.CXCalendarEvent)
         case didTapOnRiderResult(DTO.CXRiderPage.Result)
         case didTapOnStandingRider(CXRaces.RiderStanding)
+        case didTapOnPodiumRider(CXRaces.RiderPodium)
         case didTapOnRaceDetail(DTO.CX24Homepage.Race)
         case didTapOnStandings
     }
@@ -263,6 +264,88 @@ extension CXRaces {
             rankingLogoURL = item.logoURL
             self.category = category.title
             standingsURL = category.url ?? item.url
+        }
+    }
+}
+
+// MARK: - Rider podium -
+extension CXRaces {
+
+    /// A rider's podium place in one category of a latest-results race, what the rider screen
+    /// opened from the Latest results rows shows alongside the rider page.
+    struct RiderPodium: Hashable {
+        let rider: String
+        let riderURL: URL?
+        let flagURL: URL?
+        let country: String
+        let position: Int
+        let time: String
+        let category: String
+        /// The whole race, so the rider screen can open its results.
+        let race: DTO.CX24Homepage.Race
+
+        init(
+            podium: DTO.CX24Homepage.Podium,
+            category: DTO.CX24Homepage.Category,
+            race: DTO.CX24Homepage.Race
+        ) {
+            rider = podium.rider
+            riderURL = podium.riderURL
+            flagURL = podium.countryFlagURL
+            country = podium.country
+            position = podium.position
+            time = podium.time
+            self.category = category.title
+            self.race = race
+        }
+    }
+
+    /// Where the rider screen was opened from, which decides its context panel.
+    enum RiderContext: Hashable {
+        case standing(RiderStanding)
+        case podium(RiderPodium)
+
+        var rider: String {
+            switch self {
+            case .standing(let standing): standing.rider
+            case .podium(let podium): podium.rider
+            }
+        }
+
+        var riderURL: URL? {
+            switch self {
+            case .standing(let standing): standing.riderURL
+            case .podium(let podium): podium.riderURL
+            }
+        }
+
+        var flagURL: URL? {
+            switch self {
+            case .standing(let standing): standing.flagURL
+            case .podium(let podium): podium.flagURL
+            }
+        }
+
+        var position: Int {
+            switch self {
+            case .standing(let standing): standing.position
+            case .podium(let podium): podium.position
+            }
+        }
+
+        var category: String {
+            switch self {
+            case .standing(let standing): standing.category
+            case .podium(let podium): podium.category
+            }
+        }
+
+        /// Known before the rider page loads: only podiums carry a country name.
+        var country: String? {
+            switch self {
+            case .standing: nil
+            case .podium(let podium): podium.country.isEmpty ? nil : podium.country
+            }
         }
     }
 }
