@@ -456,3 +456,166 @@ export async function scrapeStandings(homepage: CheerioAPI): Promise<Standings> 
   );
   return {items};
 }
+
+// MARK: - Detail pages
+
+export interface RacePastWinner {
+  year: string;
+  rider: string;
+  riderURL: string | null;
+  countryFlagURL: string | null;
+  resultsURL: string | null;
+}
+
+export interface RacePage {
+  title: string;
+  summary: string;
+  pastWinners: RacePastWinner[];
+}
+
+export interface RiderFact {
+  label: string;
+  value: string;
+}
+
+export interface RiderResult {
+  date: string;
+  race: string;
+  position: string;
+  raceURL: string | null;
+}
+
+export interface RiderPage {
+  name: string;
+  avatarURL: string | null;
+  facts: RiderFact[];
+  results: RiderResult[];
+}
+
+export interface CategoryResult {
+  position: string;
+  rider: string;
+  age: string;
+  team: string;
+  time: string;
+  countryFlagURL: string | null;
+  riderURL: string | null;
+}
+
+const RIDER_FACTS_LIMIT = 8;
+const RIDER_RESULTS_LIMIT = 10;
+const PAST_WINNERS_CATEGORY = "Men Elite";
+
+function mainTitle($: CheerioAPI): string {
+  const heading = $("h1.main_title").first();
+  return clean((heading.length > 0 ? heading : $("h1").first()).text());
+}
+
+function isResultsPath(href: string): boolean {
+  const code = raceCode(href);
+  return code !== null && strictInt(code) !== null;
+}
+
+// The History block lists every category's winners as sibling rows under a header per category.
+export function parseRacePage($: CheerioAPI): RacePage {
+  const header = $("div.ri_history_category")
+    .filter((_, element) => ownText($(element)) === PAST_WINNERS_CATEGORY)
+    .first();
+  const siblings = header.nextUntil("div.ri_history_category");
+  const rows = siblings.filter("div.ri_row").add(siblings.find("div.ri_row"));
+
+  const seen = new Set<string>();
+  const pastWinners: RacePastWinner[] = [];
+  rows.each((_, row) => {
+    const $row = $(row);
+    const yearAnchor = $row.find("div.ri_history_left a").first();
+    const year = clean(yearAnchor.text());
+    const riderAnchor = $row.find("div.ri_history_rider a[href^=\"/rider/\"]").first();
+    const rider = clean(riderAnchor.text());
+    const resultsPath = yearAnchor.attr("href") ?? "";
+    const resultsURL = isResultsPath(resultsPath) ? absoluteURL(resultsPath) : null;
+    // Some years hold two editions (January and December), so the results link, not the year, identifies one.
+    const key = resultsURL ?? `${year}|${rider}`;
+    if (!/^(19[5-9]\d|20\d{2})$/.test(year) || !rider || seen.has(key)) return;
+    seen.add(key);
+
+    pastWinners.push({
+      year,
+      rider,
+      riderURL: absoluteURL(riderAnchor.attr("href")),
+      countryFlagURL: absoluteURL($row.find("img.flag").first().attr("src")),
+      resultsURL,
+    });
+  });
+
+  return {
+    title: mainTitle($),
+    summary: clean($("meta[name=description]").first().attr("content")),
+    pastWinners: pastWinners.sort((lhs, rhs) => Number(rhs.year) - Number(lhs.year)),
+  };
+}
+
+// Season tables come newest first, so the first rows are the most recent results.
+export function parseRiderPage($: CheerioAPI): RiderPage {
+  let avatar = $("img.rider-avatar__image").first();
+  if (avatar.length === 0) avatar = $("img[src*=\"/images/rider/\"]").first();
+
+  const seenLabels = new Set<string>();
+  const facts: RiderFact[] = [];
+  $("table.riderinfo-table tr").each((_, row) => {
+    const label = clean($(row).find("th").first().text()).replace(/:$/, "").trim();
+    const value = clean($(row).find("td").first().text());
+    if (!label || !value || seenLabels.has(label.toLowerCase())) return;
+    seenLabels.add(label.toLowerCase());
+    facts.push({label, value});
+  });
+
+  const results = $("table.rider_table tr.rider_result_row")
+    .map((_, row): RiderResult | null => {
+      const $row = $(row);
+      const raceAnchor = $row.find("td.rider_result_race a[href^=\"/race/\"]").first();
+      const date = clean($row.find("td.rider_result_date").first().text());
+      const race = clean(raceAnchor.text());
+      if (!/^\d{1,2}[-./]\d{1,2}[-./]\d{4}$/.test(date) || !race) return null;
+      const position = clean($row.find("td.rider_result_position").first().text()).replace(/\.$/, "");
+      return {
+        date,
+        race,
+        position: strictInt(position) === null ? "-" : position,
+        raceURL: absoluteURL(raceAnchor.attr("href")),
+      };
+    })
+    .get()
+    .filter((result): result is RiderResult => result !== null);
+
+  return {
+    name: mainTitle($),
+    avatarURL: absoluteURL(avatar.attr("src")),
+    facts: facts.slice(0, RIDER_FACTS_LIMIT),
+    results: results.slice(0, RIDER_RESULTS_LIMIT),
+  };
+}
+
+// A results page (/race/<id>/) holds one category; rows without a numeric position (DNF, DNS) are skipped.
+export function parseCategoryResults($: CheerioAPI): CategoryResult[] {
+  return $("tr.r1_row")
+    .map((_, row): CategoryResult | null => {
+      const $row = $(row);
+      const position = clean($row.find("td.res_position").first().text());
+      const riderCell = $row.find("td.res_rider").first();
+      const riderAnchor = riderCell.find("a[href^=\"/rider/\"]").first();
+      const rider = clean(riderAnchor.text());
+      if (strictInt(position) === null || !rider) return null;
+      return {
+        position,
+        rider,
+        age: clean($row.find("td.res_age").first().text()),
+        team: clean($row.find("td.res_team").first().text()),
+        time: clean($row.find("td.res_time").first().text()),
+        countryFlagURL: absoluteURL(riderCell.find("img.flag").first().attr("src")),
+        riderURL: absoluteURL(riderAnchor.attr("href")),
+      };
+    })
+    .get()
+    .filter((result): result is CategoryResult => result !== null);
+}
