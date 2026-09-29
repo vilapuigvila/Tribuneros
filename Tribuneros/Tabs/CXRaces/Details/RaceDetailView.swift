@@ -13,7 +13,6 @@ struct RaceDetailView: View {
     @State private var categoryResults: [String: [DTO.CX24Homepage.CategoryResult]] = [:]
     @State private var selectedCategory: Int = 0
     @State private var isLoading: Bool = true
-    @State private var loaderPhase: LoaderPhase
     @State private var errorMessage: String?
     @State private var videoSheet: VideoSheet?
     /// A results row opens the rider screen.
@@ -28,7 +27,6 @@ struct RaceDetailView: View {
         self.openRider = openRider
         _categoryResults = State(initialValue: categoryResults)
         _isLoading = State(initialValue: categoryResults.isEmpty)
-        _loaderPhase = State(initialValue: LoaderPhase(isLoading: categoryResults.isEmpty))
     }
 
     var body: some View {
@@ -37,12 +35,15 @@ struct RaceDetailView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     headerView
                     
-                    if loaderPhase == .loader {
-                        LoaderView(title: "Loading results...")
-                            .frame(maxWidth: .infinity)
-                            .padding(.top, 40)
-                    } else if loaderPhase == .waiting {
-                        EmptyView()
+                    if isLoading {
+                        VStack(alignment: .leading, spacing: 16) {
+                            categoryTabsView
+                            resultsList(DTO.CX24Homepage.CategoryResult.placeholders)
+                        }
+                        .redacted(reason: .placeholder)
+                        .disabled(true)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("Loading the results")
                     } else if let error = errorMessage {
                         TribuneruText(
                             content: "Error: \(error)",
@@ -52,7 +53,7 @@ struct RaceDetailView: View {
                         .padding()
                     } else {
                         categoryTabsView
-                        resultsListView
+                        resultsList()
                     }
 
                     Spacer()
@@ -61,15 +62,9 @@ struct RaceDetailView: View {
                 .padding(.bottom, 88)
             }
 
-            if loaderPhase != .waiting {
-                raceVideosFloatingButton
-            }
+            raceVideosFloatingButton
         }
         .background(Color.tribuneru(.vaporPageBackground))
-        .loaderPhase(
-            $loaderPhase,
-            isLoading: isLoading
-        )
         .preferredColorScheme(.dark)
         .fullScreenCover(item: $videoSheet) { sheet in
             YoutubeVideoView(url: sheet.url)
@@ -146,11 +141,12 @@ struct RaceDetailView: View {
         }
     }
     
-    private var resultsListView: some View {
+    /// The selected category's loaded results, or `placeholders` drawn in their place.
+    private func resultsList(_ placeholders: [DTO.CX24Homepage.CategoryResult]? = nil) -> some View {
         VStack(spacing: 0) {
             if selectedCategory < race.categories.count {
                 let category = race.categories[selectedCategory]
-                let results = categoryResults[category.title] ?? []
+                let results = placeholders ?? categoryResults[category.title] ?? []
 
                 if results.isEmpty {
                     TribuneruText(
@@ -244,10 +240,10 @@ struct RaceDetailView: View {
     }
 
     private var raceVideosButtonState: (title: String, systemImage: String, url: URL?) {
-        if loaderPhase == .loader {
+        if isLoading {
             return (
-                title: "Loading race videos...",
-                systemImage: "video",
+                title: "Race videos",
+                systemImage: "play.rectangle.fill",
                 url: nil
             )
         }
@@ -307,6 +303,7 @@ struct RaceDetailView: View {
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)
+        .redacted(reason: isLoading ? .placeholder : [])
         .clipShape(Capsule())
         .padding(16)
         .padding(.bottom, 16)

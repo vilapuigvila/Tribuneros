@@ -17,18 +17,23 @@ struct NextToFinishRaceDetail: View {
     @State private var profileImages: [(ImageType, UIImage)] = []
     @State private var stageProfile: [DTO.StageProfile] = []
     @State private var isLoading = true
-    @State private var loaderPhase = LoaderPhase.waiting
+    /// The profile images download after the race info is in, so the box stays until they are.
+    @State private var isLoadingImages = true
 
     @State private var activeAlert: ActiveAlert?
     
     var body: some View {
         ZStack {
             Group {
-                if loaderPhase == .loader {
-                    CyclistLoaderWithIcon(withAnimating: true)
-                        .background(.black)
+                if isLoading {
+                    buildInfoView(.placeholder)
+                        .padding()
+                        .redacted(reason: .placeholder)
+                        .disabled(true)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("Loading the race")
                         .transition(.opacity)
-                } else if loaderPhase == .content, let raceInfo {
+                } else if let raceInfo {
                     buildInfoView(raceInfo)
                         .padding()
                         .transition(.opacity)
@@ -37,12 +42,8 @@ struct NextToFinishRaceDetail: View {
                 }
             }
         }
-        .animation(.easeInOut(duration: 0.75), value: loaderPhase)
+        .animation(.easeInOut(duration: 0.3), value: isLoading)
         .background(Color.tribuneru(.greenCardBackground))
-        .loaderPhase(
-            $loaderPhase,
-            isLoading: isLoading
-        )
         .task {
             isLoading = true
             do {
@@ -56,10 +57,12 @@ struct NextToFinishRaceDetail: View {
                 isLoading = false
                 
                 await downloadAllProfilesImages()
+                isLoadingImages = false
 
             } catch {
                 activeAlert = .error(error.localizedDescription)
                 isLoading = false
+                isLoadingImages = false
                 nonFatalCrashlytics(false, error.localizedDescription)
             }
         }
@@ -129,7 +132,8 @@ struct NextToFinishRaceDetail: View {
     }
     
     private func buildInfoView(_ raceInfo: DTO.RaceDetailInfo) -> some View {
-        VStack(spacing: 12) {
+        let rows = rows(raceInfo)
+        return VStack(spacing: 12) {
             TribuneruText(content: raceInfo.title, style: .size16WeightBold)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
@@ -153,7 +157,11 @@ struct NextToFinishRaceDetail: View {
             TribuneruText(content: "Race Profile", style: .size14WeightSemiBold)
                 .padding(.top, 8)
 
-            if let profileImage {
+            if isLoading || isLoadingImages {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.tribuneru(.gray).opacity(0.3))
+                    .frame(height: 200)
+            } else if let profileImage {
                 Image(uiImage: profileImage)
                     .resizable()
                     .scaledToFit()
@@ -213,16 +221,16 @@ struct NextToFinishRaceDetail: View {
         }
     }
     
-    private var rows: [(title: String, content: String?)] {
+    private func rows(_ raceInfo: DTO.RaceDetailInfo) -> [(title: String, content: String?)] {
         [
-            ("Date",           raceInfo?.date),
-            ("Start Time",     raceInfo?.startTime),
-            ("Classification", raceInfo?.classification),
-            ("Category",       raceInfo?.category),
-            ("Distance",       raceInfo?.distance),
-            ("Departure",      raceInfo?.departure),
-            ("Arrival",        raceInfo?.arrival),
-            ("Vertical Meters",raceInfo?.verticalMeters)
+            ("Date",           raceInfo.date),
+            ("Start Time",     raceInfo.startTime),
+            ("Classification", raceInfo.classification),
+            ("Category",       raceInfo.category),
+            ("Distance",       raceInfo.distance),
+            ("Departure",      raceInfo.departure),
+            ("Arrival",        raceInfo.arrival),
+            ("Vertical Meters",raceInfo.verticalMeters)
         ]
     }
     
@@ -310,29 +318,19 @@ struct ZoomableMainScreen<Content: View>: View {
 }
 
 
-struct CyclistLoaderWithIcon: View {
-    @State private var rotation: Double = 0
-    
-    let withAnimating: Bool
-    
-    var body: some View {
-        ZStack {
-            Circle()
-                .stroke(Color.gray.opacity(0.3), lineWidth: 6)
-                .frame(width: 80, height: 80)
+extension DTO.RaceDetailInfo {
 
-            Image(systemName: "bicycle")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 30, height: 30)
-                .rotationEffect(.degrees(withAnimating ? rotation : 0))
-        }
-        .onAppear {
-            if withAnimating {
-                withAnimation(Animation.linear(duration: 1).repeatForever(autoreverses: false)) {
-                    rotation = 360
-                }
-            }
-        }
-    }
+    /// A stand-in shaped like a real race, drawn redacted while the race loads.
+    static let placeholder = DTO.RaceDetailInfo(
+        title: "Race name placeholder",
+        date: "00-00-0000",
+        startTime: "00:00",
+        classification: "Classification",
+        category: "Category",
+        distance: "000 km",
+        departure: "Departure town",
+        arrival: "Arrival town",
+        verticalMeters: "0000",
+        profileURL: nil
+    )
 }

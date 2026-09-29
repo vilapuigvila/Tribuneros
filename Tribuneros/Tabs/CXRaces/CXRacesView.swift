@@ -91,8 +91,6 @@ struct CXRacesRacesView: View {
                 }
             case .detail(.race(let urlInfo)):
                 SafariView(url: URL(string: urlInfo))
-            case .web(let url):
-                SafariView(url: url)
             default:
                 EmptyView()
             }

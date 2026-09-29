@@ -150,6 +150,60 @@ enum HomeRaces {
             let url: URL?
         }
         let sections: Section
+
+        /// Stand-ins shaped like a real page, drawn redacted while it loads. Spoiler mode is on
+        /// so the result panels show their cards; the live section is left out, as it is most days.
+        static let placeholders = Representable(
+            sections: Section(
+                title: "",
+                spoilerMode: SpoilerMode(
+                    isSpoilerModeResultsToday: true,
+                    isSpoilerModeResultsYesterday: true
+                ),
+                liveStats: [],
+                nextToFinish: (1...4).map { _ in
+                    RaceNext(
+                        eta: "00:00",
+                        duration: "0H",
+                        name: "Race name placeholder",
+                        category: "UCI",
+                        raceType: "1.UWT",
+                        distance: "000",
+                        urlPath: nil,
+                        flagCode: ""
+                    )
+                },
+                racesFinished: placeholderResults,
+                yesterdayResults: placeholderResults,
+                tomorrowRaces: (1...3).map { _ in
+                    RaceTomorrow(
+                        start: "00:00",
+                        eta: "",
+                        name: "Race name placeholder",
+                        url: nil
+                    )
+                }
+            )
+        )
+
+        private static let placeholderResults: [RaceFinished] = (1...4).map { _ in
+            RaceFinished(
+                race: "Race name placeholder",
+                raceDetails: "",
+                winnerImgURL: nil,
+                podium: [
+                    RaceFinished.Winner(
+                        position: "1",
+                        flag: nil,
+                        countryCode: "",
+                        name: "Rider name",
+                        team: "",
+                        time: "0:00:00"
+                    )
+                ],
+                isCancel: false
+            )
+        }
     }
     
     struct SpoilerMode: Identifiable {

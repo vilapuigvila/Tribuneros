@@ -29,7 +29,6 @@ struct CXEventDetailView: View {
 
     @State private var detail: DTO.CXEventDetail
     @State private var isLoading: Bool
-    @State private var loaderPhase: LoaderPhase
     @State private var videoSheet: VideoSheet?
 
     init(
@@ -54,7 +53,6 @@ struct CXEventDetailView: View {
         self.loadDetail = loadDetail
         _detail = State(initialValue: detail ?? .empty)
         _isLoading = State(initialValue: detail == nil)
-        _loaderPhase = State(initialValue: LoaderPhase(isLoading: detail == nil))
     }
 
     var body: some View {
@@ -66,13 +64,22 @@ struct CXEventDetailView: View {
                     winnerPanel
                 }
 
-                if loaderPhase == .loader {
-                    LoaderView(title: "Loading race info...")
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 24)
-                } else if loaderPhase == .content {
+                if isLoading {
+                    VStack(alignment: .leading, spacing: 20) {
+                        // Results only exist from race day on, so an upcoming race shows none.
+                        if status.hasStarted {
+                            resultsPanel(DTO.CX24Homepage.CategoryResult.placeholders)
+                        }
+                        pastWinnersPanel(DTO.CXRacePage.PastWinner.placeholders)
+                        aboutPanel("About the race placeholder. A couple of lines of text stand in for the summary of the race until it loads.")
+                    }
+                    .redacted(reason: .placeholder)
+                    .disabled(true)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("Loading the race")
+                } else {
                     if !detail.results.isEmpty {
-                        resultsPanel
+                        resultsPanel(detail.results)
                     }
                     if let page = detail.page, !page.pastWinners.isEmpty {
                         pastWinnersPanel(page.pastWinners)
@@ -88,10 +95,6 @@ struct CXEventDetailView: View {
             .padding(.bottom, 40)
         }
         .background(Color.tribuneru(.vaporPageBackground))
-        .loaderPhase(
-            $loaderPhase,
-            isLoading: isLoading
-        )
         .preferredColorScheme(.dark)
         .navigationTitle(event.series.title)
         .fullScreenCover(item: $videoSheet) { sheet in
@@ -218,19 +221,19 @@ struct CXEventDetailView: View {
 
     // MARK: - Results -
 
-    private var resultsPanel: some View {
+    private func resultsPanel(_ allResults: [DTO.CX24Homepage.CategoryResult]) -> some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelYesterday)) {
             VaporSectionHeader(title: "Results")
         } content: {
             VaporCard(spacing: 0) {
                 TribuneruText(
-                    content: "MEN ELITE · TOP \(min(UI.resultsLimit, detail.results.count))",
+                    content: "MEN ELITE · TOP \(min(UI.resultsLimit, allResults.count))",
                     style: .vaporGroupLabel,
                     color: .tribuneru(.vaporTextSecondary)
                 )
                 .padding(.bottom, 8)
 
-                let results = Array(detail.results.prefix(UI.resultsLimit))
+                let results = Array(allResults.prefix(UI.resultsLimit))
                 ForEach(results.indices, id: \.self) { index in
                     Button {
                         openResultRider(
@@ -737,7 +740,7 @@ private extension DTO.CXRacePage {
         CXEventDetailView(
             event: .mockMiddelkerke(daysFromToday: 5),
             loadDetail: { _, _ in
-                // Never finishes, so the preview stays on the loader.
+                // Never finishes, so the preview stays on the placeholders.
                 try? await Task.sleep(for: .seconds(3600))
                 return .empty
             }

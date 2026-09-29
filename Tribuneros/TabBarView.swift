@@ -15,6 +15,8 @@ enum Tab {
 struct TabBarView: View {
 
     @State private var selectedTab: Tab = .home
+    /// The bar hides while typing; as a bottom inset it would otherwise ride up on the keyboard.
+    @State private var isKeyboardVisible = false
     @StateObject private var homeRouter: Router
     @StateObject private var cxRouter: Router
     @StateObject private var paddockRouter: Router
@@ -51,6 +53,7 @@ struct TabBarView: View {
                     viewModel: homeRacesViewModel
                 )
             }
+            .webPage($homeRouter.webPage)
             .tag(Tab.home)
             
             // CX Zone -
@@ -58,6 +61,7 @@ struct TabBarView: View {
             NavigationStack(path: $cxRouter.navPath) {
                 CXRacesRacesView(viewModel: cxRacesViewModel)
             }
+            .webPage($cxRouter.webPage)
             .tag(Tab.cxZone)
             
             // Paddock -
@@ -65,15 +69,24 @@ struct TabBarView: View {
             NavigationStack(path: $paddockRouter.navPath) {
                 PaddockView(viewModel: paddockViewModel)
             }
+            .webPage($paddockRouter.webPage)
             .tag(Tab.paddock)
         }
         .toolbar(.hidden, for: .tabBar)
         .safeAreaInset(edge: .bottom) {
-            CustomTabBar(
-                selectedTab: $selectedTab,
-                cxZoneSymbolName: "bicycle",
-                onTabTap: handleTabSelection
-            )
+            if !isKeyboardVisible {
+                CustomTabBar(
+                    selectedTab: $selectedTab,
+                    cxZoneSymbolName: "bicycle",
+                    onTabTap: handleTabSelection
+                )
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+            isKeyboardVisible = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            isKeyboardVisible = false
         }
     }
 

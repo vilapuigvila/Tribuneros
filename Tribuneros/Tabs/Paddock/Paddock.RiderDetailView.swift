@@ -21,7 +21,6 @@ extension Paddock {
 
         @State private var page: DTO.PCSRiderPage?
         @State private var isLoading: Bool
-        @State private var loaderPhase: LoaderPhase
 
         init(
             context: RiderContext,
@@ -37,7 +36,6 @@ extension Paddock {
             _page = State(initialValue: page)
             let isLoading = page == nil && context.rider.url != nil
             _isLoading = State(initialValue: isLoading)
-            _loaderPhase = State(initialValue: LoaderPhase(isLoading: isLoading))
         }
 
         var body: some View {
@@ -52,11 +50,13 @@ extension Paddock {
                         ProgramPanel(card: card)
                     }
 
-                    if loaderPhase == .loader {
-                        LoaderView(title: "Loading rider...")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 24)
-                    } else if loaderPhase == .content, let facts = page?.facts, !facts.isEmpty {
+                    if isLoading {
+                        CXRiderFactsPanel(facts: DTO.CXRiderPage.Fact.placeholders)
+                            .redacted(reason: .placeholder)
+                            .disabled(true)
+                            .accessibilityElement(children: .ignore)
+                            .accessibilityLabel("Loading the rider")
+                    } else if let facts = page?.facts, !facts.isEmpty {
                         CXRiderFactsPanel(facts: facts)
                     }
 
@@ -75,10 +75,6 @@ extension Paddock {
                 .padding(.bottom, 40)
             }
             .background(Color.tribuneru(.vaporPageBackground))
-            .loaderPhase(
-                $loaderPhase,
-                isLoading: isLoading
-            )
             .preferredColorScheme(.dark)
             .navigationTitle("Rider")
             .task {
@@ -356,7 +352,7 @@ private extension DTO.PCSRiderPage {
                 )
             ),
             loadPage: { _ in
-                // Never finishes, so the preview stays on the loader.
+                // Never finishes, so the preview stays on the placeholders.
                 try? await Task.sleep(for: .seconds(3600))
                 return nil
             }

@@ -17,118 +17,94 @@ extension CXRaces {
         
         let state: CXRaces.ViewState
         let action: (CXRaces.Action) -> Void
-        @State private var loaderPhase: LoaderPhase
 
-        init(
-            state: CXRaces.ViewState,
-            action: @escaping (CXRaces.Action) -> Void
-        ) {
-            self.state = state
-            self.action = action
-            _loaderPhase = State(initialValue: LoaderPhase(isLoading: Self.isLoading(state)))
-        }
-        
         var body: some View {
             Group {
-                if loaderPhase == .content {
-                    switch state {
-                    case .idle:
-                        TribuneruText(content: "idle ...", style: .vaporMeta, color: .tribuneru(.vaporTextSecondary))
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(Color.tribuneru(.vaporPageBackground))
-                    case .loading:
-                        loadingLayout
-                    case .error(let error):
-                        VStack(spacing: 20) {
-                            Spacer(minLength: safeAreaInsets.top + 20)
-                            ErrorCardView.generic(
-                                message: error.localizedDescription,
-                                showTryAgainButton: true
-                            ) {
-                                action(.didAppeared)
-                            }
-                            Spacer(minLength: safeAreaInsets.bottom + 20)
+                switch state {
+                case .idle, .loading:
+                    // Nothing has arrived yet: the real layout drawn with stand-in data.
+                    content(
+                        .placeholders,
+                        isPlaceholder: true
+                    )
+                    .redacted(reason: .placeholder)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("Loading cyclocross")
+                case .error(let error):
+                    VStack(spacing: 20) {
+                        Spacer(minLength: safeAreaInsets.top + 20)
+                        ErrorCardView.generic(
+                            message: error.localizedDescription,
+                            showTryAgainButton: true
+                        ) {
+                            action(.didAppeared)
                         }
-                        .padding(.horizontal)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color.tribuneru(.vaporPageBackground))
-                    case .loaded(let representable):
-                        ScrollView {
-                            LazyVGrid(columns: columns, spacing: 20) {
-                                /// calendar
-                                VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-                                    VaporSectionHeader(title: "Next races")
-                                } content: {
-                                    CalendarView(representable: representable) {
-                                        action(.didTapOnNextRaces)
-                                    }
-                                }
-
-                                /// latests results
-                                VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-                                    VaporSectionHeader(title: "Latest results")
-                                } content: {
-                                    LatestResultsView(
-                                        races: representable.races,
-                                        openRider: { podium in
-                                            action(.didTapOnPodiumRider(podium))
-                                        }
-                                    ) {
-                                        action(.didTapOnLatestResults)
-                                    }
-                                }
-
-                                /// standings
-                                VaporPanel(panelColor: .tribuneru(.vaporPanelYesterday)) {
-                                    VaporSectionHeader(title: "Standings")
-                                } content: {
-                                    CyclocrossStandingsSectionView(
-                                        standings: representable.standings,
-                                        openRider: { standing in
-                                            action(.didTapOnStandingRider(standing))
-                                        }
-                                    ) {
-                                        action(.didTapOnStandings)
-                                    }
-                                }
-
-                                Color.clear
-                                    .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
-                            }
-                            .padding()
-                        }
-                        .background(Color.tribuneru(.vaporPageBackground))
+                        Spacer(minLength: safeAreaInsets.bottom + 20)
                     }
-                } else {
-                    loadingLayout
+                    .padding(.horizontal)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.tribuneru(.vaporPageBackground))
+                case .loaded(let representable):
+                    content(representable)
                 }
             }
             .preferredColorScheme(.dark)
-            .loaderPhase(
-                $loaderPhase,
-                isLoading: Self.isLoading(state)
-            )
             .onAppear {
                 action(.didAppeared)
             }
         }
 
-        /// The page background, with the loader once loading has taken over a second.
-        private var loadingLayout: some View {
-            VStack {
-                if loaderPhase == .loader {
-                    LoaderView(title: "Requesting latest results..")
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.tribuneru(.vaporPageBackground))
-        }
+        /// A placeholder page still scrolls; only its cards are disabled.
+        private func content(
+            _ representable: CXRaces.Representable,
+            isPlaceholder: Bool = false
+        ) -> some View {
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 20) {
+                    /// calendar
+                    VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
+                        VaporSectionHeader(title: "Next races")
+                    } content: {
+                        CalendarView(representable: representable) {
+                            action(.didTapOnNextRaces)
+                        }
+                    }
 
-        private static func isLoading(_ state: CXRaces.ViewState) -> Bool {
-            if case .loading = state {
-                return true
+                    /// latests results
+                    VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
+                        VaporSectionHeader(title: "Latest results")
+                    } content: {
+                        LatestResultsView(
+                            races: representable.races,
+                            openRider: { podium in
+                                action(.didTapOnPodiumRider(podium))
+                            }
+                        ) {
+                            action(.didTapOnLatestResults)
+                        }
+                    }
+
+                    /// standings
+                    VaporPanel(panelColor: .tribuneru(.vaporPanelYesterday)) {
+                        VaporSectionHeader(title: "Standings")
+                    } content: {
+                        CyclocrossStandingsSectionView(
+                            standings: representable.standings,
+                            openRider: { standing in
+                                action(.didTapOnStandingRider(standing))
+                            }
+                        ) {
+                            action(.didTapOnStandings)
+                        }
+                    }
+
+                    Color.clear
+                        .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
+                }
+                .padding()
+                .disabled(isPlaceholder)
             }
-            return false
+            .background(Color.tribuneru(.vaporPageBackground))
         }
     }
 }
@@ -461,6 +437,9 @@ extension CXRaces.ViewState {
 }
 #Preview("Loaded Empty data") {
     CXRaces.MainView(state: .loaded(.mockEmpty)) { _ in }
+}
+#Preview("Loading") {
+    CXRaces.MainView(state: .loading) { _ in }
 }
 
 #endif

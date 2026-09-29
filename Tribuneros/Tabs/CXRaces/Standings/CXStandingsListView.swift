@@ -109,6 +109,7 @@ private struct StandingsItemView: View {
     let item: DTO.CXStandings.Item
     let openRider: (CXRaces.RiderStanding) -> Void
     @State private var selectedCategoryIndex: Int = 0
+    @State private var webPage: WebPage?
 
     var body: some View {
         VaporCard {
@@ -136,11 +137,15 @@ private struct StandingsItemView: View {
                 Spacer(minLength: 0)
 
                 if let url = item.url {
-                    NavigationLink(destination: SafariView(url: url)) {
-                        EmptyView()
+                    Button {
+                        webPage = WebPage(url: url)
+                    } label: {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(.tribuneru(.vaporTextSecondary))
+                            .frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
                     }
-                    .frame(width: 44, height: 44)
-                    .contentShape(Rectangle())
                     .buttonStyle(.plain)
                 }
             }
@@ -167,6 +172,7 @@ private struct StandingsItemView: View {
                 }
             }
         }
+        .webPage($webPage)
     }
 }
 

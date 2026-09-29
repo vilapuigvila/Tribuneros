@@ -28,7 +28,6 @@ struct CXRiderDetailView: View {
     /// The past win's results row (time, team, age); only used by the `.win` context.
     @State private var winResult: DTO.CX24Homepage.CategoryResult?
     @State private var isLoading: Bool
-    @State private var loaderPhase: LoaderPhase
 
     init(
         context: CXRaces.RiderContext,
@@ -60,7 +59,6 @@ struct CXRiderDetailView: View {
         _winResult = State(initialValue: initialWinResult)
         let isLoading = page == nil && (context.riderURL != nil || context.winResultsURL != nil)
         _isLoading = State(initialValue: isLoading)
-        _loaderPhase = State(initialValue: LoaderPhase(isLoading: isLoading))
     }
 
     var body: some View {
@@ -78,11 +76,19 @@ struct CXRiderDetailView: View {
                     winPanel(winner)
                 }
 
-                if loaderPhase == .loader {
-                    LoaderView(title: "Loading rider...")
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 24)
-                } else if loaderPhase == .content, let page {
+                if isLoading {
+                    VStack(alignment: .leading, spacing: 20) {
+                        CXRiderFactsPanel(facts: DTO.CXRiderPage.Fact.placeholders)
+                        CXRiderRecentResultsPanel(
+                            results: DTO.CXRiderPage.Result.placeholders,
+                            openResult: { _ in }
+                        )
+                    }
+                    .redacted(reason: .placeholder)
+                    .disabled(true)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("Loading the rider")
+                } else if let page {
                     if !page.facts.isEmpty {
                         CXRiderFactsPanel(facts: page.facts)
                     }
@@ -109,10 +115,6 @@ struct CXRiderDetailView: View {
             .padding(.bottom, 40)
         }
         .background(Color.tribuneru(.vaporPageBackground))
-        .loaderPhase(
-            $loaderPhase,
-            isLoading: isLoading
-        )
         .preferredColorScheme(.dark)
         .navigationTitle("Rider")
         .task {
@@ -565,7 +567,7 @@ private extension DTO.CXRiderPage {
         CXRiderDetailView(
             context: .standing(.mock),
             loadDetail: { _ in
-                // Never finishes, so the preview stays on the loader.
+                // Never finishes, so the preview stays on the placeholders.
                 try? await Task.sleep(for: .seconds(3600))
                 return .init(
                     page: nil,

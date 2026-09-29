@@ -47,111 +47,84 @@ extension HomeRaces {
         
         let state: HomeRaces.ViewState
         let action: (HomeRaces.Action) -> Void
-        @State private var loaderPhase: LoaderPhase
 
-        init(
-            state: HomeRaces.ViewState,
-            action: @escaping (HomeRaces.Action) -> Void
-        ) {
-            self.state = state
-            self.action = action
-            _loaderPhase = State(initialValue: LoaderPhase(isLoading: Self.isLoading(state)))
-        }
-        
         var body: some View {
             Group {
-                if loaderPhase == .content {
-                    switch state {
-                    case .idle:
-                        Text("Hello, World!")
-                    case .loading:
-                        loadingLayout
-                    case .loaded(let representable):
-    //                    NavigationStack {
-                            ScrollView {
-                                LazyVGrid(columns: columns, spacing: spacingRows) {
-
-                                    /// - LiveStats -
-                                    buildLiveStatsView(representable)
-
-                                    /// - Next to Finish -
-                                    buildNextToFinishView(representable)
-                                
-                                    /// - Results today -
-                                    buildResultsTodayView(representable)
-                                
-                                    /// - Results yesterday -
-                                    buildResultsYesterdayView(representable)
-                                
-                                    /// - Tomorrow races -
-                                    buildTomorrowRaces(representable)
-                                
-                                    Color.clear
-                                        .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
-                                }
-                                .padding()
-                        }
-                        .background(Color.tribuneru(.vaporPageBackground))
-                    
-                    case .error(let errorView):
-                        VStack(spacing: 20) {
-                            Spacer(minLength: safeAreaInsets.top + 20)
-                            switch errorView {
-                            case .emtpyData:
-                                ErrorCardView.emptyData(
-                                    showTryAgainButton: retryCount < 3
-                                ) {
-                                    retryCount += 1
-                                    action(.onAppear)
-                                }
-                            default:
-                                ErrorCardView.generic(
-                                    message: "\(errorView)",
-                                    showTryAgainButton: retryCount < 3
-                                ) {
-                                    retryCount += 1
-                                    action(.onAppear)
-                                }
+                switch state {
+                case .idle, .loading:
+                    // Nothing has arrived yet: the real layout drawn with stand-in data.
+                    content(
+                        .placeholders,
+                        isPlaceholder: true
+                    )
+                    .redacted(reason: .placeholder)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("Loading the races")
+                case .loaded(let representable):
+                    content(representable)
+                case .error(let errorView):
+                    VStack(spacing: 20) {
+                        Spacer(minLength: safeAreaInsets.top + 20)
+                        switch errorView {
+                        case .emtpyData:
+                            ErrorCardView.emptyData(
+                                showTryAgainButton: retryCount < 3
+                            ) {
+                                retryCount += 1
+                                action(.onAppear)
                             }
-                            Spacer(minLength: safeAreaInsets.bottom + 20)
+                        default:
+                            ErrorCardView.generic(
+                                message: "\(errorView)",
+                                showTryAgainButton: retryCount < 3
+                            ) {
+                                retryCount += 1
+                                action(.onAppear)
+                            }
                         }
-                        .padding(.horizontal)
+                        Spacer(minLength: safeAreaInsets.bottom + 20)
                     }
-                } else {
-                    loadingLayout
+                    .padding(.horizontal)
                 }
             }
             .preferredColorScheme(.dark)
-            .loaderPhase(
-                $loaderPhase,
-                isLoading: Self.isLoading(state)
-            )
             .onAppear {
                 action(.onAppear)
             }
         }
 
-        /// The page background, with the loader once loading has taken over a second.
-        private var loadingLayout: some View {
-            VStack {
-                if loaderPhase == .loader {
-                    LoaderView(
-                        title: "Loading races…",
-                        subtitle: "Fetching latest data"
-                    )
+        /// A placeholder page still scrolls; only its cards are disabled.
+        private func content(
+            _ representable: Representable,
+            isPlaceholder: Bool = false
+        ) -> some View {
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: spacingRows) {
+
+                    /// - LiveStats -
+                    buildLiveStatsView(representable)
+
+                    /// - Next to Finish -
+                    buildNextToFinishView(representable)
+
+                    /// - Results today -
+                    buildResultsTodayView(representable)
+
+                    /// - Results yesterday -
+                    buildResultsYesterdayView(representable)
+
+                    /// - Tomorrow races -
+                    buildTomorrowRaces(representable)
+
+                    Color.clear
+                        .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
                 }
+                .padding()
+                .disabled(isPlaceholder)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.tribuneru(.vaporPageBackground))
         }
 
-        private static func isLoading(_ state: HomeRaces.ViewState) -> Bool {
-            if case .loading = state {
-                return true
-            }
-            return false
-        }
-        
         /// "No live race right now" is the normal state (most days), not an
         /// error like an empty "Next to finish"/"Results"/"Tomorrow" section —
         /// so unlike `buildNoResultsCardView`'s siblings below, an empty list

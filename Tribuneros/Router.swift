@@ -32,12 +32,26 @@ final class Router: ObservableObject {
         case cxZone(CXZone)
         case paddockRider(Paddock.RiderContext)
         case web(URL)
+        /// A news page: like `web`, but opens in Safari Reader when the page supports it.
+        case article(URL)
     }
-    
+
     @Published var navPath = NavigationPath()
-    
+    /// The web page shown full screen over this tab (see `View.webPage(_:)`).
+    @Published var webPage: WebPage?
+
     func routeTo(_ destination: Destination) {
-        navPath.append(destination)
+        switch destination {
+        case .web(let url):
+            webPage = WebPage(url: url)
+        case .article(let url):
+            webPage = WebPage(
+                url: url,
+                prefersReader: true
+            )
+        default:
+            navPath.append(destination)
+        }
     }
     
     func popToPrevious() {

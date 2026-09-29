@@ -16,8 +16,6 @@ struct PaddockView: View {
         }
         .navigationDestination(for: Router.Destination.self) { destination in
             switch destination {
-            case .web(let url):
-                SafariView(url: url)
             case .paddockRider(let context):
                 Paddock.RiderDetailView(context: context) {
                     viewModel.action(.didTapOnLink($0))
@@ -49,7 +47,7 @@ extension Paddock {
                             .disabled(true)
                     case .loaded(let items) where !items.isEmpty:
                         PressPanel(items: items) { url in
-                            action(.didTapOnLink(url))
+                            action(.didTapOnPressLink(url))
                         }
                     case .loaded:
                         EmptyView()

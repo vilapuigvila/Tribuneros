@@ -16,6 +16,8 @@ extension Paddock {
         case didRequestRefresh
         case didSelectFilter(Filter)
         case didTapOnLink(URL?)
+        /// Press panel cards open in Safari Reader when the site supports it.
+        case didTapOnPressLink(URL)
         /// Transfer and program cards open the native rider screen; birthday rows still open the web page.
         case didTapOnRider(RiderContext)
     }
