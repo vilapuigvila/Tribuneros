@@ -72,4 +72,36 @@ final class CXEventDetailTests: XCTestCase {
         XCTAssertTrue(page.summary.isEmpty)
         XCTAssertTrue(page.pastWinners.isEmpty)
     }
+
+    // MARK: - Rider page parsing -
+
+    func testRiderPageParsesAvatarFactsAndResults() throws {
+        let html = """
+        <html><body>
+          <h1 class="main_title">Mathieu van der Poel</h1>
+          <img class="rider-avatar__image" src="/images/rider/mathieu-van-der-poel-kL0.png">
+          <dl><dt>Date of birth:</dt><dd>19 January 1995</dd></dl>
+          <table>
+            <tr><td>Team</td><td>Alpecin - Deceuninck</td></tr>
+            <tr><td>1</td><td><a href="/rider/other-rider/">OTHER Rider</a></td></tr>
+          </table>
+          <table>
+            <tr><th>Date</th><th>Race</th><th>Pos</th></tr>
+            <tr><td>04-01-2026</td><td><a href="/race/18001/">X2O Trofee Middelkerke</a></td><td>1</td></tr>
+            <tr><td>28-12-2025</td><td><a href="/race/17990/">UCI World Cup Dendermonde</a></td><td>2.</td></tr>
+          </table>
+        </body></html>
+        """
+
+        let page = try Service.parseCx24RiderPage(SwiftSoup.parse(html))
+
+        XCTAssertEqual(page.name, "Mathieu van der Poel")
+        XCTAssertEqual(page.avatarURL?.absoluteString, "https://cyclocross24.com/images/rider/mathieu-van-der-poel-kL0.png")
+        XCTAssertEqual(page.facts.map(\.label), ["Date of birth", "Team"])
+        XCTAssertEqual(page.facts.last?.value, "Alpecin - Deceuninck")
+        XCTAssertEqual(page.results.map(\.position), ["1", "2"])
+        XCTAssertEqual(page.results.first?.date, "04-01-2026")
+        XCTAssertEqual(page.results.first?.race, "X2O Trofee Middelkerke")
+        XCTAssertEqual(page.results.first?.raceURL?.absoluteString, "https://cyclocross24.com/race/18001/")
+    }
 }

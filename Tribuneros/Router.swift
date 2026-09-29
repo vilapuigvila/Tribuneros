@@ -19,6 +19,7 @@ final class Router: ObservableObject {
             case latestResults
             case raceDetail(DTO.CX24Homepage.Race)
             case eventDetail(DTO.CXCalendarEvent)
+            case winnerDetail(DTO.CXCalendarEvent, DTO.CX24Homepage.CategoryResult?)
             case standings
         }
         

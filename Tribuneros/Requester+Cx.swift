@@ -365,6 +365,81 @@ extension Service {
         )
     }
 
+    // MARK: - Rider page -
+
+    static func getCxRiderPage(_ riderURL: URL?) async -> DTO.CXRiderPage? {
+        guard let riderURL else { return nil }
+        do {
+            return try parseCx24RiderPage(try await fetchCx24Document(riderURL))
+        } catch {
+            reportCxDetailError(error, "Failed to fetch rider page")
+            return nil
+        }
+    }
+
+    /// Best-effort parse of a rider page (`/rider/<slug>/`). Only the avatar selector is known
+    /// to be stable (the Cloud Function's standings scrape uses it too); facts and results key on
+    /// row shapes: a facts row is a short label/value pair, a results row links to a race and
+    /// holds a date.
+    static func parseCx24RiderPage(_ document: Document) throws -> DTO.CXRiderPage {
+        let heading = try document.select("h1.main_title").first() ?? document.select("h1").first()
+        let name = try heading?.text().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let avatar = try document.select("img.rider-avatar__image").first()
+            ?? document.select("img[src*=/images/rider/]").first()
+        let avatarURL = cx24AbsoluteURL(try avatar?.attr("src") ?? "")
+
+        var facts: [DTO.CXRiderPage.Fact] = []
+        var seenLabels = Set<String>()
+        func addFact(_ label: String, _ value: String) {
+            let label = label
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .trimmingCharacters(in: CharacterSet(charactersIn: ":"))
+            let value = value.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !label.isEmpty, label.count <= 30, Int(label) == nil,
+                  !value.isEmpty, value.count <= 60,
+                  seenLabels.insert(label.lowercased()).inserted else { return }
+            facts.append(.init(label: label, value: value))
+        }
+
+        for term in try document.select("dl dt").array() {
+            addFact(try term.text(), try term.nextElementSibling()?.text() ?? "")
+        }
+
+        var results: [DTO.CXRiderPage.Result] = []
+        for row in try document.select("tr").array() {
+            let cells = try row.select("td, th").array()
+            if let raceAnchor = try row.select("a[href*=/race/]").first() {
+                let text = try row.text()
+                guard let dateRange = text.range(
+                    of: #"\b\d{1,2}[-./]\d{1,2}[-./]\d{4}\b"#,
+                    options: .regularExpression
+                ) else { continue }
+                let race = try raceAnchor.text().trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !race.isEmpty else { continue }
+                let position = try cells
+                    .map { try $0.text().trimmingCharacters(in: CharacterSet(charactersIn: ". ")) }
+                    .first { !$0.isEmpty && $0.count <= 3 && Int($0) != nil } ?? "-"
+                results.append(
+                    .init(
+                        date: String(text[dateRange]),
+                        race: race,
+                        position: position,
+                        raceURL: cx24AbsoluteURL(try raceAnchor.attr("href"))
+                    )
+                )
+            } else if cells.count == 2, try row.select("a[href*=/rider/]").first() == nil {
+                addFact(try cells[0].text(), try cells[1].text())
+            }
+        }
+
+        return .init(
+            name: name,
+            avatarURL: avatarURL,
+            facts: Array(facts.prefix(8)),
+            results: Array(results.prefix(10))
+        )
+    }
+
     /// The first plausible season year (1950–2099) in a row's text, e.g. "2025" out of
     /// "04-01-2025" or "2024-2025".
     private static func cx24SeasonYear(in text: String) -> String? {

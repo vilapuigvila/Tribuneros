@@ -309,4 +309,24 @@ extension DTO {
             .init(page: nil, results: [], videoURL: nil)
         }
     }
+
+    /// Best-effort scrape of a rider's cyclocross24 page (`/rider/<slug>/`).
+    struct CXRiderPage: Equatable, Sendable {
+        struct Fact: Equatable, Sendable, Hashable {
+            let label: String
+            let value: String
+        }
+
+        struct Result: Equatable, Sendable, Hashable {
+            let date: String
+            let race: String
+            let position: String
+            let raceURL: URL?
+        }
+
+        let name: String
+        let avatarURL: URL?
+        let facts: [Fact]
+        let results: [Result]
+    }
 }
