@@ -108,6 +108,13 @@ bot challenge: Node/curl requests get HTTP 403 with a "Just a moment..." page, w
   updates" and "Birthdays". Program-update times are relative ("16h") and transfer dates have no
   year ("20/09"); `Paddock.InteractorImpl` resolves both against the fetch time, and the feed
   groups by calendar day. An empty program-updates list is normal — PCS often has none.
+- Transfer and program cards open `Paddock.RiderDetailView` (route `paddockRider(Paddock.RiderContext)`):
+  the card's data (new team / added and dropped races) plus the rider's PCS page, fetched on
+  demand by `Service.getPCSRiderPage` (10 min TTL). `parsePCSRiderPage` is best-effort (the `h1`
+  name, the first rider photo, a `team/` link in the title block, and "Label:" elements in `b`,
+  `strong` or `.bold` followed by their value) and covered only by synthetic HTML in
+  `PaddockTests`; capture a real rider page with `URLSession` to tighten it. Birthday rows still
+  open the PCS page in Safari.
 
 **The Paddock press list comes from Firebase Remote Config**, key `press_urls`: a JSON array whose
 entries are either a URL string or a `{"Name": "url"}` object (the console currently uses the
