@@ -113,7 +113,10 @@ bot challenge: Node/curl requests get HTTP 403 with a "Just a moment..." page, w
 entries are either a URL string or a `{"Name": "url"}` object (the console currently uses the
 object form). Non-http(s) entries are dropped. The in-app default (the six original sites) covers
 first launch and offline; DEBUG builds fetch with a 0s minimum interval, release keeps the 12h
-default.
+default. Paddock shows the press panel without waiting for the fetch: `requestPress()` first
+publishes `Service.cachedPressLinks()` (the last activated value, or the default), then refreshes
+it. Until any list is known (`Domain.press == nil`, `ViewState.press == .loading`) the panel shows
+redacted placeholder cards; an empty list hides it.
 
 **CX lists come from Firestore.** The `scrapeCx` scheduled function (`functions/src/index.ts`,
 daily at 23:00 Europe/Madrid) scrapes cyclocross24.com with cheerio (`functions/src/cx.ts`, a port of the old

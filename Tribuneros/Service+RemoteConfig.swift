@@ -36,7 +36,13 @@ extension Service {
     static func getPressLinks() async -> [DTO.PressLink] {
         // A failed fetch keeps the last activated value, or the in-app default.
         _ = try? await remoteConfig.fetchAndActivate()
-        return parsePressLinks(remoteConfig.configValue(forKey: pressURLsKey).dataValue)
+        return cachedPressLinks()
+    }
+
+    /// The press list available without a network round trip: the value activated on a previous
+    /// launch (Remote Config persists it), or the in-app default on first launch.
+    static func cachedPressLinks() -> [DTO.PressLink] {
+        parsePressLinks(remoteConfig.configValue(forKey: pressURLsKey).dataValue)
     }
 
     static func parsePressLinks(_ data: Data) -> [DTO.PressLink] {

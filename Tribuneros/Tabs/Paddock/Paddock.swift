@@ -38,15 +38,22 @@ extension Paddock {
 // MARK: - View State -
 extension Paddock {
     struct ViewState: Equatable {
-        let press: [PressItem]
+        let press: Press
         let filter: Filter
         let feed: Feed
 
         static let idle = ViewState(
-            press: [],
+            press: .loading,
             filter: .all,
             feed: .loading
         )
+    }
+
+    enum Press: Equatable {
+        /// No list known yet: the panel shows redacted placeholder cards.
+        case loading
+        /// An empty list hides the panel.
+        case loaded([PressItem])
     }
 
     enum Feed: Equatable {
@@ -61,6 +68,15 @@ extension Paddock {
         let url: URL
         let name: String
         let domain: String?
+
+        /// Stand-ins shaped like real cards, drawn redacted while the list loads.
+        static let placeholders: [PressItem] = (1...4).map { index in
+            .init(
+                url: URL(string: "https://placeholder.invalid/\(index)")!,
+                name: "Cycling news",
+                domain: "cyclingnews.com"
+            )
+        }
     }
 
     struct Section: Identifiable, Equatable {

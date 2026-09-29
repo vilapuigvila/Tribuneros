@@ -58,7 +58,9 @@ extension Paddock {
             calendar: Calendar = .current
         ) -> Paddock.ViewState {
             Paddock.ViewState(
-                press: domain.press.map(Paddock.PressItem.init(link:)),
+                press: domain.press.map { links in
+                    Paddock.Press.loaded(links.map(Paddock.PressItem.init(link:)))
+                } ?? .loading,
                 filter: domain.filter,
                 feed: mapFeed(
                     from: domain,

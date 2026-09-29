@@ -23,7 +23,8 @@ extension Paddock {
             let kind: Kind
         }
 
-        var press: [DTO.PressLink]
+        /// `nil` until a press list is known, which the view shows as a placeholder.
+        var press: [DTO.PressLink]?
         var events: [Event]
         var filter: Filter
         var lastUpdated: Date?
@@ -31,7 +32,7 @@ extension Paddock {
         var error: EquatableError?
 
         static let empty = Domain(
-            press: [],
+            press: nil,
             events: [],
             filter: .all,
             lastUpdated: nil,
@@ -73,6 +74,10 @@ extension Paddock {
 
         private func requestPress() {
             guard pressTask == nil else { return }
+            // Show the saved list right away; the fetch below only refreshes it.
+            if domain.press == nil {
+                mutate { $0.press = Service.cachedPressLinks() }
+            }
             pressTask = Task { @MainActor [weak self] in
                 let links = await Service.getPressLinks()
                 self?.mutate { $0.press = links }

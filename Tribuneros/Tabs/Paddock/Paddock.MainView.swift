@@ -38,10 +38,17 @@ extension Paddock {
         var body: some View {
             ScrollView {
                 VStack(spacing: 20) {
-                    if !state.press.isEmpty {
-                        PressPanel(items: state.press) { url in
+                    switch state.press {
+                    case .loading:
+                        PressPanel(items: PressItem.placeholders) { _ in }
+                            .redacted(reason: .placeholder)
+                            .disabled(true)
+                    case .loaded(let items) where !items.isEmpty:
+                        PressPanel(items: items) { url in
                             action(.didTapOnLink(url))
                         }
+                    case .loaded:
+                        EmptyView()
                     }
 
                     FeedPanel(
@@ -72,7 +79,7 @@ extension Paddock {
         url: nil
     )
     let state = Paddock.ViewState(
-        press: [
+        press: .loaded([
             .init(
                 url: URL(string: "https://escapecollective.com")!,
                 name: "Escape Collective",
@@ -83,7 +90,7 @@ extension Paddock {
                 name: "cyclingnews.com",
                 domain: nil
             )
-        ],
+        ]),
         filter: .all,
         feed: .loaded([
             .init(
@@ -131,5 +138,9 @@ extension Paddock {
         ])
     )
     return Paddock.MainView(state: state) { _ in }
+}
+
+#Preview("Paddock - loading") {
+    Paddock.MainView(state: .idle) { _ in }
 }
 #endif

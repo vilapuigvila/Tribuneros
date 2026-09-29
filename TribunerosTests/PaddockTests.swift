@@ -59,6 +59,41 @@ final class PaddockTests: XCTestCase {
         )
     }
 
+    func testPressIsLoadingUntilAListIsKnown() {
+        func press(_ links: [DTO.PressLink]?) -> Paddock.Press {
+            let domain = Paddock.Domain(
+                press: links,
+                events: [],
+                filter: .all,
+                lastUpdated: nil,
+                loading: false,
+                error: nil
+            )
+            return Paddock.ViewModel<Paddock.InteractorImpl>.mapToViewState(
+                from: domain,
+                now: fetchedAt,
+                calendar: calendar
+            ).press
+        }
+        let link = DTO.PressLink(
+            name: "Escape Collective",
+            url: URL(string: "https://www.escapecollective.com")!
+        )
+
+        XCTAssertEqual(press(nil), .loading)
+        XCTAssertEqual(press([]), .loaded([]))
+        XCTAssertEqual(
+            press([link]),
+            .loaded([
+                .init(
+                    url: link.url,
+                    name: "Escape Collective",
+                    domain: "escapecollective.com"
+                )
+            ])
+        )
+    }
+
     private func viewState(
         events: [Paddock.Domain.Event],
         filter: Paddock.Filter = .all,
