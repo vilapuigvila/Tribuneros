@@ -46,6 +46,7 @@ struct CXStandingsListView: View {
 
 struct CyclocrossStandingsCardView: View {
     let item: DTO.CXStandings.Item
+    var openRider: (CXRaces.RiderStanding) -> Void = { _ in }
     let onTap: () -> Void
 
     var body: some View {
@@ -64,7 +65,15 @@ struct CyclocrossStandingsCardView: View {
             }
 
             if let firstCategory = item.categories.first {
-                StandingsCategorySummaryView(category: firstCategory)
+                StandingsCategorySummaryView(category: firstCategory) { leader in
+                    openRider(
+                        CXRaces.RiderStanding(
+                            leader: leader,
+                            category: firstCategory,
+                            item: item
+                        )
+                    )
+                }
             } else {
                 TribuneruText(
                     content: "No categories found.",
@@ -197,6 +206,10 @@ private struct StandingsLeaderRowView: View {
                 color: .tribuneru(.vaporTextSecondary),
                 lineLimit: 1
             )
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundColor(.tribuneru(.vaporTextSecondary))
         }
         .padding(.vertical, 6)
     }
@@ -360,6 +373,7 @@ private struct StandingsLeaderTableRowView: View {
 
 private struct StandingsCategorySummaryView: View {
     let category: DTO.CXStandings.Category
+    let openLeader: (DTO.CXStandings.Leader) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -371,7 +385,14 @@ private struct StandingsCategorySummaryView: View {
 
             let leaders = Array(category.leaders.prefix(3))
             ForEach(leaders, id: \.self) { leader in
-                StandingsLeaderRowView(leader: leader)
+                // A button wins over the card's own tap gesture, so only the row opens the rider.
+                Button {
+                    openLeader(leader)
+                } label: {
+                    StandingsLeaderRowView(leader: leader)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
             }
         }
     }

@@ -149,7 +149,8 @@ year, winner and results link) and a recent-results row opens `CXEventDetailView
 when one matches, else a minimal event built from the row (the detail then takes its winner from
 the loaded results).
 
-Standings list rows open `CXRiderDetailView` (built from `CXRaces.RiderStanding`: ranking,
+Standings list rows, and the leader rows on the CX Zone standings summary card (the rest of that
+card still opens the list), open `CXRiderDetailView` (built from `CXRaces.RiderStanding`: ranking,
 category, position, points) with the same rider-page sections as the winner screen; those sections
 (`CXRiderAvatar`, `CXRiderFactsPanel`, `CXRiderRecentResultsPanel`, `CXStatTile`) live in
 `Details/CXRiderSections.swift`.

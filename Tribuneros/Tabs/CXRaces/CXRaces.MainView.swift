@@ -70,7 +70,12 @@ extension CXRaces {
                             VaporPanel(panelColor: .tribuneru(.vaporPanelYesterday)) {
                                 VaporSectionHeader(title: "Standings")
                             } content: {
-                                CyclocrossStandingsSectionView(standings: representable.standings) {
+                                CyclocrossStandingsSectionView(
+                                    standings: representable.standings,
+                                    openRider: { standing in
+                                        action(.didTapOnStandingRider(standing))
+                                    }
+                                ) {
                                     action(.didTapOnStandings)
                                 }
                             }
