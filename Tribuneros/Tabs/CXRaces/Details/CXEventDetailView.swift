@@ -18,8 +18,8 @@ struct CXEventDetailView: View {
 
     let event: DTO.CXCalendarEvent
     let openURL: (URL) -> Void
-    /// Opens the native winner screen with the race's winning result row, when it was loaded.
-    private let openWinner: (DTO.CXCalendarEvent, DTO.CX24Homepage.CategoryResult?) -> Void
+    /// Opens the native winner screen, for this season's winner or a past edition's.
+    private let openWinner: (CXRaces.Winner) -> Void
     /// Fetches the on-demand part of the screen; injectable so previews never hit the network.
     private let loadDetail: (DTO.CXCalendarEvent, Bool) async -> DTO.CXEventDetail
 
@@ -36,7 +36,7 @@ struct CXEventDetailView: View {
                 hasStarted: $1
             )
         },
-        openWinner: @escaping (DTO.CXCalendarEvent, DTO.CX24Homepage.CategoryResult?) -> Void = { _, _ in },
+        openWinner: @escaping (CXRaces.Winner) -> Void = { _ in },
         openURL: @escaping (URL) -> Void
     ) {
         self.event = event
@@ -153,8 +153,10 @@ struct CXEventDetailView: View {
         } content: {
             Button {
                 openWinner(
-                    event,
-                    winningResult
+                    CXRaces.Winner(
+                        event: event,
+                        result: winningResult
+                    )
                 )
             } label: {
                 VaporCard {
@@ -239,11 +241,13 @@ struct CXEventDetailView: View {
             VaporCard(spacing: 0) {
                 ForEach(winners.indices, id: \.self) { index in
                     let winner = winners[index]
-                    let url = winner.resultsURL ?? winner.riderURL
                     Button {
-                        if let url {
-                            openURL(url)
-                        }
+                        openWinner(
+                            CXRaces.Winner(
+                                event: event,
+                                pastWinner: winner
+                            )
+                        )
                     } label: {
                         HStack(spacing: 10) {
                             TribuneruText(
@@ -261,15 +265,12 @@ struct CXEventDetailView: View {
                                 lineLimit: 1
                             )
                             Spacer(minLength: 0)
-                            if url != nil {
-                                chevron
-                            }
+                            chevron
                         }
                         .padding(.vertical, 10)
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .disabled(url == nil)
 
                     if index < winners.count - 1 {
                         divider

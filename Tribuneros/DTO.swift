@@ -310,6 +310,13 @@ extension DTO {
         }
     }
 
+    /// What the winner screen loads on demand: the rider page, and the winner's results row
+    /// when the caller didn't already have it.
+    struct CXWinnerDetail: Equatable, Sendable {
+        let page: CXRiderPage?
+        let result: CX24Homepage.CategoryResult?
+    }
+
     /// Best-effort scrape of a rider's cyclocross24 page (`/rider/<slug>/`).
     struct CXRiderPage: Equatable, Sendable {
         struct Fact: Equatable, Sendable, Hashable {

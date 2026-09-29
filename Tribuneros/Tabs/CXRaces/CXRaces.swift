@@ -17,7 +17,7 @@ extension CXRaces {
         case didTapOnLatestResults
         case didTapOnCalendarEvent(DTO.CXCalendarEvent)
         case didTapOnLink(URL)
-        case didTapOnWinner(DTO.CXCalendarEvent, DTO.CX24Homepage.CategoryResult?)
+        case didTapOnWinner(CXRaces.Winner)
         case didTapOnRaceDetail(DTO.CX24Homepage.Race)
         case didTapOnStandings
     }
@@ -133,6 +133,72 @@ extension CXRaces {
         case "C3": "UCI Class 3"
         default: nil
         }
+    }
+}
+
+// MARK: - Winner -
+extension CXRaces {
+
+    /// Everything the winner screen needs, built either from a calendar event's winner (this
+    /// season) or from a past edition listed on the race page.
+    struct Winner: Hashable {
+        let name: String
+        let riderURL: URL?
+        let flagURL: URL?
+        let country: String?
+        let race: String
+        let raceFlagURL: URL?
+        let raceClass: String
+        let series: RaceSeries
+        /// A full date for this season's winner, only the year for a past edition.
+        let dateText: String
+        /// The winning edition's results page; the screen loads `result` from it when missing.
+        let resultsURL: URL?
+        /// The winner's results row (time, team, age), when the caller already has it.
+        let result: DTO.CX24Homepage.CategoryResult?
+
+        init(
+            event: DTO.CXCalendarEvent,
+            result: DTO.CX24Homepage.CategoryResult?
+        ) {
+            name = event.winnerName
+            riderURL = event.winnerURL
+            flagURL = event.winnerFlagURL ?? result?.countryFlagURL
+            country = event.winnerCountry
+            race = event.race
+            raceFlagURL = event.flagURL
+            raceClass = event.raceClass
+            series = event.series
+            dateText = event.eventDate.map { WinnerDate.formatter.string(from: $0) } ?? event.date
+            resultsURL = event.resultsURL
+            self.result = result
+        }
+
+        init(
+            event: DTO.CXCalendarEvent,
+            pastWinner: DTO.CXRacePage.PastWinner
+        ) {
+            name = pastWinner.rider
+            riderURL = pastWinner.riderURL
+            flagURL = pastWinner.countryFlagURL
+            country = nil
+            race = event.race
+            raceFlagURL = event.flagURL
+            raceClass = event.raceClass
+            series = event.series
+            dateText = pastWinner.year
+            resultsURL = pastWinner.resultsURL
+            result = nil
+        }
+    }
+
+    private enum WinnerDate {
+        static let formatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "d MMMM yyyy"
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            return formatter
+        }()
     }
 }
 

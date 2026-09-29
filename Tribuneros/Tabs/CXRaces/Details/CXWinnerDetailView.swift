@@ -7,36 +7,39 @@
 
 import SwiftUI
 
-/// Native screen for the winner of a CX calendar race, opened from the "Winner" row of
-/// `CXEventDetailView`. The race facts (who, where, winning time, team, age) come from data the
-/// app already holds: the calendar event and, when it was loaded, the winner's results row. The
-/// rider's photo, profile facts and recent results come from their cyclocross24 page, fetched on
-/// the device and parsed best-effort — each section hides when it comes back empty.
+/// Native screen for a CX race winner, opened from `CXEventDetailView`'s "Winner" row (this
+/// season) or one of its "Past winners" rows. The race facts come from `CXRaces.Winner`; the
+/// winning time, team and age from the winner's results row, loaded from the edition's results
+/// page when the caller didn't have it. The rider's photo, profile facts and recent results come
+/// from their cyclocross24 page, parsed best-effort — each section hides when it comes back empty.
 struct CXWinnerDetailView: View {
-    let event: DTO.CXCalendarEvent
-    let result: DTO.CX24Homepage.CategoryResult?
+    let winner: CXRaces.Winner
     let openURL: (URL) -> Void
-    /// Fetches the rider page; injectable so previews never hit the network.
-    private let loadRiderPage: (URL?) async -> DTO.CXRiderPage?
+    /// Fetches the rider page and missing results row; injectable so previews never hit the network.
+    private let loadDetail: (CXRaces.Winner) async -> DTO.CXWinnerDetail
 
     @State private var page: DTO.CXRiderPage?
+    @State private var result: DTO.CX24Homepage.CategoryResult?
     @State private var isLoading: Bool
 
     init(
-        event: DTO.CXCalendarEvent,
-        result: DTO.CX24Homepage.CategoryResult?,
+        winner: CXRaces.Winner,
         page: DTO.CXRiderPage? = nil,
-        loadRiderPage: @escaping (URL?) async -> DTO.CXRiderPage? = {
-            await Service.getCxRiderPage($0)
+        loadDetail: @escaping (CXRaces.Winner) async -> DTO.CXWinnerDetail = {
+            await Service.getCxWinnerDetail(
+                riderURL: $0.riderURL,
+                resultsURL: $0.result == nil ? $0.resultsURL : nil
+            )
         },
         openURL: @escaping (URL) -> Void
     ) {
-        self.event = event
-        self.result = result
+        self.winner = winner
         self.openURL = openURL
-        self.loadRiderPage = loadRiderPage
+        self.loadDetail = loadDetail
         _page = State(initialValue: page)
-        _isLoading = State(initialValue: page == nil && event.winnerURL != nil)
+        _result = State(initialValue: winner.result)
+        let needsResult = winner.result == nil && winner.resultsURL != nil
+        _isLoading = State(initialValue: page == nil && (winner.riderURL != nil || needsResult))
     }
 
     var body: some View {
@@ -58,9 +61,9 @@ struct CXWinnerDetailView: View {
                     }
                 }
 
-                if let winnerURL = event.winnerURL {
+                if let riderURL = winner.riderURL {
                     Button {
-                        openURL(winnerURL)
+                        openURL(riderURL)
                     } label: {
                         VaporCard {
                             VaporMoreInfoLink(title: "rider page on cyclocross24")
@@ -77,7 +80,9 @@ struct CXWinnerDetailView: View {
         .navigationTitle("Winner")
         .task {
             guard isLoading else { return }
-            page = await loadRiderPage(event.winnerURL)
+            let detail = await loadDetail(winner)
+            page = detail.page
+            result = result ?? detail.result
             isLoading = false
         }
     }
@@ -105,9 +110,9 @@ struct CXWinnerDetailView: View {
                         lineLimit: 2
                     )
                     HStack(spacing: 8) {
-                        VaporFlagView(url: event.winnerFlagURL ?? result?.countryFlagURL)
+                        VaporFlagView(url: winner.flagURL ?? result?.countryFlagURL)
                         TribuneruText(
-                            content: event.winnerCountry ?? "-",
+                            content: winner.country ?? countryFact ?? "-",
                             style: .vaporMeta,
                             color: .tribuneru(.vaporTextSecondary),
                             lineLimit: 1
@@ -158,15 +163,15 @@ struct CXWinnerDetailView: View {
             VStack(alignment: .leading, spacing: 10) {
                 VaporCard(spacing: 4) {
                     TribuneruText(
-                        content: event.race,
+                        content: winner.race,
                         style: .vaporRaceNameNext,
                         color: .tribuneru(.vaporTextPrimary),
                         lineLimit: 2
                     )
                     HStack(spacing: 6) {
-                        VaporFlagView(url: event.flagURL)
+                        VaporFlagView(url: winner.raceFlagURL)
                         TribuneruText(
-                            content: [victoryDate, event.raceClass]
+                            content: [winner.dateText, winner.raceClass]
                                 .filter { !$0.isEmpty }
                                 .joined(separator: " · "),
                             style: .vaporMeta,
@@ -198,7 +203,7 @@ struct CXWinnerDetailView: View {
         if let age = result?.age, !age.isEmpty {
             stats.append(.init(label: "Age", value: age))
         }
-        stats.append(.init(label: "Series", value: event.series.title))
+        stats.append(.init(label: "Series", value: winner.series.title))
         return stats
     }
 
@@ -293,12 +298,12 @@ struct CXWinnerDetailView: View {
         if let name = page?.name, !name.isEmpty {
             return name
         }
-        return event.winnerName
+        return winner.name
     }
 
-    private var victoryDate: String {
-        guard let date = event.eventDate else { return event.date }
-        return CXWinnerDetailDate.formatter.string(from: date)
+    /// Past winners carry no country, so fall back to a "Nationality" fact from the rider page.
+    private var countryFact: String? {
+        page?.facts.first { $0.label.lowercased().contains("nationality") }?.value
     }
 
     private var divider: some View {
@@ -310,15 +315,6 @@ struct CXWinnerDetailView: View {
 }
 
 // MARK: - Private types -
-
-private enum CXWinnerDetailDate {
-    static let formatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d MMMM yyyy"
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        return formatter
-    }()
-}
 
 private struct Stat: Identifiable {
     let label: String
@@ -449,9 +445,42 @@ private extension DTO.CXRiderPage {
 #Preview("CX Winner - loaded") {
     NavigationStack {
         CXWinnerDetailView(
-            event: .mockWinner,
-            result: .mockWinner,
+            winner: .init(
+                event: .mockWinner,
+                result: .mockWinner
+            ),
             page: .mock
+        ) { _ in }
+    }
+}
+
+#Preview("CX Winner - past edition") {
+    NavigationStack {
+        CXWinnerDetailView(
+            winner: .init(
+                event: .mockWinner,
+                pastWinner: .init(
+                    year: "2024",
+                    rider: "ISERBYT Eli",
+                    riderURL: URL(string: "https://cyclocross24.com/rider/eli-iserbyt/"),
+                    countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+                    resultsURL: URL(string: "https://cyclocross24.com/race/17001/")
+                )
+            ),
+            loadDetail: { _ in
+                .init(
+                    page: nil,
+                    result: .init(
+                        position: "1",
+                        rider: "ISERBYT Eli",
+                        age: "26",
+                        team: "Pauwels Sauzen - Cibel Clementines",
+                        time: "1:01:12",
+                        countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+                        raceVideosURL: nil
+                    )
+                )
+            }
         ) { _ in }
     }
 }
@@ -459,9 +488,16 @@ private extension DTO.CXRiderPage {
 #Preview("CX Winner - calendar data only") {
     NavigationStack {
         CXWinnerDetailView(
-            event: .mockWinner,
-            result: nil,
-            loadRiderPage: { _ in nil }
+            winner: .init(
+                event: .mockWinner,
+                result: nil
+            ),
+            loadDetail: { _ in
+                .init(
+                    page: nil,
+                    result: nil
+                )
+            }
         ) { _ in }
     }
 }
@@ -469,12 +505,17 @@ private extension DTO.CXRiderPage {
 #Preview("CX Winner - loading") {
     NavigationStack {
         CXWinnerDetailView(
-            event: .mockWinner,
-            result: .mockWinner,
-            loadRiderPage: { _ in
+            winner: .init(
+                event: .mockWinner,
+                result: .mockWinner
+            ),
+            loadDetail: { _ in
                 // Never finishes, so the preview stays on the loader.
                 try? await Task.sleep(for: .seconds(3600))
-                return nil
+                return .init(
+                    page: nil,
+                    result: nil
+                )
             }
         ) { _ in }
     }

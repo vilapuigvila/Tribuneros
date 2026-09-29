@@ -26,6 +26,48 @@ final class CXEventDetailTests: XCTestCase {
         XCTAssertEqual(CXRaces.RaceSeries.of(race: "Cross4Life Copenhagen", raceClass: "C2", country: nil), .others)
     }
 
+    // MARK: - Winner -
+
+    func testPastWinnerBuildsWinnerForItsEdition() {
+        let event = DTO.CXCalendarEvent(
+            date: "04-01-2026",
+            race: "X2O Badkamers Trofee - Middelkerke",
+            raceClass: "C1",
+            flagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+            winnerName: "VAN DER POEL Mathieu",
+            isCancelled: false,
+            raceID: 18001,
+            raceSlug: "middelkerke",
+            raceURL: URL(string: "https://cyclocross24.com/race/middelkerke/"),
+            resultsURL: URL(string: "https://cyclocross24.com/race/18001/"),
+            videoURL: nil,
+            websiteURL: nil,
+            raceCountry: "Belgium",
+            winnerURL: URL(string: "https://cyclocross24.com/rider/mathieu-van-der-poel/"),
+            winnerCountry: "Netherlands",
+            winnerFlagURL: nil
+        )
+        let pastWinner = DTO.CXRacePage.PastWinner(
+            year: "2024",
+            rider: "ISERBYT Eli",
+            riderURL: URL(string: "https://cyclocross24.com/rider/eli-iserbyt/"),
+            countryFlagURL: nil,
+            resultsURL: URL(string: "https://cyclocross24.com/race/17001/")
+        )
+
+        let winner = CXRaces.Winner(event: event, pastWinner: pastWinner)
+
+        XCTAssertEqual(winner.name, "ISERBYT Eli")
+        XCTAssertEqual(winner.dateText, "2024")
+        XCTAssertEqual(winner.race, event.race)
+        XCTAssertEqual(winner.series, .x2oTrofee)
+        XCTAssertNil(winner.country)
+        XCTAssertNil(winner.result)
+        // The past edition's results, not this season's.
+        XCTAssertEqual(winner.resultsURL, pastWinner.resultsURL)
+        XCTAssertEqual(winner.riderURL, pastWinner.riderURL)
+    }
+
     // MARK: - Race page parsing -
 
     func testRacePageParsesWinnersByYear() throws {

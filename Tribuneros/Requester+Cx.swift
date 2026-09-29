@@ -367,6 +367,17 @@ extension Service {
 
     // MARK: - Rider page -
 
+    /// Loads the winner's rider page and, when `resultsURL` is given, their row (position 1) from
+    /// that edition's results.
+    static func getCxWinnerDetail(riderURL: URL?, resultsURL: URL?) async -> DTO.CXWinnerDetail {
+        async let page = getCxRiderPage(riderURL)
+        async let results = fetchCxEventResults(resultsURL)
+        return await .init(
+            page: page,
+            result: results.first { $0.position == "1" }
+        )
+    }
+
     static func getCxRiderPage(_ riderURL: URL?) async -> DTO.CXRiderPage? {
         guard let riderURL else { return nil }
         do {

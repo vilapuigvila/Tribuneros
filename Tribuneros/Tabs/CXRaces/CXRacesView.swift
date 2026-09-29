@@ -30,17 +30,14 @@ struct CXRacesRacesView: View {
             case .cxZone(.eventDetail(let event)):
                 CXEventDetailView(
                     event: event,
-                    openWinner: { event, result in
-                        viewModel.action(.didTapOnWinner(event, result))
+                    openWinner: { winner in
+                        viewModel.action(.didTapOnWinner(winner))
                     }
                 ) { url in
                     viewModel.action(.didTapOnLink(url))
                 }
-            case .cxZone(.winnerDetail(let event, let result)):
-                CXWinnerDetailView(
-                    event: event,
-                    result: result
-                ) { url in
+            case .cxZone(.winnerDetail(let winner)):
+                CXWinnerDetailView(winner: winner) { url in
                     viewModel.action(.didTapOnLink(url))
                 }
             case .cxZone(.latestResults):
