@@ -16,40 +16,35 @@ struct NextToFinishRaceDetail: View {
     @State private var profileImage: UIImage? = nil
     @State private var profileImages: [(ImageType, UIImage)] = []
     @State private var stageProfile: [DTO.StageProfile] = []
-    @State private var isLoading = false
-    
-    @State private var showLoader = false
+    @State private var isLoading = true
+    @State private var loaderPhase = LoaderPhase.waiting
 
     @State private var activeAlert: ActiveAlert?
     
     var body: some View {
         ZStack {
             Group {
-                if let raceInfo {
-                    buildInfoView(raceInfo)
-                        .padding()
-                        .transition(.opacity)
-                } else if showLoader {
+                if loaderPhase == .loader {
                     CyclistLoaderWithIcon(withAnimating: true)
                         .background(.black)
                         .transition(.opacity)
-                    
+                } else if loaderPhase == .content, let raceInfo {
+                    buildInfoView(raceInfo)
+                        .padding()
+                        .transition(.opacity)
                 } else {
                     EmptyView()
                 }
             }
         }
-        .animation(.easeInOut(duration: 0.75), value: (raceInfo != nil || isLoading))
+        .animation(.easeInOut(duration: 0.75), value: loaderPhase)
         .background(Color.tribuneru(.greenCardBackground))
+        .loaderPhase(
+            $loaderPhase,
+            isLoading: isLoading
+        )
         .task {
-            showLoader = false
             isLoading = true
-            Task {
-                try? await Task.sleep(nanoseconds: 1_000_000_000)
-                if isLoading {
-                    showLoader = true
-                }
-            }
             do {
                 async let raceInfoTask = Service.getNextToFinishRaceDetail(urlInfo)
                 async let stageProfileTask = Service.getInfoProfiles(urlInfo)

@@ -12,6 +12,8 @@ import FoundationXML // Necessary for XML parsing on certain platforms
 import `SwiftSoup` // Add SwiftSoup for HTML parsing
 import FirebaseFirestore
 
+private let cacheTimeinterval = 24 * 60 * 60
+
 extension Service {
     private static let cx24BaseURL = URL(string: "https://cyclocross24.com")!
     
@@ -30,20 +32,20 @@ extension Service {
     private struct CalendarDocument: Decodable {
         let events: [DTO.CXCalendarEvent]
     }
-
+/*
     private static func _readCxDocument<D: Decodable>(_ name: String, as type: D.Type) async throws -> D {
         try await Firestore.firestore()
             .collection("cx")
             .document(name)
             .getDocument()
             .data(as: type)
-    }
+    }*/
     
     private static func readCxDocument<D: Decodable>(_ name: String, as type: D.Type) async throws -> D {
         let ref = Firestore.firestore().collection("cx").document(name)
         if let cached = try? await ref.getDocument(source: .cache),
            let updatedAt = cached.get("updatedAt") as? Timestamp,
-           Date().timeIntervalSince(updatedAt.dateValue()) < 24 * 60 * 60 {
+           Date().timeIntervalSince(updatedAt.dateValue()) < Double(cacheTimeinterval) {
             return try cached.data(as: type)
         }
         return try await ref.getDocument().data(as: type)
@@ -283,8 +285,8 @@ extension Service {
         /// Mirrors the function's refresh policy; `nil` means a stored copy never goes stale.
         var maxAge: TimeInterval? {
             switch self {
-            case .rider: 24 * 60 * 60
-            case .race: 7 * 24 * 60 * 60
+            case .rider: Double(cacheTimeinterval)
+            case .race: Double(7 * cacheTimeinterval)
             case .results: nil
             }
         }

@@ -29,6 +29,7 @@ struct CXEventDetailView: View {
 
     @State private var detail: DTO.CXEventDetail
     @State private var isLoading: Bool
+    @State private var loaderPhase: LoaderPhase
     @State private var videoSheet: VideoSheet?
 
     init(
@@ -53,6 +54,7 @@ struct CXEventDetailView: View {
         self.loadDetail = loadDetail
         _detail = State(initialValue: detail ?? .empty)
         _isLoading = State(initialValue: detail == nil)
+        _loaderPhase = State(initialValue: LoaderPhase(isLoading: detail == nil))
     }
 
     var body: some View {
@@ -64,11 +66,11 @@ struct CXEventDetailView: View {
                     winnerPanel
                 }
 
-                if isLoading {
+                if loaderPhase == .loader {
                     LoaderView(title: "Loading race info...")
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 24)
-                } else {
+                } else if loaderPhase == .content {
                     if !detail.results.isEmpty {
                         resultsPanel
                     }
@@ -86,6 +88,10 @@ struct CXEventDetailView: View {
             .padding(.bottom, 40)
         }
         .background(Color.tribuneru(.vaporPageBackground))
+        .loaderPhase(
+            $loaderPhase,
+            isLoading: isLoading
+        )
         .preferredColorScheme(.dark)
         .navigationTitle(event.series.title)
         .fullScreenCover(item: $videoSheet) { sheet in

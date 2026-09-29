@@ -21,6 +21,7 @@ extension Paddock {
 
         @State private var page: DTO.PCSRiderPage?
         @State private var isLoading: Bool
+        @State private var loaderPhase: LoaderPhase
 
         init(
             context: RiderContext,
@@ -34,7 +35,9 @@ extension Paddock {
             self.openURL = openURL
             self.loadPage = loadPage
             _page = State(initialValue: page)
-            _isLoading = State(initialValue: page == nil && context.rider.url != nil)
+            let isLoading = page == nil && context.rider.url != nil
+            _isLoading = State(initialValue: isLoading)
+            _loaderPhase = State(initialValue: LoaderPhase(isLoading: isLoading))
         }
 
         var body: some View {
@@ -49,11 +52,11 @@ extension Paddock {
                         ProgramPanel(card: card)
                     }
 
-                    if isLoading {
+                    if loaderPhase == .loader {
                         LoaderView(title: "Loading rider...")
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 24)
-                    } else if let facts = page?.facts, !facts.isEmpty {
+                    } else if loaderPhase == .content, let facts = page?.facts, !facts.isEmpty {
                         CXRiderFactsPanel(facts: facts)
                     }
 
@@ -72,6 +75,10 @@ extension Paddock {
                 .padding(.bottom, 40)
             }
             .background(Color.tribuneru(.vaporPageBackground))
+            .loaderPhase(
+                $loaderPhase,
+                isLoading: isLoading
+            )
             .preferredColorScheme(.dark)
             .navigationTitle("Rider")
             .task {

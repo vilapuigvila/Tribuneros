@@ -13,6 +13,7 @@ struct RaceDetailView: View {
     @State private var categoryResults: [String: [DTO.CX24Homepage.CategoryResult]] = [:]
     @State private var selectedCategory: Int = 0
     @State private var isLoading: Bool = true
+    @State private var loaderPhase: LoaderPhase
     @State private var errorMessage: String?
     @State private var videoSheet: VideoSheet?
     /// A results row opens the rider screen.
@@ -27,6 +28,7 @@ struct RaceDetailView: View {
         self.openRider = openRider
         _categoryResults = State(initialValue: categoryResults)
         _isLoading = State(initialValue: categoryResults.isEmpty)
+        _loaderPhase = State(initialValue: LoaderPhase(isLoading: categoryResults.isEmpty))
     }
 
     var body: some View {
@@ -35,10 +37,12 @@ struct RaceDetailView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     headerView
                     
-                    if isLoading {
+                    if loaderPhase == .loader {
                         LoaderView(title: "Loading results...")
                             .frame(maxWidth: .infinity)
                             .padding(.top, 40)
+                    } else if loaderPhase == .waiting {
+                        EmptyView()
                     } else if let error = errorMessage {
                         TribuneruText(
                             content: "Error: \(error)",
@@ -57,9 +61,15 @@ struct RaceDetailView: View {
                 .padding(.bottom, 88)
             }
 
-            raceVideosFloatingButton
+            if loaderPhase != .waiting {
+                raceVideosFloatingButton
+            }
         }
         .background(Color.tribuneru(.vaporPageBackground))
+        .loaderPhase(
+            $loaderPhase,
+            isLoading: isLoading
+        )
         .preferredColorScheme(.dark)
         .fullScreenCover(item: $videoSheet) { sheet in
             YoutubeVideoView(url: sheet.url)
@@ -234,7 +244,7 @@ struct RaceDetailView: View {
     }
 
     private var raceVideosButtonState: (title: String, systemImage: String, url: URL?) {
-        if isLoading {
+        if loaderPhase == .loader {
             return (
                 title: "Loading race videos...",
                 systemImage: "video",

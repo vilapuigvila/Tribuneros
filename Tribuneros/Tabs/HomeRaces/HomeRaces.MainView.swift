@@ -47,77 +47,109 @@ extension HomeRaces {
         
         let state: HomeRaces.ViewState
         let action: (HomeRaces.Action) -> Void
+        @State private var loaderPhase: LoaderPhase
+
+        init(
+            state: HomeRaces.ViewState,
+            action: @escaping (HomeRaces.Action) -> Void
+        ) {
+            self.state = state
+            self.action = action
+            _loaderPhase = State(initialValue: LoaderPhase(isLoading: Self.isLoading(state)))
+        }
         
         var body: some View {
             Group {
-                switch state {
-                case .idle:
-                    Text("Hello, World!")
-                case .loading:
-                    VStack {
-                        LoaderView(
-                            title: "Loading races…",
-                            subtitle: "Fetching latest data"
-                        )
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.tribuneru(.vaporPageBackground))
-                case .loaded(let representable):
-//                    NavigationStack {
-                        ScrollView {
-                            LazyVGrid(columns: columns, spacing: spacingRows) {
+                if loaderPhase == .content {
+                    switch state {
+                    case .idle:
+                        Text("Hello, World!")
+                    case .loading:
+                        loadingLayout
+                    case .loaded(let representable):
+    //                    NavigationStack {
+                            ScrollView {
+                                LazyVGrid(columns: columns, spacing: spacingRows) {
 
-                                /// - LiveStats -
-                                buildLiveStatsView(representable)
+                                    /// - LiveStats -
+                                    buildLiveStatsView(representable)
 
-                                /// - Next to Finish -
-                                buildNextToFinishView(representable)
+                                    /// - Next to Finish -
+                                    buildNextToFinishView(representable)
                                 
-                                /// - Results today -
-                                buildResultsTodayView(representable)
+                                    /// - Results today -
+                                    buildResultsTodayView(representable)
                                 
-                                /// - Results yesterday -
-                                buildResultsYesterdayView(representable)
+                                    /// - Results yesterday -
+                                    buildResultsYesterdayView(representable)
                                 
-                                /// - Tomorrow races -
-                                buildTomorrowRaces(representable)
+                                    /// - Tomorrow races -
+                                    buildTomorrowRaces(representable)
                                 
-                                Color.clear
-                                    .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
-                            }
-                            .padding()
-                    }
-                    .background(Color.tribuneru(.vaporPageBackground))
-                    
-                case .error(let errorView):
-                    VStack(spacing: 20) {
-                        Spacer(minLength: safeAreaInsets.top + 20)
-                        switch errorView {
-                        case .emtpyData:
-                            ErrorCardView.emptyData(
-                                showTryAgainButton: retryCount < 3
-                            ) {
-                                retryCount += 1
-                                action(.onAppear)
-                            }
-                        default:
-                            ErrorCardView.generic(
-                                message: "\(errorView)",
-                                showTryAgainButton: retryCount < 3
-                            ) {
-                                retryCount += 1
-                                action(.onAppear)
-                            }
+                                    Color.clear
+                                        .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
+                                }
+                                .padding()
                         }
-                        Spacer(minLength: safeAreaInsets.bottom + 20)
+                        .background(Color.tribuneru(.vaporPageBackground))
+                    
+                    case .error(let errorView):
+                        VStack(spacing: 20) {
+                            Spacer(minLength: safeAreaInsets.top + 20)
+                            switch errorView {
+                            case .emtpyData:
+                                ErrorCardView.emptyData(
+                                    showTryAgainButton: retryCount < 3
+                                ) {
+                                    retryCount += 1
+                                    action(.onAppear)
+                                }
+                            default:
+                                ErrorCardView.generic(
+                                    message: "\(errorView)",
+                                    showTryAgainButton: retryCount < 3
+                                ) {
+                                    retryCount += 1
+                                    action(.onAppear)
+                                }
+                            }
+                            Spacer(minLength: safeAreaInsets.bottom + 20)
+                        }
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
+                } else {
+                    loadingLayout
                 }
             }
             .preferredColorScheme(.dark)
+            .loaderPhase(
+                $loaderPhase,
+                isLoading: Self.isLoading(state)
+            )
             .onAppear {
                 action(.onAppear)
             }
+        }
+
+        /// The page background, with the loader once loading has taken over a second.
+        private var loadingLayout: some View {
+            VStack {
+                if loaderPhase == .loader {
+                    LoaderView(
+                        title: "Loading races…",
+                        subtitle: "Fetching latest data"
+                    )
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.tribuneru(.vaporPageBackground))
+        }
+
+        private static func isLoading(_ state: HomeRaces.ViewState) -> Bool {
+            if case .loading = state {
+                return true
+            }
+            return false
         }
         
         /// "No live race right now" is the normal state (most days), not an
