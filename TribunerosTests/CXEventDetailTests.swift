@@ -63,6 +63,66 @@ final class CXEventDetailTests: XCTestCase {
         XCTAssertFalse(CXRaces.calendarEvent(event, matches: "koksijde"))
     }
 
+    // MARK: - Standings search -
+
+    func testStandingsSearchFiltersRankingsCategoriesAndRiders() {
+        func leader(_ position: Int, _ rider: String) -> DTO.CXStandings.Leader {
+            .init(
+                position: position,
+                rider: rider,
+                riderURL: nil,
+                countryFlagURL: nil,
+                points: ""
+            )
+        }
+        func category(_ title: String, _ leaders: [DTO.CXStandings.Leader]) -> DTO.CXStandings.Category {
+            .init(
+                title: title,
+                url: nil,
+                leaders: leaders,
+                leaderImageURL: nil
+            )
+        }
+        func item(_ title: String, _ categories: [DTO.CXStandings.Category]) -> DTO.CXStandings.Item {
+            .init(
+                title: title,
+                url: nil,
+                logoURL: nil,
+                categories: categories
+            )
+        }
+        let standings = DTO.CXStandings(items: [
+            item("UCI Ranking", [
+                category("Men Elite", [leader(1, "VANTHOURENHOUT Michael"), leader(2, "VAN DER POEL Mathieu")]),
+                category("Women Elite", [leader(1, "VAN EMPEL Fem"), leader(2, "ALVARADO Ceylin")])
+            ]),
+            item("Superprestige", [
+                category("Men Elite", [leader(1, "ISERBYT Eli"), leader(2, "VANTHOURENHOUT Michael")])
+            ])
+        ])
+
+        XCTAssertEqual(CXRaces.standings(standings, matching: " "), standings)
+
+        // A rider: only their rows stay, in every ranking they appear in.
+        let rider = CXRaces.standings(standings, matching: "vanthourenhout")
+        XCTAssertEqual(rider.items.map(\.title), ["UCI Ranking", "Superprestige"])
+        XCTAssertEqual(rider.items[0].categories.map(\.title), ["Men Elite"])
+        XCTAssertEqual(rider.items[0].categories[0].leaders.map(\.position), [1])
+
+        // A ranking keeps everything; a category keeps all its riders.
+        XCTAssertEqual(CXRaces.standings(standings, matching: "superprestige").items, [standings.items[1]])
+        let women = CXRaces.standings(standings, matching: "women")
+        XCTAssertEqual(women.items.map(\.title), ["UCI Ranking"])
+        XCTAssertEqual(women.items[0].categories, [standings.items[0].categories[1]])
+
+        // Words combine across levels, ignoring accents.
+        let combined = CXRaces.standings(standings, matching: "superprestige iserbyt")
+        XCTAssertEqual(combined.items.map(\.title), ["Superprestige"])
+        XCTAssertEqual(combined.items[0].categories[0].leaders.map(\.rider), ["ISERBYT Eli"])
+        XCTAssertEqual(CXRaces.standings(standings, matching: "émpel").items.count, 1)
+        XCTAssertTrue(CXRaces.standings(standings, matching: "nys").items.isEmpty)
+    }
+
     // MARK: - Winner -
 
     func testPastWinnerBuildsWinnerForItsEdition() {

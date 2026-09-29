@@ -10,12 +10,19 @@ import SwiftUI
 struct CXStandingsListView: View {
     let standings: DTO.CXStandings
     var openRider: (CXRaces.RiderStanding) -> Void = { _ in }
+    @State private var searchText = ""
 
     var body: some View {
+        let filtered = CXRaces.standings(
+            standings,
+            matching: searchText
+        )
         List {
-            if standings.items.isEmpty {
+            if filtered.items.isEmpty {
                 TribuneruText(
-                    content: "No standings found.",
+                    content: standings.items.isEmpty
+                        ? "No standings found."
+                        : "No riders or standings match \u{201C}\(searchText)\u{201D}.",
                     style: .vaporMeta,
                     color: .tribuneru(.vaporTextSecondary),
                     lineLimit: 2
@@ -27,7 +34,8 @@ struct CXStandingsListView: View {
                 .listRowInsets(.init(top: 8, leading: 16, bottom: 8, trailing: 16))
                 .listRowBackground(Color.clear)
             } else {
-                ForEach(standings.items, id: \.self) { item in
+                // Keyed by title, so filtering doesn't reset a card's selected category tab.
+                ForEach(filtered.items, id: \.title) { item in
                     StandingsItemView(
                         item: item,
                         openRider: openRider
@@ -41,6 +49,11 @@ struct CXStandingsListView: View {
         .scrollContentBackground(.hidden)
         .background(Color.tribuneru(.vaporPageBackground))
         .preferredColorScheme(.dark)
+        .searchable(
+            text: $searchText,
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: "Rider, ranking, category..."
+        )
     }
 }
 

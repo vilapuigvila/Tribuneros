@@ -151,6 +151,57 @@ extension CXRaces {
         }
     }
 
+    /// The Standings search. Each word of `query` must appear (ignoring case and accents) in the
+    /// ranking's title, the category's title or the rider's name, so "superprestige", "women" and
+    /// "iserbyt" all work, and so does "superprestige iserbyt". A ranking or category that matches
+    /// on its own keeps all its riders; otherwise only matching riders stay, and categories and
+    /// rankings left empty are dropped. An empty query returns `standings` unchanged.
+    static func standings(
+        _ standings: DTO.CXStandings,
+        matching query: String
+    ) -> DTO.CXStandings {
+        let terms = query.split(whereSeparator: \.isWhitespace)
+        guard !terms.isEmpty else { return standings }
+        func matches(_ fields: String...) -> Bool {
+            let searchable = fields.joined(separator: " ")
+            return terms.allSatisfy { term in
+                searchable.range(
+                    of: term,
+                    options: [.caseInsensitive, .diacriticInsensitive]
+                ) != nil
+            }
+        }
+
+        let items = standings.items.compactMap { item -> DTO.CXStandings.Item? in
+            if matches(item.title) {
+                return item
+            }
+            let categories = item.categories.compactMap { category -> DTO.CXStandings.Category? in
+                if matches(item.title, category.title) {
+                    return category
+                }
+                let leaders = category.leaders.filter { leader in
+                    matches(item.title, category.title, leader.rider)
+                }
+                guard !leaders.isEmpty else { return nil }
+                return .init(
+                    title: category.title,
+                    url: category.url,
+                    leaders: leaders,
+                    leaderImageURL: category.leaderImageURL
+                )
+            }
+            guard !categories.isEmpty else { return nil }
+            return .init(
+                title: item.title,
+                url: item.url,
+                logoURL: item.logoURL,
+                categories: categories
+            )
+        }
+        return .init(items: items)
+    }
+
     /// UCI class codes as shown on cyclocross24, spelled out for the detail screen.
     static func raceClassDescription(_ raceClass: String) -> String? {
         switch raceClass.uppercased().trimmingCharacters(in: .whitespaces) {

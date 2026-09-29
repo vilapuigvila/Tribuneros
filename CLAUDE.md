@@ -156,6 +156,11 @@ the loaded results). A win (position 1) opens `CXWinnerDetailView` for that race
 (`Winner(riderResult:rider:raceEvent:)`, route `winnerDetail(_, from: nil)`); anything else opens
 `CXEventDetailView`.
 
+The Standings list has a search bar too (`CXRaces.standings(_:matching:)`: words match the
+ranking title, category title or rider name; a matching ranking/category keeps all its riders,
+otherwise only matching riders stay and emptied categories/rankings are dropped). It only searches
+what the standings document holds: the top five of each category.
+
 Standings list rows, and the leader rows on the CX Zone standings summary card (the rest of that
 card still opens the list), open `CXRiderDetailView` with `CXRaces.RiderContext.standing`
 (`RiderStanding`: ranking, category, position, points). Latest-results podium rows (home card and
