@@ -26,6 +26,118 @@ final class CXEventDetailTests: XCTestCase {
         XCTAssertEqual(CXRaces.RaceSeries.of(race: "Cross4Life Copenhagen", raceClass: "C2", country: nil), .others)
     }
 
+    // MARK: - Winner -
+
+    func testPastWinnerBuildsWinnerForItsEdition() {
+        let event = DTO.CXCalendarEvent(
+            date: "04-01-2026",
+            race: "X2O Badkamers Trofee - Middelkerke",
+            raceClass: "C1",
+            flagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png"),
+            winnerName: "VAN DER POEL Mathieu",
+            isCancelled: false,
+            raceID: 18001,
+            raceSlug: "middelkerke",
+            raceURL: URL(string: "https://cyclocross24.com/race/middelkerke/"),
+            resultsURL: URL(string: "https://cyclocross24.com/race/18001/"),
+            videoURL: nil,
+            websiteURL: nil,
+            raceCountry: "Belgium",
+            winnerURL: URL(string: "https://cyclocross24.com/rider/mathieu-van-der-poel/"),
+            winnerCountry: "Netherlands",
+            winnerFlagURL: nil
+        )
+        let pastWinner = DTO.CXRacePage.PastWinner(
+            year: "2024",
+            rider: "ISERBYT Eli",
+            riderURL: URL(string: "https://cyclocross24.com/rider/eli-iserbyt/"),
+            countryFlagURL: nil,
+            resultsURL: URL(string: "https://cyclocross24.com/race/17001/")
+        )
+
+        let winner = CXRaces.Winner(event: event, pastWinner: pastWinner)
+
+        XCTAssertEqual(winner.name, "ISERBYT Eli")
+        XCTAssertEqual(winner.dateText, "2024")
+        XCTAssertEqual(winner.race, event.race)
+        XCTAssertEqual(winner.series, .x2oTrofee)
+        XCTAssertNil(winner.country)
+        XCTAssertNil(winner.result)
+        // The past edition's results, not this season's.
+        XCTAssertEqual(winner.resultsURL, pastWinner.resultsURL)
+        XCTAssertEqual(winner.riderURL, pastWinner.riderURL)
+        // Opening the race from the winner screen shows that edition, not this season's.
+        XCTAssertEqual(winner.raceEvent.date, "2024")
+        XCTAssertEqual(winner.raceEvent.winnerName, "ISERBYT Eli")
+        XCTAssertEqual(winner.raceEvent.resultsURL, pastWinner.resultsURL)
+        XCTAssertEqual(winner.raceEvent.raceID, 17001)
+        XCTAssertEqual(winner.raceEvent.raceURL, event.raceURL)
+        XCTAssertEqual(
+            CXRaces.Winner(event: event, result: nil).raceEvent,
+            event
+        )
+    }
+
+    // MARK: - Rider result → calendar event -
+
+    private func calendarEvent(
+        date: String,
+        race: String,
+        resultsID: Int
+    ) -> DTO.CXCalendarEvent {
+        .init(
+            date: date,
+            race: race,
+            raceClass: "C1",
+            flagURL: nil,
+            winnerName: "",
+            isCancelled: false,
+            raceID: resultsID,
+            raceSlug: nil,
+            raceURL: nil,
+            resultsURL: URL(string: "https://cyclocross24.com/race/\(resultsID)/"),
+            videoURL: nil,
+            websiteURL: nil,
+            raceCountry: "Belgium",
+            winnerURL: nil,
+            winnerCountry: nil,
+            winnerFlagURL: nil
+        )
+    }
+
+    func testRiderResultMatchesCalendarEventByLinkOrDateAndName() {
+        let calendar = [
+            calendarEvent(date: "28-12-2025", race: "UCI World Cup Dendermonde", resultsID: 17990),
+            calendarEvent(date: "04-01-2026", race: "X2O Badkamers Trofee - Middelkerke", resultsID: 18001)
+        ]
+
+        let byLink = CXRaces.calendarEvent(
+            for: .init(date: "28-12-2025", race: "Dendermonde", position: "2", raceURL: URL(string: "/race/17990", relativeTo: URL(string: "https://cyclocross24.com"))),
+            in: calendar
+        )
+        XCTAssertEqual(byLink, calendar[0])
+
+        let byDateAndName = CXRaces.calendarEvent(
+            for: .init(date: "4.1.2026", race: "Middelkerke", position: "1", raceURL: nil),
+            in: calendar
+        )
+        XCTAssertEqual(byDateAndName, calendar[1])
+    }
+
+    func testRiderResultOutsideCalendarBuildsMinimalEvent() {
+        let event = CXRaces.calendarEvent(
+            for: .init(date: "5/1/2025", race: "Zonhoven", position: "3", raceURL: URL(string: "https://cyclocross24.com/race/16500/")),
+            in: []
+        )
+
+        XCTAssertEqual(event.date, "05-01-2025")
+        XCTAssertEqual(event.race, "Zonhoven")
+        XCTAssertEqual(event.raceID, 16500)
+        XCTAssertEqual(event.resultsURL?.absoluteString, "https://cyclocross24.com/race/16500/")
+        XCTAssertNil(event.raceURL)
+        XCTAssertTrue(event.winnerName.isEmpty)
+    }
+
     // MARK: - Race page parsing -
 
     func testRacePageParsesWinnersByYear() throws {
@@ -71,5 +183,37 @@ final class CXEventDetailTests: XCTestCase {
         XCTAssertEqual(page.title, "Race")
         XCTAssertTrue(page.summary.isEmpty)
         XCTAssertTrue(page.pastWinners.isEmpty)
+    }
+
+    // MARK: - Rider page parsing -
+
+    func testRiderPageParsesAvatarFactsAndResults() throws {
+        let html = """
+        <html><body>
+          <h1 class="main_title">Mathieu van der Poel</h1>
+          <img class="rider-avatar__image" src="/images/rider/mathieu-van-der-poel-kL0.png">
+          <dl><dt>Date of birth:</dt><dd>19 January 1995</dd></dl>
+          <table>
+            <tr><td>Team</td><td>Alpecin - Deceuninck</td></tr>
+            <tr><td>1</td><td><a href="/rider/other-rider/">OTHER Rider</a></td></tr>
+          </table>
+          <table>
+            <tr><th>Date</th><th>Race</th><th>Pos</th></tr>
+            <tr><td>04-01-2026</td><td><a href="/race/18001/">X2O Trofee Middelkerke</a></td><td>1</td></tr>
+            <tr><td>28-12-2025</td><td><a href="/race/17990/">UCI World Cup Dendermonde</a></td><td>2.</td></tr>
+          </table>
+        </body></html>
+        """
+
+        let page = try Service.parseCx24RiderPage(SwiftSoup.parse(html))
+
+        XCTAssertEqual(page.name, "Mathieu van der Poel")
+        XCTAssertEqual(page.avatarURL?.absoluteString, "https://cyclocross24.com/images/rider/mathieu-van-der-poel-kL0.png")
+        XCTAssertEqual(page.facts.map(\.label), ["Date of birth", "Team"])
+        XCTAssertEqual(page.facts.last?.value, "Alpecin - Deceuninck")
+        XCTAssertEqual(page.results.map(\.position), ["1", "2"])
+        XCTAssertEqual(page.results.first?.date, "04-01-2026")
+        XCTAssertEqual(page.results.first?.race, "X2O Trofee Middelkerke")
+        XCTAssertEqual(page.results.first?.raceURL?.absoluteString, "https://cyclocross24.com/race/18001/")
     }
 }

@@ -46,6 +46,20 @@ extension CXRaces {
                 router.routeTo(.cxZone(.eventDetail(event)))
             case .didTapOnLink(let url):
                 router.routeTo(.web(url))
+            case .didTapOnWinner(let winner, let from):
+                router.routeTo(.cxZone(.winnerDetail(winner, from: from)))
+            case .didTapOnWinnerRace(let event, let openedFrom):
+                if event == openedFrom {
+                    router.popToPrevious()
+                } else {
+                    router.routeTo(.cxZone(.eventDetail(event)))
+                }
+            case .didTapOnRiderResult(let result):
+                let event = CXRaces.calendarEvent(
+                    for: result,
+                    in: interactor.domain.calendar
+                )
+                router.routeTo(.cxZone(.eventDetail(event)))
             case .didTapOnRaceDetail(let race):
                 router.routeTo(.cxZone(.raceDetail(race)))
             case .didTapOnStandings:

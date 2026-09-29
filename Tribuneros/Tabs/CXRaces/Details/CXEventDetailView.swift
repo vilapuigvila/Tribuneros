@@ -18,6 +18,8 @@ struct CXEventDetailView: View {
 
     let event: DTO.CXCalendarEvent
     let openURL: (URL) -> Void
+    /// Opens the native winner screen, for this season's winner or a past edition's.
+    private let openWinner: (CXRaces.Winner) -> Void
     /// Fetches the on-demand part of the screen; injectable so previews never hit the network.
     private let loadDetail: (DTO.CXCalendarEvent, Bool) async -> DTO.CXEventDetail
 
@@ -34,10 +36,12 @@ struct CXEventDetailView: View {
                 hasStarted: $1
             )
         },
+        openWinner: @escaping (CXRaces.Winner) -> Void = { _ in },
         openURL: @escaping (URL) -> Void
     ) {
         self.event = event
         self.openURL = openURL
+        self.openWinner = openWinner
         self.loadDetail = loadDetail
         _detail = State(initialValue: detail ?? .empty)
         _isLoading = State(initialValue: detail == nil)
@@ -48,7 +52,7 @@ struct CXEventDetailView: View {
             VStack(alignment: .leading, spacing: 20) {
                 summaryPanel
 
-                if !event.winnerName.isEmpty {
+                if !winnerName.isEmpty {
                     winnerPanel
                 }
 
@@ -97,11 +101,11 @@ struct CXEventDetailView: View {
         } content: {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 6) {
-                    DetailTag(title: event.series.title)
+                    CXDetailTag(title: event.series.title)
                     if !event.raceClass.isEmpty {
-                        DetailTag(title: event.raceClass)
+                        CXDetailTag(title: event.raceClass)
                     }
-                    DetailTag(
+                    CXDetailTag(
                         title: status.title,
                         color: status.color
                     )
@@ -148,26 +152,30 @@ struct CXEventDetailView: View {
             VaporSectionHeader(title: "Winner")
         } content: {
             Button {
-                if let url = event.winnerURL {
-                    openURL(url)
-                }
+                openWinner(
+                    CXRaces.Winner(
+                        event: event,
+                        result: winningResult
+                    )
+                )
             } label: {
                 VaporCard {
                     HStack(spacing: 10) {
                         Image(systemName: "trophy.fill")
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.tribuneru(.vaporAccent))
-                        VaporFlagView(url: event.winnerFlagURL)
+                        VaporFlagView(url: event.winnerFlagURL ?? winningResult?.countryFlagURL)
                         VStack(alignment: .leading, spacing: 2) {
                             TribuneruText(
-                                content: event.winnerName,
+                                content: winnerName,
                                 style: .vaporWinnerName,
                                 color: .tribuneru(.vaporTextPrimary),
                                 lineLimit: 1
                             )
                             TribuneruText(
-                                content: ["Men Elite", event.winnerCountry]
+                                content: ["Men Elite", event.winnerCountry, winningResult?.time]
                                     .compactMap { $0 }
+                                    .filter { !$0.isEmpty }
                                     .joined(separator: " · "),
                                 style: .vaporMeta,
                                 color: .tribuneru(.vaporTextSecondary),
@@ -175,15 +183,23 @@ struct CXEventDetailView: View {
                             )
                         }
                         Spacer(minLength: 0)
-                        if event.winnerURL != nil {
-                            chevron
-                        }
+                        chevron
                     }
                 }
             }
             .buttonStyle(.plain)
-            .disabled(event.winnerURL == nil)
         }
+    }
+
+    /// The calendar's winner, or the results' when the calendar has none (a race opened from a
+    /// rider's recent results, outside this season's calendar).
+    private var winnerName: String {
+        event.winnerName.isEmpty ? (winningResult?.rider ?? "") : event.winnerName
+    }
+
+    /// The results row of the winner, which carries their team, age and winning time.
+    private var winningResult: DTO.CX24Homepage.CategoryResult? {
+        detail.results.first { $0.position == "1" }
     }
 
     // MARK: - Results -
@@ -231,11 +247,13 @@ struct CXEventDetailView: View {
             VaporCard(spacing: 0) {
                 ForEach(winners.indices, id: \.self) { index in
                     let winner = winners[index]
-                    let url = winner.resultsURL ?? winner.riderURL
                     Button {
-                        if let url {
-                            openURL(url)
-                        }
+                        openWinner(
+                            CXRaces.Winner(
+                                event: event,
+                                pastWinner: winner
+                            )
+                        )
                     } label: {
                         HStack(spacing: 10) {
                             TribuneruText(
@@ -253,15 +271,12 @@ struct CXEventDetailView: View {
                                 lineLimit: 1
                             )
                             Spacer(minLength: 0)
-                            if url != nil {
-                                chevron
-                            }
+                            chevron
                         }
                         .padding(.vertical, 10)
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .disabled(url == nil)
 
                     if index < winners.count - 1 {
                         divider
@@ -413,6 +428,29 @@ struct CXEventDetailView: View {
     }
 }
 
+// MARK: - Shared components -
+
+/// Outlined Space Mono tag used on the CX detail screens (series, class, status).
+struct CXDetailTag: View {
+    let title: String
+    var color: Color = .tribuneru(.vaporTextSecondary)
+
+    var body: some View {
+        TribuneruText(
+            content: title.uppercased(),
+            style: .vaporFeedTag,
+            color: color,
+            lineLimit: 1
+        )
+        .padding(.horizontal, 8)
+        .padding(.vertical, 5)
+        .overlay(
+            RoundedRectangle(cornerRadius: 5)
+                .stroke(color, lineWidth: 0.5)
+        )
+    }
+}
+
 // MARK: - Private types -
 
 private enum CXEventDetailDate {
@@ -462,26 +500,6 @@ private extension CXEventDetailView {
     struct VideoSheet: Identifiable {
         let id = UUID()
         let url: URL
-    }
-
-    struct DetailTag: View {
-        let title: String
-        var color: Color = .tribuneru(.vaporTextSecondary)
-
-        var body: some View {
-            TribuneruText(
-                content: title.uppercased(),
-                style: .vaporFeedTag,
-                color: color,
-                lineLimit: 1
-            )
-            .padding(.horizontal, 8)
-            .padding(.vertical, 5)
-            .overlay(
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(color, lineWidth: 0.5)
-            )
-        }
     }
 
     struct InfoRow: View {

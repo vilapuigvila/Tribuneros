@@ -137,7 +137,17 @@ and UCI class since cyclocross24 has no series field), and a row opens `CXEventD
 `Service.getCxEventDetail` fills it on demand, on the device: the race page's history of winners
 (`parseCx24RacePage`, best-effort: it keys on rows holding a rider link and a year, not on table
 classes, and is covered only by synthetic HTML in `CXEventDetailTests`), plus the Men Elite results
-and video once the race day has come.
+and video once the race day has come. Its "Winner" row and each "Past winners" row open `CXWinnerDetailView`
+(built from `CXRaces.Winner`): race facts and the winner's results row (time, team, age, fetched
+from that edition's results page when not already loaded) plus their rider page via
+`Service.getCxWinnerDetail`
+(`parseCx24RiderPage`: the `img.rider-avatar__image` avatar selector is shared with the Cloud
+Function; facts and recent results are best-effort, like the race page). The winner screen's "Victory" card
+pops back when that edition is the race it was opened from (the route carries it:
+`winnerDetail(_:from:)`), otherwise it opens the winning edition (`CXRaces.Winner.raceEvent`; for a past winner, the race with that
+year, winner and results link) and a recent-results row opens `CXEventDetailView` again, via `CXRaces.calendarEvent(for:in:)`: this season's calendar entry
+when one matches, else a minimal event built from the row (the detail then takes its winner from
+the loaded results).
 
 ### `Alfy`: sibling shared package
 
