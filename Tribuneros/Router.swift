@@ -22,7 +22,8 @@ final class Router: ObservableObject {
             case riderDetail(CXRaces.RiderContext)
             /// `from` is the race detail the winner screen was opened from, so opening that same
             /// race again pops back instead of pushing a duplicate.
-            case winnerDetail(CXRaces.Winner, from: DTO.CXCalendarEvent)
+            /// `nil` when opened from a rider screen, where there's no race to go back to.
+            case winnerDetail(CXRaces.Winner, from: DTO.CXCalendarEvent?)
             case standings
         }
         

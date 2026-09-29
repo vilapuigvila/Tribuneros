@@ -45,8 +45,8 @@ struct CXRacesRacesView: View {
                     openRace: { event in
                         viewModel.action(.didTapOnWinnerRace(event, openedFrom: from))
                     },
-                    openRaceResult: { result in
-                        viewModel.action(.didTapOnRiderResult(result))
+                    openRaceResult: { result, rider in
+                        viewModel.action(.didTapOnRiderResult(result, rider: rider))
                     }
                 ) { url in
                     viewModel.action(.didTapOnLink(url))
@@ -77,8 +77,8 @@ struct CXRacesRacesView: View {
                     openRace: { race in
                         viewModel.action(.didTapOnRaceDetail(race))
                     },
-                    openRaceResult: { result in
-                        viewModel.action(.didTapOnRiderResult(result))
+                    openRaceResult: { result, rider in
+                        viewModel.action(.didTapOnRiderResult(result, rider: rider))
                     }
                 ) { url in
                     viewModel.action(.didTapOnLink(url))

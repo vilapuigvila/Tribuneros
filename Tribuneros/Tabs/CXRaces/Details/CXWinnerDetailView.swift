@@ -18,7 +18,7 @@ struct CXWinnerDetailView: View {
     /// Opens the winning race (the "Victory" card) as a native race detail.
     private let openRace: (DTO.CXCalendarEvent) -> Void
     /// Opens a "Recent results" row as a native race detail.
-    private let openRaceResult: (DTO.CXRiderPage.Result) -> Void
+    private let openRaceResult: (DTO.CXRiderPage.Result, CXRaces.RiderRef) -> Void
     /// Fetches the rider page and missing results row; injectable so previews never hit the network.
     private let loadDetail: (CXRaces.Winner) async -> DTO.CXWinnerDetail
 
@@ -36,7 +36,7 @@ struct CXWinnerDetailView: View {
             )
         },
         openRace: @escaping (DTO.CXCalendarEvent) -> Void = { _ in },
-        openRaceResult: @escaping (DTO.CXRiderPage.Result) -> Void = { _ in },
+        openRaceResult: @escaping (DTO.CXRiderPage.Result, CXRaces.RiderRef) -> Void = { _, _ in },
         openURL: @escaping (URL) -> Void
     ) {
         self.winner = winner
@@ -67,7 +67,7 @@ struct CXWinnerDetailView: View {
                     if !page.results.isEmpty {
                         CXRiderRecentResultsPanel(
                             results: page.results,
-                            openResult: openRaceResult
+                            openResult: { openRaceResult($0, riderRef) }
                         )
                     }
                 }
@@ -210,6 +210,16 @@ struct CXWinnerDetailView: View {
     }
 
     // MARK: - Helpers -
+
+    /// This screen's rider, for opening the winner screen from one of their wins.
+    private var riderRef: CXRaces.RiderRef {
+        CXRaces.RiderRef(
+            name: riderName,
+            riderURL: winner.riderURL,
+            flagURL: winner.flagURL ?? result?.countryFlagURL,
+            country: winner.country ?? countryFact
+        )
+    }
 
     private var riderName: String {
         if let name = page?.name, !name.isEmpty {

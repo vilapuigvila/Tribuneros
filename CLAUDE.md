@@ -145,9 +145,11 @@ from that edition's results page when not already loaded) plus their rider page 
 Function; facts and recent results are best-effort, like the race page). The winner screen's "Victory" card
 pops back when that edition is the race it was opened from (the route carries it:
 `winnerDetail(_:from:)`), otherwise it opens the winning edition (`CXRaces.Winner.raceEvent`; for a past winner, the race with that
-year, winner and results link) and a recent-results row opens `CXEventDetailView` again, via `CXRaces.calendarEvent(for:in:)`: this season's calendar entry
+year, winner and results link) and a recent-results row (on any rider screen) resolves its race via `CXRaces.calendarEvent(for:in:)`: this season's calendar entry
 when one matches, else a minimal event built from the row (the detail then takes its winner from
-the loaded results).
+the loaded results). A win (position 1) opens `CXWinnerDetailView` for that race instead
+(`Winner(riderResult:rider:raceEvent:)`, route `winnerDetail(_, from: nil)`); anything else opens
+`CXEventDetailView`.
 
 Standings list rows, and the leader rows on the CX Zone standings summary card (the rest of that
 card still opens the list), open `CXRiderDetailView` with `CXRaces.RiderContext.standing`

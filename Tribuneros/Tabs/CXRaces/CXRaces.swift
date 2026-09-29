@@ -18,8 +18,9 @@ extension CXRaces {
         case didTapOnCalendarEvent(DTO.CXCalendarEvent)
         case didTapOnLink(URL)
         case didTapOnWinner(CXRaces.Winner, from: DTO.CXCalendarEvent)
-        case didTapOnWinnerRace(DTO.CXCalendarEvent, openedFrom: DTO.CXCalendarEvent)
-        case didTapOnRiderResult(DTO.CXRiderPage.Result)
+        case didTapOnWinnerRace(DTO.CXCalendarEvent, openedFrom: DTO.CXCalendarEvent?)
+        /// A "Recent results" row; `rider` is whose page it is, used when the row is a win.
+        case didTapOnRiderResult(DTO.CXRiderPage.Result, rider: CXRaces.RiderRef)
         case didTapOnStandingRider(CXRaces.RiderStanding)
         case didTapOnPodiumRider(CXRaces.RiderPodium)
         case didTapOnResultRider(CXRaces.RiderResult)
@@ -222,6 +223,41 @@ extension CXRaces {
                 winnerFlagURL: pastWinner.countryFlagURL
             )
         }
+
+        /// A win in a rider's "Recent results": the rider is known from their screen, the race
+        /// is `raceEvent` (from `CXRaces.calendarEvent(for:in:)`). The time, team and age load from
+        /// the race's results page, like a past winner's.
+        init(
+            riderResult: DTO.CXRiderPage.Result,
+            rider: RiderRef,
+            raceEvent: DTO.CXCalendarEvent
+        ) {
+            name = rider.name
+            riderURL = rider.riderURL
+            flagURL = rider.flagURL
+            country = rider.country
+            race = raceEvent.race
+            raceFlagURL = raceEvent.flagURL
+            raceClass = raceEvent.raceClass
+            series = raceEvent.series
+            dateText = raceEvent.eventDate.map { WinnerDate.formatter.string(from: $0) } ?? riderResult.date
+            resultsURL = raceEvent.resultsURL
+            result = nil
+            // A race built from the row has no winner yet; give it this rider so its detail
+            // shows them before the results load.
+            self.raceEvent = raceEvent.winnerName.isEmpty
+                ? raceEvent.withWinner(rider)
+                : raceEvent
+        }
+    }
+
+    /// Who a rider screen is about, as shown on it: enough to open the winner screen for one of
+    /// their wins.
+    struct RiderRef: Hashable {
+        let name: String
+        let riderURL: URL?
+        let flagURL: URL?
+        let country: String?
     }
 
     private enum WinnerDate {
@@ -466,6 +502,28 @@ extension CXRaces {
 }
 
 extension DTO.CXCalendarEvent {
+    /// The same event with `rider` as its winner.
+    func withWinner(_ rider: CXRaces.RiderRef) -> Self {
+        .init(
+            date: date,
+            race: race,
+            raceClass: raceClass,
+            flagURL: flagURL,
+            winnerName: rider.name,
+            isCancelled: isCancelled,
+            raceID: raceID,
+            raceSlug: raceSlug,
+            raceURL: raceURL,
+            resultsURL: resultsURL,
+            videoURL: videoURL,
+            websiteURL: websiteURL,
+            raceCountry: raceCountry,
+            winnerURL: rider.riderURL,
+            winnerCountry: rider.country,
+            winnerFlagURL: rider.flagURL
+        )
+    }
+
     var series: CXRaces.RaceSeries {
         .of(
             race: race,

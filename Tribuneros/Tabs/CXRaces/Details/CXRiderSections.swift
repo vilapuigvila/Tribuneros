@@ -112,7 +112,8 @@ struct CXRiderFactsPanel: View {
     }
 }
 
-/// "Recent results" panel; a row with a race link opens it through `openResult`.
+/// "Recent results" panel; a row with a race link goes through `openResult` (the view model
+/// opens the winner screen for a win, the race detail otherwise).
 struct CXRiderRecentResultsPanel: View {
     let results: [DTO.CXRiderPage.Result]
     let openResult: (DTO.CXRiderPage.Result) -> Void

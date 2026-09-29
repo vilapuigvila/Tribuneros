@@ -78,6 +78,38 @@ final class CXEventDetailTests: XCTestCase {
         )
     }
 
+    func testRecentResultWinBuildsWinnerForThatRace() {
+        let rider = CXRaces.RiderRef(
+            name: "Mathieu van der Poel",
+            riderURL: URL(string: "https://cyclocross24.com/rider/mathieu-van-der-poel/"),
+            flagURL: URL(string: "https://cyclocross24.com/images/flag/32/Netherlands.png"),
+            country: "Netherlands"
+        )
+        let row = DTO.CXRiderPage.Result(
+            date: "5/1/2025",
+            race: "Zonhoven",
+            position: "1",
+            raceURL: URL(string: "https://cyclocross24.com/race/16500/")
+        )
+        // Outside this season's calendar: a minimal race built from the row.
+        let raceEvent = CXRaces.calendarEvent(for: row, in: [])
+
+        let winner = CXRaces.Winner(riderResult: row, rider: rider, raceEvent: raceEvent)
+
+        XCTAssertEqual(winner.name, "Mathieu van der Poel")
+        XCTAssertEqual(winner.riderURL, rider.riderURL)
+        XCTAssertEqual(winner.country, "Netherlands")
+        XCTAssertEqual(winner.race, "Zonhoven")
+        XCTAssertEqual(winner.dateText, "5 January 2025")
+        XCTAssertEqual(winner.resultsURL, row.raceURL)
+        XCTAssertNil(winner.result)
+        // The built race gets this rider as its winner; everything else is kept.
+        XCTAssertEqual(winner.raceEvent.winnerName, "Mathieu van der Poel")
+        XCTAssertEqual(winner.raceEvent.winnerURL, rider.riderURL)
+        XCTAssertEqual(winner.raceEvent.resultsURL, raceEvent.resultsURL)
+        XCTAssertEqual(winner.raceEvent.date, raceEvent.date)
+    }
+
     // MARK: - Rider standing -
 
     func testRiderStandingCombinesLeaderCategoryAndRanking() {
