@@ -81,3 +81,6 @@ firebase-debug.log
 firebase-debug.*.log
 firestore-debug.log
 ui-debug.log
+
+# Spec/plan working folders (screenshots, drafts)
+specs/
