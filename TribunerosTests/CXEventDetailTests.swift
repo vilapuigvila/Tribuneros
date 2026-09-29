@@ -68,6 +68,66 @@ final class CXEventDetailTests: XCTestCase {
         XCTAssertEqual(winner.riderURL, pastWinner.riderURL)
     }
 
+    // MARK: - Rider result → calendar event -
+
+    private func calendarEvent(
+        date: String,
+        race: String,
+        resultsID: Int
+    ) -> DTO.CXCalendarEvent {
+        .init(
+            date: date,
+            race: race,
+            raceClass: "C1",
+            flagURL: nil,
+            winnerName: "",
+            isCancelled: false,
+            raceID: resultsID,
+            raceSlug: nil,
+            raceURL: nil,
+            resultsURL: URL(string: "https://cyclocross24.com/race/\(resultsID)/"),
+            videoURL: nil,
+            websiteURL: nil,
+            raceCountry: "Belgium",
+            winnerURL: nil,
+            winnerCountry: nil,
+            winnerFlagURL: nil
+        )
+    }
+
+    func testRiderResultMatchesCalendarEventByLinkOrDateAndName() {
+        let calendar = [
+            calendarEvent(date: "28-12-2025", race: "UCI World Cup Dendermonde", resultsID: 17990),
+            calendarEvent(date: "04-01-2026", race: "X2O Badkamers Trofee - Middelkerke", resultsID: 18001)
+        ]
+
+        let byLink = CXRaces.calendarEvent(
+            for: .init(date: "28-12-2025", race: "Dendermonde", position: "2", raceURL: URL(string: "/race/17990", relativeTo: URL(string: "https://cyclocross24.com"))),
+            in: calendar
+        )
+        XCTAssertEqual(byLink, calendar[0])
+
+        let byDateAndName = CXRaces.calendarEvent(
+            for: .init(date: "4.1.2026", race: "Middelkerke", position: "1", raceURL: nil),
+            in: calendar
+        )
+        XCTAssertEqual(byDateAndName, calendar[1])
+    }
+
+    func testRiderResultOutsideCalendarBuildsMinimalEvent() {
+        let event = CXRaces.calendarEvent(
+            for: .init(date: "5/1/2025", race: "Zonhoven", position: "3", raceURL: URL(string: "https://cyclocross24.com/race/16500/")),
+            in: []
+        )
+
+        XCTAssertEqual(event.date, "05-01-2025")
+        XCTAssertEqual(event.race, "Zonhoven")
+        XCTAssertEqual(event.raceID, 16500)
+        XCTAssertEqual(event.resultsURL?.absoluteString, "https://cyclocross24.com/race/16500/")
+        XCTAssertNil(event.raceURL)
+        XCTAssertTrue(event.winnerName.isEmpty)
+    }
+
     // MARK: - Race page parsing -
 
     func testRacePageParsesWinnersByYear() throws {

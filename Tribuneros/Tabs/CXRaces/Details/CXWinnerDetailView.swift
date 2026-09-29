@@ -15,6 +15,8 @@ import SwiftUI
 struct CXWinnerDetailView: View {
     let winner: CXRaces.Winner
     let openURL: (URL) -> Void
+    /// Opens a "Recent results" row as a native race detail.
+    private let openRaceResult: (DTO.CXRiderPage.Result) -> Void
     /// Fetches the rider page and missing results row; injectable so previews never hit the network.
     private let loadDetail: (CXRaces.Winner) async -> DTO.CXWinnerDetail
 
@@ -31,10 +33,12 @@ struct CXWinnerDetailView: View {
                 resultsURL: $0.result == nil ? $0.resultsURL : nil
             )
         },
+        openRaceResult: @escaping (DTO.CXRiderPage.Result) -> Void = { _ in },
         openURL: @escaping (URL) -> Void
     ) {
         self.winner = winner
         self.openURL = openURL
+        self.openRaceResult = openRaceResult
         self.loadDetail = loadDetail
         _page = State(initialValue: page)
         _result = State(initialValue: winner.result)
@@ -251,9 +255,7 @@ struct CXWinnerDetailView: View {
                 ForEach(results.indices, id: \.self) { index in
                     let item = results[index]
                     Button {
-                        if let raceURL = item.raceURL {
-                            openURL(raceURL)
-                        }
+                        openRaceResult(item)
                     } label: {
                         HStack(spacing: 10) {
                             PositionBadge(position: item.position)

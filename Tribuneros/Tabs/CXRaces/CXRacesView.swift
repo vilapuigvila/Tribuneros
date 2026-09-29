@@ -37,7 +37,12 @@ struct CXRacesRacesView: View {
                     viewModel.action(.didTapOnLink(url))
                 }
             case .cxZone(.winnerDetail(let winner)):
-                CXWinnerDetailView(winner: winner) { url in
+                CXWinnerDetailView(
+                    winner: winner,
+                    openRaceResult: { result in
+                        viewModel.action(.didTapOnRiderResult(result))
+                    }
+                ) { url in
                     viewModel.action(.didTapOnLink(url))
                 }
             case .cxZone(.latestResults):

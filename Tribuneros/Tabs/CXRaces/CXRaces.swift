@@ -18,6 +18,7 @@ extension CXRaces {
         case didTapOnCalendarEvent(DTO.CXCalendarEvent)
         case didTapOnLink(URL)
         case didTapOnWinner(CXRaces.Winner)
+        case didTapOnRiderResult(DTO.CXRiderPage.Result)
         case didTapOnRaceDetail(DTO.CX24Homepage.Race)
         case didTapOnStandings
     }
@@ -161,7 +162,7 @@ extension CXRaces {
             event: DTO.CXCalendarEvent,
             result: DTO.CX24Homepage.CategoryResult?
         ) {
-            name = event.winnerName
+            name = event.winnerName.isEmpty ? (result?.rider ?? "") : event.winnerName
             riderURL = event.winnerURL
             flagURL = event.winnerFlagURL ?? result?.countryFlagURL
             country = event.winnerCountry
@@ -199,6 +200,68 @@ extension CXRaces {
             formatter.locale = Locale(identifier: "en_US_POSIX")
             return formatter
         }()
+    }
+}
+
+// MARK: - Rider result → calendar event -
+extension CXRaces {
+
+    /// The calendar event a rider-page result points at: this season's calendar entry when one
+    /// matches (by results/race link, then by date and name), otherwise a minimal event built from
+    /// the result itself, enough for `CXEventDetailView` to load that race's results.
+    static func calendarEvent(
+        for result: DTO.CXRiderPage.Result,
+        in calendar: [DTO.CXCalendarEvent]
+    ) -> DTO.CXCalendarEvent {
+        let date = normalizedCalendarDate(result.date)
+        let path = result.raceURL.map(normalizedPath)
+
+        if let path, let match = calendar.first(where: { event in
+            [event.resultsURL, event.raceURL].contains { $0.map(normalizedPath) == path }
+        }) {
+            return match
+        }
+        let name = result.race.lowercased()
+        if let match = calendar.first(where: { event in
+            event.date == date
+                && (event.race.lowercased().contains(name) || name.contains(event.race.lowercased()))
+        }) {
+            return match
+        }
+
+        // `/race/<numeric id>/` is a results page, `/race/<slug>/` the race page.
+        let components = path?.split(separator: "/").map(String.init) ?? []
+        let raceID = components.count >= 2 && components[0] == "race" ? Int(components[1]) : nil
+        return .init(
+            date: date,
+            race: result.race,
+            raceClass: "",
+            flagURL: nil,
+            winnerName: "",
+            isCancelled: false,
+            raceID: raceID,
+            raceSlug: raceID == nil && components.count >= 2 ? components[1] : nil,
+            raceURL: raceID == nil ? result.raceURL : nil,
+            resultsURL: raceID != nil ? result.raceURL : nil,
+            videoURL: nil,
+            websiteURL: nil,
+            raceCountry: nil,
+            winnerURL: nil,
+            winnerCountry: nil,
+            winnerFlagURL: nil
+        )
+    }
+
+    private static func normalizedPath(_ url: URL) -> String {
+        url.path.trimmingCharacters(in: CharacterSet(charactersIn: "/")).lowercased()
+    }
+
+    /// Rider pages may write "4.1.2026" or "04/01/2026"; the calendar uses "04-01-2026".
+    private static func normalizedCalendarDate(_ date: String) -> String {
+        let parts = date.split { "-./".contains($0) }.map(String.init)
+        guard parts.count == 3 else { return date }
+        let pad = { (part: String) in part.count == 1 ? "0" + part : part }
+        return "\(pad(parts[0]))-\(pad(parts[1]))-\(parts[2])"
     }
 }
 

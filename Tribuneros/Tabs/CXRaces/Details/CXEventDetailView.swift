@@ -52,7 +52,7 @@ struct CXEventDetailView: View {
             VStack(alignment: .leading, spacing: 20) {
                 summaryPanel
 
-                if !event.winnerName.isEmpty {
+                if !winnerName.isEmpty {
                     winnerPanel
                 }
 
@@ -164,10 +164,10 @@ struct CXEventDetailView: View {
                         Image(systemName: "trophy.fill")
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.tribuneru(.vaporAccent))
-                        VaporFlagView(url: event.winnerFlagURL)
+                        VaporFlagView(url: event.winnerFlagURL ?? winningResult?.countryFlagURL)
                         VStack(alignment: .leading, spacing: 2) {
                             TribuneruText(
-                                content: event.winnerName,
+                                content: winnerName,
                                 style: .vaporWinnerName,
                                 color: .tribuneru(.vaporTextPrimary),
                                 lineLimit: 1
@@ -189,6 +189,12 @@ struct CXEventDetailView: View {
             }
             .buttonStyle(.plain)
         }
+    }
+
+    /// The calendar's winner, or the results' when the calendar has none (a race opened from a
+    /// rider's recent results, outside this season's calendar).
+    private var winnerName: String {
+        event.winnerName.isEmpty ? (winningResult?.rider ?? "") : event.winnerName
     }
 
     /// The results row of the winner, which carries their team, age and winning time.
