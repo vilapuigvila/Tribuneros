@@ -15,12 +15,16 @@ struct RaceDetailView: View {
     @State private var isLoading: Bool = true
     @State private var errorMessage: String?
     @State private var videoSheet: VideoSheet?
+    /// A results row opens the rider screen.
+    private let openRider: (CXRaces.RiderResult) -> Void
     
     init(
         race: DTO.CX24Homepage.Race,
-        categoryResults: [String: [DTO.CX24Homepage.CategoryResult]] = [:]
+        categoryResults: [String: [DTO.CX24Homepage.CategoryResult]] = [:],
+        openRider: @escaping (CXRaces.RiderResult) -> Void = { _ in }
     ) {
         self.race = race
+        self.openRider = openRider
         _categoryResults = State(initialValue: categoryResults)
         _isLoading = State(initialValue: categoryResults.isEmpty)
     }
@@ -149,8 +153,20 @@ struct RaceDetailView: View {
                     resultsHeaderRow
 
                     ForEach(results.indices, id: \.self) { index in
-                        ResultRow(result: results[index])
-                            .frame(height: 64)
+                        Button {
+                            openRider(
+                                CXRaces.RiderResult(
+                                    result: results[index],
+                                    category: category.title,
+                                    race: race
+                                )
+                            )
+                        } label: {
+                            ResultRow(result: results[index])
+                                .frame(height: 64)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
 
                         if index < results.count - 1 {
                             TribunerosDivider(

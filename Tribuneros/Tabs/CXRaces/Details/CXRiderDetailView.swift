@@ -52,6 +52,8 @@ struct CXRiderDetailView: View {
                     standingPanel(standing)
                 case .podium(let podium):
                     podiumPanel(podium)
+                case .result(let result):
+                    resultPanel(result)
                 }
 
                 if isLoading {
@@ -101,7 +103,7 @@ struct CXRiderDetailView: View {
             HStack(spacing: 6) {
                 CXDetailTag(
                     title: "#\(context.position)",
-                    color: context.position == 1 ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary)
+                    color: context.position == "1" ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary)
                 )
                 CXDetailTag(title: context.category)
             }
@@ -125,7 +127,7 @@ struct CXRiderDetailView: View {
                             lineLimit: 1
                         )
                     }
-                    if let team = page?.team {
+                    if let team = page?.team ?? context.team {
                         TribuneruText(
                             content: team,
                             style: .vaporMeta,
@@ -264,6 +266,54 @@ struct CXRiderDetailView: View {
                         label: "Time",
                         value: podium.time.isEmpty ? "-" : podium.time
                     )
+                }
+            }
+        }
+    }
+
+    // MARK: - Result -
+
+    /// Opened from the race screen it describes, so the race card isn't a link back.
+    private func resultPanel(_ result: CXRaces.RiderResult) -> some View {
+        VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
+            VaporSectionHeader(title: "Result")
+        } content: {
+            VStack(alignment: .leading, spacing: 10) {
+                VaporCard(spacing: 4) {
+                    TribuneruText(
+                        content: result.raceTitle,
+                        style: .vaporRaceNameNext,
+                        color: .tribuneru(.vaporTextPrimary),
+                        lineLimit: 2
+                    )
+                    HStack(spacing: 6) {
+                        VaporFlagView(url: result.raceFlagURL)
+                        TribuneruText(
+                            content: [result.category, result.raceMeta]
+                                .filter { !$0.isEmpty }
+                                .joined(separator: " · "),
+                            style: .vaporMeta,
+                            color: .tribuneru(.vaporTextSecondary),
+                            lineLimit: 1
+                        )
+                    }
+                }
+
+                HStack(spacing: 10) {
+                    CXStatTile(
+                        label: "Position",
+                        value: "#\(result.result.position)"
+                    )
+                    CXStatTile(
+                        label: "Time",
+                        value: result.result.time.isEmpty ? "-" : result.result.time
+                    )
+                    if !result.result.age.isEmpty {
+                        CXStatTile(
+                            label: "Age",
+                            value: result.result.age
+                        )
+                    }
                 }
             }
         }

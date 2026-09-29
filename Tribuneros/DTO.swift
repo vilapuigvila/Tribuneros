@@ -228,6 +228,8 @@ extension DTO {
             let time: String
             let countryFlagURL: URL?
             let raceVideosURL: URL?
+            /// Defaulted so existing call sites and previews keep compiling.
+            var riderURL: URL? = nil
         }
 
         let sections: [Section]

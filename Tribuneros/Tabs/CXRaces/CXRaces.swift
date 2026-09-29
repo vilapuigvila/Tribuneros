@@ -22,6 +22,7 @@ extension CXRaces {
         case didTapOnRiderResult(DTO.CXRiderPage.Result)
         case didTapOnStandingRider(CXRaces.RiderStanding)
         case didTapOnPodiumRider(CXRaces.RiderPodium)
+        case didTapOnResultRider(CXRaces.RiderResult)
         case didTapOnRaceDetail(DTO.CX24Homepage.Race)
         case didTapOnStandings
     }
@@ -168,7 +169,7 @@ extension CXRaces {
             result: DTO.CX24Homepage.CategoryResult?
         ) {
             name = event.winnerName.isEmpty ? (result?.rider ?? "") : event.winnerName
-            riderURL = event.winnerURL
+            riderURL = event.winnerURL ?? result?.riderURL
             flagURL = event.winnerFlagURL ?? result?.countryFlagURL
             country = event.winnerCountry
             race = event.race
@@ -300,15 +301,55 @@ extension CXRaces {
         }
     }
 
+    /// A rider's row in a race's full results (a race opened from Latest results, or a calendar
+    /// race's Men Elite top 10).
+    struct RiderResult: Hashable {
+        let result: DTO.CX24Homepage.CategoryResult
+        let category: String
+        let raceTitle: String
+        let raceFlagURL: URL?
+        /// "4 January 2026 · Zonhoven, Belgium", or whatever the opening screen knows.
+        let raceMeta: String
+
+        init(
+            result: DTO.CX24Homepage.CategoryResult,
+            category: String,
+            race: DTO.CX24Homepage.Race
+        ) {
+            self.result = result
+            self.category = category
+            raceTitle = race.title
+            raceFlagURL = race.countryFlagURL
+            raceMeta = [race.date, race.location]
+                .filter { !$0.isEmpty }
+                .joined(separator: " · ")
+        }
+
+        init(
+            result: DTO.CX24Homepage.CategoryResult,
+            event: DTO.CXCalendarEvent
+        ) {
+            self.result = result
+            category = "Men Elite"
+            raceTitle = event.race
+            raceFlagURL = event.flagURL
+            raceMeta = [event.date, event.raceCountry ?? ""]
+                .filter { !$0.isEmpty }
+                .joined(separator: " · ")
+        }
+    }
+
     /// Where the rider screen was opened from, which decides its context panel.
     enum RiderContext: Hashable {
         case standing(RiderStanding)
         case podium(RiderPodium)
+        case result(RiderResult)
 
         var rider: String {
             switch self {
             case .standing(let standing): standing.rider
             case .podium(let podium): podium.rider
+            case .result(let result): result.result.rider
             }
         }
 
@@ -316,6 +357,7 @@ extension CXRaces {
             switch self {
             case .standing(let standing): standing.riderURL
             case .podium(let podium): podium.riderURL
+            case .result(let result): result.result.riderURL
             }
         }
 
@@ -323,13 +365,15 @@ extension CXRaces {
             switch self {
             case .standing(let standing): standing.flagURL
             case .podium(let podium): podium.flagURL
+            case .result(let result): result.result.countryFlagURL
             }
         }
 
-        var position: Int {
+        var position: String {
             switch self {
-            case .standing(let standing): standing.position
-            case .podium(let podium): podium.position
+            case .standing(let standing): "\(standing.position)"
+            case .podium(let podium): "\(podium.position)"
+            case .result(let result): result.result.position
             }
         }
 
@@ -337,14 +381,23 @@ extension CXRaces {
             switch self {
             case .standing(let standing): standing.category
             case .podium(let podium): podium.category
+            case .result(let result): result.category
             }
         }
 
         /// Known before the rider page loads: only podiums carry a country name.
         var country: String? {
             switch self {
-            case .standing: nil
+            case .standing, .result: nil
             case .podium(let podium): podium.country.isEmpty ? nil : podium.country
+            }
+        }
+
+        /// Known before the rider page loads: only results carry a team.
+        var team: String? {
+            switch self {
+            case .standing, .podium: nil
+            case .result(let result): result.result.team.isEmpty ? nil : result.result.team
             }
         }
     }

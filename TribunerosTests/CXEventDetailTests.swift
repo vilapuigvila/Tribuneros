@@ -156,9 +156,54 @@ final class CXEventDetailTests: XCTestCase {
         XCTAssertEqual(context.rider, "DEL GROSSO Tibor")
         XCTAssertEqual(context.riderURL, podium.riderURL)
         XCTAssertEqual(context.flagURL, podium.countryFlagURL)
-        XCTAssertEqual(context.position, 2)
+        XCTAssertEqual(context.position, "2")
         XCTAssertEqual(context.category, "Men Elite")
         XCTAssertEqual(context.country, "Netherlands")
+    }
+
+    func testRiderResultFromCalendarEventAndWinnerRiderFallback() {
+        let row = DTO.CX24Homepage.CategoryResult(
+            position: "1",
+            rider: "ISERBYT Eli",
+            age: "26",
+            team: "Pauwels Sauzen",
+            time: "1:01:12",
+            countryFlagURL: nil,
+            raceVideosURL: nil,
+            riderURL: URL(string: "https://cyclocross24.com/rider/eli-iserbyt/")
+        )
+        // A race reached from a rider's recent results: no calendar winner or rider link.
+        let event = DTO.CXCalendarEvent(
+            date: "05-01-2025",
+            race: "Zonhoven",
+            raceClass: "",
+            flagURL: nil,
+            winnerName: "",
+            isCancelled: false,
+            raceID: 16500,
+            raceSlug: nil,
+            raceURL: nil,
+            resultsURL: URL(string: "https://cyclocross24.com/race/16500/"),
+            videoURL: nil,
+            websiteURL: nil,
+            raceCountry: "Belgium",
+            winnerURL: nil,
+            winnerCountry: nil,
+            winnerFlagURL: nil
+        )
+
+        let context = CXRaces.RiderContext.result(CXRaces.RiderResult(result: row, event: event))
+
+        XCTAssertEqual(context.rider, "ISERBYT Eli")
+        XCTAssertEqual(context.riderURL, row.riderURL)
+        XCTAssertEqual(context.position, "1")
+        XCTAssertEqual(context.category, "Men Elite")
+        XCTAssertEqual(context.team, "Pauwels Sauzen")
+        XCTAssertNil(context.country)
+        // The winner screen falls back to the results row's rider link.
+        let winner = CXRaces.Winner(event: event, result: row)
+        XCTAssertEqual(winner.name, "ISERBYT Eli")
+        XCTAssertEqual(winner.riderURL, row.riderURL)
     }
 
     func testRiderPageFactLookup() {

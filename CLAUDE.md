@@ -153,7 +153,11 @@ Standings list rows, and the leader rows on the CX Zone standings summary card (
 card still opens the list), open `CXRiderDetailView` with `CXRaces.RiderContext.standing`
 (`RiderStanding`: ranking, category, position, points). Latest-results podium rows (home card and
 full list; the rest of each card still opens the list / the race) open it with `.podium`
-(`RiderPodium`: position, time, category and the race, whose card opens `RaceDetailView`). It shows
+(`RiderPodium`: position, time, category and the race, whose card opens `RaceDetailView`). Result
+rows in `RaceDetailView` and in the calendar detail's Men Elite top 10 open it with `.result`
+(`RiderResult`); `CategoryResult.riderURL` (parsed from the results table's rider link, defaulted
+to `nil` so existing initializers compile) feeds its rider page, and the winner screen's rider link
+when the calendar has none. It shows
 the same rider-page sections as the winner screen; those sections
 (`CXRiderAvatar`, `CXRiderFactsPanel`, `CXRiderRecentResultsPanel`, `CXStatTile`) live in
 `Details/CXRiderSections.swift`.

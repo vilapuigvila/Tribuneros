@@ -20,6 +20,8 @@ struct CXEventDetailView: View {
     let openURL: (URL) -> Void
     /// Opens the native winner screen, for this season's winner or a past edition's.
     private let openWinner: (CXRaces.Winner) -> Void
+    /// Opens the rider screen for a row of the results panel.
+    private let openResultRider: (CXRaces.RiderResult) -> Void
     /// Fetches the on-demand part of the screen; injectable so previews never hit the network.
     private let loadDetail: (DTO.CXCalendarEvent, Bool) async -> DTO.CXEventDetail
 
@@ -36,12 +38,14 @@ struct CXEventDetailView: View {
                 hasStarted: $1
             )
         },
+        openResultRider: @escaping (CXRaces.RiderResult) -> Void = { _ in },
         openWinner: @escaping (CXRaces.Winner) -> Void = { _ in },
         openURL: @escaping (URL) -> Void
     ) {
         self.event = event
         self.openURL = openURL
         self.openWinner = openWinner
+        self.openResultRider = openResultRider
         self.loadDetail = loadDetail
         _detail = State(initialValue: detail ?? .empty)
         _isLoading = State(initialValue: detail == nil)
@@ -218,7 +222,18 @@ struct CXEventDetailView: View {
 
                 let results = Array(detail.results.prefix(UI.resultsLimit))
                 ForEach(results.indices, id: \.self) { index in
-                    ResultRow(result: results[index])
+                    Button {
+                        openResultRider(
+                            CXRaces.RiderResult(
+                                result: results[index],
+                                event: event
+                            )
+                        )
+                    } label: {
+                        ResultRow(result: results[index])
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
                     if index < results.count - 1 {
                         divider
                     }

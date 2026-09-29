@@ -209,6 +209,7 @@ extension Service {
             let rider = try riderCell.select("a").first()?.text().trimmingCharacters(in: .whitespacesAndNewlines)
                 ?? riderCell.text().trimmingCharacters(in: .whitespacesAndNewlines)
             
+            let riderURL = cx24AbsoluteURL(try riderCell.select("a[href*=/rider/]").first()?.attr("href") ?? "")
             let flagImg = try riderCell.select("img.flag").first()
             let countryFlagURL = cx24AbsoluteURL(try flagImg?.attr("src") ?? "")
             
@@ -225,7 +226,8 @@ extension Service {
                 team: team,
                 time: time,
                 countryFlagURL: countryFlagURL,
-                raceVideosURL: raceVideosURL
+                raceVideosURL: raceVideosURL,
+                riderURL: riderURL
             )
         }
     }
