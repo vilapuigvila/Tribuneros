@@ -82,6 +82,23 @@ final class CXEventDetailTests: XCTestCase {
         XCTAssertEqual(context.riderURL, pastWinner.riderURL)
         XCTAssertEqual(context.position, "1")
         XCTAssertNil(context.team)
+        // Its winning row (time, team, age) loads from that edition's results page...
+        XCTAssertEqual(context.winResultsURL, pastWinner.resultsURL)
+        // ...unless the winner already carries it.
+        let loadedRow = DTO.CX24Homepage.CategoryResult(
+            position: "1",
+            rider: "VAN DER POEL Mathieu",
+            age: "31",
+            team: "Alpecin - Deceuninck",
+            time: "59:36",
+            countryFlagURL: nil,
+            raceVideosURL: nil
+        )
+        let loadedWinner = CXRaces.Winner(
+            event: event,
+            result: loadedRow
+        )
+        XCTAssertNil(CXRaces.RiderContext.win(loadedWinner).winResultsURL)
     }
 
     func testRecentResultWinBuildsWinnerForThatRace() {

@@ -438,6 +438,12 @@ extension CXRaces {
             }
         }
 
+        /// A past win's results page, when its winning row (time, team, age) still has to load.
+        var winResultsURL: URL? {
+            guard case .win(let winner) = self, winner.result == nil else { return nil }
+            return winner.resultsURL
+        }
+
         /// Known before the rider page loads: only results carry a team.
         var team: String? {
             switch self {

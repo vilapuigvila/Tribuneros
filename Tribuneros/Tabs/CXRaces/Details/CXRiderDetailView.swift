@@ -20,17 +20,23 @@ struct CXRiderDetailView: View {
     private let openEvent: (DTO.CXCalendarEvent) -> Void
     /// Opens a "Recent results" row as a native race detail.
     private let openRaceResult: (DTO.CXRiderPage.Result, CXRaces.RiderRef) -> Void
-    /// Fetches the rider page; injectable so previews never hit the network.
-    private let loadRiderPage: (URL?) async -> DTO.CXRiderPage?
+    /// Fetches the rider page and, for a past win, its winning results row; injectable so
+    /// previews never hit the network.
+    private let loadDetail: (CXRaces.RiderContext) async -> DTO.CXWinnerDetail
 
     @State private var page: DTO.CXRiderPage?
+    /// The past win's results row (time, team, age); only used by the `.win` context.
+    @State private var winResult: DTO.CX24Homepage.CategoryResult?
     @State private var isLoading: Bool
 
     init(
         context: CXRaces.RiderContext,
         page: DTO.CXRiderPage? = nil,
-        loadRiderPage: @escaping (URL?) async -> DTO.CXRiderPage? = {
-            await Service.getCxRiderPage($0)
+        loadDetail: @escaping (CXRaces.RiderContext) async -> DTO.CXWinnerDetail = {
+            await Service.getCxWinnerDetail(
+                riderURL: $0.riderURL,
+                resultsURL: $0.winResultsURL
+            )
         },
         openRace: @escaping (DTO.CX24Homepage.Race) -> Void = { _ in },
         openEvent: @escaping (DTO.CXCalendarEvent) -> Void = { _ in },
@@ -42,9 +48,18 @@ struct CXRiderDetailView: View {
         self.openRace = openRace
         self.openEvent = openEvent
         self.openRaceResult = openRaceResult
-        self.loadRiderPage = loadRiderPage
+        self.loadDetail = loadDetail
         _page = State(initialValue: page)
-        _isLoading = State(initialValue: page == nil && context.riderURL != nil)
+        let initialWinResult: DTO.CX24Homepage.CategoryResult?
+        if case .win(let winner) = context {
+            initialWinResult = winner.result
+        } else {
+            initialWinResult = nil
+        }
+        _winResult = State(initialValue: initialWinResult)
+        _isLoading = State(
+            initialValue: page == nil && (context.riderURL != nil || context.winResultsURL != nil)
+        )
     }
 
     var body: some View {
@@ -97,7 +112,9 @@ struct CXRiderDetailView: View {
         .navigationTitle("Rider")
         .task {
             guard isLoading else { return }
-            page = await loadRiderPage(context.riderURL)
+            let detail = await loadDetail(context)
+            page = detail.page
+            winResult = winResult ?? detail.result
             isLoading = false
         }
     }
@@ -133,7 +150,7 @@ struct CXRiderDetailView: View {
                             lineLimit: 1
                         )
                     }
-                    if let team = page?.team ?? context.team {
+                    if let team = page?.team ?? context.team ?? winTeam {
                         TribuneruText(
                             content: team,
                             style: .vaporMeta,
@@ -368,10 +385,18 @@ struct CXRiderDetailView: View {
                 .buttonStyle(.plain)
 
                 HStack(spacing: 10) {
-                    CXStatTile(
-                        label: "Edition",
-                        value: winner.dateText
-                    )
+                    if let time = winResult?.time, !time.isEmpty {
+                        CXStatTile(
+                            label: "Time",
+                            value: time
+                        )
+                    }
+                    if let age = winResult?.age, !age.isEmpty {
+                        CXStatTile(
+                            label: "Age",
+                            value: age
+                        )
+                    }
                     CXStatTile(
                         label: "Series",
                         value: winner.series.title
@@ -382,6 +407,12 @@ struct CXRiderDetailView: View {
     }
 
     // MARK: - Helpers -
+
+    /// The past win's team, from its results row.
+    private var winTeam: String? {
+        guard let team = winResult?.team, !team.isEmpty else { return nil }
+        return team
+    }
 
     /// This screen's rider, for opening the winner screen from one of their wins.
     private var riderRef: CXRaces.RiderRef {
@@ -500,7 +531,12 @@ private extension DTO.CXRiderPage {
                     )
                 )
             ),
-            loadRiderPage: { _ in nil }
+            loadDetail: { _ in
+                .init(
+                    page: nil,
+                    result: nil
+                )
+            }
         ) { _ in }
     }
 }
@@ -509,7 +545,12 @@ private extension DTO.CXRiderPage {
     NavigationStack {
         CXRiderDetailView(
             context: .standing(.mock),
-            loadRiderPage: { _ in nil }
+            loadDetail: { _ in
+                .init(
+                    page: nil,
+                    result: nil
+                )
+            }
         ) { _ in }
     }
 }
@@ -518,10 +559,13 @@ private extension DTO.CXRiderPage {
     NavigationStack {
         CXRiderDetailView(
             context: .standing(.mock),
-            loadRiderPage: { _ in
+            loadDetail: { _ in
                 // Never finishes, so the preview stays on the loader.
                 try? await Task.sleep(for: .seconds(3600))
-                return nil
+                return .init(
+                    page: nil,
+                    result: nil
+                )
             }
         ) { _ in }
     }
