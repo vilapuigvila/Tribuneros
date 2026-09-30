@@ -33,7 +33,7 @@
 /* Begin PBXFileReference section */
 		164972F03AB24484BD25113B /* TribunerosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TribunerosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C205F805B0E4AD58CAB2421 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
-		50B365772D6489EF000DA4AC /* Tribuneros.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tribuneros.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		50B365772D6489EF000DA4AC /* Cycling Tribune.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Cycling Tribune.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -105,7 +105,7 @@
 		50B365782D6489EF000DA4AC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				50B365772D6489EF000DA4AC /* Tribuneros.app */,
+				50B365772D6489EF000DA4AC /* Cycling Tribune.app */,
 				164972F03AB24484BD25113B /* TribunerosTests.xctest */,
 			);
 			name = Products;
@@ -150,7 +150,7 @@
 				ED11B09019D9765149A6B76E /* FirebaseFirestore */,
 			);
 			productName = Tribuneros;
-			productReference = 50B365772D6489EF000DA4AC /* Tribuneros.app */;
+			productReference = 50B365772D6489EF000DA4AC /* Cycling Tribune.app */;
 			productType = "com.apple.product-type.application";
 		};
 		50BEF7D1A40147509E2CE915 /* TribunerosTests */ = {
@@ -429,6 +429,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Tribuneros/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Cycling Tribune";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -442,7 +443,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pskmoons.Tribuneros;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Cycling Tribune";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -461,6 +462,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Tribuneros/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Cycling Tribune";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -474,7 +476,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pskmoons.Tribuneros;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Cycling Tribune";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

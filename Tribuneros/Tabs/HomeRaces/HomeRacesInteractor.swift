@@ -93,7 +93,7 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                 return
             }
             #endif
-            let requestDate = Date()
+//            let requestDate = Date()
 //            guard requestThrottle.startRequestIfAllowed(at: requestDate) else { return }
             
             subject.send(domain.copy(loading: true))
