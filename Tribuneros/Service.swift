@@ -761,6 +761,19 @@ struct Service {
             throw NSError(domain: "Impossible parsing", code: 0, userInfo: nil)
         }
     }
+
+    /// Fetch and cache race result detail page with 1-day TTL
+    static func getCachedRaceResult(url: URL) async throws -> Document {
+        let (data, _) = try await Requester
+            .makeRequest(url)
+            .ttl(86400) // 1 day = 86400 seconds
+            .cacheControlBehavior(.ignoreServer)
+            .send()
+        guard let htmlContent = String(data: data, encoding: .utf8) else {
+            throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
+        }
+        return try SwiftSoup.parse(htmlContent)
+    }
 }
 
 struct TodaySectionModel: Decodable, Hashable, Sendable {
