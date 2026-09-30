@@ -90,7 +90,8 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
                             nextToFinish: nextToFinish(domain),
                             racesFinished: finishedRaces(domain.todayRaces),
                             yesterdayResults: finishedRaces(domain.yesterdayResults)
-                        )
+                        ),
+                        staleCopy: domain.staleCopy
                     )
                 )
             }

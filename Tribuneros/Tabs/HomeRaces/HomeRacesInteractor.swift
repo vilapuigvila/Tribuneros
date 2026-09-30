@@ -20,6 +20,7 @@ struct HomeRacesDomain: Equatable {
     private(set) var isOnSpoilerModeResultsYesterday: Bool
     let error: EquatableError?
     private(set) var loading: Bool
+    var staleCopy: HomeRaces.StaleCopy? = nil
 
     static let empty: HomeRacesDomain = .init(
         nextToFinishRaces: [],
@@ -103,6 +104,12 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                 do {
                     let result = try await Service.getLatestResults()
                     try Task.checkCancellation()
+                    let staleCopy = result.staleCopySavedAt.map {
+                        HomeRaces.StaleCopy(
+                            savedAt: $0,
+                            isOffline: !NetworkStatusMonitor.shared.hasConnection
+                        )
+                    }
                     
                     self?.requestThrottle.registerOutcome(isFailure: false)
                     
@@ -117,7 +124,8 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                             isOnSpoilerModeResultsYesterday: UserSettings.spoilerModeResultsYesterday ?? false,
                             error: (result.nextToFinish.isEmpty && result.today.isEmpty && result.yesterdayResults.isEmpty && result.tomorrowRaces.isEmpty && result.liveStats.isEmpty) ?
                                 HomeRaces.ErrorReason.emptyResponse.toEquatableError() : nil,
-                            loading: false
+                            loading: false,
+                            staleCopy: staleCopy
                         )
                     )
                 } catch {

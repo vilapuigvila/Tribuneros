@@ -268,4 +268,53 @@ final class HomeTodayRacesTests: XCTestCase {
         XCTAssertEqual(representable.sections.nextToFinish.map(\.name), ["Soon", "Later"])
         XCTAssertEqual(representable.sections.nextToFinish.map(\.isLive), [true, false])
     }
+
+    private func response(_ headers: [String: String]) -> HTTPURLResponse {
+        HTTPURLResponse(
+            url: URL(string: "https://www.procyclingstats.com/index.php")!,
+            statusCode: 200,
+            httpVersion: "HTTP/1.1",
+            headerFields: headers
+        )!
+    }
+
+    func testAStaleCachedCopyReportsWhenItWasFetched() {
+        let now = date(12, 0)
+        let savedAt = Service.staleCopySavedAt(
+            response(["X-Cache": "STALE", "Age": "10800"]),
+            now: now
+        )
+        XCTAssertEqual(savedAt, date(9, 0))
+    }
+
+    func testAFreshOrNetworkResponseIsNotAStaleCopy() {
+        let now = date(12, 0)
+        XCTAssertNil(Service.staleCopySavedAt(response(["X-Cache": "HIT", "Age": "120"]), now: now))
+        XCTAssertNil(Service.staleCopySavedAt(response(["X-Cache": "MISS"]), now: now))
+        XCTAssertNil(Service.staleCopySavedAt(response(["X-Cache": "STALE"]), now: now))
+    }
+
+    func testTheViewModelPassesTheStaleCopyToTheView() throws {
+        let staleCopy = HomeRaces.StaleCopy(
+            savedAt: date(9, 0),
+            isOffline: true
+        )
+        let domain = HomeRacesDomain(
+            nextToFinishRaces: [race("Soon")],
+            todayRaces: [],
+            yesterdayResults: [],
+            tomorrowRaces: [],
+            liveStatsRaces: [],
+            isOnSpoilerModeResultsToday: false,
+            isOnSpoilerModeResultsYesterday: false,
+            error: nil,
+            loading: false,
+            staleCopy: staleCopy
+        )
+
+        guard case .loaded(let representable) = state(after: domain) else {
+            return XCTFail("Expected a loaded state")
+        }
+        XCTAssertEqual(representable.staleCopy, staleCopy)
+    }
 }

@@ -14,6 +14,8 @@ enum DTO {
         let yesterdayResults: [TodayResult]
         let tomorrowRaces: [TomorrowRace]
         let liveStats: [LiveStatsRace]
+        /// Set only when the page is an expired cached copy (offline or a failed fetch): when it was fetched.
+        var staleCopySavedAt: Date? = nil
     }
 
     struct LiveStatsRace: Codable, Equatable {

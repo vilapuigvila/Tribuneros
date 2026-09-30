@@ -40,6 +40,44 @@ struct HomeScreenHeader: View {
     }
 }
 
+/// Under the header when the page is an old cached copy, since the header always shows today's date.
+struct StaleCopyNotice: View {
+    let staleCopy: HomeRaces.StaleCopy
+
+    private static let formatter: RelativeDateTimeFormatter = {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .abbreviated
+        return formatter
+    }()
+
+    var body: some View {
+        TimelineView(.everyMinute) { context in
+            HStack(spacing: 6) {
+                Image(systemName: staleCopy.isOffline ? "wifi.slash" : "exclamationmark.arrow.circlepath")
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundColor(.tribuneru(.vaporTextSecondary))
+                TribuneruText(
+                    content: text(now: context.date),
+                    style: .vaporMeta,
+                    color: .tribuneru(.vaporTextSecondary),
+                    lineLimit: 1
+                )
+            }
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("home.staleNotice")
+    }
+
+    private func text(now: Date) -> String {
+        let reason = staleCopy.isOffline ? "Offline" : "Couldn't refresh"
+        let updated = Self.formatter.localizedString(
+            for: min(staleCopy.savedAt, now),
+            relativeTo: now
+        )
+        return "\(reason) · updated \(updated)"
+    }
+}
+
 /// With the navigation bar hidden, scrolled content would run under the status bar; this fades it out.
 struct StatusBarScrim: View {
     @Environment(\.safeAreaInsets) private var safeAreaInsets

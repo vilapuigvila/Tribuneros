@@ -163,7 +163,8 @@ private struct HomeRacesMockHarness: View {
                     nextToFinish: representable.sections.nextToFinish,
                     racesFinished: representable.sections.racesFinished,
                     yesterdayResults: representable.sections.yesterdayResults
-                )
+                ),
+                staleCopy: representable.staleCopy
             )
         )
     }
@@ -177,6 +178,20 @@ private struct HomeRacesMockHarness: View {
 
 #Preview("Home — mock, spoiler on") {
     HomeRacesMockHarness(initialState: .loaded(.mockFull(spoilerModeOn: true)))
+}
+
+#Preview("Home — stale copy, offline") {
+    HomeRacesMockHarness(
+        initialState: .loaded(
+            HomeRaces.Representable(
+                sections: HomeRaces.Representable.mockFull(spoilerModeOn: false).sections,
+                staleCopy: HomeRaces.StaleCopy(
+                    savedAt: Date().addingTimeInterval(-3 * 3600),
+                    isOffline: true
+                )
+            )
+        )
+    )
 }
 
 #Preview("Home — loading") {

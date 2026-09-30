@@ -111,7 +111,12 @@ extension HomeRaces {
             let sections = representable.sections
             return ScrollView {
                 VStack(alignment: .leading, spacing: 30) {
-                    HomeScreenHeader(date: Date())
+                    VStack(alignment: .leading, spacing: 8) {
+                        HomeScreenHeader(date: Date())
+                        if let staleCopy = representable.staleCopy {
+                            StaleCopyNotice(staleCopy: staleCopy)
+                        }
+                    }
 
                     TodaySection(
                         races: sections.nextToFinish,

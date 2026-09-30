@@ -52,7 +52,7 @@ struct Service {
     static func getLatestResults() async throws -> DTO.Home {
 //        let url = URL(string: "https://www.procyclingstats.com/race/settimana-internazionale-coppi-e-bartali/2025/stage-3/info/profiles")!
         do {
-            let document = try await getHomepageDocument()
+            let (document, staleCopySavedAt) = try await getHomepageCopy()
             let nextToFinishResults = parseNextToFinishResults(document)
             let todayResults = parseResultsToday(from: document)
             let yesterdayResults = try parseResultsYesterday(document)
@@ -65,7 +65,8 @@ struct Service {
                 today: todayResults,
                 yesterdayResults: yesterdayResults,
                 tomorrowRaces: tomorrowRaces,
-                liveStats: liveStatsRaces
+                liveStats: liveStatsRaces,
+                staleCopySavedAt: staleCopySavedAt
             )
 
         } catch {
@@ -77,7 +78,11 @@ struct Service {
     }
 
     static func getHomepageDocument() async throws -> Document {
-        let (data, _) = try await Requester
+        try await getHomepageCopy().document
+    }
+
+    static func getHomepageCopy() async throws -> (document: Document, staleCopySavedAt: Date?) {
+        let (data, response) = try await Requester
             .makeRequest(homepageURL)
             .ttl(60*15) // 15 minutes
             .cacheControlBehavior(.ignoreServer)
@@ -85,7 +90,22 @@ struct Service {
         guard let htmlContent = String(data: data, encoding: .utf8) else {
             throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
         }
-        return try SwiftSoup.parse(htmlContent)
+        return (
+            try SwiftSoup.parse(htmlContent),
+            staleCopySavedAt(response, now: Date())
+        )
+    }
+
+    /// Alfy marks an expired cached copy with `X-Cache: STALE`; its `Age` is seconds since it was fetched.
+    static func staleCopySavedAt(
+        _ response: URLResponse,
+        now: Date
+    ) -> Date? {
+        guard let http = response as? HTTPURLResponse,
+              http.value(forHTTPHeaderField: "X-Cache") == "STALE",
+              let age = http.value(forHTTPHeaderField: "Age").flatMap(TimeInterval.init)
+        else { return nil }
+        return now.addingTimeInterval(-age)
     }
 
     static func isOffline(_ error: Error) -> Bool {

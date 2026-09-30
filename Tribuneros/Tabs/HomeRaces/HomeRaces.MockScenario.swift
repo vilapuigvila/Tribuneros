@@ -12,6 +12,8 @@ extension HomeRaces {
         case later
         case one
         case empty
+        /// `live` data served as a 3-hour-old cached copy while offline.
+        case stale
 
         static var current: MockScenario? {
             let info = ProcessInfo.processInfo
@@ -36,7 +38,11 @@ extension HomeRaces {
                 isOnSpoilerModeResultsToday: isOnSpoilerModeResultsToday,
                 isOnSpoilerModeResultsYesterday: isOnSpoilerModeResultsYesterday,
                 error: nil,
-                loading: false
+                loading: false,
+                staleCopy: self == .stale ? HomeRaces.StaleCopy(
+                    savedAt: now.addingTimeInterval(-3 * 3600),
+                    isOffline: true
+                ) : nil
             )
         }
 
@@ -46,7 +52,7 @@ extension HomeRaces {
             let coppa = race("Coppa Bernocchi", in: 217, category: "ME", raceType: "1.1", flag: "it", path: "race/coppa-bernocchi/2026/result", now: now)
             let montreal = race("GP de Montréal", in: 427, category: "ME", raceType: "1.UWT", flag: "ca", path: "race/gp-de-montreal/2026/result", now: now)
             switch self {
-            case .live: return [montreal, coppa, cro, chrono]
+            case .live, .stale: return [montreal, coppa, cro, chrono]
             case .later: return [montreal, chrono]
             case .one: return [cro]
             case .empty: return []
@@ -54,7 +60,7 @@ extension HomeRaces {
         }
 
         private func liveStats(for races: [DTO.NextToFinishResult]) -> [DTO.LiveStatsRace] {
-            guard self == .live || self == .one else { return [] }
+            guard self == .live || self == .stale || self == .one else { return [] }
             let liveNames: Set<String> = self == .one ? ["CRO Race - S1"] : ["CRO Race - S1", "Coppa Bernocchi"]
             return races
                 .filter { liveNames.contains($0.name) }

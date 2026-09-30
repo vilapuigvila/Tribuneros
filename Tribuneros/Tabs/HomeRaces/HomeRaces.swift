@@ -133,6 +133,7 @@ enum HomeRaces {
             var finishDate: Date? = nil
         }
         let sections: Section
+        var staleCopy: StaleCopy? = nil
 
         /// Stand-ins shaped like a real page, drawn redacted while it loads. Spoiler mode is on
         /// so the result sections show their cards.
@@ -180,6 +181,12 @@ enum HomeRaces {
         }
     }
     
+    /// The page shown is an expired cached copy: when it was fetched, and whether the device is offline.
+    struct StaleCopy: Equatable {
+        let savedAt: Date
+        let isOffline: Bool
+    }
+
     struct SpoilerMode: Identifiable {
         let id = UUID()
         let isSpoilerModeResultsToday: Bool
