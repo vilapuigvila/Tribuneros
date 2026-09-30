@@ -11,6 +11,7 @@ struct RaceFinishedDetailView: View {
     let raceFinished: HomeRaces.Representable.RaceFinished
     @State private var isLoading = false
     @State private var errorMessage: String?
+    @State private var webPage: WebPage?
 
     var body: some View {
         NavigationStack {
@@ -75,6 +76,25 @@ struct RaceFinishedDetailView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 16)
+
+                        // View Full Results Button
+                        Button(action: openFullResults) {
+                            HStack(spacing: 8) {
+                                TribuneruText(
+                                    content: "View Full Results",
+                                    style: .vaporBodyBold,
+                                    color: .tribuneru(.vaporTextOnAccent)
+                                )
+                                Image(systemName: "arrow.up.right")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(.tribuneru(.vaporTextOnAccent))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color.tribuneru(.vaporAccent))
+                            .cornerRadius(8)
+                        }
+                        .padding(.horizontal, 16)
                     }
 
                     Spacer()
@@ -94,7 +114,16 @@ struct RaceFinishedDetailView: View {
             } message: { error in
                 Text(error)
             }
+            .webPage($webPage)
         }
+    }
+
+    private func openFullResults() {
+        guard let url = raceFinished.raceURL else {
+            errorMessage = "Race URL not available"
+            return
+        }
+        webPage = WebPage(url: url)
     }
 }
 
