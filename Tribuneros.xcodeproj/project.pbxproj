@@ -37,13 +37,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		5057B1DD2D82FCB900A7B453 /* Exceptions for "Tribuneros" folder in "Tribuneros" target */ = {
+		5057B1DD2D82FCB900A7B453 /* Exceptions for "Tribuneros" folder in "Tribunerus" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 				Tribuneros.xctestplan,
 			);
-			target = 50B365762D6489EF000DA4AC /* Tribuneros */;
+			target = 50B365762D6489EF000DA4AC /* Tribunerus */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -56,7 +56,7 @@
 		50B365792D6489EF000DA4AC /* Tribuneros */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				5057B1DD2D82FCB900A7B453 /* Exceptions for "Tribuneros" folder in "Tribuneros" target */,
+				5057B1DD2D82FCB900A7B453 /* Exceptions for "Tribuneros" folder in "Tribunerus" target */,
 			);
 			path = Tribuneros;
 			sourceTree = "<group>";
@@ -122,9 +122,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		50B365762D6489EF000DA4AC /* Tribuneros */ = {
+		50B365762D6489EF000DA4AC /* Tribunerus */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 50B365872D6489F1000DA4AC /* Build configuration list for PBXNativeTarget "Tribuneros" */;
+			buildConfigurationList = 50B365872D6489F1000DA4AC /* Build configuration list for PBXNativeTarget "Tribunerus" */;
 			buildPhases = (
 				50B365732D6489EF000DA4AC /* Sources */,
 				50B365742D6489EF000DA4AC /* Frameworks */,
@@ -138,7 +138,7 @@
 			fileSystemSynchronizedGroups = (
 				50B365792D6489EF000DA4AC /* Tribuneros */,
 			);
-			name = Tribuneros;
+			name = Tribunerus;
 			packageProductDependencies = (
 				500DE0C92D64CFE800D7D4DE /* SwiftSoup */,
 				50788AC52DD1FDE40051A80F /* SwiftSoup */,
@@ -216,7 +216,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				50B365762D6489EF000DA4AC /* Tribuneros */,
+				50B365762D6489EF000DA4AC /* Tribunerus */,
 				50BEF7D1A40147509E2CE915 /* TribunerosTests */,
 			);
 		};
@@ -287,7 +287,7 @@
 /* Begin PBXTargetDependency section */
 		3CFA5662663643FEA1E31456 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 50B365762D6489EF000DA4AC /* Tribuneros */;
+			target = 50B365762D6489EF000DA4AC /* Tribunerus */;
 			targetProxy = BF2C434C99A14D7385BD5AD0 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -541,7 +541,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		50B365872D6489F1000DA4AC /* Build configuration list for PBXNativeTarget "Tribuneros" */ = {
+		50B365872D6489F1000DA4AC /* Build configuration list for PBXNativeTarget "Tribunerus" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				50B365882D6489F1000DA4AC /* Debug */,

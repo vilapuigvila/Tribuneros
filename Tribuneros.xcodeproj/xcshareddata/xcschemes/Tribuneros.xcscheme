@@ -16,8 +16,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "50B365762D6489EF000DA4AC"
-               BuildableName = "Tribuneros.app"
-               BlueprintName = "Tribuneros"
+               BuildableName = "Cycling Tribune.app"
+               BlueprintName = "Tribunerus"
                ReferencedContainer = "container:Tribuneros.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -50,8 +50,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "50B365762D6489EF000DA4AC"
-            BuildableName = "Tribuneros.app"
-            BlueprintName = "Tribuneros"
+            BuildableName = "Cycling Tribune.app"
+            BlueprintName = "Tribunerus"
             ReferencedContainer = "container:Tribuneros.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -99,8 +99,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "50B365762D6489EF000DA4AC"
-            BuildableName = "Tribuneros.app"
-            BlueprintName = "Tribuneros"
+            BuildableName = "Cycling Tribune.app"
+            BlueprintName = "Tribunerus"
             ReferencedContainer = "container:Tribuneros.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
