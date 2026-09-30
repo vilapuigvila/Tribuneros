@@ -36,6 +36,8 @@ struct HomeRacesView: View {
                 ) {
                     viewModel.action($0)
                 }
+            case .raceResultDetail(let raceFinished):
+                RaceFinishedDetailView(raceFinished: raceFinished)
             default:
                 EmptyView()
             }

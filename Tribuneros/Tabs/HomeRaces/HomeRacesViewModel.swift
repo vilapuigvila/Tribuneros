@@ -47,6 +47,8 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
             interactor.useCase(.spoilerModeResultYesterday)
         case .openLink(let url):
             router.routeTo(.web(url))
+        case .openRaceResult(let raceFinished):
+            router.routeTo(.raceResultDetail(raceFinished))
         case .navigate(let destiantion):
             switch destiantion {
             case .nextToFinishRace(let index):

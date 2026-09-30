@@ -32,8 +32,8 @@ struct YesterdayResultsListView: View {
                     YesterdayResultsCard(
                         races: races,
                         identifierPrefix: "yesterdayResults"
-                    ) { url in
-                        action(.openLink(url))
+                    ) { race in
+                        action(.openRaceResult(race))
                     }
                 }
             }

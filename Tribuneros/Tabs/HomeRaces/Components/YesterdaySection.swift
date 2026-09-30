@@ -40,8 +40,8 @@ struct YesterdaySection: View {
                 YesterdayResultsCard(
                     races: Array(races.prefix(Self.previewLimit)),
                     identifierPrefix: "home.yesterday"
-                ) { url in
-                    action(.openLink(url))
+                ) { race in
+                    action(.openRaceResult(race))
                 }
             }
         }
@@ -51,7 +51,7 @@ struct YesterdaySection: View {
 struct YesterdayResultsCard: View {
     let races: [HomeRaces.Representable.RaceFinished]
     let identifierPrefix: String
-    let open: (URL) -> Void
+    let open: (HomeRaces.Representable.RaceFinished) -> Void
 
     var body: some View {
         LazyVStack(spacing: 0) {
@@ -74,10 +74,15 @@ struct YesterdayResultsCard: View {
 
 struct YesterdayResultRow: View {
     let race: HomeRaces.Representable.RaceFinished
-    let open: (URL) -> Void
+    let open: (HomeRaces.Representable.RaceFinished) -> Void
 
     var body: some View {
-        row.opensPage(race.raceURL, open: open)
+        Button {
+            open(race)
+        } label: {
+            row
+        }
+        .buttonStyle(.plain)
     }
 
     private var row: some View {
