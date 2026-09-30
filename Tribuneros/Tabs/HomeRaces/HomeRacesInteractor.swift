@@ -58,7 +58,7 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
     private let requestThrottle =
         RequestThrottleController(minimumInterval: 60, extraRequestsLimit: 2)
     
-    private let subject = CurrentValueSubject<Domain, Never>(.empty)
+    private let subject = CurrentValueSubject<Domain, Never>(.empty.copy(loading: true))
     
     var publisher: AnyPublisher<Domain, Never> {
         subject.eraseToAnyPublisher()

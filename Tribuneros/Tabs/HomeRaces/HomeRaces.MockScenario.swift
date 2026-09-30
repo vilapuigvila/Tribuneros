@@ -2,23 +2,15 @@
 //  HomeRaces.MockScenario.swift
 //  Tribuneros
 //
-//  Fixed Today Races data for UI runs (Maestro flows) in place of the network. Pick a
-//  scenario with the `HOME_MOCK` environment variable or a `homeMock` launch argument;
-//  `MOCKING=1` alone means `live`. Debug builds only.
-//
 
 #if DEBUG
 import Foundation
 
 extension HomeRaces {
     enum MockScenario: String {
-        /// Several races today, the first two live.
         case live
-        /// Races today, none of them live yet.
         case later
-        /// A single live race.
         case one
-        /// No races today.
         case empty
 
         static var current: MockScenario? {
@@ -88,6 +80,7 @@ extension HomeRaces {
             now: Date
         ) -> DTO.NextToFinishResult {
             let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
             formatter.dateFormat = "HH:mm"
             return DTO.NextToFinishResult(
                 eta: formatter.string(from: now.addingTimeInterval(TimeInterval(minutes * 60))),

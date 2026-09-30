@@ -2,8 +2,6 @@
 //  TodayRacesListView.swift
 //  Tribuneros
 //
-//  "See all" behind the Today hero: every race left today, live or not, by finish time.
-//
 
 import SwiftUI
 
@@ -15,15 +13,11 @@ struct TodayRacesListView: View {
         races.filter(\.isLive).count
     }
 
-    private var laterCount: Int {
-        races.count - liveCount
-    }
-
     var body: some View {
-        ScrollView {
+        HomeListScreen {
             VStack(alignment: .leading, spacing: 18) {
                 heading
-                VStack(spacing: 12) {
+                LazyVStack(spacing: 12) {
                     ForEach(Array(races.enumerated()), id: \.element.id) { index, race in
                         Button {
                             UIImpactFeedbackGenerator(style: .light).impactOccurred()
@@ -36,14 +30,7 @@ struct TodayRacesListView: View {
                     }
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 4)
-            .padding(.bottom, 24)
         }
-        .background(Color.tribuneru(.vaporPageBackground))
-        .preferredColorScheme(.dark)
-        .navigationTitle("")
-        .navigationBarTitleDisplayMode(.inline)
     }
 
     private var heading: some View {
@@ -97,12 +84,8 @@ struct TodayRacesListView: View {
     }
 
     private var summary: String {
-        var parts: [String] = []
-        if laterCount > 0 {
-            parts.append("\(laterCount) later today")
-        }
-        parts.append("by finish time")
-        return parts.joined(separator: " · ")
+        let later = races.count - liveCount
+        return later > 0 ? "\(later) later today · by finish time" : "by finish time"
     }
 }
 
@@ -115,7 +98,7 @@ struct TodayRaceRow: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            RaceArtView(art: .day, alignment: .trailing)
+            RaceArtView.fallback
                 .frame(width: Sizes.artSide, height: Sizes.artSide)
                 .overlay(alignment: .topLeading) {
                     RaceStatusTag(kind: race.statusKind, size: .small)
@@ -161,7 +144,7 @@ struct TodayRaceRow: View {
         .padding(12)
         .homeCard(cornerRadius: 18)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(accessibilityText)
+        .accessibilityLabel(race.accessibilityDescription)
         .accessibilityAddTraits(.isButton)
     }
 
@@ -186,16 +169,4 @@ struct TodayRaceRow: View {
             .joined(separator: " · ")
     }
 
-    private var accessibilityText: String {
-        var parts = [
-            race.title,
-            race.stageLabel ?? "one-day race",
-            race.isLive ? "live now" : "later today",
-            "expected finish \(race.eta)"
-        ]
-        if let remaining = race.remainingTimeDescription() {
-            parts.append("in \(remaining)")
-        }
-        return parts.joined(separator: ", ")
-    }
 }

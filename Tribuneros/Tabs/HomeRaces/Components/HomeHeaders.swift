@@ -2,8 +2,6 @@
 //  HomeHeaders.swift
 //  Tribuneros
 //
-//  The screen header and the title row every Today Races section starts with.
-//
 
 import SwiftUI
 
@@ -65,18 +63,45 @@ struct StatusBarScrim: View {
     }
 }
 
-/// A section title, one line, with "See all" at the trailing edge when there is a list behind it.
-/// `reservesTapHeight: false` is for a title with a control directly under it: the 44pt tap
-/// area of "See all" then overflows the row instead of making it taller.
-struct HomeSectionHeader: View {
+struct HomeSpoiler {
+    let isOn: Bool
+    let identifier: String
+    let action: () -> Void
+}
+
+/// A title row and its content. With a spoiler chip under the title the content folds away (and is
+/// not built) while spoilers are off; without one the content sits 14pt under the title.
+struct HomeSection<Content: View>: View {
     let title: String
     var seeAll: (() -> Void)?
-    var reservesTapHeight: Bool = true
-    var seeAllIdentifier: String = "seeAll"
-    /// Draws "See all" without an action, for a section whose list doesn't exist yet.
+    var seeAllIdentifier: String = ""
     var showsInertSeeAll: Bool = false
+    var spoiler: HomeSpoiler?
+    @ViewBuilder let content: () -> Content
 
+    @ViewBuilder
     var body: some View {
+        if let spoiler {
+            VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 0) {
+                    header(reservesTapHeight: false)
+                    HomeSpoilerChip(
+                        isSpoilerModeOn: spoiler.isOn,
+                        action: spoiler.action,
+                        identifier: spoiler.identifier
+                    )
+                }
+                FoldingContent(isShown: spoiler.isOn, content: content)
+            }
+        } else {
+            VStack(alignment: .leading, spacing: 14) {
+                header(reservesTapHeight: true)
+                content()
+            }
+        }
+    }
+
+    private func header(reservesTapHeight: Bool) -> some View {
         HStack(spacing: 12) {
             TribuneruText(
                 content: title,
@@ -105,7 +130,25 @@ struct HomeSectionHeader: View {
     }
 }
 
-struct SeeAllLabel: View {
+/// The scroll screen behind a "See all": no navigation title, the page background, dark scheme.
+struct HomeListScreen<Content: View>: View {
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        ScrollView {
+            content()
+                .padding(.horizontal, 16)
+                .padding(.top, 4)
+                .padding(.bottom, 24)
+        }
+        .background(Color.tribuneru(.vaporPageBackground))
+        .preferredColorScheme(.dark)
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct SeeAllLabel: View {
     var body: some View {
         HStack(spacing: 2) {
             TribuneruText(
@@ -121,7 +164,6 @@ struct SeeAllLabel: View {
     }
 }
 
-/// The spoiler chip, left aligned under a section title.
 struct HomeSpoilerChip: View {
     let isSpoilerModeOn: Bool
     let action: () -> Void
@@ -139,7 +181,6 @@ struct HomeSpoilerChip: View {
     }
 }
 
-/// One line inside a card-shaped box, for a section that has nothing to show yet.
 struct HomeEmptyNote: View {
     let text: String
 

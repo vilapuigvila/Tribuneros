@@ -2,9 +2,6 @@
 //  RaceArt.swift
 //  Tribuneros
 //
-//  The generic paintings shown where PCS gives no race image. Vector assets, so they
-//  fill any frame without going soft.
-//
 
 import SwiftUI
 
@@ -35,5 +32,11 @@ struct RaceArtView: View {
             }
             .clipped()
             .accessibilityHidden(true)
+    }
+}
+
+extension RaceArtView {
+    static var fallback: RaceArtView {
+        RaceArtView(art: .day, alignment: .trailing)
     }
 }

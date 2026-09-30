@@ -54,13 +54,9 @@ struct TribuneruText: View {
             "SpaceGrotesk-Bold"
         case .vaporScreenDate, .vaporMeta, .vaporFeedDetail:
             "SpaceGrotesk-Regular"
-        case .vaporRaceNameTomorrow:
-            "SpaceGrotesk-Medium"
-        case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporCountdown, .vaporTabLabel, .vaporPressName:
+        case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporTabLabel, .vaporPressName:
             "SpaceGrotesk-SemiBold"
         case .vaporSpoilerChip, .vaporFeedTag, .vaporChangeSign, .vaporAge:
-            "SpaceMono-Bold"
-        case .vaporETANext, .vaporStartTimeTomorrow:
             "SpaceMono-Bold"
         case .vaporFinishTime, .vaporETALine, .vaporMonoMeta, .vaporGroupLabel:
             "SpaceMono-Regular"
@@ -91,12 +87,9 @@ struct TribuneruText: View {
         case .vaporSectionTitle: 30
         case .vaporSpoilerChip: 11
         case .vaporRaceNameNext, .vaporWinnerName: 14
-        case .vaporRaceNameResult, .vaporRaceNameTomorrow: 13
-        case .vaporETANext: 20
-        case .vaporStartTimeTomorrow: 18
+        case .vaporRaceNameResult: 13
         case .vaporFinishTime: 12
         case .vaporETALine: 11
-        case .vaporCountdown: 11
         case .vaporMeta: 11
         case .vaporTabLabel: 11
         case .vaporPressName: 13
@@ -136,15 +129,14 @@ struct TribuneruText: View {
         // Weight for the vapor cases is baked into the loaded font file
         // (see `fontName`); this value is unused but kept exhaustive.
         case .vaporScreenTitle, .vaporSectionTitle, .vaporSpoilerChip,
-             .vaporETANext, .vaporStartTimeTomorrow,
              .vaporFeedTag, .vaporChangeSign, .vaporAge,
              .vaporHeading, .vaporHeroTitle, .vaporTag, .vaporTagSmall, .vaporPill, .vaporStatTime,
              .vaporRowTime, .vaporResultTitle, .vaporResultTime, .vaporBannerTitle:
             .bold
-        case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporCountdown, .vaporTabLabel, .vaporPressName,
+        case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporTabLabel, .vaporPressName,
              .vaporLink, .vaporRowTitle, .vaporRowCountdown:
             .semibold
-        case .vaporRaceNameTomorrow, .vaporHeroSubtitle:
+        case .vaporHeroSubtitle:
             .medium
         case .vaporScreenDate, .vaporMeta, .vaporFinishTime, .vaporETALine,
              .vaporFeedDetail, .vaporMonoMeta, .vaporGroupLabel,
@@ -162,8 +154,6 @@ struct TribuneruText: View {
         switch style {
         case .vaporScreenTitle: -0.4
         case .vaporSectionTitle: -0.8
-        case .vaporETANext: -0.5
-        case .vaporStartTimeTomorrow: -0.4
         case .vaporFeedTag: 0.8
         case .vaporGroupLabel: 0.66
         case .vaporHeading: -0.4
@@ -177,7 +167,7 @@ struct TribuneruText: View {
     /// font (if ever substituted) to keep digits tabular.
     private var isTabularNumeric: Bool {
         switch style {
-        case .vaporETANext, .vaporStartTimeTomorrow, .vaporFinishTime, .vaporETALine,
+        case .vaporFinishTime, .vaporETALine,
              .vaporMonoMeta, .vaporAge, .vaporPill, .vaporStatTime, .vaporRowTime, .vaporResultTime,
              .vaporRowCountdown:
             true
@@ -206,13 +196,9 @@ extension TribuneruText {
         case vaporSpoilerChip
         case vaporRaceNameNext
         case vaporRaceNameResult
-        case vaporRaceNameTomorrow
         case vaporWinnerName
-        case vaporETANext
-        case vaporStartTimeTomorrow
         case vaporFinishTime
         case vaporETALine
-        case vaporCountdown
         case vaporMeta
         case vaporTabLabel
 

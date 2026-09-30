@@ -2,43 +2,29 @@
 //  ResultsTodaySection.swift
 //  Tribuneros
 //
-//  "Results today": the title on one line, the spoiler chip under it, then a card per
-//  finished race. With spoilers off the cards fold away and only the header stays.
-//
 
 import SwiftUI
-
-extension HomeRaces.Representable.RaceFinished {
-    /// The first podium entry that actually has a rider; yesterday's podiums are padded with blanks.
-    var winner: Winner? {
-        podium.first { !$0.name.isEmpty }
-    }
-}
 
 struct ResultsTodaySection: View {
     let races: [HomeRaces.Representable.RaceFinished]
     let isSpoilerModeOn: Bool
     let action: (HomeRaces.Action) -> Void
 
+    private var spoiler: HomeSpoiler? {
+        guard !races.isEmpty else { return nil }
+        return HomeSpoiler(
+            isOn: isSpoilerModeOn,
+            identifier: "home.results.spoiler"
+        ) {
+            action(.spoilerModeResultToday)
+        }
+    }
+
     var body: some View {
-        if races.isEmpty {
-            VStack(alignment: .leading, spacing: 14) {
-                HomeSectionHeader(title: "Results today")
+        HomeSection(title: "Results today", spoiler: spoiler) {
+            if races.isEmpty {
                 HomeEmptyNote(text: "No results yet")
-            }
-        } else {
-            VStack(alignment: .leading, spacing: 6) {
-                VStack(alignment: .leading, spacing: 0) {
-                    HomeSectionHeader(
-                        title: "Results today",
-                        reservesTapHeight: false
-                    )
-                    HomeSpoilerChip(
-                        isSpoilerModeOn: isSpoilerModeOn,
-                        action: { action(.spoilerModeResultToday) },
-                        identifier: "home.results.spoiler"
-                    )
-                }
+            } else {
                 cards
             }
         }
@@ -47,7 +33,7 @@ struct ResultsTodaySection: View {
     private var cards: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                ForEach(Array(races.enumerated()), id: \.element.id) { index, race in
+                ForEach(Array(races.enumerated()), id: \.offset) { index, race in
                     ResultHighlightCard(race: race) { url in
                         action(.openLink(url))
                     }
@@ -58,7 +44,6 @@ struct ResultsTodaySection: View {
         }
         .contentMargins(.horizontal, 16, for: .scrollContent)
         .padding(.horizontal, -16)
-        .foldsAway(unless: isSpoilerModeOn)
     }
 }
 
@@ -72,30 +57,16 @@ struct ResultHighlightCard: View {
     let race: HomeRaces.Representable.RaceFinished
     let open: (URL) -> Void
 
-    @ViewBuilder
     var body: some View {
-        if let url = race.raceURL {
-            Button {
-                open(url)
-            } label: {
-                card
-            }
-            .buttonStyle(.plain)
-        } else {
-            card
-        }
+        card.opensPage(race.raceURL, open: open)
     }
 
     private var card: some View {
         VStack(alignment: .leading, spacing: 0) {
-            CachedImageView(
-                imageUrl: race.winnerImgURL,
-                cornerRadius: 0,
-                contentMode: .fill,
-                fallback: .raceArt
+            WinnerPhoto(
+                url: race.winnerImgURL,
+                size: CGSize(width: Sizes.width, height: Sizes.photoHeight)
             )
-            .frame(width: Sizes.width, height: Sizes.photoHeight, alignment: .top)
-            .clipped()
             details
         }
         .frame(width: Sizes.width, alignment: .topLeading)

@@ -45,8 +45,6 @@ extension Color {
             Color(hex: 0x0E0F22)
         case .vaporPanelTomorrow:
             Color(hex: 0x150E1E)
-        case .vaporPanelLive:
-            Color(hex: 0x1A0B10)
         case .vaporNegative:
             Color(hex: 0xFB7185)
         case .vaporLiveRed:
@@ -55,8 +53,6 @@ extension Color {
             Color(hex: 0x263049)
         case .vaporTagNeutralText:
             Color(hex: 0xD3DCE8)
-        case .vaporTagNeutralDot:
-            Color(hex: 0xAEB9C8)
         case .vaporTextMuted:
             Color(hex: 0xB7C2CF)
         }
@@ -82,18 +78,11 @@ extension Color {
         case vaporPanelToday
         case vaporPanelYesterday
         case vaporPanelTomorrow
-        /// Darker than `vaporCardSurface` (relative luminance 0.0049 vs 0.0093),
-        /// keeping the Vapor spec's rule that a panel is always darker than the
-        /// cards on it. See `agent-doc/home_redesign_spec.md` §1 and §8 (the
-        /// section→colour mapping is a free choice).
-        case vaporPanelLive
         case vaporNegative
         /// The LIVE tag; red on purpose, unlike the green `vaporLive` dot.
         case vaporLiveRed
-        /// The grey TODAY / NO RACES tag: fill, text and hollow dot.
         case vaporTagNeutral
         case vaporTagNeutralText
-        case vaporTagNeutralDot
         case vaporTextMuted
     }
 }

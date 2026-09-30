@@ -2,9 +2,6 @@
 //  HomeTodayRacesTests.swift
 //  TribunerosTests
 //
-//  What the Today Races screen shows from PCS's "Next to finish": stage titles, finish times,
-//  ordering, and which races count as live.
-//
 
 import XCTest
 import Combine
@@ -37,17 +34,12 @@ final class HomeTodayRacesTests: XCTestCase {
         )
     }
 
-    private func next(eta: String, duration: String = "2h") -> RaceNext {
-        RaceNext(
-            eta: eta,
-            duration: duration,
-            name: "Race",
-            category: "ME",
-            raceType: "1.1",
-            distance: "",
-            urlPath: nil,
-            flagCode: "it"
-        )
+    private func next(eta: String, duration: String = "2h", now: Date) -> RaceNext {
+        HomeRaces.TodayRaces.build(
+            nextToFinish: [race(eta: eta, duration: duration)],
+            liveStats: [],
+            now: now
+        )[0]
     }
 
     // MARK: - Title and stage
@@ -78,30 +70,45 @@ final class HomeTodayRacesTests: XCTestCase {
 
     func testRemainingTimeCountsDownToTheEta() {
         let now = date(14, 28)
-        XCTAssertEqual(next(eta: "16:42").remainingTimeDescription(now: now), "2h 14m")
-        XCTAssertEqual(next(eta: "15:28").remainingTimeDescription(now: now), "1h")
-        XCTAssertEqual(next(eta: "14:58").remainingTimeDescription(now: now), "30m")
+        XCTAssertEqual(next(eta: "16:42", now: now).remainingTimeDescription(now: now), "2h 14m")
+        XCTAssertEqual(next(eta: "15:28", now: now).remainingTimeDescription(now: now), "1h")
+        XCTAssertEqual(next(eta: "14:58", now: now).remainingTimeDescription(now: now), "30m")
     }
 
     func testRemainingTimeIsAbsentOnceTheEtaPassedOrCannotBeRead() {
         let now = date(14, 28)
-        XCTAssertNil(next(eta: "14:00", duration: "-").remainingTimeDescription(now: now))
-        XCTAssertNil(next(eta: "-", duration: "-").remainingTimeDescription(now: now))
-        XCTAssertNil(next(eta: "25:99").remainingTimeDescription(now: now))
+        XCTAssertNil(next(eta: "14:00", duration: "-", now: now).remainingTimeDescription(now: now))
+        XCTAssertNil(next(eta: "-", duration: "-", now: now).remainingTimeDescription(now: now))
+        XCTAssertNil(next(eta: "25:99", now: now).remainingTimeDescription(now: now))
     }
 
     func testAFinishAfterMidnightRollsToTomorrowWhilePcsStillCountsHours() {
         let now = date(22, 0)
-        let afterMidnight = next(eta: "00:40", duration: "3h")
+        let afterMidnight = next(eta: "00:40", duration: "3h", now: now)
         XCTAssertEqual(afterMidnight.remainingTimeDescription(now: now), "2h 40m")
         let tomorrow = calendar.date(byAdding: .day, value: 1, to: date(0, 40))
-        XCTAssertEqual(afterMidnight.finishDate(now: now), tomorrow)
+        XCTAssertEqual(afterMidnight.finishDate, tomorrow)
+    }
+
+    func testAFinishFromLateYesterdayIsNotCountedDownAfterMidnight() {
+        let now = date(0, 10)
+        let yesterdaysFinish = next(eta: "23:50", duration: "-", now: now)
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: date(23, 50))
+        XCTAssertEqual(yesterdaysFinish.finishDate, yesterday)
+        XCTAssertNil(yesterdaysFinish.remainingTimeDescription(now: now))
+
+        let races = HomeRaces.TodayRaces.build(
+            nextToFinish: [race("Next", eta: "01:30", duration: "1h"), race("Old", eta: "23:50", duration: "-")],
+            liveStats: [],
+            now: now
+        )
+        XCTAssertEqual(races.map(\.name), ["Old", "Next"])
     }
 
     func testAnEtaThatPassedStaysTodayWhenPcsShowsADash() {
         let now = date(22, 0)
-        let passed = next(eta: "05:30", duration: "-")
-        XCTAssertEqual(passed.finishDate(now: now), date(5, 30))
+        let passed = next(eta: "05:30", duration: "-", now: now)
+        XCTAssertEqual(passed.finishDate, date(5, 30))
         XCTAssertNil(passed.remainingTimeDescription(now: now))
     }
 
@@ -171,13 +178,33 @@ final class HomeTodayRacesTests: XCTestCase {
         XCTAssertEqual(races.map(\.isLive), [false])
     }
 
+    // MARK: - Images
+
+    func testPCSImageHeadersAreOnlyAddedForPCSHosts() {
+        var pcs = URLRequest(url: URL(string: "https://www.procyclingstats.com/images/riders/a.jpg")!)
+        Service.addPCSImageHeaders(to: &pcs)
+        XCTAssertEqual(pcs.value(forHTTPHeaderField: "Referer"), "https://www.procyclingstats.com/")
+        XCTAssertNotNil(pcs.value(forHTTPHeaderField: "User-Agent"))
+
+        for other in ["https://flagcdn.com/w40/it.png", "https://evilprocyclingstats.com/a.jpg"] {
+            var request = URLRequest(url: URL(string: other)!)
+            Service.addPCSImageHeaders(to: &request)
+            XCTAssertNil(request.value(forHTTPHeaderField: "Referer"), other)
+        }
+    }
+
     // MARK: - View model
 
     private final class StubInteractor: InteractorProtocol {
         typealias Domain = HomeRacesDomain
         typealias UseCase = HomeRaces.UseCase
 
-        let subject = CurrentValueSubject<HomeRacesDomain, Never>(.empty)
+        let subject: CurrentValueSubject<HomeRacesDomain, Never>
+
+        init(initial: HomeRacesDomain = .empty) {
+            subject = CurrentValueSubject(initial)
+        }
+
         var domain: HomeRacesDomain { subject.value }
         var publisher: AnyPublisher<HomeRacesDomain, Never> { subject.eraseToAnyPublisher() }
         func useCase(_ useCase: HomeRaces.UseCase) {}
@@ -187,27 +214,33 @@ final class HomeTodayRacesTests: XCTestCase {
         let interactor = StubInteractor()
         let viewModel = HomeRacesViewModel(interactor: interactor, router: Router())
         let settled = expectation(description: "the view model mapped the domain")
-        let cancellable = viewModel.$stateView.dropFirst().first().sink { _ in settled.fulfill() }
+        let cancellable = viewModel.$stateView
+            .first { state in
+                if case .idle = state { return false }
+                return true
+            }
+            .sink { _ in settled.fulfill() }
         interactor.subject.send(domain)
         wait(for: [settled], timeout: 2)
         cancellable.cancel()
         return viewModel.stateView
     }
 
-    func testTheViewModelStartsIdleSoThePageDrawsPlaceholders() {
-        let viewModel = HomeRacesViewModel(interactor: StubInteractor(), router: Router())
+    func testTheViewModelStartsLoadingSoThePageDrawsPlaceholders() {
+        let viewModel = HomeRacesViewModel(interactor: StubInteractor(initial: .empty.copy(loading: true)), router: Router())
         let settled = expectation(description: "the initial domain was mapped")
         DispatchQueue.main.async { settled.fulfill() }
         wait(for: [settled], timeout: 2)
 
-        guard case .idle = viewModel.stateView else {
-            return XCTFail("Expected .idle before the first request, got \(viewModel.stateView)")
+        guard case .loading = viewModel.stateView else {
+            return XCTFail("Expected .loading before the first response, got \(viewModel.stateView)")
         }
     }
 
     func testTheViewModelMapsRacesInFinishOrderWithTheLiveFlag() throws {
         let now = Date()
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "HH:mm"
         let soon = formatter.string(from: now.addingTimeInterval(60 * 60))
         let later = formatter.string(from: now.addingTimeInterval(3 * 60 * 60))

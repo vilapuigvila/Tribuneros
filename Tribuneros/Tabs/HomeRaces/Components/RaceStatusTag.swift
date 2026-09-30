@@ -2,8 +2,6 @@
 //  RaceStatusTag.swift
 //  Tribuneros
 //
-//  The pill in the corner of a race image: red LIVE, or a grey one when nothing is live.
-//
 
 import SwiftUI
 
@@ -67,7 +65,7 @@ struct RaceStatusTag: View {
                 .frame(width: isRegular ? 6 : 5, height: isRegular ? 6 : 5)
         } else {
             Circle()
-                .strokeBorder(Color.tribuneru(.vaporTagNeutralDot), lineWidth: isRegular ? 1.5 : 1.2)
+                .strokeBorder(Color.tribuneru(.vaporTextMuted), lineWidth: isRegular ? 1.5 : 1.2)
                 .frame(width: isRegular ? 7 : 5, height: isRegular ? 7 : 5)
         }
     }

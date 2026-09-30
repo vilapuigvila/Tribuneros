@@ -73,9 +73,7 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
     }
     
     private func mapToHomeRacesState(_ domain: HomeRacesDomain) -> HomeRaces.ViewState {
-        if domain == .empty {
-            return .idle
-        } else if domain.loading {
+        if domain.loading {
             return .loading
         } else {
             if let error = domain.error {
@@ -89,11 +87,9 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
                         sections: .init(
                             title: "",
                             spoilerMode: spoilerMode(domain),
-                            liveStats: liveStats(domain),
                             nextToFinish: nextToFinish(domain),
-                            racesFinished: todayRaces(domain),
-                            yesterdayResults: yesterdayResults(domain),
-                            tomorrowRaces: tomorrowRaces(domain)
+                            racesFinished: finishedRaces(domain.todayRaces),
+                            yesterdayResults: finishedRaces(domain.yesterdayResults)
                         )
                     )
                 )
@@ -112,47 +108,6 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
         )
     }
     
-    private func liveStats(_ domain: HomeRacesDomain) -> [HomeRaces.Representable.LiveRace] {
-        domain.liveStatsRaces.map {
-            HomeRaces.Representable.LiveRace(
-                status: $0.status,
-                isLive: $0.isLive,
-                raceName: $0.raceName,
-                ridersCount: $0.ridersCount,
-                racePath: $0.racePath,
-                url: $0.url
-            )
-        }
-    }
-
-    private func tomorrowRaces(_ domain: HomeRacesDomain) -> [HomeRaces.Representable.RaceTomorrow] {
-        domain.tomorrowRaces.map {
-            HomeRaces.Representable.RaceTomorrow(start: $0.startTime, eta: $0.eta, name: $0.raceName, url: $0.relativeUrl)
-        }
-    }
-    
-    private func todayRaces(_ domain: HomeRacesDomain) -> [HomeRaces.Representable.RaceFinished] {
-        domain.todayRaces.map { race in
-            HomeRaces.Representable.RaceFinished(
-                race: race.raceName,
-                raceDetails: race.raceDetails,
-                winnerImgURL: race.winner,
-                podium: race.podium.map {
-                    HomeRaces.Representable.RaceFinished.Winner(
-                        position: $0.position,
-                        flag: $0.flag,
-                        countryCode: $0.countryCode ?? "",
-                        name: $0.name,
-                        team: $0.team,
-                        time: $0.time
-                    )
-                },
-                isCancel: false,
-                raceURL: race.raceURL
-            )
-        }
-    }
-
     private func nextToFinish(_ domain: HomeRacesDomain) -> [HomeRaces.Representable.RaceNext] {
         HomeRaces.TodayRaces.build(
             nextToFinish: domain.nextToFinishRaces,
@@ -160,32 +115,13 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
         )
     }
     
-    private func yesterdayResults(_ domain: HomeRacesDomain) -> [HomeRaces.Representable.RaceFinished] {
-        typealias Winners = HomeRaces.Representable.RaceFinished.Winner
-        
-        let ensurePodiumCount: ([DTO.TodayResult.Winner]) -> [Winners] = { podium in
-            let winners = podium.map {
-                HomeRaces.Representable.RaceFinished.Winner(
-                    position: $0.position,
-                    flag: $0.flag,
-                    countryCode: $0.countryCode ?? "",
-                    name: $0.name,
-                    team: $0.team,
-                    time: $0.time
-                )
-            }
-            let missing = 3 - min(podium.count, 3)
-            let empties: [Winners] = (0..<missing).map { _ in
-                .init(position: "-", flag: nil, countryCode: "", name: "", team: "", time: "")
-            }
-            return winners + empties
-        }
-        return domain.yesterdayResults.map { race in
+    private func finishedRaces(_ results: [DTO.TodayResult]) -> [HomeRaces.Representable.RaceFinished] {
+        results.map { race in
             HomeRaces.Representable.RaceFinished(
                 race: race.raceName,
                 raceDetails: race.raceDetails,
                 winnerImgURL: race.winner,
-                podium: ensurePodiumCount(race.podium),
+                podium: race.podium.map { HomeRaces.Representable.RaceFinished.Winner($0) },
                 isCancel: false,
                 raceURL: race.raceURL
             )

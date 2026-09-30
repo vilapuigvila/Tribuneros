@@ -2,8 +2,6 @@
 //  YesterdayResultsListView.swift
 //  Tribuneros
 //
-//  "See all" behind Yesterday: every finished race, behind the same spoiler chip.
-//
 
 import SwiftUI
 
@@ -13,7 +11,7 @@ struct YesterdayResultsListView: View {
     let action: (HomeRaces.Action) -> Void
 
     var body: some View {
-        ScrollView {
+        HomeListScreen {
             VStack(alignment: .leading, spacing: 6) {
                 VStack(alignment: .leading, spacing: 0) {
                     TribuneruText(
@@ -30,21 +28,15 @@ struct YesterdayResultsListView: View {
                         identifier: "yesterdayResults.spoiler"
                     )
                 }
-                YesterdayResultsCard(
-                    races: races,
-                    identifierPrefix: "yesterdayResults"
-                ) { url in
-                    action(.openLink(url))
+                FoldingContent(isShown: isSpoilerModeOn) {
+                    YesterdayResultsCard(
+                        races: races,
+                        identifierPrefix: "yesterdayResults"
+                    ) { url in
+                        action(.openLink(url))
+                    }
                 }
-                .foldsAway(unless: isSpoilerModeOn)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 4)
-            .padding(.bottom, 24)
         }
-        .background(Color.tribuneru(.vaporPageBackground))
-        .preferredColorScheme(.dark)
-        .navigationTitle("")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }

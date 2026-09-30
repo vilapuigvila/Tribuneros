@@ -2,9 +2,6 @@
 //  TodayHeroCard.swift
 //  Tribuneros
 //
-//  The "Today" section: the first race of the day as one big card, or a resting scene when
-//  the day has no races. "See all" opens the whole list once there is more than one.
-//
 
 import SwiftUI
 
@@ -18,12 +15,11 @@ struct TodaySection: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HomeSectionHeader(
-                title: "Today",
-                seeAll: seeAll,
-                seeAllIdentifier: "home.today.seeAll"
-            )
+        HomeSection(
+            title: "Today",
+            seeAll: seeAll,
+            seeAllIdentifier: "home.today.seeAll"
+        ) {
             if let race = races.first {
                 TodayHeroCard(race: race) {
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
@@ -39,7 +35,6 @@ struct TodaySection: View {
 struct TodayHeroCard: View {
     private enum Sizes {
         static let artHeight: CGFloat = 232
-        static let cornerRadius: CGFloat = 20
     }
 
     let race: HomeRaces.Representable.RaceNext
@@ -51,11 +46,11 @@ struct TodayHeroCard: View {
                 art
                 stats
             }
-            .homeCard(cornerRadius: Sizes.cornerRadius)
+            .homeCard()
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(accessibilityText)
+        .accessibilityLabel(race.accessibilityDescription)
         .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier("home.today.hero")
     }
@@ -63,16 +58,7 @@ struct TodayHeroCard: View {
     private var art: some View {
         ZStack {
             RaceArtView(art: .day)
-            LinearGradient(
-                colors: [Color.tribuneru(.vaporPageBackground).opacity(0.5), .clear],
-                startPoint: .top,
-                endPoint: UnitPoint(x: 0.5, y: 0.3)
-            )
-            LinearGradient(
-                colors: [Color.tribuneru(.vaporPageBackground).opacity(0.78), .clear],
-                startPoint: .bottom,
-                endPoint: UnitPoint(x: 0.5, y: 0.54)
-            )
+            ImageScrim()
             VStack(alignment: .leading, spacing: 0) {
                 HStack(spacing: 8) {
                     RaceStatusTag(kind: race.statusKind)
@@ -96,7 +82,7 @@ struct TodayHeroCard: View {
                 color: .tribuneru(.white(level: 1)),
                 lineLimit: 2
             )
-            .shadow(color: Color.tribuneru(.black).opacity(0.5), radius: 7, x: 0, y: 1)
+            .artTitleShadow()
             HStack(spacing: 8) {
                 VaporFlagView(countryCode: race.flagCode)
                 TribuneruText(
@@ -160,22 +146,8 @@ struct TodayHeroCard: View {
             .font(.system(size: 14, weight: .regular))
             .foregroundColor(.tribuneru(.vaporTextSecondary))
     }
-
-    private var accessibilityText: String {
-        var parts = [
-            race.title,
-            race.stageLabel ?? "one-day race",
-            race.isLive ? "live now" : "later today",
-            "expected finish \(race.eta)"
-        ]
-        if let remaining = race.remainingTimeDescription() {
-            parts.append("in \(remaining)")
-        }
-        return parts.joined(separator: ", ")
-    }
 }
 
-/// The "in 2h 14m" capsule on a race image, kept current by the minute. Absent once the ETA passed.
 struct RemainingPill: View {
     let race: HomeRaces.Representable.RaceNext
 
@@ -209,15 +181,11 @@ struct TodayEmptyCard: View {
                 startRadiusFraction: 0,
                 endRadiusFraction: 0.7
             )
-            LinearGradient(
-                colors: [Color.tribuneru(.vaporPageBackground).opacity(0.4), .clear],
-                startPoint: .top,
-                endPoint: UnitPoint(x: 0.5, y: 0.28)
-            )
-            LinearGradient(
-                colors: [Color.tribuneru(.vaporPageBackground).opacity(0.7), .clear],
-                startPoint: .bottom,
-                endPoint: UnitPoint(x: 0.5, y: 0.42)
+            ImageScrim(
+                top: 0.4,
+                topEnd: 0.28,
+                bottom: 0.7,
+                bottomEnd: 0.42
             )
             VStack(alignment: .leading, spacing: 0) {
                 RaceStatusTag(kind: .noRaces)
@@ -229,7 +197,7 @@ struct TodayEmptyCard: View {
                         color: .tribuneru(.white(level: 1)),
                         lineLimit: 2
                     )
-                    .shadow(color: Color.tribuneru(.black).opacity(0.5), radius: 7, x: 0, y: 1)
+                    .artTitleShadow()
                     TribuneruText(
                         content: "Nothing on today's list yet. New races show up here as soon as they're listed.",
                         style: .vaporBannerSubtitle,
@@ -245,11 +213,7 @@ struct TodayEmptyCard: View {
             .padding(14)
         }
         .frame(height: 282)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .strokeBorder(Color.tribuneru(.vaporTextPrimary).opacity(0.08), lineWidth: 1)
-        )
+        .homeCard()
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("home.today.empty")
     }

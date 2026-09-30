@@ -141,7 +141,7 @@ bar), then four sections:
   suffix on the name is the stage (`title` / `stageLabel`); without one it reads "One-day race". The
   "in 2h 14m" text is computed from the ETA and refreshed by `TimelineView(.everyMinute)`.
 - **Results today** and **Yesterday**: the title, a `VaporSpoilerChip` under it, then highlight
-  cards / one card of rows. Spoilers default off and fold the content away (one setting each, in
+  cards / one card of rows. Spoilers default off and fold the content away (`FoldingContent` doesn't even build it, so no images load; one setting each, in
   `UserSettings`). Yesterday previews 3 rows; its "See all" pushes `YesterdayResultsListView`
   behind the same chip. Cards and rows open the race's PCS results page in Safari
   (`DTO.TodayResult.raceURL`). Both results parsers split the title (`<b>`) from the route and
@@ -151,7 +151,7 @@ bar), then four sections:
 "Races tomorrow" is no longer drawn (it is still parsed). The generic paintings (`RaceArtView`, the
 vector assets `RaceArtDay`, `RaceArtNight` and `RaceArtBanner`) stand in wherever PCS has no
 image: a winner photo that is missing or fails to load falls back to the day painting
-(`CachedImageView(fallback: .raceArt)`). PCS answers 403 to image requests without a Referer and a
+(`WinnerPhoto`, i.e. `CachedImageView(presentation: .racePhoto)`). PCS answers 403 to image requests without a Referer and a
 browser User-Agent, so `CachedImageView` adds both for PCS URLs (`Service.addPCSImageHeaders`).
 
 **The Paddock press list comes from Firebase Remote Config**, key `press_urls`: a JSON array whose

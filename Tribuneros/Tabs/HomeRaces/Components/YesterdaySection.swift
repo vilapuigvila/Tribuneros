@@ -2,9 +2,6 @@
 //  YesterdaySection.swift
 //  Tribuneros
 //
-//  "Yesterday": the title with "See all", the spoiler chip under it, then one card holding a
-//  row per finished race. The card previews a few; "See all" opens the whole list.
-//
 
 import SwiftUI
 
@@ -20,34 +17,32 @@ struct YesterdaySection: View {
         return { action(.navigate(.yesterdayResults)) }
     }
 
+    private var spoiler: HomeSpoiler? {
+        guard !races.isEmpty else { return nil }
+        return HomeSpoiler(
+            isOn: isSpoilerModeOn,
+            identifier: "home.yesterday.spoiler"
+        ) {
+            action(.spoilerModeResultYesterday)
+        }
+    }
+
     var body: some View {
-        if races.isEmpty {
-            VStack(alignment: .leading, spacing: 14) {
-                HomeSectionHeader(title: "Yesterday")
+        HomeSection(
+            title: "Yesterday",
+            seeAll: seeAll,
+            seeAllIdentifier: "home.yesterday.seeAll",
+            spoiler: spoiler
+        ) {
+            if races.isEmpty {
                 HomeEmptyNote(text: "No results")
-            }
-        } else {
-            VStack(alignment: .leading, spacing: 6) {
-                VStack(alignment: .leading, spacing: 0) {
-                    HomeSectionHeader(
-                        title: "Yesterday",
-                        seeAll: seeAll,
-                        reservesTapHeight: false,
-                        seeAllIdentifier: "home.yesterday.seeAll"
-                    )
-                    HomeSpoilerChip(
-                        isSpoilerModeOn: isSpoilerModeOn,
-                        action: { action(.spoilerModeResultYesterday) },
-                        identifier: "home.yesterday.spoiler"
-                    )
-                }
+            } else {
                 YesterdayResultsCard(
                     races: Array(races.prefix(Self.previewLimit)),
                     identifierPrefix: "home.yesterday"
                 ) { url in
                     action(.openLink(url))
                 }
-                .foldsAway(unless: isSpoilerModeOn)
             }
         }
     }
@@ -59,8 +54,8 @@ struct YesterdayResultsCard: View {
     let open: (URL) -> Void
 
     var body: some View {
-        VStack(spacing: 0) {
-            ForEach(Array(races.enumerated()), id: \.element.id) { index, race in
+        LazyVStack(spacing: 0) {
+            ForEach(Array(races.enumerated()), id: \.offset) { index, race in
                 if index > 0 {
                     TribunerosDivider(
                         height: 0.5,
@@ -81,29 +76,16 @@ struct YesterdayResultRow: View {
     let race: HomeRaces.Representable.RaceFinished
     let open: (URL) -> Void
 
-    @ViewBuilder
     var body: some View {
-        if let url = race.raceURL {
-            Button {
-                open(url)
-            } label: {
-                row(showsChevron: true)
-            }
-            .buttonStyle(.plain)
-        } else {
-            row(showsChevron: false)
-        }
+        row.opensPage(race.raceURL, open: open)
     }
 
-    private func row(showsChevron: Bool) -> some View {
+    private var row: some View {
         HStack(spacing: 14) {
-            CachedImageView(
-                imageUrl: race.winnerImgURL,
-                cornerRadius: 0,
-                contentMode: .fill,
-                fallback: .raceArt
+            WinnerPhoto(
+                url: race.winnerImgURL,
+                size: CGSize(width: 72, height: 72)
             )
-            .frame(width: 72, height: 72, alignment: .top)
             .clipShape(RoundedRectangle(cornerRadius: 12))
             VStack(alignment: .leading, spacing: 4) {
                 TribuneruText(
@@ -125,7 +107,7 @@ struct YesterdayResultRow: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            if showsChevron {
+            if race.raceURL != nil {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(.tribuneru(.vaporTextSecondary))
@@ -158,16 +140,5 @@ struct YesterdayResultRow: View {
                 lineLimit: 1
             )
         }
-    }
-}
-
-extension View {
-    /// Collapses and fades a section body, the way spoiler mode hides results.
-    func foldsAway(unless isShown: Bool) -> some View {
-        opacity(isShown ? 1 : 0)
-            .frame(maxHeight: isShown ? nil : 0)
-            .clipped()
-            .animation(.interpolatingSpring(.smooth, initialVelocity: 0.5), value: isShown)
-            .accessibilityHidden(!isShown)
     }
 }

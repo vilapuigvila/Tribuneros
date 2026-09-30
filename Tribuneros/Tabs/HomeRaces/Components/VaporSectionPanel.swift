@@ -2,65 +2,10 @@
 //  VaporSectionPanel.swift
 //  Tribuneros
 //
-//  The "Vapor" redesign, originally Home-only: each section (Next to
-//  finish, Results today/yesterday, Races tomorrow) is one rounded,
-//  coloured panel holding a large title and a 2-column grid of race cards.
-//  Also rolled out to CX Zone and Paddock — see `VaporPanel` below for
-//  the freeform (non-grid) variant those use.
-//
-//  See `agent-doc/home_redesign_spec.md` for the full spec this implements.
 
 import SwiftUI
 
-/// One coloured, rounded section on the Home screen: a header followed by a
-/// 2-column grid of cards, both painted the section's own panel colour.
-///
-/// The panel colour must stay darker than `Color.tribuneru(.vaporCardSurface)`
-/// — the cards read as floating above it. See the spec's §1.
-struct VaporSectionPanel<Header: View, Content: View>: View {
-    let panelColor: Color
-    /// When `true`, the card grid collapses to zero height and fades out —
-    /// used for the spoiler toggle. `header` (and whatever control lives in
-    /// it, e.g. the spoiler chip) stays outside this and is always shown:
-    /// hiding it along with the content would make it impossible to ever
-    /// un-hide the section again.
-    var contentHidden: Bool = false
-    @ViewBuilder let header: () -> Header
-    @ViewBuilder let content: () -> Content
-
-    private static var columns: [GridItem] {
-        [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)]
-    }
-
-    var body: some View {
-        VStack(spacing: 0) {
-            header()
-                .padding(.top, 28)
-                .padding(.horizontal, 20)
-                .padding(.bottom, 16)
-
-            LazyVGrid(columns: Self.columns, spacing: 10) {
-                content()
-            }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 24)
-            .opacity(contentHidden ? 0 : 1)
-            .frame(maxWidth: .infinity, maxHeight: contentHidden ? 0 : nil)
-            .clipped()
-            .animation(.interpolatingSpring(.smooth, initialVelocity: 0.5), value: contentHidden)
-        }
-        .background(panelColor)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
-    }
-}
-
-/// A rounded, coloured panel holding a header and freeform content — the
-/// non-grid sibling of `VaporSectionPanel`, used where a section holds a
-/// single preview card or a list rather than a 2-column card grid (CX Zone's
-/// "Next races" / "Latest results" / "Standings" sections).
-///
-/// Same colour rule as `VaporSectionPanel`: `panelColor` must stay darker
-/// than `Color.tribuneru(.vaporCardSurface)`.
+/// A rounded, coloured panel with a header and freeform content; `panelColor` must stay darker than `vaporCardSurface`.
 struct VaporPanel<Header: View, Content: View>: View {
     let panelColor: Color
     @ViewBuilder let header: () -> Header
@@ -201,37 +146,3 @@ struct VaporSpoilerChip: View {
         .buttonStyle(.plain)
     }
 }
-
-#if DEBUG
-#Preview("Vapor panel") {
-    ZStack {
-        Color.tribuneru(.vaporPageBackground).ignoresSafeArea()
-        ScrollView {
-            VStack(spacing: 20) {
-                VaporSectionPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-                    VaporSectionHeader(title: "Next to finish", showsLiveDot: true)
-                } content: {
-                    Color.tribuneru(.vaporCardSurface)
-                        .frame(height: 100)
-                        .cornerRadius(8)
-                    Color.tribuneru(.vaporCardSurface)
-                        .frame(height: 100)
-                        .cornerRadius(8)
-                }
-
-                VaporSectionPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-                    VaporSectionHeader(title: "Results today") {
-                        VaporSpoilerChip(isSpoilerModeOn: false) {}
-                    }
-                } content: {
-                    Color.tribuneru(.vaporCardSurface)
-                        .frame(height: 100)
-                        .cornerRadius(8)
-                }
-            }
-            .padding(16)
-        }
-    }
-    .preferredColorScheme(.dark)
-}
-#endif

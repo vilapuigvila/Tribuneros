@@ -20,7 +20,9 @@ struct Service {
 
     /// PCS answers 403 to image requests without a Referer and a browser User-Agent.
     static func addPCSImageHeaders(to request: inout URLRequest) {
-        guard request.url?.host?.hasSuffix("procyclingstats.com") == true else { return }
+        guard let host = request.url?.host,
+              host == "procyclingstats.com" || host.hasSuffix(".procyclingstats.com")
+        else { return }
         request.setValue(baseStringURL, forHTTPHeaderField: "Referer")
         request.setValue(
             "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)",
@@ -122,9 +124,14 @@ struct Service {
     
     // MARK: - Parsing Function -
 
-    private static func raceURL(_ link: Element?, baseUrl: String) -> URL? {
-        guard let href = try? link?.attr("href"), !href.isEmpty else { return nil }
-        return URL(string: baseUrl + href)
+    private static func parseRaceHeader(_ detailsDiv: Element?) throws -> (title: String, details: String, url: URL?) {
+        let link = try detailsDiv?.select("a").first()
+        let href = try link?.attr("href") ?? ""
+        return (
+            title: try link?.select("b").text() ?? "",
+            details: try link?.select("span").text() ?? "",
+            url: href.isEmpty ? nil : pcsAbsoluteURL(href)
+        )
     }
 
     static func parseResultsToday(from document: Document) -> [DTO.TodayResult] {
@@ -142,9 +149,7 @@ struct Service {
                 let detailsDiv = try race.select("div").filter { element in
                     try element.hasAttr("style") && element.attr("style").contains("calc(100% - 95px)")
                 }.first
-                let raceLink = try detailsDiv?.select("a").first()
-                let raceTitle = try raceLink?.select("b").text() ?? ""
-                let raceSummary = try raceLink?.select("span").text() ?? ""
+                let header = try parseRaceHeader(detailsDiv)
                 let raceFullText = try detailsDiv?.text() ?? ""
 
                 // 2. Extract winner image URL from the first <div class="winner-img">
@@ -221,9 +226,9 @@ struct Service {
                 
                 // 5. Create the TodayResult DTO and append to our results
                 let resultDTO = DTO.TodayResult(
-                    raceName: raceTitle.isEmpty ? raceFullText : raceTitle,
-                    raceDetails: raceSummary,
-                    raceURL: raceURL(raceLink, baseUrl: baseUrl),
+                    raceName: header.title.isEmpty ? raceFullText : header.title,
+                    raceDetails: header.details,
+                    raceURL: header.url,
                     winner: winnerURL,
                     podium: podiumWinners,
                     additionalDetails: additionalDetails
@@ -256,9 +261,7 @@ struct Service {
                }.first
                
                /// Volta Ciclista a Catalunya (2.UWT)
-               let raceLink = try detailsDiv?.select("a").first()
-               let raceTitle = try raceLink?.select("b").text()
-               let raceDetails = try raceLink?.select("span").text()
+               let header = try parseRaceHeader(detailsDiv)
 
 //               let raceDetails = try detailsDiv?.text()
                
@@ -339,9 +342,9 @@ struct Service {
                
                // 5. Create the TodayResult DTO for this race item.
                let resultDTO = DTO.TodayResult(
-                raceName: raceTitle.debugOptional,
-                raceDetails: raceDetails.debugOptional,
-                raceURL: raceURL(raceLink, baseUrl: baseUrl),
+                raceName: header.title.isEmpty ? "-" : header.title,
+                raceDetails: header.details,
+                raceURL: header.url,
                 winner: raceWinnerUrl,
                 podium: podiumWinners,
                 additionalDetails: additionalDetails
@@ -706,15 +709,3 @@ struct TodaySectionModel: Decodable, Hashable, Sendable {
     let races: [Race]
 }
 
-extension String? {
-    var debugOptional: String {
-        guard let self = self else {
-#if DEBUG
-            return "shit 😭"
-#else
-            return "-"
-#endif
-        }
-        return self
-    }
-}

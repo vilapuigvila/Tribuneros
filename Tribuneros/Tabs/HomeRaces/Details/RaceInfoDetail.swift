@@ -142,7 +142,7 @@ struct NextToFinishRaceDetail: View {
                     lineLimit: 4
                 )
             }
-        }
+        } 
     }
 
     private func infoItems(_ info: DTO.RaceDetailInfo) -> [InfoItem] {

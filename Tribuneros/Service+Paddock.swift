@@ -199,7 +199,7 @@ extension Service {
         text.split(whereSeparator: \.isWhitespace).joined(separator: " ")
     }
 
-    private static func pcsAbsoluteURL(_ path: String) -> URL? {
+    static func pcsAbsoluteURL(_ path: String) -> URL? {
         if path.hasPrefix("http") {
             return URL(string: path)
         }

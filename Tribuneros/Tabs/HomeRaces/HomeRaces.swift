@@ -84,7 +84,7 @@ enum HomeRaces {
         
         var result: Representable {
             guard case .loaded(let result) = self else {
-                return .init(sections: .init(title: "", spoilerMode: .empty, liveStats: [], nextToFinish: [], racesFinished: [], yesterdayResults: [], tomorrowRaces: []))
+                return .init(sections: .init(title: "", spoilerMode: .empty, nextToFinish: [], racesFinished: [], yesterdayResults: []))
             }
             return result
         }
@@ -95,11 +95,9 @@ enum HomeRaces {
             let id = UUID()
             let title: String
             let spoilerMode: SpoilerMode
-            let liveStats: [LiveRace]
             let nextToFinish: [RaceNext]
             let racesFinished: [RaceFinished]
             let yesterdayResults: [RaceFinished]
-            let tomorrowRaces: [RaceTomorrow]
         }
         struct RaceFinished: Identifiable {
             struct Winner: Identifiable {
@@ -132,24 +130,7 @@ enum HomeRaces {
             let urlPath: String?
             let flagCode: String
             var isLive: Bool = false
-        }
-        struct RaceTomorrow: Identifiable {
-            let id = UUID()
-
-            let start: String
-            let eta: String
-            let name: String
-            let url: URL?
-        }
-        struct LiveRace: Identifiable {
-            let id = UUID()
-
-            let status: String
-            let isLive: Bool
-            let raceName: String
-            let ridersCount: Int?
-            let racePath: String
-            let url: URL?
+            var finishDate: Date? = nil
         }
         let sections: Section
 
@@ -162,11 +143,10 @@ enum HomeRaces {
                     isSpoilerModeResultsToday: true,
                     isSpoilerModeResultsYesterday: true
                 ),
-                liveStats: [],
                 nextToFinish: (1...2).map { _ in
                     RaceNext(
                         eta: "00:00",
-                        duration: "-",
+                        duration: "0H",
                         name: "Race name placeholder",
                         category: "UCI",
                         raceType: "1.UWT",
@@ -176,15 +156,7 @@ enum HomeRaces {
                     )
                 },
                 racesFinished: placeholderResults,
-                yesterdayResults: placeholderResults,
-                tomorrowRaces: (1...3).map { _ in
-                    RaceTomorrow(
-                        start: "00:00",
-                        eta: "",
-                        name: "Race name placeholder",
-                        url: nil
-                    )
-                }
+                yesterdayResults: placeholderResults
             )
         )
 
@@ -313,5 +285,24 @@ struct DemoView: View {
     
     DemoView(representable: representable) { action in
         
+    }
+}
+
+extension HomeRaces.Representable.RaceFinished {
+    var winner: Winner? {
+        podium.first.flatMap { $0.name.isEmpty ? nil : $0 }
+    }
+}
+
+extension HomeRaces.Representable.RaceFinished.Winner {
+    init(_ dto: DTO.TodayResult.Winner) {
+        self.init(
+            position: dto.position,
+            flag: dto.flag,
+            countryCode: dto.countryCode ?? "",
+            name: dto.name,
+            team: dto.team,
+            time: dto.time
+        )
     }
 }

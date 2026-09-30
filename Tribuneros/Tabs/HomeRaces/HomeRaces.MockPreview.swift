@@ -15,8 +15,8 @@ import SwiftUI
 // MARK: - Mock data -
 
 extension HomeRaces.Representable {
-    /// A fully populated Home screen: all four sections have data, so every
-    /// card shape (next to finish, results with a 3-rider podium, tomorrow)
+    /// A fully populated Home screen: every section has data, so every
+    /// card shape (next to finish, results with a 3-rider podium)
     /// renders at once without touching the network.
     ///
     /// Spoiler mode starts ON (results visible) — `false` is the real app's
@@ -40,11 +40,9 @@ extension HomeRaces.Representable {
                     isSpoilerModeResultsToday: spoilerModeOn,
                     isSpoilerModeResultsYesterday: spoilerModeOn
                 ),
-                liveStats: [],
                 nextToFinish: RaceNext.mockFullList,
                 racesFinished: RaceFinished.mockToday,
-                yesterdayResults: RaceFinished.mockYesterday,
-                tomorrowRaces: RaceTomorrow.mockFullList
+                yesterdayResults: RaceFinished.mockYesterday
             )
         )
     }
@@ -96,9 +94,7 @@ extension HomeRaces.Representable.RaceFinished {
                 raceDetails: "One-day race",
                 winnerImgURL: URL(string: "https://www.procyclingstats.com/images/riders/bp/ee/filippo-ganna-2025.jpg"),
                 podium: [
-                    .init(position: "1", flag: nil, countryCode: "be", name: "MERLIER Tim", team: "Soudal Quick-Step", time: "4:02:18"),
-                    .init(position: "-", flag: nil, countryCode: "", name: "", team: "", time: ""),
-                    .init(position: "-", flag: nil, countryCode: "", name: "", team: "", time: "")
+                    .init(position: "1", flag: nil, countryCode: "be", name: "MERLIER Tim", team: "Soudal Quick-Step", time: "4:02:18")
                 ],
                 isCancel: false
             ),
@@ -107,22 +103,10 @@ extension HomeRaces.Representable.RaceFinished {
                 raceDetails: "Stage 2",
                 winnerImgURL: nil,
                 podium: [
-                    .init(position: "1", flag: nil, countryCode: "it", name: "MILAN Jonathan", team: "Lidl-Trek", time: "3:58:44"),
-                    .init(position: "-", flag: nil, countryCode: "", name: "", team: "", time: ""),
-                    .init(position: "-", flag: nil, countryCode: "", name: "", team: "", time: "")
+                    .init(position: "1", flag: nil, countryCode: "it", name: "MILAN Jonathan", team: "Lidl-Trek", time: "3:58:44")
                 ],
                 isCancel: false
             )
-        ]
-    }
-}
-
-extension HomeRaces.Representable.RaceTomorrow {
-    static var mockFullList: [HomeRaces.Representable.RaceTomorrow] {
-        [
-            .init(start: "10:45", eta: "15:30", name: "Settimana Coppi e Bartali · Stage 4", url: nil),
-            .init(start: "11:20", eta: "16:12", name: "Volta a Catalunya · Stage 8", url: nil),
-            .init(start: "12:00", eta: "16:40", name: "Per Sempre Alfredo", url: nil)
         ]
     }
 }
@@ -176,11 +160,9 @@ private struct HomeRacesMockHarness: View {
                         isSpoilerModeResultsToday: isSpoilerModeResultsToday,
                         isSpoilerModeResultsYesterday: isSpoilerModeResultsYesterday
                     ),
-                    liveStats: representable.sections.liveStats,
                     nextToFinish: representable.sections.nextToFinish,
                     racesFinished: representable.sections.racesFinished,
-                    yesterdayResults: representable.sections.yesterdayResults,
-                    tomorrowRaces: representable.sections.tomorrowRaces
+                    yesterdayResults: representable.sections.yesterdayResults
                 )
             )
         )

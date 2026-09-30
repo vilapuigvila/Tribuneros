@@ -2,9 +2,6 @@
 //  HomeRaces.TodayRaces.swift
 //  Tribuneros
 //
-//  What the "Today" section and its "Today's races" list show: PCS's "Next to finish" rows,
-//  ordered by finish time, each marked LIVE when PCS also lists it under LiveStats.
-//
 
 import Foundation
 
@@ -23,31 +20,9 @@ extension HomeRaces.Representable.RaceNext {
         stageLabel ?? "One-day race"
     }
 
-    /// When the race is expected to finish, today unless PCS still counts hours to go for an
-    /// ETA that already passed by a wide margin (a finish after midnight).
-    func finishDate(now: Date, calendar: Calendar = .current) -> Date? {
-        let parts = eta.split(separator: ":")
-        guard parts.count == 2,
-              let hour = Int(parts[0]),
-              let minute = Int(parts[1]),
-              (0..<24).contains(hour),
-              (0..<60).contains(minute),
-              let today = calendar.date(bySettingHour: hour, minute: minute, second: 0, of: now)
-        else {
-            return nil
-        }
-        let hasTimeToGo = duration.contains(where: \.isNumber)
-        let isFarPast = today.timeIntervalSince(now) < -2 * 60 * 60
-        if hasTimeToGo && isFarPast {
-            return calendar.date(byAdding: .day, value: 1, to: today)
-        }
-        return today
-    }
-
-    /// "2h 14m", "45m", or `nil` when the ETA can't be read or has passed.
     func remainingTimeDescription(now: Date = Date()) -> String? {
-        guard let finish = finishDate(now: now) else { return nil }
-        let seconds = finish.timeIntervalSince(now)
+        guard let finishDate else { return nil }
+        let seconds = finishDate.timeIntervalSince(now)
         guard seconds > 0 else { return nil }
 
         let totalMinutes = max(1, Int(seconds / 60))
@@ -57,6 +32,19 @@ extension HomeRaces.Representable.RaceNext {
             return minutes > 0 ? "\(hours)h \(minutes)m" : "\(hours)h"
         }
         return "\(minutes)m"
+    }
+
+    var accessibilityDescription: String {
+        var parts = [
+            title,
+            subtitle,
+            isLive ? "live now" : "later today",
+            "expected finish \(eta)"
+        ]
+        if let remaining = remainingTimeDescription() {
+            parts.append("in \(remaining)")
+        }
+        return parts.joined(separator: ", ")
     }
 
     private var stageSplit: (title: String, stage: String)? {
@@ -78,28 +66,29 @@ extension HomeRaces {
         static func build(
             nextToFinish: [DTO.NextToFinishResult],
             liveStats: [DTO.LiveStatsRace],
-            now: Date = Date(),
-            calendar: Calendar = .current
+            now: Date = Date()
         ) -> [Representable.RaceNext] {
             nextToFinish
-                .map { race in
-                    Representable.RaceNext(
-                        eta: race.eta,
-                        duration: race.duration,
-                        name: race.name,
-                        category: race.category,
-                        raceType: race.raceType,
-                        distance: race.distance,
-                        urlPath: race.urlPath.isEmpty ? nil : race.urlPath,
-                        flagCode: race.flagCode,
-                        isLive: isLive(race, in: liveStats)
+                .enumerated()
+                .map { offset, race in
+                    (
+                        offset: offset,
+                        race: Representable.RaceNext(
+                            eta: race.eta,
+                            duration: race.duration,
+                            name: race.name,
+                            category: race.category,
+                            raceType: race.raceType,
+                            distance: race.distance,
+                            urlPath: race.urlPath.isEmpty ? nil : race.urlPath,
+                            flagCode: race.flagCode,
+                            isLive: isLive(race, in: liveStats),
+                            finishDate: finishDate(eta: race.eta, duration: race.duration, now: now)
+                        )
                     )
                 }
-                .enumerated()
                 .sorted { lhs, rhs in
-                    let left = lhs.element.finishDate(now: now, calendar: calendar)
-                    let right = rhs.element.finishDate(now: now, calendar: calendar)
-                    switch (left, right) {
+                    switch (lhs.race.finishDate, rhs.race.finishDate) {
                     case let (left?, right?) where left != right:
                         return left < right
                     case (.some, .none):
@@ -110,17 +99,41 @@ extension HomeRaces {
                         return lhs.offset < rhs.offset
                     }
                 }
-                .map(\.element)
+                .map(\.race)
         }
 
-        /// LiveStats links to the race's `/live` page, so its path is the race path plus `/live`;
-        /// the shared title is the fallback when a path is missing.
+        /// PCS counts hours to go only while the finish is ahead, so an ETA far off the other way is the neighbouring day.
+        static func finishDate(eta: String, duration: String, now: Date) -> Date? {
+            let calendar = Calendar.current
+            let parts = eta.split(separator: ":")
+            guard parts.count == 2,
+                  let hour = Int(parts[0]),
+                  let minute = Int(parts[1]),
+                  (0..<24).contains(hour),
+                  (0..<60).contains(minute),
+                  let today = calendar.date(bySettingHour: hour, minute: minute, second: 0, of: now)
+            else {
+                return nil
+            }
+            let hasTimeToGo = duration.contains(where: \.isNumber)
+            let untilEta = today.timeIntervalSince(now)
+            if hasTimeToGo && untilEta < -2 * 60 * 60 {
+                return calendar.date(byAdding: .day, value: 1, to: today)
+            }
+            if !hasTimeToGo && untilEta > 12 * 60 * 60 {
+                return calendar.date(byAdding: .day, value: -1, to: today)
+            }
+            return today
+        }
+
+        /// LiveStats links to the race's `/live` page; the shared title is the fallback when a path is missing.
         static func isLive(_ race: DTO.NextToFinishResult, in liveStats: [DTO.LiveStatsRace]) -> Bool {
             let racePath = relativePath(race.urlPath)
             return liveStats.contains { entry in
                 guard entry.isLive else { return false }
-                if !racePath.isEmpty, relativePath(entry.racePath) == racePath {
-                    return true
+                let entryPath = relativePath(entry.racePath)
+                if !racePath.isEmpty, !entryPath.isEmpty {
+                    return racePath == entryPath
                 }
                 return entry.raceName.caseInsensitiveCompare(race.name) == .orderedSame
             }

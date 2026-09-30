@@ -130,32 +130,30 @@ extension HomeRaces.Representable.RaceFinished.Winner {
 import Kingfisher
 
 struct CachedImageView: View {
-    /// What shows while there is nothing to show: a cycling glyph, or the race painting.
-    enum Fallback {
-        case cyclist
-        case raceArt
+    enum Presentation {
+        case fitted
+        case racePhoto
     }
 
     @State private var didFail: Bool = false
 
     let imageUrl: URL?
     let cornerRadius: Double
-    let contentMode: SwiftUI.ContentMode
-    let fallback: Fallback
+    let presentation: Presentation
+
     init(
         imageUrl: URL?,
         cornerRadius: Double = 5,
-        contentMode: SwiftUI.ContentMode = .fit,
-        fallback: Fallback = .cyclist
+        presentation: Presentation = .fitted
     ) {
         self.imageUrl = imageUrl
         self.cornerRadius = cornerRadius
-        self.contentMode = contentMode
-        self.fallback = fallback
+        self.presentation = presentation
     }
+
     var body: some View {
         ZStack {
-            if didFail || (fallback == .raceArt && imageUrl == nil) {
+            if didFail || imageUrl == nil {
                 buildFailureImage()
             } else {
                 KFImage(imageUrl)
@@ -174,33 +172,55 @@ struct CachedImageView: View {
                     }
                     .cancelOnDisappear(true)
                     .resizable()
-                    .aspectRatio(contentMode: contentMode)
+                    .aspectRatio(contentMode: presentation == .racePhoto ? .fill : .fit)
                     .cornerRadius(cornerRadius)
             }
+        }
+        .onChange(of: imageUrl) {
+            didFail = false
         }
     }
 
     @ViewBuilder
     private func buildPlaceholder() -> some View {
-        switch fallback {
-        case .cyclist:
+        switch presentation {
+        case .fitted:
             ProgressView()
-        case .raceArt:
-            RaceArtView(art: .day, alignment: .trailing)
+        case .racePhoto:
+            RaceArtView.fallback
         }
     }
 
     @ViewBuilder
     private func buildFailureImage() -> some View {
-        switch fallback {
-        case .cyclist:
+        switch presentation {
+        case .fitted:
             Image(systemName: "figure.indoor.cycle")
                 .resizable()
                 .scaledToFit()
                 .foregroundColor(.gray)
                 .scaleEffect(0.35)
-        case .raceArt:
-            RaceArtView(art: .day, alignment: .trailing)
+        case .racePhoto:
+            RaceArtView.fallback
         }
+    }
+}
+
+struct WinnerPhoto: View {
+    let url: URL?
+    let size: CGSize
+
+    var body: some View {
+        CachedImageView(
+            imageUrl: url,
+            cornerRadius: 0,
+            presentation: .racePhoto
+        )
+        .frame(
+            width: size.width,
+            height: size.height,
+            alignment: .top
+        )
+        .clipped()
     }
 }
