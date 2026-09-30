@@ -34,8 +34,8 @@ struct ResultsTodaySection: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
                 ForEach(Array(races.enumerated()), id: \.offset) { index, race in
-                    ResultHighlightCard(race: race) { url in
-                        action(.openLink(url))
+                    ResultHighlightCard(race: race) {
+                        action(.openRaceResult(race))
                     }
                     .accessibilityIdentifier("home.results.card.\(index)")
                 }
@@ -55,10 +55,15 @@ struct ResultHighlightCard: View {
     }
 
     let race: HomeRaces.Representable.RaceFinished
-    let open: (URL) -> Void
+    let open: () -> Void
 
     var body: some View {
-        card.opensPage(race.raceURL, open: open)
+        Button {
+            open()
+        } label: {
+            card
+        }
+        .buttonStyle(.plain)
     }
 
     private var card: some View {
