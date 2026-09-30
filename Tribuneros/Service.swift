@@ -19,15 +19,34 @@ struct Service {
     private static let requester = Requester.self
 
     /// PCS answers 403 to image requests without a Referer and a browser User-Agent.
+    private static let pcsImageHeaderFields = [
+        "Referer": baseStringURL,
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)"
+    ]
+
+    private static func isPCSHost(_ url: URL?) -> Bool {
+        guard let host = url?.host else { return false }
+        return host == "procyclingstats.com" || host.hasSuffix(".procyclingstats.com")
+    }
+
+    static func pcsImageHeaders(for url: URL) -> [Requester.HeaderParam] {
+        guard isPCSHost(url) else { return [] }
+        return pcsImageHeaderFields.map {
+            .custom(
+                headerField: $0.key,
+                value: $0.value
+            )
+        }
+    }
+
     static func addPCSImageHeaders(to request: inout URLRequest) {
-        guard let host = request.url?.host,
-              host == "procyclingstats.com" || host.hasSuffix(".procyclingstats.com")
-        else { return }
-        request.setValue(baseStringURL, forHTTPHeaderField: "Referer")
-        request.setValue(
-            "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)",
-            forHTTPHeaderField: "User-Agent"
-        )
+        guard isPCSHost(request.url) else { return }
+        pcsImageHeaderFields.forEach {
+            request.setValue(
+                $0.value,
+                forHTTPHeaderField: $0.key
+            )
+        }
     }
 
     static func getLatestResults() async throws -> DTO.Home {
@@ -60,7 +79,7 @@ struct Service {
     static func getHomepageDocument() async throws -> Document {
         let (data, _) = try await Requester
             .makeRequest(homepageURL)
-            .ttl(60)
+            .ttl(60*15) // 15 minutes
             .cacheControlBehavior(.ignoreServer)
             .send()
         guard let htmlContent = String(data: data, encoding: .utf8) else {
@@ -385,7 +404,7 @@ struct Service {
             return nil
         }
     }
-    
+    /*
     static func getTodayRaces(date: Date? = nil) async -> [TodaySectionModel] {
 //        https://www.procyclingstats.com/index.php
         let url = URL(string: "https://www.procyclingstats.com/index.php")!
@@ -488,7 +507,7 @@ struct Service {
         }
         return sections
     }
-
+*/
     static func parseRacesTomorrow(from document: Document) -> [DTO.TomorrowRace] {
         do {
             guard let container = try document.select("div.h4line:has(h4:contains(Races tomorrow)) + div").first() else {
@@ -573,7 +592,11 @@ struct Service {
     static func getInfoProfiles(_ urlString: String) async throws -> [DTO.StageProfile] {
         let url = URL(string: urlString + "/info/profiles")!
         do {
-            let data = try await URLSession.shared.data(from: url).0
+            let (data, _) = try await Requester
+                .makeRequest(url.absoluteString)
+                .ttl(86400*2) // 2 days
+                .cacheControlBehavior(.ignoreServer)
+                .send()
             guard let htmlContent = String(data: data, encoding: .utf8) else {
                 throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
             }
@@ -598,7 +621,9 @@ struct Service {
             print("avpv [NETWORK] get stage profile info - \(dump(stageImages))")
             return stageImages
         } catch {
-            nonFatalCrashlytics(false, error.localizedDescription)
+            if !isOffline(error) {
+                nonFatalCrashlytics(false, error.localizedDescription)
+            }
             return []
         }
     }
@@ -606,7 +631,11 @@ struct Service {
     static func getNextToFinishRaceDetail(_ urlString: String) async throws -> DTO.RaceDetailInfo? {
         let url = URL(string: urlString)!
         do {
-            let data = try await URLSession.shared.data(from: url).0
+            let (data, _) = try await Requester
+                .makeRequest(url.absoluteString)
+                .ttl(60*30) // 30 minutes
+                .cacheControlBehavior(.ignoreServer)
+                .send()
             guard let htmlContent = String(data: data, encoding: .utf8) else {
                 throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
             }
@@ -688,7 +717,9 @@ struct Service {
                 return nil
             }
         } catch {
-            nonFatalCrashlytics(false, error.localizedDescription)
+            if !isOffline(error) {
+                nonFatalCrashlytics(false, error.localizedDescription)
+            }
             throw NSError(domain: "Impossible parsing", code: 0, userInfo: nil)
         }
     }

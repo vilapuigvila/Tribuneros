@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Alfy
 
 struct NextToFinishRaceDetail: View {
     private typealias ImageType = DTO.StageProfile.ProfileImageType
@@ -271,12 +272,17 @@ struct NextToFinishRaceDetail: View {
 
     private func loadImage(_ url: URL, type: ImageType) async -> ProfileImage? {
         do {
-            var request = URLRequest(url: url)
-            Service.addPCSImageHeaders(to: &request)
-            let (data, _) = try await URLSession.shared.data(for: request)
+            let (data, _) = try await Requester
+                .makeRequest(url.absoluteString)
+                .headers(Service.pcsImageHeaders(for: url))
+                .ttl(86400 * 7) // 1 week
+                .cacheControlBehavior(.ignoreServer)
+                .send()
             return UIImage(data: data).map { ProfileImage(type: type, image: $0) }
         } catch {
-            nonFatalCrashlytics(false, error.localizedDescription)
+            if !Service.isOffline(error) {
+                nonFatalCrashlytics(false, error.localizedDescription)
+            }
             return nil
         }
     }
