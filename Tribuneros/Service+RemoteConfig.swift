@@ -13,7 +13,7 @@ extension Service {
 
     private static let defaultPressURLs = """
     [
-        {"Ciclismo 2005": "http://ciclismo2005.com"},
+        {"Ciclismo 2005": "https://ciclismo2005.com"},
         {"Escape Collective": "https://escapecollective.com"},
         {"Cycling News": "https://www.cyclingnews.com"},
         {"Cycling Update": "https://cyclinguptodate.com"},
