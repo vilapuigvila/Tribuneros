@@ -26,10 +26,11 @@ final class Router: ObservableObject {
             case winnerDetail(CXRaces.Winner, from: DTO.CXCalendarEvent?)
             case standings
         }
-        
+
         case nextToFinishRace(index: Int)
         case todayRaces
         case yesterdayResults
+        case raceResultDetail(HomeRaces.Representable.RaceFinished)
         case detail(Detail)
         case cxZone(CXZone)
         case paddockRider(Paddock.RiderContext)

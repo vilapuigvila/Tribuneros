@@ -204,6 +204,7 @@ enum HomeRaces {
         case spoilerModeResultYesterday
         case navigate(Navigate)
         case openLink(URL)
+        case openRaceResult(Representable.RaceFinished)
     }
 
     enum Navigate: Hashable, Sendable {
