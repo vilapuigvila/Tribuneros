@@ -38,6 +38,10 @@ struct HomeRacesView: View {
                 }
             case .raceResultDetail(let raceFinished):
                 RaceFinishedDetailView(raceFinished: raceFinished)
+            case .historyResults:
+                HistoryResultsListView(races: sections.historyResults) {
+                    viewModel.action($0)
+                }
             default:
                 EmptyView()
             }
@@ -137,7 +141,10 @@ extension HomeRaces {
                         action: action
                     )
 
-                    HistorySection()
+                    HistorySection(
+                        races: sections.historyResults,
+                        action: action
+                    )
 
                     Color.clear
                         .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
