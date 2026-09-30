@@ -14,6 +14,7 @@ struct HomeRacesDomain: Equatable {
     let nextToFinishRaces: [DTO.NextToFinishResult]
     let todayRaces: [DTO.TodayResult]
     let yesterdayResults: [DTO.TodayResult]
+    let historyResults: [DTO.TodayResult]
     let tomorrowRaces: [DTO.TomorrowRace]
     let liveStatsRaces: [DTO.LiveStatsRace]
     private(set) var isOnSpoilerModeResultsToday: Bool
@@ -26,6 +27,7 @@ struct HomeRacesDomain: Equatable {
         nextToFinishRaces: [],
         todayRaces: [],
         yesterdayResults: [],
+        historyResults: [],
         tomorrowRaces: [],
         liveStatsRaces: [],
         isOnSpoilerModeResultsToday: false,
@@ -113,11 +115,15 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                     
                     self?.requestThrottle.registerOutcome(isFailure: false)
                     
+                    // Fetch history results in the background
+                    let historyResults = (try? await Service.getHistoryRaces()) ?? []
+
                     self?.subject.send(
                         Domain(
                             nextToFinishRaces: result.nextToFinish,
                             todayRaces: result.today,
                             yesterdayResults: result.yesterdayResults,
+                            historyResults: historyResults,
                             tomorrowRaces: result.tomorrowRaces,
                             liveStatsRaces: result.liveStats,
                             isOnSpoilerModeResultsToday: UserSettings.spoilerModeResultsToday ?? false,
@@ -136,6 +142,7 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                             nextToFinishRaces: [],
                             todayRaces: [],
                             yesterdayResults: [],
+                            historyResults: [],
                             tomorrowRaces: [],
                             liveStatsRaces: [],
                             isOnSpoilerModeResultsToday: UserSettings.spoilerModeResultsToday ?? false,

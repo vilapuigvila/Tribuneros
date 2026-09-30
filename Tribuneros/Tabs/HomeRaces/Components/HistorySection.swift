@@ -6,12 +6,96 @@
 import SwiftUI
 
 struct HistorySection: View {
+    let races: [HomeRaces.Representable.RaceFinished]
+    let action: (HomeRaces.Action) -> Void
+
     var body: some View {
         HomeSection(
             title: "History",
-            showsInertSeeAll: true
+            showsInertSeeAll: !races.isEmpty
         ) {
-            HistoryBanner()
+            if races.isEmpty {
+                HistoryBanner()
+            } else {
+                VStack(spacing: 12) {
+                    ForEach(races.prefix(3), id: \.id) { race in
+                        HistoryRaceRow(race: race) {
+                            action(.openRaceResult(race))
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct HistoryRaceRow: View {
+    let race: HomeRaces.Representable.RaceFinished
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 8) {
+                TribuneruText(
+                    content: race.race,
+                    style: .vaporCardTitle,
+                    color: .tribuneru(.white(level: 1)),
+                    lineLimit: 1
+                )
+
+                if !race.raceDetails.isEmpty {
+                    TribuneruText(
+                        content: race.raceDetails,
+                        style: .vaporCardSubtitle,
+                        color: .tribuneru(.vaporTextSecondary),
+                        lineLimit: 1
+                    )
+                }
+
+                if let winner = race.podium.first, !winner.name.isEmpty {
+                    HStack(spacing: 8) {
+                        if let flagURL = winner.flag {
+                            CachedImageView(
+                                imageUrl: flagURL,
+                                cornerRadius: 2
+                            )
+                            .frame(width: 16, height: 12)
+                        }
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            TribuneruText(
+                                content: winner.name,
+                                style: .vaporCardDescription,
+                                color: .tribuneru(.white(level: 1)),
+                                lineLimit: 1
+                            )
+
+                            if !winner.team.isEmpty && winner.team != "#" {
+                                TribuneruText(
+                                    content: winner.team,
+                                    style: .vaporCardSmall,
+                                    color: .tribuneru(.vaporTextSecondary),
+                                    lineLimit: 1
+                                )
+                            }
+                        }
+
+                        Spacer()
+
+                        if !winner.time.isEmpty && winner.time != "#" {
+                            TribuneruText(
+                                content: winner.time,
+                                style: .vaporCardSmall,
+                                color: .tribuneru(.vaporTextSecondary),
+                                lineLimit: 1
+                            )
+                        }
+                    }
+                }
+            }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .homeCard()
         }
     }
 }

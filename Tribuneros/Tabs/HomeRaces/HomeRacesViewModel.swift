@@ -91,7 +91,8 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
                             spoilerMode: spoilerMode(domain),
                             nextToFinish: nextToFinish(domain),
                             racesFinished: finishedRaces(domain.todayRaces),
-                            yesterdayResults: finishedRaces(domain.yesterdayResults)
+                            yesterdayResults: finishedRaces(domain.yesterdayResults),
+                            historyResults: finishedRaces(domain.historyResults)
                         ),
                         staleCopy: domain.staleCopy
                     )

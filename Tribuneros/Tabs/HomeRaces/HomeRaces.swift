@@ -84,7 +84,7 @@ enum HomeRaces {
         
         var result: Representable {
             guard case .loaded(let result) = self else {
-                return .init(sections: .init(title: "", spoilerMode: .empty, nextToFinish: [], racesFinished: [], yesterdayResults: []))
+                return .init(sections: .init(title: "", spoilerMode: .empty, nextToFinish: [], racesFinished: [], yesterdayResults: [], historyResults: []))
             }
             return result
         }
@@ -98,6 +98,7 @@ enum HomeRaces {
             let nextToFinish: [RaceNext]
             let racesFinished: [RaceFinished]
             let yesterdayResults: [RaceFinished]
+            let historyResults: [RaceFinished]
         }
         struct RaceFinished: Identifiable {
             struct Winner: Identifiable {
@@ -157,7 +158,8 @@ enum HomeRaces {
                     )
                 },
                 racesFinished: placeholderResults,
-                yesterdayResults: placeholderResults
+                yesterdayResults: placeholderResults,
+                historyResults: placeholderResults
             )
         )
 
