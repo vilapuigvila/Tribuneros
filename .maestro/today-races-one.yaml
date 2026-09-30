@@ -1,0 +1,20 @@
+# Today section with a single live race (mock scenario "one", Debug build only): the hero is
+# there and there is no "See all", since there is no list behind it.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      homeMock: one
+- extendedWaitUntil:
+    visible:
+      id: "home.today.hero"
+    timeout: 20000
+- assertVisible:
+    id: "home.today.hero"
+    text: "CRO Race, Stage 1, live now.*"
+- assertNotVisible:
+    id: "home.today.seeAll"

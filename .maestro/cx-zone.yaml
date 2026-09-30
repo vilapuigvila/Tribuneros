@@ -1,0 +1,81 @@
+# CX Zone tab (Firestore documents) and every screen behind it that loads on the device:
+# race results, calendar race, winner and rider. Sections and titles are drawn redacted while
+# loading, so they only match once the data is in.
+appId: com.pskmoons.Tribuneros
+---
+- launchApp:
+    clearState: true
+- tapOn: "CX Zone"
+- extendedWaitUntil:
+    visible: "Latest results"
+    timeout: 45000
+- assertVisible: "Next races"
+
+# Latest results -> full list -> race results (category tabs + results rows)
+- tapOn:
+    text: ".*\\(C.*\\).*"
+    below: "Latest results"
+- assertVisible: "Latest Cyclocross Results"
+- tapOn:
+    text: ".*\\(C.*\\).*"
+    below: "Latest Cyclocross Results"
+- extendedWaitUntil:
+    visible: "MEN ELITE"
+    timeout: 45000
+- assertVisible: "Rider"
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+
+# Podium row -> rider (Profile facts + Recent results)
+- tapOn:
+    text: "\\d, [A-Z].*"
+    below: "MEN ELITE"
+- extendedWaitUntil:
+    visible: "Profile"
+    timeout: 45000
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+
+# Next races -> All races -> calendar race with a finished result. The race names below are
+# season fixtures (a finished race, and a race with a history); pick others if the calendar
+# no longer has them.
+- tapOn: "more info"
+- assertVisible: "All races"
+- tapOn: "Race, country, winner..."
+- inputText: "Kleeberg"
+- tapOn: "Kleeberg Cross Mechelen.*"
+- extendedWaitUntil:
+    visible: "Results"
+    timeout: 45000
+- assertVisible: "Winner"
+
+# Winner -> winner screen (Profile facts + Recent results)
+- tapOn: ".*, Men Elite · .*"
+- assertVisible: "Victory"
+- extendedWaitUntil:
+    visible: "Profile"
+    timeout: 45000
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+
+# A race with a history: Past winners, and a past winner's rider screen
+- tapOn: "Clear text"
+- inputText: "koksijde"
+- tapOn: "\\d\\d-\\d\\d-\\d{4}, .*Koksijde"
+- extendedWaitUntil:
+    visible: "Past winners"
+    timeout: 45000
+- tapOn: "\\d{4}, [A-Z].*"
+- assertVisible: "Victory"
+- extendedWaitUntil:
+    visible: "Profile"
+    timeout: 45000

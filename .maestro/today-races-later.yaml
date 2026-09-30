@@ -1,0 +1,36 @@
+# Today section when no race is live yet (mock scenario "later", Debug build only): the hero
+# and the list carry the grey TODAY tag, never LIVE.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      homeMock: later
+- extendedWaitUntil:
+    visible:
+      id: "home.today.hero"
+    timeout: 20000
+- assertVisible:
+    id: "home.today.hero"
+    text: "Chrono des Nations, One-day race, later today.*"
+- assertNotVisible:
+    text: ".*live now.*"
+- tapOn:
+    id: "home.today.seeAll"
+- extendedWaitUntil:
+    visible: "Today's races"
+    timeout: 10000
+- assertVisible:
+    id: "todayRaces.summary"
+    text: "2 later today.*by finish time"
+- assertVisible:
+    id: "todayRaces.row.0"
+    text: "Chrono des Nations, One-day race, later today.*"
+- assertVisible:
+    id: "todayRaces.row.1"
+    text: "GP de Montréal, One-day race, later today.*"
+- assertNotVisible:
+    text: ".*live now.*"

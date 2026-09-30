@@ -1,0 +1,40 @@
+# Paddock tab (PCS homepage feed + press strip) and a rider screen opened from a feed card.
+appId: com.pskmoons.Tribuneros
+---
+- launchApp:
+    clearState: true
+- tapOn: "Paddock"
+- extendedWaitUntil:
+    visible: "The press"
+    timeout: 45000
+- assertVisible: "Transfers"
+- assertVisible: "Birthdays"
+- extendedWaitUntil:
+    notVisible: "Loading the paddock"
+    timeout: 45000
+# Transfer and program cards open the rider screen (birthdays open the web page). A quiet feed
+# can have neither, so each is only opened when present; the chip brings the card to the top,
+# clear of the tab bar.
+- tapOn: "Transfers"
+- runFlow:
+    when:
+      visible: "TRANSFER,.*"
+    commands:
+      - tapOn: "TRANSFER,.*"
+      - assertVisible: "Transfer"
+      - extendedWaitUntil:
+          visible: "Profile"
+          timeout: 45000
+      - swipe:
+          start: 1%, 50%
+          end: 70%, 50%
+- tapOn: "Programs"
+- runFlow:
+    when:
+      visible: "PROGRAM,.*"
+    commands:
+      - tapOn: "PROGRAM,.*"
+      - assertVisible: "Program update"
+      - extendedWaitUntil:
+          visible: "Profile"
+          timeout: 45000

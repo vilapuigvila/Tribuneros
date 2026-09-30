@@ -1,0 +1,42 @@
+# Today Races tab against the live PCS homepage: the header, every section and, when a race is
+# left today, its race detail. Titles are drawn redacted while the page loads, so they only match
+# once the data is in. The states below are fixed by the mock scenarios (Debug build):
+# today-races-live, -later, -one, -empty and -results.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "Results today"
+    timeout: 45000
+- assertVisible:
+    id: "home.header"
+- assertVisible: "Today"
+- scrollUntilVisible:
+    element: "Yesterday"
+    timeout: 20000
+- scrollUntilVisible:
+    element:
+      id: "home.history.banner"
+    timeout: 20000
+- assertVisible: "History"
+# The first race of the day opens its race detail; the section shows a resting scene on days
+# without races, so the detail is only opened when the card is there.
+- scrollUntilVisible:
+    element:
+      id: "home.header"
+    direction: UP
+    timeout: 20000
+- runFlow:
+    when:
+      visible:
+        id: "home.today.hero"
+    commands:
+      - tapOn:
+          id: "home.today.hero"
+      - extendedWaitUntil:
+          visible: "Race Profile"
+          timeout: 45000
+      - assertVisible: "Race info"

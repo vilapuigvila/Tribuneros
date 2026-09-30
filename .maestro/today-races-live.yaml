@@ -1,0 +1,53 @@
+# Today section with several races, two of them live (mock scenario "live", Debug build only):
+# the first race by finish time is the hero, and "See all" lists every race by finish time,
+# red LIVE for the live ones and grey TODAY for the rest.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      homeMock: live
+- extendedWaitUntil:
+    visible:
+      id: "home.today.hero"
+    timeout: 20000
+- assertVisible:
+    id: "home.header"
+- assertVisible: "Today"
+- assertVisible:
+    id: "home.today.hero"
+    text: "CRO Race, Stage 1, live now.*"
+- assertVisible:
+    id: "home.today.seeAll"
+
+# See all -> every race, ordered by finish time
+- tapOn:
+    id: "home.today.seeAll"
+- extendedWaitUntil:
+    visible: "Today's races"
+    timeout: 10000
+- assertVisible:
+    id: "todayRaces.summary"
+    text: "2 live.*2 later today.*by finish time"
+- assertVisible:
+    id: "todayRaces.row.0"
+    text: "CRO Race, Stage 1, live now.*"
+- assertVisible:
+    id: "todayRaces.row.1"
+    text: "Chrono des Nations, One-day race, later today.*"
+- assertVisible:
+    id: "todayRaces.row.2"
+    text: "Coppa Bernocchi, One-day race, live now.*"
+- assertVisible:
+    id: "todayRaces.row.3"
+    text: "GP de Montréal, One-day race, later today.*"
+
+# Back to the tab: the hero is still there
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- assertVisible:
+    id: "home.today.hero"
