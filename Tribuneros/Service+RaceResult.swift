@@ -14,6 +14,11 @@ extension Service {
 
     /// Fetches and parses a PCS race result page (1-day cache); `nil` when it can't be loaded.
     static func getCachedRaceResultPage(url: URL) async -> DTO.RaceResultPage? {
+        #if DEBUG
+        if HomeRaces.MockScenario.current != nil {
+            return HomeRaces.MockScenario.raceResultPage(for: url)
+        }
+        #endif
         do {
             let (data, _) = try await Requester
                 .makeRequest(url.absoluteString)

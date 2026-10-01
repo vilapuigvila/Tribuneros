@@ -21,7 +21,7 @@ scraped server-side by a Firebase Cloud Function and read from Firestore (see "D
 - Run a single test: add `-only-testing:TribunerosTests/<TestClass>/<testMethod>` to the `test` invocation above.
 - Test plan (`Tribuneros/Tribuneros.xctestplan`) skips the placeholder `TribunerosTests.testExample`.
 - If Swift Package resolution breaks: Xcode → File → Packages → Reset Package Caches, then clear DerivedData.
-- Debug-only launch env flags: `HOME_MOCK=live|later|one|empty` (or a `homeMock` launch argument, which is what the Maestro flows pass) replaces the PCS fetch with fixed Today Races data, see `HomeRaces.MockScenario.swift`; `MOCKING=1` alone means `live`. `DEBUG_BACKGROUND=1` (highlights view backgrounds via `.debugBackground()`) and `FIREBASE_EMULATOR=1` (Firestore and `cxDetail` on the local emulators, see `Service.useFirebaseEmulatorIfEnabled()`; seed `cx/*` by calling `runCxScrape` with `FIRESTORE_EMULATOR_HOST` set). From the CLI: `SIMCTL_CHILD_FIREBASE_EMULATOR=1 xcrun simctl launch <device> com.pskmoons.Tribuneros`.
+- Debug-only launch env flags: `HOME_MOCK=live|later|one|empty|stale|history` (or a `homeMock` launch argument, which is what the Maestro flows pass) replaces the PCS fetch with fixed Today Races data, and the race result pages it opens with a mock top 10, see `HomeRaces.MockScenario.swift`; `MOCKING=1` alone means `live`. `DEBUG_BACKGROUND=1` (highlights view backgrounds via `.debugBackground()`) and `FIREBASE_EMULATOR=1` (Firestore and `cxDetail` on the local emulators, see `Service.useFirebaseEmulatorIfEnabled()`; seed `cx/*` by calling `runCxScrape` with `FIRESTORE_EMULATOR_HOST` set). From the CLI: `SIMCTL_CHILD_FIREBASE_EMULATOR=1 xcrun simctl launch <device> com.pskmoons.Tribuneros`.
 
 ### Tests
 

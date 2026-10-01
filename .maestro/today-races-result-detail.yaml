@@ -1,7 +1,7 @@
 # The native race result screen (RaceFinishedDetailView), opened from a Results today card, a
 # Yesterday row (home and "See all") and a History row, plus the History section itself
-# (mock scenario "history" = "live" plus five History rows, Debug build only). The mock races
-# carry only a winner, so that is the podium the screen shows.
+# (mock scenario "history" = "live" plus five History rows, Debug build only). The result page is
+# mocked too: the race's winner, then "MOCK Chaser 2".."MOCK Chaser 10", so no PCS request is made.
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -26,6 +26,8 @@ tags:
     timeout: 10000
 - assertVisible: "Giro della Toscana.*"
 - assertVisible: "MOCK Rider One"
+- assertVisible: "MOCK Chaser 2"
+- assertNotVisible: "Couldn't load the full results.*"
 - swipe:
     start: 1%, 50%
     end: 70%, 50%
@@ -120,3 +122,4 @@ tags:
     timeout: 10000
 - assertVisible: "Memorial Marco Pantani.*"
 - assertVisible: "MOCK Rider Twelve"
+- assertVisible: "MOCK Chaser 2"

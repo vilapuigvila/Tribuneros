@@ -190,6 +190,35 @@ extension HomeRaces {
             ]
         }
 
+        /// The result page behind a mock race: its winner, then stand-ins; `nil` for any other URL.
+        static func raceResultPage(for url: URL) -> DTO.RaceResultPage? {
+            let races = resultsToday + resultsYesterday + resultsHistory
+            guard let winner = races.first(where: { $0.raceURL == url })?.podium.first else {
+                return nil
+            }
+            let leader = DTO.RaceResultPage.Row(
+                position: "1",
+                name: winner.name,
+                team: "MOCK Team",
+                time: winner.time
+            )
+            let chasers = (2...Service.raceResultRowLimit).map { position in
+                DTO.RaceResultPage.Row(
+                    position: "\(position)",
+                    name: "MOCK Chaser \(position)",
+                    team: "MOCK Team",
+                    time: position < 4 ? ",," : String(format: "0:%02d", position * 3)
+                )
+            }
+            return DTO.RaceResultPage(
+                stage: nil,
+                from: nil,
+                to: nil,
+                distance: nil,
+                rows: [leader] + chasers
+            )
+        }
+
         private static func result(
             _ name: String,
             _ details: String,
