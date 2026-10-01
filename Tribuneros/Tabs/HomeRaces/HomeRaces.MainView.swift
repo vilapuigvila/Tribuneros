@@ -37,7 +37,10 @@ struct HomeRacesView: View {
                     viewModel.action($0)
                 }
             case .raceResultDetail(let raceFinished):
-                RaceFinishedDetailView(raceFinished: raceFinished)
+                RaceFinishedDetailView(
+                    raceFinished: raceFinished,
+                    router: viewModel.router
+                )
             case .historyResults:
                 HistoryResultsListView(races: sections.historyResults) {
                     viewModel.action($0)

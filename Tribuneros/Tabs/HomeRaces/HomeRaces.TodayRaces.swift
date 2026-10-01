@@ -13,11 +13,11 @@ extension HomeRaces.Representable.RaceNext {
     }
 
     var stageLabel: String? {
-        stageSplit.map { "Stage \($0.stage)" }
+        stageSplit.map { HomeRaces.Stage.label($0.stage) }
     }
 
     var subtitle: String {
-        stageLabel ?? "One-day race"
+        stageLabel ?? HomeRaces.Stage.oneDayLabel
     }
 
     func remainingTimeDescription(now: Date = Date()) -> String? {
@@ -48,15 +48,51 @@ extension HomeRaces.Representable.RaceNext {
     }
 
     private var stageSplit: (title: String, stage: String)? {
-        guard let range = name.range(of: " - S", options: .backwards) else { return nil }
-        let stage = name[range.upperBound...]
-        guard let first = stage.first,
-              first.isNumber,
-              stage.allSatisfy({ $0.isNumber || ($0.isLetter && $0.isLowercase) })
-        else {
-            return nil
+        HomeRaces.Stage.split(name: name)
+    }
+}
+
+extension HomeRaces {
+    /// How PCS names a stage: a number with an optional lowercase letter ("3", "2b"). Shared by
+    /// Today Races (the " - S2" name suffix) and the race result screen (the "Stage 2b | …"
+    /// details line and the `stage-2b` URL).
+    enum Stage {
+        static let oneDayLabel = "One-day race"
+
+        static func label(_ stage: String) -> String {
+            "Stage \(stage)"
         }
-        return (String(name[..<range.lowerBound]), String(stage))
+
+        /// "Tour of Turkey - S2" → ("Tour of Turkey", "2").
+        static func split(name: String) -> (title: String, stage: String)? {
+            guard let range = name.range(of: " - S", options: .backwards) else { return nil }
+            let stage = name[range.upperBound...]
+            guard isStageNumber(stage) else { return nil }
+            return (String(name[..<range.lowerBound]), String(stage))
+        }
+
+        /// "Stage 2a (ITT) | Wulpen - Wulpen (6km)" → "2a".
+        static func number(inDetails details: String) -> String? {
+            let lead = details
+                .split(separator: "|", maxSplits: 1, omittingEmptySubsequences: false)
+                .first
+                .map { $0.trimmingCharacters(in: .whitespaces) } ?? ""
+            guard lead.hasPrefix("Stage ") else { return nil }
+            let token = lead.dropFirst("Stage ".count).split(separator: " ").first ?? ""
+            return isStageNumber(token) ? String(token) : nil
+        }
+
+        /// ".../2026/stage-2b" → "2b".
+        static func number(inURL url: URL?) -> String? {
+            guard let last = url?.lastPathComponent, last.hasPrefix("stage-") else { return nil }
+            let token = last.dropFirst("stage-".count)
+            return isStageNumber(token) ? String(token) : nil
+        }
+
+        static func isStageNumber<S: StringProtocol>(_ value: S) -> Bool {
+            guard let first = value.first, first.isNumber else { return false }
+            return value.allSatisfy { $0.isNumber || ($0.isLetter && $0.isLowercase) }
+        }
     }
 }
 

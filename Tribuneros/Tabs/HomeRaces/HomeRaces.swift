@@ -100,8 +100,9 @@ enum HomeRaces {
             let yesterdayResults: [RaceFinished]
             let historyResults: [RaceFinished]
         }
-        struct RaceFinished: Identifiable {
-            struct Winner: Identifiable {
+        /// Hashable because it is the `raceResultDetail` route's payload (and `Action.openRaceResult`'s).
+        struct RaceFinished: Identifiable, Hashable {
+            struct Winner: Identifiable, Hashable {
                 let id = UUID()
                 let position: String
                 let flag: URL?
