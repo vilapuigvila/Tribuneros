@@ -25,7 +25,8 @@ final class MockSwitchTests: XCTestCase {
             ("one", .one),
             ("empty", .empty),
             ("stale", .stale),
-            ("history", .history)
+            ("history", .history),
+            ("previews", .previews)
         ]
         for (raw, scenario) in all {
             XCTAssertEqual(

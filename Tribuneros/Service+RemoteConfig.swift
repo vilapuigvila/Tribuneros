@@ -74,6 +74,11 @@ extension Service {
     #endif
 
     static func getPressLinks() async -> [DTO.PressLink] {
+        #if DEBUG
+        if HomeRaces.MockScenario.current != nil {
+            return PaddockMock.pressLinks
+        }
+        #endif
         // A failed fetch keeps the last activated value, or the in-app default.
         _ = try? await remoteConfig.fetchAndActivate()
         return cachedPressLinks()

@@ -12,6 +12,11 @@ import Alfy
 extension Service {
 
     static func getPaddock() async throws -> DTO.Paddock {
+        #if DEBUG
+        if HomeRaces.MockScenario.current != nil {
+            return PaddockMock.paddock()
+        }
+        #endif
         let document = try await getHomepageDocument()
         return DTO.Paddock(
             transfers: parseTransfers(document),
@@ -113,6 +118,11 @@ extension Service {
 
     /// Fetches and parses a PCS rider page on demand; `nil` when it can't be loaded or parsed.
     static func getPCSRiderPage(url: URL) async -> DTO.PCSRiderPage? {
+        #if DEBUG
+        if HomeRaces.MockScenario.current != nil {
+            return PaddockMock.riderPage(url: url)
+        }
+        #endif
         do {
             let (data, _) = try await Requester
                 .makeRequest(url.absoluteString)

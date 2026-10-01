@@ -1,10 +1,14 @@
-# CX Zone tab (Firestore documents) and every screen behind it that loads on the device:
-# race results, calendar race, winner and rider. Sections and titles are drawn redacted while
+# CX Zone tab and every screen behind it: race results, calendar race, winner and rider, on Debug
+# mock data (mock scenario live): no network. Sections and titles are drawn redacted while
 # loading, so they only match once the data is in.
 appId: com.pskmoons.Tribuneros
+tags:
+  - mock
 ---
 - launchApp:
     clearState: true
+    arguments:
+      mockScenario: live
 - tapOn: "CX Zone"
 - extendedWaitUntil:
     visible: "Latest results"
@@ -41,9 +45,8 @@ appId: com.pskmoons.Tribuneros
     start: 1%, 50%
     end: 70%, 50%
 
-# Next races -> All races -> calendar race with a finished result. The race names below are
-# season fixtures (a finished race, and a race with a history); pick others if the calendar
-# no longer has them.
+# Next races -> All races -> calendar race with a finished result, then a race with a history
+# (both are in the mock calendar).
 - tapOn: "more info"
 - assertVisible: "All races"
 - tapOn: "Race, country, winner..."

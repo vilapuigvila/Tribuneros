@@ -21,7 +21,7 @@ scraped server-side by a Firebase Cloud Function and read from Firestore (see "D
 - Run a single test: add `-only-testing:TribunerosTests/<TestClass>/<testMethod>` to the `test` invocation above.
 - Test plan (`Tribuneros/Tribuneros.xctestplan`) skips the placeholder `TribunerosTests.testExample`.
 - If Swift Package resolution breaks: Xcode → File → Packages → Reset Package Caches, then clear DerivedData.
-- Debug-only launch env flags: `MOCK_SCENARIO=live|later|one|empty|stale|history` (or a `mockScenario` launch argument, which is what the Maestro flows pass) is the one switch for all mock data: fixed Today Races data instead of the PCS fetch, the race info stubs, the race result pages it opens (a mock top 10) and the Course du Jour schedule, see `HomeRaces.MockScenario.swift`; unset or unknown means real data. `CT_COURSEDUJOUR_NATIVE` (or `ctCoursedujourNative`) only overrides the Remote Config flag `isCourseDuJourNativeEnabled`, it never turns on mocks. `DEBUG_BACKGROUND=1` (highlights view backgrounds via `.debugBackground()`) and `FIREBASE_EMULATOR=1` (Firestore and `cxDetail` on the local emulators, see `Service.useFirebaseEmulatorIfEnabled()`; seed `cx/*` by calling `runCxScrape` with `FIRESTORE_EMULATOR_HOST` set). From the CLI: `SIMCTL_CHILD_FIREBASE_EMULATOR=1 xcrun simctl launch <device> com.pskmoons.Tribuneros`.
+- Debug-only launch env flags: `MOCK_SCENARIO=live|later|one|empty|stale|history|previews` (or a `mockScenario` launch argument, which is what the Maestro flows pass) is the one switch for all mock data: fixed Today Races data instead of the PCS fetch, the race info stubs, the race result pages it opens (a mock top 10), the Course du Jour schedule, the Paddock feed, press list and rider pages, and the CX Zone documents and detail pages (no PCS, cyclocross24, Firestore, `cxDetail` or YouTube request), see `HomeRaces.MockScenario.swift`; unset or unknown means real data. `CT_COURSEDUJOUR_NATIVE` (or `ctCoursedujourNative`) only overrides the Remote Config flag `isCourseDuJourNativeEnabled`, it never turns on mocks. `DEBUG_BACKGROUND=1` (highlights view backgrounds via `.debugBackground()`) and `FIREBASE_EMULATOR=1` (Firestore and `cxDetail` on the local emulators, see `Service.useFirebaseEmulatorIfEnabled()`; seed `cx/*` by calling `runCxScrape` with `FIRESTORE_EMULATOR_HOST` set). From the CLI: `SIMCTL_CHILD_FIREBASE_EMULATOR=1 xcrun simctl launch <device> com.pskmoons.Tribuneros`.
 
 ### Tests
 
@@ -33,8 +33,8 @@ scraped server-side by a Firebase Cloud Function and read from Firestore (see "D
   times (including a finish after midnight), ordering, the LIVE join with LiveStats, and the view
   model mapping. Its dates are built with `Calendar.current`, so it doesn't depend on the time zone.
 - UI flows are Maestro files in `.maestro/` (`maestro test --include-tags home .maestro`, against a
-  Debug build installed on the booted simulator). `today-races.yaml` reads the live PCS page; the
-  other `today-races-*.yaml` flows pick a `mockScenario`. The folder is ignored by the global
+  Debug build installed on the booted simulator). Every flow passes a `mockScenario`, so none
+  needs the network. The folder is ignored by the global
   gitignore on this machine, so the flows stay local unless force-added.
 - Two tests hit the live network and are slow/flaky by nature, not a sign your change broke
   something: `RequesterHomeParsingTests.testGetLatestResultsParsesRealWebsite` (PCS) and

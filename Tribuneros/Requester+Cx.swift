@@ -18,15 +18,30 @@ extension Service {
     private static let cx24BaseURL = URL(string: "https://cyclocross24.com")!
     
     static func getCxEvents() async throws -> DTO.CX24Homepage {
-        try await readCxDocument("homepage", as: DTO.CX24Homepage.self)
+        #if DEBUG
+        if HomeRaces.MockScenario.current != nil {
+            return CxMock.homepage()
+        }
+        #endif
+        return try await readCxDocument("homepage", as: DTO.CX24Homepage.self)
     }
 
     static func getCxStandings() async throws -> DTO.CXStandings {
-        try await readCxDocument("standings", as: DTO.CXStandings.self)
+        #if DEBUG
+        if HomeRaces.MockScenario.current != nil {
+            return CxMock.standings
+        }
+        #endif
+        return try await readCxDocument("standings", as: DTO.CXStandings.self)
     }
 
     static func getCxAllCalendarEvents() async throws -> [DTO.CXCalendarEvent] {
-        try await readCxDocument("calendar", as: CalendarDocument.self).events
+        #if DEBUG
+        if HomeRaces.MockScenario.current != nil {
+            return CxMock.calendar()
+        }
+        #endif
+        return try await readCxDocument("calendar", as: CalendarDocument.self).events
     }
 
     private struct CalendarDocument: Decodable {
@@ -71,6 +86,11 @@ extension Service {
     }
     
     static func getYoutubeRaceURL(_ raceURL: URL) async -> URL? {
+        #if DEBUG
+        if HomeRaces.MockScenario.current != nil {
+            return CxMock.videoURL
+        }
+        #endif
         do {
             let raceRequest = URLRequest(
                 url: raceURL,
@@ -314,7 +334,7 @@ extension Service {
         }
     }
 
-    private struct ResultsDocument: Decodable {
+    struct ResultsDocument: Decodable {
         let results: [DTO.CX24Homepage.CategoryResult]
     }
 
@@ -326,6 +346,14 @@ extension Service {
         as type: D.Type
     ) async -> D? {
         guard let id = kind.id(for: url) else { return nil }
+        #if DEBUG
+        if HomeRaces.MockScenario.current != nil {
+            return CxMock.detail(
+                kind,
+                id: id
+            ) as? D
+        }
+        #endif
         let ref = Firestore.firestore().collection(kind.collection).document(id)
 
         var cached: D?
