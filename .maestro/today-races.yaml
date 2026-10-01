@@ -17,9 +17,9 @@ tags:
 - scrollUntilVisible:
     element: "Yesterday"
     timeout: 20000
+# History shows race rows when PCS has results, the banner otherwise; both sit under the title.
 - scrollUntilVisible:
-    element:
-      id: "home.history.banner"
+    element: "History"
     timeout: 20000
 - assertVisible: "History"
 # The first race of the day opens its race detail; the section shows a resting scene on days

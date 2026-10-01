@@ -100,8 +100,8 @@ enum HomeRaces {
             let yesterdayResults: [RaceFinished]
             let historyResults: [RaceFinished]
         }
-        struct RaceFinished: Identifiable {
-            struct Winner: Identifiable {
+        struct RaceFinished: Identifiable, Hashable, Sendable {
+            struct Winner: Identifiable, Hashable, Sendable {
                 let id = UUID()
                 let position: String
                 let flag: URL?
@@ -217,6 +217,7 @@ enum HomeRaces {
         case todayRaces
         case todayResults
         case yesterdayResults
+        case historyResults
         case tomorrowRaces
         case detail(Detail)
     }

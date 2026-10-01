@@ -252,6 +252,7 @@ final class HomeTodayRacesTests: XCTestCase {
             ],
             todayRaces: [],
             yesterdayResults: [],
+            historyResults: [],
             tomorrowRaces: [],
             liveStatsRaces: [
                 DTO.LiveStatsRace(status: "live", isLive: true, raceName: "Soon", ridersCount: 10, racePath: "race/soon/2026/result/live", url: nil)
@@ -303,6 +304,7 @@ final class HomeTodayRacesTests: XCTestCase {
             nextToFinishRaces: [race("Soon")],
             todayRaces: [],
             yesterdayResults: [],
+            historyResults: [],
             tomorrowRaces: [],
             liveStatsRaces: [],
             isOnSpoilerModeResultsToday: false,

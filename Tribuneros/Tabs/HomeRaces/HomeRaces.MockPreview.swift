@@ -42,7 +42,8 @@ extension HomeRaces.Representable {
                 ),
                 nextToFinish: RaceNext.mockFullList,
                 racesFinished: RaceFinished.mockToday,
-                yesterdayResults: RaceFinished.mockYesterday
+                yesterdayResults: RaceFinished.mockYesterday,
+                historyResults: []
             )
         )
     }
@@ -144,7 +145,7 @@ private struct HomeRacesMockHarness: View {
             case .spoilerModeResultYesterday:
                 isSpoilerModeResultsYesterday.toggle()
                 rebuild()
-            case .onAppear, .onDisappear, .navigate, .openLink:
+            case .onAppear, .onDisappear, .navigate, .openLink, .openRaceResult:
                 break
             }
         }
@@ -162,7 +163,8 @@ private struct HomeRacesMockHarness: View {
                     ),
                     nextToFinish: representable.sections.nextToFinish,
                     racesFinished: representable.sections.racesFinished,
-                    yesterdayResults: representable.sections.yesterdayResults
+                    yesterdayResults: representable.sections.yesterdayResults,
+                    historyResults: representable.sections.historyResults
                 ),
                 staleCopy: representable.staleCopy
             )

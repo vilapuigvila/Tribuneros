@@ -56,7 +56,7 @@ struct RaceFinishedDetailView: View {
             if !raceFinished.raceDetails.isEmpty {
                 TribuneruText(
                     content: raceFinished.raceDetails,
-                    style: .vaporBodySmall,
+                    style: .vaporRowMeta,
                     color: .tribuneru(.vaporTextSecondary),
                     lineLimit: 2
                 )
@@ -105,7 +105,7 @@ struct RaceFinishedDetailView: View {
             VStack(alignment: .center) {
                 TribuneruText(
                     content: winner.position,
-                    style: .vaporBodyBold,
+                    style: .vaporRowTitle,
                     color: .tribuneru(.vaporTextPrimary),
                     lineLimit: 1
                 )
@@ -117,7 +117,7 @@ struct RaceFinishedDetailView: View {
                 HStack(spacing: 6) {
                     TribuneruText(
                         content: winner.name,
-                        style: .vaporBodyBold,
+                        style: .vaporRowTitle,
                         color: .tribuneru(.vaporTextPrimary),
                         lineLimit: 1
                     )
@@ -133,7 +133,7 @@ struct RaceFinishedDetailView: View {
 
                 TribuneruText(
                     content: winner.team,
-                    style: .vaporBodySmall,
+                    style: .vaporRowMeta,
                     color: .tribuneru(.vaporTextSecondary),
                     lineLimit: 1
                 )
@@ -144,8 +144,8 @@ struct RaceFinishedDetailView: View {
             if !winner.time.isEmpty {
                 TribuneruText(
                     content: winner.time,
-                    style: .vaporBodySmall,
-                    color: .tribuneru(.vaporTextTertiary),
+                    style: .vaporRowMeta,
+                    color: .tribuneru(.vaporTextMuted),
                     lineLimit: 1
                 )
             }
@@ -157,7 +157,6 @@ struct RaceFinishedDetailView: View {
 #Preview {
     let mockPodium: [HomeRaces.Representable.RaceFinished.Winner] = [
         HomeRaces.Representable.RaceFinished.Winner(
-            id: UUID(),
             position: "1",
             flag: URL(string: "https://flagcdn.com/w40/be.png"),
             countryCode: "BE",
@@ -166,7 +165,6 @@ struct RaceFinishedDetailView: View {
             time: "6:28:35"
         ),
         HomeRaces.Representable.RaceFinished.Winner(
-            id: UUID(),
             position: "2",
             flag: URL(string: "https://flagcdn.com/w40/nl.png"),
             countryCode: "NL",
@@ -175,7 +173,6 @@ struct RaceFinishedDetailView: View {
             time: "+00:34"
         ),
         HomeRaces.Representable.RaceFinished.Winner(
-            id: UUID(),
             position: "3",
             flag: URL(string: "https://flagcdn.com/w40/it.png"),
             countryCode: "IT",
@@ -186,7 +183,6 @@ struct RaceFinishedDetailView: View {
     ]
 
     let mockRace = HomeRaces.Representable.RaceFinished(
-        id: UUID(),
         race: "Tour of Flanders",
         raceDetails: "Elite Men | Belgium | 265.8 km",
         winnerImgURL: URL(string: "https://www.procyclingstats.com/images/riders/bp/ee/remco-evenepoel-2025.jpg"),

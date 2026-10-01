@@ -1,0 +1,122 @@
+# The native race result screen (RaceFinishedDetailView), opened from a Results today card, a
+# Yesterday row (home and "See all") and a History row, plus the History section itself
+# (mock scenario "history" = "live" plus five History rows, Debug build only). The mock races
+# carry only a winner, so that is the podium the screen shows.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      homeMock: history
+- extendedWaitUntil:
+    visible:
+      id: "home.results.spoiler"
+    timeout: 20000
+
+# Results today card -> result screen
+- tapOn:
+    id: "home.results.spoiler"
+- tapOn:
+    id: "home.results.card.0"
+- extendedWaitUntil:
+    visible: "Race Result"
+    timeout: 10000
+- assertVisible: "Giro della Toscana.*"
+- assertVisible: "MOCK Rider One"
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+
+# Yesterday row -> result screen
+- scrollUntilVisible:
+    element:
+      id: "home.yesterday.spoiler"
+- tapOn:
+    id: "home.yesterday.spoiler"
+- tapOn:
+    id: "home.yesterday.row.0"
+- extendedWaitUntil:
+    visible: "Race Result"
+    timeout: 10000
+- assertVisible: "Tour de Langkawi.*"
+- assertVisible: "MOCK Rider Four"
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+
+# Yesterday "See all" row -> result screen
+- scrollUntilVisible:
+    element:
+      id: "home.yesterday.seeAll"
+    direction: UP
+- tapOn:
+    id: "home.yesterday.seeAll"
+- extendedWaitUntil:
+    visible:
+      id: "yesterdayResults.row.3"
+    timeout: 10000
+- tapOn:
+    id: "yesterdayResults.row.3"
+- extendedWaitUntil:
+    visible: "Race Result"
+    timeout: 10000
+- assertVisible: "Tre Valli Varesine.*"
+- assertVisible: "MOCK Rider Seven"
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+
+# History: a preview of three rows instead of the banner, each opening the result screen
+- scrollUntilVisible:
+    element:
+      id: "home.history.row.0"
+- assertVisible:
+    id: "home.history.row.0"
+    text: "Tre Valli Varesine.*"
+- assertVisible:
+    id: "home.history.row.1"
+    text: "Il Lombardia.*"
+- scrollUntilVisible:
+    element:
+      id: "home.history.row.2"
+- assertVisible:
+    id: "home.history.row.2"
+    text: "Milano-Torino.*"
+- assertNotVisible:
+    id: "home.history.row.3"
+- assertNotVisible:
+    id: "home.history.banner"
+- tapOn:
+    id: "home.history.row.1"
+- extendedWaitUntil:
+    visible: "Race Result"
+    timeout: 10000
+- assertVisible: "Il Lombardia.*"
+- assertVisible: "MOCK Rider Nine"
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+
+# History "See all" -> every history row
+- tapOn:
+    id: "home.history.seeAll"
+- extendedWaitUntil:
+    visible:
+      id: "historyResults.row.4"
+    timeout: 10000
+- assertVisible:
+    id: "historyResults.row.0"
+    text: "Tre Valli Varesine.*"
+- tapOn:
+    id: "historyResults.row.4"
+- extendedWaitUntil:
+    visible: "Race Result"
+    timeout: 10000
+- assertVisible: "Memorial Marco Pantani.*"
+- assertVisible: "MOCK Rider Twelve"
