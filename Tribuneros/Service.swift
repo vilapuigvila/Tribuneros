@@ -77,20 +77,26 @@ struct Service {
         }
     }
 
-    /// Fetches historical race results from the past 2-3 weeks.
-    /// Returns the latest available historical results with 1-day caching.
-    static func getHistoryRaces() async throws -> [DTO.TodayResult] {
-        do {
-            // For history, we fetch results from a few days ago
-            // The PCS homepage includes "Results yesterday", so we'll fetch a secondary
-            // results page or parse historical data from what's available
-            // For now, we'll parse from the homepage but if there's no data, return empty
-            let document = try await getHomepageDocument()
+    private static let latestResultsURL = baseStringURL + "races.php?s=latest-results"
+    private static let historyLimit = 30
 
-            // Try to parse additional historical results
-            // We'll look for any extra result sections beyond yesterday
-            let historicalResults = parseHistoricalResults(from: document)
-            return Array(historicalResults.prefix(3)) // Return max 3 historical results
+    /// Winners of the races finished before yesterday, newest first, from PCS's "Latest race
+    /// results" table (today and yesterday have their own sections, from the homepage).
+    static func getHistoryRaces(now: Date = Date()) async -> [DTO.TodayResult] {
+        do {
+            let (data, _) = try await Requester
+                .makeRequest(latestResultsURL)
+                .ttl(6 * 3600)
+                .cacheControlBehavior(.ignoreServer)
+                .send()
+            guard let html = String(data: data, encoding: .utf8) else { return [] }
+            let calendar = Calendar.current
+            let yesterday = calendar.date(byAdding: .day, value: -1, to: now) ?? now
+            return parseHistoryResults(
+                try SwiftSoup.parse(html),
+                before: calendar.startOfDay(for: yesterday),
+                calendar: calendar
+            )
         } catch {
             if !isOffline(error) {
                 nonFatalCrashlytics(false, "History fetch error: \(error.localizedDescription)")
@@ -99,124 +105,63 @@ struct Service {
         }
     }
 
-    /// Parses historical results from the PCS homepage or additional pages.
-    /// This method looks for results sections and returns them as historical data.
-    private static func parseHistoricalResults(from document: Document) -> [DTO.TodayResult] {
-        var results = [DTO.TodayResult]()
-        let baseUrl = "https://www.procyclingstats.com/"
+    /// Rows are date, race (link), class, winner (flag + link) and time ago; a row dated before
+    /// `cutoff` becomes a result with the winner as its only podium entry.
+    static func parseHistoryResults(
+        _ document: Document,
+        before cutoff: Date,
+        calendar: Calendar = .current
+    ) -> [DTO.TodayResult] {
+        let input = DateFormatter()
+        input.locale = Locale(identifier: "en_US_POSIX")
+        input.calendar = calendar
+        input.timeZone = calendar.timeZone
+        input.dateFormat = "yyyy-MM-dd"
+        let output = DateFormatter()
+        output.calendar = calendar
+        output.timeZone = calendar.timeZone
+        output.setLocalizedDateFormatFromTemplate("d MMM")
 
-        do {
-            // Try to find any additional results sections beyond "Results today" and "Results yesterday"
-            // For now, we'll return the results we can find from the homepage
-            // In a production scenario, you'd fetch from a dedicated results/history page
-
-            // Parse "Results today" as history if needed for variety
-            if let resultsDiv = try? document.select("div.h4bar:has(h4:contains(Results today))").first(),
-               let resultsUl = try? resultsDiv.nextElementSibling(),
-               resultsUl.tagName() == "ul" {
-                let raceItems = try resultsUl.select("li.race").array()
-                for race in raceItems {
-                    if let result = try parseRaceItem(race, baseUrl: baseUrl) {
-                        results.append(result)
-                    }
-                }
+        guard let rows = try? document.select("table.basic > tbody > tr").array() else { return [] }
+        let results = rows.compactMap { row -> DTO.TodayResult? in
+            guard let cells = try? row.select("td").array(), cells.count >= 4,
+                  let dateText = try? cells[0].text(),
+                  let date = input.date(from: dateText),
+                  date < cutoff,
+                  let raceLink = try? cells[1].select("a").first(),
+                  let href = try? raceLink.attr("href"),
+                  let raceName = try? raceLink.text(),
+                  !raceName.isEmpty,
+                  let winnerLink = try? cells[3].select("a").first(),
+                  let winnerName = try? winnerLink.text().trimmingCharacters(in: .whitespaces),
+                  !winnerName.isEmpty
+            else {
+                return nil
             }
-        } catch {
-            nonFatalCrashlytics(false, "Error parsing historical results: \(error.localizedDescription)")
+            let raceClass = (try? cells[2].text()) ?? ""
+            let flagCode = (try? cells[3].select("span.flag").first()?.className())?
+                .split(separator: " ")
+                .map(String.init)
+                .first { $0.lowercased() != "flag" }
+            return DTO.TodayResult(
+                raceName: raceClass.isEmpty ? raceName : "\(raceName) (\(raceClass))",
+                raceDetails: output.string(from: date),
+                raceURL: URL(string: baseStringURL + href),
+                winner: nil,
+                podium: [
+                    DTO.TodayResult.Winner(
+                        position: "1",
+                        flag: flagCode.flatMap { URL(string: baseStringURL + "images/flags/" + $0 + ".png") },
+                        countryCode: flagCode,
+                        name: winnerName,
+                        team: "",
+                        time: ""
+                    )
+                ],
+                additionalDetails: []
+            )
         }
-
-        return results
-    }
-
-    /// Helper to parse a single race item from results sections
-    private static func parseRaceItem(_ race: Element, baseUrl: String) throws -> DTO.TodayResult? {
-        let detailsDiv = try race.select("div").filter { element in
-            try element.hasAttr("style") && element.attr("style").contains("width: calc(100% - 95px)")
-        }.first
-
-        let header = try parseRaceHeader(detailsDiv)
-
-        // Get winner image URL
-        var raceWinnerUrl: URL? = nil
-        if let winnerImgDiv = try race.select("div.winner-img").first() {
-            let styleAttr = try winnerImgDiv.attr("style")
-            let pattern = "url\\((.*?)\\)"
-            if let regex = try? NSRegularExpression(pattern: pattern, options: []),
-               let match = regex.firstMatch(in: styleAttr, options: [], range: NSRange(styleAttr.startIndex..<styleAttr.endIndex, in: styleAttr)),
-               let range = Range(match.range(at: 1), in: styleAttr)
-            {
-                let relativeUrl = String(styleAttr[range])
-                raceWinnerUrl = URL(string: baseUrl + relativeUrl)
-            }
-        }
-
-        // Parse podium
-        let podiumWinners: [DTO.TodayResult.Winner] = {
-            guard let podiumRows = try? race.select("table.top3 > tbody > tr").array() else {
-                return []
-            }
-            return podiumRows.compactMap { row in
-                guard let tds = try? row.select("td").array(), tds.count >= 3 else {
-                    return nil
-                }
-                guard let position = try? tds[0].text() else {
-                    return nil
-                }
-                let flagSpan: (countryCode: String?, urlFlag: URL?) = {
-                    guard let flagSpan = try? tds[1].select("span.flag").first(),
-                          let classes = try? flagSpan.className().split(separator: " ").map(String.init),
-                          let code = classes.first(where: { $0.lowercased() != "flag" })
-                    else {
-                        return (nil, nil)
-                    }
-                    return (code, URL(string: baseUrl + "images/flags/" + code + ".png"))
-                }()
-                let raceInfo: (name: String?, team: String?, time: String?) = {
-                    if tds.count == 3 {
-                        let name = try? tds[1].select("a").text()
-                        let team = ""
-                        let time = try? tds[2].text()
-                        return (name, team, time)
-                    } else {
-                        let name = try? tds[1].select("a").text()
-                        let team = try? tds[2].select("a").text()
-                        let time = try? tds[3].text()
-                        return (name, team, time)
-                    }
-                }()
-                return DTO.TodayResult.Winner(
-                    position: position,
-                    flag: flagSpan.urlFlag,
-                    countryCode: flagSpan.countryCode,
-                    name: raceInfo.name ?? "#",
-                    team: raceInfo.team ?? "#",
-                    time: raceInfo.time ?? "#"
-                )
-            }
-        }()
-
-        // Parse additional details
-        let additionalDetails: [DTO.TodayResult.AdditionalDetails] = {
-            guard let leaderItems = try? race.select("ul.leaders > li").array() else { return [] }
-            return leaderItems.compactMap { leader in
-                guard let tag = try? leader.select("div").attr("data-stage_type"),
-                      let relUrl = try? leader.select("a").attr("href")
-                else {
-                    return nil
-                }
-                let fullUrl = URL(string: baseUrl + relUrl)
-                return DTO.TodayResult.AdditionalDetails(tag: tag, url: fullUrl)
-            }
-        }()
-
-        return DTO.TodayResult(
-            raceName: header.title.isEmpty ? "-" : header.title,
-            raceDetails: header.details,
-            raceURL: header.url,
-            winner: raceWinnerUrl,
-            podium: podiumWinners,
-            additionalDetails: additionalDetails
-        )
+        return Array(results.prefix(historyLimit))
     }
 
     static func getHomepageDocument() async throws -> Document {

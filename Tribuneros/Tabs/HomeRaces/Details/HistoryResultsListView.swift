@@ -22,10 +22,11 @@ struct HistoryResultsListView: View {
                 .padding(.horizontal, 2)
 
                 VStack(alignment: .leading, spacing: 12) {
-                    ForEach(races, id: \.id) { race in
+                    ForEach(Array(races.enumerated()), id: \.element.id) { index, race in
                         HistoryResultCard(race: race) {
                             action(.openRaceResult(race))
                         }
+                        .accessibilityIdentifier("historyResults.row.\(index)")
                     }
                 }
             }
@@ -42,7 +43,7 @@ struct HistoryResultCard: View {
             VStack(alignment: .leading, spacing: 8) {
                 TribuneruText(
                     content: race.race,
-                    style: .vaporCardTitle,
+                    style: .vaporRowTitle,
                     color: .tribuneru(.white(level: 1)),
                     lineLimit: 1
                 )
@@ -50,7 +51,7 @@ struct HistoryResultCard: View {
                 if !race.raceDetails.isEmpty {
                     TribuneruText(
                         content: race.raceDetails,
-                        style: .vaporCardSubtitle,
+                        style: .vaporRowMeta,
                         color: .tribuneru(.vaporTextSecondary),
                         lineLimit: 1
                     )
@@ -61,7 +62,7 @@ struct HistoryResultCard: View {
                         HStack(spacing: 8) {
                             TribuneruText(
                                 content: winner.position,
-                                style: .vaporCardSmall,
+                                style: .vaporRowMeta,
                                 color: .tribuneru(.vaporTextSecondary),
                                 lineLimit: 1
                             )
@@ -78,7 +79,7 @@ struct HistoryResultCard: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 TribuneruText(
                                     content: winner.name,
-                                    style: .vaporCardDescription,
+                                    style: .vaporResultTitle,
                                     color: .tribuneru(.white(level: 1)),
                                     lineLimit: 1
                                 )
@@ -86,7 +87,7 @@ struct HistoryResultCard: View {
                                 if !winner.team.isEmpty && winner.team != "#" {
                                     TribuneruText(
                                         content: winner.team,
-                                        style: .vaporCardSmall,
+                                        style: .vaporRowMeta,
                                         color: .tribuneru(.vaporTextSecondary),
                                         lineLimit: 1
                                     )
@@ -98,7 +99,7 @@ struct HistoryResultCard: View {
                             if !winner.time.isEmpty && winner.time != "#" {
                                 TribuneruText(
                                     content: winner.time,
-                                    style: .vaporCardSmall,
+                                    style: .vaporResultTime,
                                     color: .tribuneru(.vaporTextSecondary),
                                     lineLimit: 1
                                 )

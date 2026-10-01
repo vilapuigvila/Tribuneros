@@ -80,7 +80,7 @@ struct RaceFinishedDetailView: View {
         }
         .background(Color.tribuneru(.vaporPageBackground))
         .preferredColorScheme(.dark)
-        .navigationTitle("")
+        .navigationTitle("Race Result")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             viewModel.action(.onAppear)

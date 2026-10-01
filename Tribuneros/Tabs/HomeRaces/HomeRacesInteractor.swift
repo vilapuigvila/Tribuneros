@@ -104,6 +104,7 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
             task = Task { [weak self] in
                 defer { self?.task = nil }
                 do {
+                    async let history = Service.getHistoryRaces()
                     let result = try await Service.getLatestResults()
                     try Task.checkCancellation()
                     let staleCopy = result.staleCopySavedAt.map {
@@ -115,8 +116,7 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                     
                     self?.requestThrottle.registerOutcome(isFailure: false)
                     
-                    // Fetch history results in the background
-                    let historyResults = (try? await Service.getHistoryRaces()) ?? []
+                    let historyResults = await history
 
                     self?.subject.send(
                         Domain(

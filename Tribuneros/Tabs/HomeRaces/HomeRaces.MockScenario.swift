@@ -14,6 +14,8 @@ extension HomeRaces {
         case empty
         /// `live` data served as a 3-hour-old cached copy while offline.
         case stale
+        /// `live` data plus five History rows (three in the preview, all behind "See all").
+        case history
 
         static var current: MockScenario? {
             let info = ProcessInfo.processInfo
@@ -33,6 +35,7 @@ extension HomeRaces {
                 nextToFinishRaces: races,
                 todayRaces: Self.resultsToday,
                 yesterdayResults: Self.resultsYesterday,
+                historyResults: self == .history ? Self.resultsHistory : [],
                 tomorrowRaces: [],
                 liveStatsRaces: liveStats(for: races),
                 isOnSpoilerModeResultsToday: isOnSpoilerModeResultsToday,
@@ -52,7 +55,7 @@ extension HomeRaces {
             let coppa = race("Coppa Bernocchi", in: 217, category: "ME", raceType: "1.1", flag: "it", path: "race/coppa-bernocchi/2026/result", now: now)
             let montreal = race("GP de Montréal", in: 427, category: "ME", raceType: "1.UWT", flag: "ca", path: "race/gp-de-montreal/2026/result", now: now)
             switch self {
-            case .live, .stale: return [montreal, coppa, cro, chrono]
+            case .live, .stale, .history: return [montreal, coppa, cro, chrono]
             case .later: return [montreal, chrono]
             case .one: return [cro]
             case .empty: return []
@@ -60,7 +63,7 @@ extension HomeRaces {
         }
 
         private func liveStats(for races: [DTO.NextToFinishResult]) -> [DTO.LiveStatsRace] {
-            guard self == .live || self == .stale || self == .one else { return [] }
+            guard self == .live || self == .stale || self == .one || self == .history else { return [] }
             let liveNames: Set<String> = self == .one ? ["CRO Race - S1"] : ["CRO Race - S1", "Coppa Bernocchi"]
             return races
                 .filter { liveNames.contains($0.name) }
@@ -148,6 +151,41 @@ extension HomeRaces {
                     "Busto Arsizio - Varese (198km)",
                     slug: "tre-valli-varesine",
                     winner: ("it", "MOCK Rider Seven", "4:29:31")
+                )
+            ]
+        }
+
+        private static var resultsHistory: [DTO.TodayResult] {
+            [
+                result(
+                    "Tre Valli Varesine (1.Pro)",
+                    "Busto Arsizio - Varese (198km)",
+                    slug: "tre-valli-varesine-history",
+                    winner: ("it", "MOCK Rider Eight", "4:29:31")
+                ),
+                result(
+                    "Il Lombardia (1.UWT)",
+                    "Bergamo - Como (238km)",
+                    slug: "il-lombardia",
+                    winner: ("si", "MOCK Rider Nine", "5:41:12")
+                ),
+                result(
+                    "Milano-Torino (1.Pro)",
+                    "Mortara - Superga (179km)",
+                    slug: "milano-torino",
+                    winner: ("be", "MOCK Rider Ten", "4:07:50")
+                ),
+                result(
+                    "Gran Premio Bruno Beghelli (1.Pro)",
+                    "Monteveglio - Bologna (197km)",
+                    slug: "gran-premio-bruno-beghelli",
+                    winner: ("it", "MOCK Rider Eleven", "4:15:03")
+                ),
+                result(
+                    "Memorial Marco Pantani (1.1)",
+                    "Cesenatico - Cesenatico (190km)",
+                    slug: "memorial-marco-pantani",
+                    winner: ("co", "MOCK Rider Twelve", "4:22:40")
                 )
             ]
         }
