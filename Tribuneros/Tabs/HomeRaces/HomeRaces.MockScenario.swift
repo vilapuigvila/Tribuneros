@@ -57,7 +57,7 @@ extension HomeRaces {
                     isOffline: true
                 ) : nil
             )
-            if self == .previews {
+            if self == .previews || self == .live {
                 domain.previews = Self.mockPreviews
             }
             return domain
