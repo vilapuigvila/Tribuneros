@@ -59,9 +59,6 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
     typealias Domain = HomeRacesDomain
     typealias UseCase = HomeRaces.UseCase
     
-    private let requestThrottle =
-        RequestThrottleController(minimumInterval: 60, extraRequestsLimit: 2)
-    
     private let subject = CurrentValueSubject<Domain, Never>(.empty.copy(loading: true))
     
     var publisher: AnyPublisher<Domain, Never> {
@@ -97,9 +94,6 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                 return
             }
             #endif
-//            let requestDate = Date()
-//            guard requestThrottle.startRequestIfAllowed(at: requestDate) else { return }
-            
             subject.send(domain.copy(loading: true))
             
             task = Task { [weak self] in
@@ -114,8 +108,6 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                             isOffline: !NetworkStatusMonitor.shared.hasConnection
                         )
                     }
-                    
-                    self?.requestThrottle.registerOutcome(isFailure: false)
                     
                     let historyResults = await history
 
@@ -137,8 +129,6 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                         )
                     )
                 } catch {
-                    self?.requestThrottle.registerOutcome(isFailure: true)
-
                     self?.subject.send(
                         Domain(
                             nextToFinishRaces: [],
