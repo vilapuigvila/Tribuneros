@@ -54,7 +54,8 @@ struct YesterdayResultsCard: View {
     let open: (HomeRaces.Representable.RaceFinished) -> Void
 
     var body: some View {
-        LazyVStack(spacing: 0) {
+        // Not lazy: re-estimated row heights resize the page mid-scroll and make it jump at the top.
+        VStack(spacing: 0) {
             ForEach(Array(races.enumerated()), id: \.offset) { index, race in
                 if index > 0 {
                     TribunerosDivider(
