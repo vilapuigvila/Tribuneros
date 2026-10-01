@@ -1,0 +1,29 @@
+# "Where to watch" with the flag off keeps opening the coursedujour.com web page.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      homeMock: live
+      ctCoursedujourNative: "off"
+- extendedWaitUntil:
+    visible:
+      id: "home.today.hero"
+    timeout: 20000
+- tapOn:
+    id: "home.today.hero"
+- extendedWaitUntil:
+    visible:
+      id: "raceInfo.whereToWatch"
+    timeout: 10000
+- assertVisible: "CRO Race — Stage 1"
+- tapOn:
+    id: "raceInfo.whereToWatch"
+- extendedWaitUntil:
+    visible: ".*coursedujour.*"
+    timeout: 15000
+- assertNotVisible:
+    id: "whereToWatch.day.0"

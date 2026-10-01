@@ -1,0 +1,72 @@
+# "Where to watch" with Remote Config flag ct_coursedujour_native on (Debug build only: the
+# ctCoursedujourNative launch argument forces the flag and serves a fixed mock schedule).
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      homeMock: live
+      ctCoursedujourNative: "on"
+- extendedWaitUntil:
+    visible:
+      id: "home.today.hero"
+    timeout: 20000
+- tapOn:
+    id: "home.today.hero"
+- extendedWaitUntil:
+    visible:
+      id: "raceInfo.whereToWatch"
+    timeout: 10000
+- assertVisible: "CRO Race — Stage 1"
+- tapOn:
+    id: "raceInfo.whereToWatch"
+
+# Today: day strip, discipline sections, races with their channels
+- extendedWaitUntil:
+    visible:
+      id: "whereToWatch.day.0"
+    timeout: 10000
+- assertVisible:
+    id: "whereToWatch.day.0"
+    text: "TODAY.*3 races"
+- assertVisible:
+    id: "whereToWatch.section.Road"
+- assertVisible:
+    id: "whereToWatch.featured"
+    text: "CRO Race — Stage 1, 2.1 \\(Men\\)  ·  Zagreb, Croatia, live now.*"
+- assertVisible:
+    id: "whereToWatch.channel.Sporza / VRT"
+- assertVisible:
+    id: "whereToWatch.race.GP de Montréal"
+- assertVisible:
+    id: "whereToWatch.channel.FloBikes"
+- scrollUntilVisible:
+    element: "No broadcast listed yet"
+- assertVisible:
+    id: "whereToWatch.section.Gravel"
+
+# Another day
+- scrollUntilVisible:
+    element:
+      id: "whereToWatch.day.1"
+    direction: UP
+- tapOn:
+    id: "whereToWatch.day.1"
+- extendedWaitUntil:
+    visible:
+      id: "whereToWatch.race.Coppa Bernocchi"
+    timeout: 10000
+- assertVisible:
+    id: "whereToWatch.channel.RAI Sport"
+- assertNotVisible:
+    id: "whereToWatch.race.CRO Race — Stage 1"
+
+# Back to the race info
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- assertVisible:
+    id: "raceInfo.whereToWatch"

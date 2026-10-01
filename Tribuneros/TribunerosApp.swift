@@ -27,6 +27,7 @@ struct TribunerosApp: App {
     init() {
         CrashlyticsManager.shared.configure()
         Service.useFirebaseEmulatorIfEnabled()
+        Service.refreshRemoteConfig()
         CrashlyticsHelper.send(false, "testng", domain: .cyclocross)
     }
     

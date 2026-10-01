@@ -1,0 +1,43 @@
+# "Where to watch" for a race the schedule doesn't list: the button says so, and the schedule
+# opens with a notice instead of a pin. Mock data: in homeMock "later" the hero is Chrono des
+# Nations, which the mock schedule leaves out.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      homeMock: later
+      ctCoursedujourNative: "on"
+- extendedWaitUntil:
+    visible:
+      id: "home.today.hero"
+    timeout: 20000
+- assertVisible:
+    id: "home.today.hero"
+    text: ".*Chrono des Nations.*"
+- tapOn:
+    id: "home.today.hero"
+
+- extendedWaitUntil:
+    visible:
+      id: "raceInfo.whereToWatch"
+      text: ".*Where to watch.*Not in the TV listings.*"
+    timeout: 10000
+- tapOn:
+    id: "raceInfo.whereToWatch"
+
+- extendedWaitUntil:
+    visible:
+      id: "whereToWatch.notListed"
+    timeout: 10000
+- assertVisible:
+    id: "whereToWatch.notListed"
+    text: ".*Chrono des Nations isn't in this day's TV listings\\..*"
+- assertNotVisible:
+    id: "whereToWatch.featured"
+- assertNotVisible: "YOUR RACE"
+- assertVisible:
+    id: "whereToWatch.race.CRO Race — Stage 1"

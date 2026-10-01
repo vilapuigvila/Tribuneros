@@ -21,7 +21,10 @@ struct HomeRacesView: View {
             case .nextToFinishRace(let index):
                 if sections.nextToFinish.indices.contains(index),
                    let urlPath = sections.nextToFinish[index].urlPath {
-                    NextToFinishRaceDetail(urlInfo: urlPath)
+                    NextToFinishRaceDetail(
+                        urlInfo: urlPath,
+                        watchKey: HomeRaces.WhereToWatch.RaceKey(race: sections.nextToFinish[index])
+                    )
                 } else {
                     EmptyView()
                 }
@@ -39,6 +42,11 @@ struct HomeRacesView: View {
             case .raceResultDetail(let raceFinished):
                 RaceFinishedDetailView(
                     raceFinished: raceFinished,
+                    router: viewModel.router
+                )
+            case .whereToWatch(let raceKey):
+                WhereToWatchView(
+                    raceKey: raceKey,
                     router: viewModel.router
                 )
             case .historyResults:

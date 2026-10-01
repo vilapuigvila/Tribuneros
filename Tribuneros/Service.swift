@@ -697,6 +697,9 @@ struct Service {
     }
 
     static func getInfoProfiles(_ urlString: String) async throws -> [DTO.StageProfile] {
+        #if DEBUG
+        if HomeRaces.MockScenario.current != nil { return [] }
+        #endif
         let url = URL(string: urlString + "/info/profiles")!
         do {
             let (data, _) = try await Requester
@@ -736,6 +739,22 @@ struct Service {
     }
     
     static func getNextToFinishRaceDetail(_ urlString: String) async throws -> DTO.RaceDetailInfo? {
+        #if DEBUG
+        if HomeRaces.MockScenario.current != nil {
+            return DTO.RaceDetailInfo(
+                title: "CRO Race — Stage 1",
+                date: "01 October 2026",
+                startTime: "12:00",
+                classification: "2.1",
+                category: "ME",
+                distance: "134 km",
+                departure: "Zagreb",
+                arrival: "Zagreb",
+                verticalMeters: "1200",
+                profileURL: nil
+            )
+        }
+        #endif
         let url = URL(string: urlString)!
         do {
             let (data, _) = try await Requester

@@ -10,6 +10,7 @@ import FirebaseRemoteConfig
 
 extension Service {
     static let pressURLsKey = "press_urls"
+    static let courseDuJourNativeKey = "ct_coursedujour_native"
 
     private static let defaultPressURLs = """
     [
@@ -28,10 +29,45 @@ extension Service {
         #if DEBUG
         settings.minimumFetchInterval = 0
         #endif
+        settings.minimumFetchInterval = 3600*12 // 12 hour
         config.configSettings = settings
-        config.setDefaults([pressURLsKey: defaultPressURLs as NSString])
+        config.setDefaults([
+            pressURLsKey: defaultPressURLs as NSString,
+            courseDuJourNativeKey: false as NSNumber
+        ])
         return config
     }()
+
+    /// Warms the activated values at launch, so flags are current without opening Paddock first.
+    static func refreshRemoteConfig() {
+        Task {
+            _ = try? await remoteConfig.fetchAndActivate()
+        }
+    }
+
+    /// Native Course du Jour schedule behind "Where to watch" instead of the web page.
+    static var isCourseDuJourNativeEnabled: Bool {
+        #if DEBUG
+        if let override = courseDuJourNativeOverride {
+            return override
+        }
+        #endif
+        return remoteConfig.configValue(forKey: courseDuJourNativeKey).boolValue
+    }
+
+    #if DEBUG
+    /// `CT_COURSEDUJOUR_NATIVE` or the `ctCoursedujourNative` launch argument: on/off, bypasses Remote Config.
+    static var courseDuJourNativeOverride: Bool? {
+        let raw = ProcessInfo.processInfo.environment["CT_COURSEDUJOUR_NATIVE"]
+            ?? UserDefaults.standard.string(forKey: "ctCoursedujourNative")
+        return raw.map { ["1", "on", "true", "yes"].contains($0.lowercased()) }
+    }
+
+    /// Forcing the flag on also swaps the network for a fixed schedule, so UI flows are deterministic.
+    static var courseDuJourMockEnabled: Bool {
+        courseDuJourNativeOverride == true
+    }
+    #endif
 
     static func getPressLinks() async -> [DTO.PressLink] {
         // A failed fetch keeps the last activated value, or the in-app default.

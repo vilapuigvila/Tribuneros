@@ -369,3 +369,61 @@ extension DTO {
         let results: [Result]
     }
 }
+
+// MARK: - Course du Jour -
+
+extension DTO {
+    /// One day of coursedujour.com's TV schedule.
+    struct CourseDuJourPage: Equatable, Sendable {
+        /// A tab of the page's day strip.
+        struct Day: Equatable, Hashable, Identifiable, Sendable {
+            /// "2026-10-02"
+            let date: String
+            /// 0 is the site's today, -1 yesterday.
+            let offset: Int
+            let raceCount: Int
+            var id: String { date }
+        }
+
+        struct Broadcaster: Equatable, Hashable, Identifiable, Sendable {
+            let name: String
+            /// "FI, SE"
+            let regions: String
+            let url: URL?
+            let start: Date?
+            let end: Date?
+            var id: String { name }
+        }
+
+        struct Race: Equatable, Hashable, Identifiable, Sendable {
+            let name: String
+            /// "Stage 5"
+            let stage: String?
+            /// "2.Pro (Men)"
+            let category: String
+            let location: String
+            let start: Date?
+            let end: Date?
+            let broadcasters: [Broadcaster]
+            var id: String { [name, stage ?? "", start.map { "\($0.timeIntervalSince1970)" } ?? ""].joined(separator: "|") }
+        }
+
+        /// A discipline block: "Road", "CX", "Gravel".
+        struct Section: Equatable, Hashable, Identifiable, Sendable {
+            let discipline: String
+            /// "1 race with live coverage", "no live coverage today"
+            let caption: String
+            let races: [Race]
+            var id: String { discipline }
+        }
+
+        /// "2026-10-01"
+        let date: String
+        /// "Thursday, 1 October 2026"
+        let heading: String
+        /// When the site last refreshed its broadcast data.
+        let updatedAt: Date?
+        let days: [Day]
+        let sections: [Section]
+    }
+}

@@ -1,0 +1,68 @@
+# "Where to watch" finds the race Race info was opened from: the button names its channels, and
+# the schedule pins it as "Your race" on its day only. Mock data (homeMock + ctCoursedujourNative).
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      homeMock: live
+      ctCoursedujourNative: "on"
+- extendedWaitUntil:
+    visible:
+      id: "home.today.hero"
+    timeout: 20000
+- tapOn:
+    id: "home.today.hero"
+
+# Race info already knows where CRO Race is on
+- extendedWaitUntil:
+    visible:
+      id: "raceInfo.whereToWatch"
+      text: ".*Where to watch.*Sporza / VRT.*"
+    timeout: 10000
+- tapOn:
+    id: "raceInfo.whereToWatch"
+
+# Pinned above the sections, and left out of the list
+- extendedWaitUntil:
+    visible:
+      id: "whereToWatch.featured"
+    timeout: 10000
+- assertVisible: "YOUR RACE"
+- assertVisible:
+    id: "whereToWatch.featured"
+    text: "CRO Race — Stage 1, 2.1 \\(Men\\)  ·  Zagreb, Croatia, live now.*"
+- assertNotVisible:
+    id: "whereToWatch.notListed"
+- assertNotVisible:
+    id: "whereToWatch.race.CRO Race — Stage 1"
+- scrollUntilVisible:
+    element:
+      id: "whereToWatch.race.GP de Montréal"
+
+# Another day has no pin
+- scrollUntilVisible:
+    element:
+      id: "whereToWatch.day.1"
+    direction: UP
+- tapOn:
+    id: "whereToWatch.day.1"
+- extendedWaitUntil:
+    visible:
+      id: "whereToWatch.race.Coppa Bernocchi"
+    timeout: 10000
+- assertNotVisible:
+    id: "whereToWatch.featured"
+- assertNotVisible:
+    id: "whereToWatch.notListed"
+
+# Back on its day, the pin returns
+- tapOn:
+    id: "whereToWatch.day.0"
+- extendedWaitUntil:
+    visible:
+      id: "whereToWatch.featured"
+    timeout: 10000

@@ -25,6 +25,8 @@ struct NextToFinishRaceDetail: View {
     }
 
     let urlInfo: String
+    /// The race to look up in the TV schedule; nil hides the coverage line.
+    var watchKey: HomeRaces.WhereToWatch.RaceKey? = nil
 
     @State private var raceInfo: DTO.RaceDetailInfo? = nil
     @State private var profileImages: [ProfileImage] = []
@@ -34,6 +36,10 @@ struct NextToFinishRaceDetail: View {
     // The profile images download after the race info is in, so their placeholder stays until they are.
     @State private var isLoadingImages = true
     @State private var errorMessage: String?
+    @State private var webPage: WebPage?
+    @State private var coverage: HomeRaces.WhereToWatch.Coverage?
+
+    private static let whereToWatchURL = URL(string: "https://coursedujour.com/")!
 
     var body: some View {
         ScrollView {
@@ -88,7 +94,12 @@ struct NextToFinishRaceDetail: View {
                 nonFatalCrashlytics(false, error.localizedDescription)
             }
         }
+        .task {
+            guard Service.isCourseDuJourNativeEnabled, let watchKey else { return }
+            coverage = await Service.getCourseDuJourCoverage(for: watchKey)
+        }
         .sheet(isPresented: $showZoom) { zoomSheet }
+        .webPage($webPage)
     }
 
     // MARK: - Info -
@@ -127,6 +138,66 @@ struct NextToFinishRaceDetail: View {
                         }
                     }
                 }
+
+                watchButton
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var watchButton: some View {
+        if Service.isCourseDuJourNativeEnabled {
+            NavigationLink(value: Router.Destination.whereToWatch(watchKey)) {
+                watchLabel(
+                    trailingIcon: "chevron.right",
+                    summary: coverage?.summary
+                )
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("raceInfo.whereToWatch")
+        } else {
+            Button {
+                webPage = WebPage(url: Self.whereToWatchURL)
+            } label: {
+                watchLabel(
+                    trailingIcon: "arrow.up.right",
+                    summary: nil
+                )
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("raceInfo.whereToWatch")
+        }
+    }
+
+    private func watchLabel(
+        trailingIcon: String,
+        summary: String?
+    ) -> some View {
+        VaporCard {
+            HStack(spacing: 10) {
+                Image(systemName: "tv")
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundColor(.tribuneru(.vaporAccent))
+                    .frame(width: 18)
+                VStack(alignment: .leading, spacing: 2) {
+                    TribuneruText(
+                        content: "Where to watch",
+                        style: .vaporRaceNameResult,
+                        color: .tribuneru(.vaporAccent)
+                    )
+                    if let summary {
+                        TribuneruText(
+                            content: summary,
+                            style: .vaporMeta,
+                            color: .tribuneru(.vaporTextSecondary),
+                            lineLimit: 2
+                        )
+                    }
+                }
+                Spacer(minLength: 0)
+                Image(systemName: trailingIcon)
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundColor(.tribuneru(.vaporTextSecondary))
             }
         }
     }
@@ -135,15 +206,18 @@ struct NextToFinishRaceDetail: View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
             VaporSectionHeader(title: "Race info")
         } content: {
-            VaporCard {
-                TribuneruText(
-                    content: errorMessage ?? "No info available for this race yet.",
-                    style: .vaporMeta,
-                    color: .tribuneru(.vaporTextSecondary),
-                    lineLimit: 4
-                )
+            VStack(alignment: .leading, spacing: 12) {
+                VaporCard {
+                    TribuneruText(
+                        content: errorMessage ?? "No info available for this race yet.",
+                        style: .vaporMeta,
+                        color: .tribuneru(.vaporTextSecondary),
+                        lineLimit: 4
+                    )
+                }
+                watchButton
             }
-        } 
+        }
     }
 
     private func infoItems(_ info: DTO.RaceDetailInfo) -> [InfoItem] {
