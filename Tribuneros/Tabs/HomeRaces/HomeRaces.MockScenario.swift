@@ -16,7 +16,7 @@ extension HomeRaces {
         case stale
         /// `live` data plus five History rows (three in the preview, all behind "See all").
         case history
-        /// `live` data with Results today empty and three homepage previews.
+        /// No races today, so the resting card shrinks, plus three homepage previews.
         case previews
 
         /// The one mock switch: every mock in the app asks this, and nil means real data.
@@ -43,7 +43,7 @@ extension HomeRaces {
             let races = nextToFinish(now: now)
             var domain = HomeRacesDomain(
                 nextToFinishRaces: races,
-                todayRaces: self == .previews ? [] : Self.resultsToday,
+                todayRaces: Self.resultsToday,
                 yesterdayResults: Self.resultsYesterday,
                 historyResults: self == .history ? Self.resultsHistory : [],
                 tomorrowRaces: [],
@@ -69,15 +69,15 @@ extension HomeRaces {
             let coppa = race("Coppa Bernocchi", in: 217, category: "ME", raceType: "1.1", flag: "it", path: "race/coppa-bernocchi/2026/result", now: now)
             let montreal = race("GP de Montréal", in: 427, category: "ME", raceType: "1.UWT", flag: "ca", path: "race/gp-de-montreal/2026/result", now: now)
             switch self {
-            case .live, .stale, .history, .previews: return [montreal, coppa, cro, chrono]
+            case .live, .stale, .history: return [montreal, coppa, cro, chrono]
             case .later: return [montreal, chrono]
             case .one: return [cro]
-            case .empty: return []
+            case .empty, .previews: return []
             }
         }
 
         private func liveStats(for races: [DTO.NextToFinishResult]) -> [DTO.LiveStatsRace] {
-            guard self == .live || self == .stale || self == .one || self == .history || self == .previews else { return [] }
+            guard self == .live || self == .stale || self == .one || self == .history else { return [] }
             let liveNames: Set<String> = self == .one ? ["CRO Race - S1"] : ["CRO Race - S1", "Coppa Bernocchi"]
             return races
                 .filter { liveNames.contains($0.name) }
@@ -105,6 +105,7 @@ extension HomeRaces {
             let formatter = DateFormatter()
             formatter.locale = Locale(identifier: "en_US_POSIX")
             formatter.dateFormat = "HH:mm"
+            let minutes = Self.fittingToday(minutes, now: now)
             return DTO.NextToFinishResult(
                 eta: formatter.string(from: now.addingTimeInterval(TimeInterval(minutes * 60))),
                 duration: "\(minutes / 60)h",
@@ -115,6 +116,30 @@ extension HomeRaces {
                 urlPath: "https://www.procyclingstats.com/\(path)",
                 flagCode: flag
             )
+        }
+
+        /// Late in the day, squeezes the finishes so the latest one (427 min) still lands before
+        /// midnight, locally and on the Where to watch calendar; otherwise flows fail after ~17:00.
+        private static func fittingToday(
+            _ minutes: Int,
+            now: Date
+        ) -> Int {
+            let latest = 427
+            let minutesLeft = [Calendar.current.timeZone, HomeRaces.WhereToWatch.scheduleTimeZone]
+                .map { timeZone -> Int in
+                    var calendar = Calendar(identifier: .gregorian)
+                    calendar.timeZone = timeZone
+                    let midnight = calendar.nextDate(
+                        after: now,
+                        matching: DateComponents(hour: 0, minute: 0),
+                        matchingPolicy: .nextTime
+                    ) ?? now
+                    return Int(midnight.timeIntervalSince(now) / 60)
+                }
+                .min() ?? latest
+            let room = minutesLeft - 5
+            guard room < latest else { return minutes }
+            return max(1, minutes * max(room, 0) / latest)
         }
 
         private static var resultsToday: [DTO.TodayResult] {

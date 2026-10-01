@@ -7,6 +7,7 @@ import SwiftUI
 
 struct TodaySection: View {
     let races: [HomeRaces.Representable.RaceNext]
+    var isCompact = false
     let action: (HomeRaces.Action) -> Void
 
     private var seeAll: (() -> Void)? {
@@ -26,7 +27,7 @@ struct TodaySection: View {
                     action(.navigate(.nextToFinishRace(index: 0)))
                 }
             } else {
-                TodayEmptyCard()
+                TodayEmptyCard(isCompact: isCompact)
             }
         }
     }
@@ -172,6 +173,8 @@ struct RemainingPill: View {
 }
 
 struct TodayEmptyCard: View {
+    var isCompact = false
+
     var body: some View {
         ZStack {
             RaceArtView(art: .night)
@@ -202,7 +205,7 @@ struct TodayEmptyCard: View {
                         content: "Nothing on today's list yet. New races show up here as soon as they're listed.",
                         style: .vaporBannerSubtitle,
                         color: Color.tribuneru(.vaporTextPrimary).opacity(0.8),
-                        lineLimit: 3
+                        lineLimit: isCompact ? 2 : 3
                     )
                     .frame(maxWidth: 270, alignment: .leading)
                 }
@@ -212,7 +215,7 @@ struct TodayEmptyCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(14)
         }
-        .frame(height: 282)
+        .frame(height: isCompact ? 141 : 282)
         .homeCard()
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("home.today.empty")

@@ -1,4 +1,5 @@
-# Previews stay hidden when Results today has results (mock scenario "live", Debug build only).
+# No Previews section without previews (mock scenario "empty": full-size resting card) or when
+# Today has races (mock scenario "live"). Debug build only.
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -7,10 +8,22 @@ tags:
 - launchApp:
     clearState: true
     arguments:
+      mockScenario: empty
+- extendedWaitUntil:
+    visible:
+      id: "home.today.empty"
+    timeout: 20000
+- assertNotVisible: "Previews"
+- assertNotVisible:
+    id: "home.previews.row.0"
+
+- launchApp:
+    clearState: true
+    arguments:
       mockScenario: live
 - extendedWaitUntil:
     visible:
-      id: "home.results.spoiler"
+      id: "home.today.hero"
     timeout: 20000
 - assertNotVisible:
     id: "home.previews.row.0"

@@ -124,9 +124,9 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
         )
     }
     
-    /// Previews stand in for Results today, so they only show while it is empty.
+    /// Previews fill the Today gap, so they only show while it has no races.
     private func previews(_ domain: HomeRacesDomain) -> [HomeRaces.Representable.RacePreview] {
-        guard domain.todayRaces.isEmpty else { return [] }
+        guard domain.nextToFinishRaces.isEmpty else { return [] }
         return domain.previews.map {
             HomeRaces.Representable.RacePreview(
                 countdown: $0.countdown,

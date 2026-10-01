@@ -1,6 +1,6 @@
-# Results today with no results (mock scenario "previews", Debug build only): the homepage
-# previews replace "No results yet" and a row opens the preview detail screen. The preview page is
-# mocked too (MOCK-prefixed stage and route), so no PCS request is made.
+# No races today but PCS has previews (mock scenario "previews", Debug build only): the resting
+# card shrinks to half height, a Previews section sits between Today and Results today, and a row
+# opens the preview detail screen. The preview page is mocked (MOCK-prefixed route), no PCS request.
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -15,11 +15,17 @@ tags:
       id: "home.previews.row.0"
     timeout: 20000
 - assertVisible:
+    id: "home.today.empty"
+    text: ".*The peloton is resting.*"
+- assertNotVisible:
+    id: "home.today.hero"
+- assertVisible: "Previews"
+- assertVisible:
     id: "home.previews.row.0"
     text: ".*MOCK Tour de Langkawi.*"
 - assertVisible:
     id: "home.previews.row.1"
-- assertNotVisible: "No results yet.*"
+- assertVisible: "Results today"
 
 - tapOn:
     id: "home.previews.row.0"

@@ -142,12 +142,19 @@ extension HomeRaces {
 
                     TodaySection(
                         races: sections.nextToFinish,
+                        isCompact: !sections.previews.isEmpty,
                         action: action
                     )
 
+                    if !sections.previews.isEmpty {
+                        PreviewsSection(
+                            previews: sections.previews,
+                            action: action
+                        )
+                    }
+
                     ResultsTodaySection(
                         races: sections.racesFinished,
-                        previews: sections.previews,
                         isSpoilerModeOn: sections.spoilerMode.isSpoilerModeResultsToday,
                         action: action
                     )
