@@ -32,6 +32,6 @@
 
 ## Security & Configuration Tips
 - Firebase configuration lives in `Tribuneros/GoogleService-Info.plist`; avoid committing environment-specific secrets or credentials.
-- Useful debug flags: `HOME_MOCK=live|later|one|empty` (fixed Today Races data), `MOCKING=1` (same as `live`) and `DEBUG_BACKGROUND=1` (highlight view backgrounds in Debug).
+- Useful debug flags: `MOCK_SCENARIO=live|later|one|empty|stale|history` (or the `mockScenario` launch argument) is the only switch for mock data: Today Races, race info stubs and the Course du Jour schedule, and unset means real data. `CT_COURSEDUJOUR_NATIVE` only overrides the Remote Config flag. `DEBUG_BACKGROUND=1` (highlight view backgrounds in Debug).
 
 

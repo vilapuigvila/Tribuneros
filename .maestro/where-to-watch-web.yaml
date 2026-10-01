@@ -7,7 +7,7 @@ tags:
 - launchApp:
     clearState: true
     arguments:
-      homeMock: live
+      mockScenario: live
       ctCoursedujourNative: "off"
 - extendedWaitUntil:
     visible:

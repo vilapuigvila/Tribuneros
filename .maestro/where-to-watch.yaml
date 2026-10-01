@@ -1,5 +1,5 @@
 # "Where to watch" with Remote Config flag ct_coursedujour_native on (Debug build only: the
-# ctCoursedujourNative launch argument forces the flag and serves a fixed mock schedule).
+# ctCoursedujourNative launch argument forces the flag; mockScenario serves the fixed mock schedule).
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -8,7 +8,7 @@ tags:
 - launchApp:
     clearState: true
     arguments:
-      homeMock: live
+      mockScenario: live
       ctCoursedujourNative: "on"
 - extendedWaitUntil:
     visible:

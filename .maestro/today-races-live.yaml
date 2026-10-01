@@ -9,7 +9,7 @@ tags:
 - launchApp:
     clearState: true
     arguments:
-      homeMock: live
+      mockScenario: live
 - extendedWaitUntil:
     visible:
       id: "home.today.hero"

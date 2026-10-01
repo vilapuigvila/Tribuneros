@@ -18,7 +18,7 @@ extension Service {
     /// The site's today when `date` is nil, otherwise that day ("yyyy-MM-dd").
     static func getCourseDuJourPage(date: String? = nil) async -> DTO.CourseDuJourPage? {
         #if DEBUG
-        if courseDuJourMockEnabled {
+        if HomeRaces.MockScenario.current != nil {
             return CourseDuJourMock.page(date: date)
         }
         #endif

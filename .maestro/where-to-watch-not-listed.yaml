@@ -1,5 +1,5 @@
 # "Where to watch" for a race the schedule doesn't list: the button says so, and the schedule
-# opens with a notice instead of a pin. Mock data: in homeMock "later" the hero is Chrono des
+# opens with a notice instead of a pin. Mock data: in mockScenario "later" the hero is Chrono des
 # Nations, which the mock schedule leaves out.
 appId: com.pskmoons.Tribuneros
 tags:
@@ -9,7 +9,7 @@ tags:
 - launchApp:
     clearState: true
     arguments:
-      homeMock: later
+      mockScenario: later
       ctCoursedujourNative: "on"
 - extendedWaitUntil:
     visible:

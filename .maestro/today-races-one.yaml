@@ -8,7 +8,7 @@ tags:
 - launchApp:
     clearState: true
     arguments:
-      homeMock: one
+      mockScenario: one
 - extendedWaitUntil:
     visible:
       id: "home.today.hero"

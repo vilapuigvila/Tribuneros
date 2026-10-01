@@ -58,14 +58,18 @@ extension Service {
     #if DEBUG
     /// `CT_COURSEDUJOUR_NATIVE` or the `ctCoursedujourNative` launch argument: on/off, bypasses Remote Config.
     static var courseDuJourNativeOverride: Bool? {
-        let raw = ProcessInfo.processInfo.environment["CT_COURSEDUJOUR_NATIVE"]
-            ?? UserDefaults.standard.string(forKey: "ctCoursedujourNative")
-        return raw.map { ["1", "on", "true", "yes"].contains($0.lowercased()) }
+        courseDuJourNativeOverride(
+            environment: ProcessInfo.processInfo.environment,
+            launchValue: UserDefaults.standard.string(forKey: "ctCoursedujourNative")
+        )
     }
 
-    /// Forcing the flag on also swaps the network for a fixed schedule, so UI flows are deterministic.
-    static var courseDuJourMockEnabled: Bool {
-        courseDuJourNativeOverride == true
+    static func courseDuJourNativeOverride(
+        environment: [String: String],
+        launchValue: String?
+    ) -> Bool? {
+        (environment["CT_COURSEDUJOUR_NATIVE"] ?? launchValue)
+            .map { ["1", "on", "true", "yes"].contains($0.lowercased()) }
     }
     #endif
 

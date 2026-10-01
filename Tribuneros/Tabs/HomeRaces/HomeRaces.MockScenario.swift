@@ -17,12 +17,20 @@ extension HomeRaces {
         /// `live` data plus five History rows (three in the preview, all behind "See all").
         case history
 
+        /// The one mock switch: every mock in the app asks this, and nil means real data.
         static var current: MockScenario? {
-            let info = ProcessInfo.processInfo
-            if let raw = info.environment["HOME_MOCK"] ?? UserDefaults.standard.string(forKey: "homeMock") {
-                return MockScenario(rawValue: raw)
-            }
-            return info.isMockingEnabled ? .live : nil
+            resolve(
+                environment: ProcessInfo.processInfo.environment,
+                launchValue: UserDefaults.standard.string(forKey: "mockScenario")
+            )
+        }
+
+        /// `MOCK_SCENARIO` wins over the `mockScenario` launch argument; an unknown value is nil.
+        static func resolve(
+            environment: [String: String],
+            launchValue: String?
+        ) -> MockScenario? {
+            (environment["MOCK_SCENARIO"] ?? launchValue).flatMap(MockScenario.init(rawValue:))
         }
 
         func domain(
