@@ -32,6 +32,7 @@ final class Router: ObservableObject {
         case yesterdayResults
         case historyResults
         case raceResultDetail(HomeRaces.Representable.RaceFinished)
+        case racePreview(HomeRaces.Representable.RacePreview)
         case detail(Detail)
         case cxZone(CXZone)
         case paddockRider(Paddock.RiderContext)

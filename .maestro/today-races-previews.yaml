@@ -1,0 +1,41 @@
+# Results today with no results (mock scenario "previews", Debug build only): the homepage
+# previews replace "No results yet" and a row opens the preview detail screen. The preview page is
+# mocked too (MOCK-prefixed stage and route), so no PCS request is made.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: previews
+- extendedWaitUntil:
+    visible:
+      id: "home.previews.row.0"
+    timeout: 20000
+- assertVisible:
+    id: "home.previews.row.0"
+    text: ".*MOCK Tour de Langkawi.*"
+- assertVisible:
+    id: "home.previews.row.1"
+- assertNotVisible: "No results yet.*"
+
+- tapOn:
+    id: "home.previews.row.0"
+- extendedWaitUntil:
+    visible:
+      id: "previewDetail.title"
+    timeout: 10000
+- assertVisible: ".*MOCK Kuala Kubu Bharu.*"
+- assertVisible: ".*MOCK Ipoh.*"
+- assertVisible: ".*09:12.*"
+- assertVisible:
+    id: "previewDetail.keypoint.0"
+- assertVisible:
+    id: "previewDetail.fact.0"
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- assertVisible:
+    id: "home.previews.row.0"

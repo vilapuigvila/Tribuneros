@@ -49,6 +49,8 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
             router.routeTo(.web(url))
         case .openRaceResult(let raceFinished):
             router.routeTo(.raceResultDetail(raceFinished))
+        case .openRacePreview(let preview):
+            router.routeTo(.racePreview(preview))
         case .navigate(let destiantion):
             switch destiantion {
             case .nextToFinishRace(let index):
@@ -94,7 +96,8 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
                             nextToFinish: nextToFinish(domain),
                             racesFinished: finishedRaces(domain.todayRaces),
                             yesterdayResults: finishedRaces(domain.yesterdayResults),
-                            historyResults: finishedRaces(domain.historyResults)
+                            historyResults: finishedRaces(domain.historyResults),
+                            previews: previews(domain)
                         ),
                         staleCopy: domain.staleCopy
                     )
@@ -121,6 +124,18 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
         )
     }
     
+    /// Previews stand in for Results today, so they only show while it is empty.
+    private func previews(_ domain: HomeRacesDomain) -> [HomeRaces.Representable.RacePreview] {
+        guard domain.todayRaces.isEmpty else { return [] }
+        return domain.previews.map {
+            HomeRaces.Representable.RacePreview(
+                countdown: $0.countdown,
+                name: $0.name,
+                url: $0.url
+            )
+        }
+    }
+
     private func finishedRaces(_ results: [DTO.TodayResult]) -> [HomeRaces.Representable.RaceFinished] {
         results.map { race in
             HomeRaces.Representable.RaceFinished(

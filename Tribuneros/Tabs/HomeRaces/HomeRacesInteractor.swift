@@ -22,6 +22,7 @@ struct HomeRacesDomain: Equatable {
     let error: EquatableError?
     private(set) var loading: Bool
     var staleCopy: HomeRaces.StaleCopy? = nil
+    var previews: [DTO.Preview] = []
 
     static let empty: HomeRacesDomain = .init(
         nextToFinishRaces: [],
@@ -131,7 +132,8 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                             error: (result.nextToFinish.isEmpty && result.today.isEmpty && result.yesterdayResults.isEmpty && result.tomorrowRaces.isEmpty && result.liveStats.isEmpty) ?
                                 HomeRaces.ErrorReason.emptyResponse.toEquatableError() : nil,
                             loading: false,
-                            staleCopy: staleCopy
+                            staleCopy: staleCopy,
+                            previews: result.previews
                         )
                     )
                 } catch {

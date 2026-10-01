@@ -16,6 +16,8 @@ extension HomeRaces {
         case stale
         /// `live` data plus five History rows (three in the preview, all behind "See all").
         case history
+        /// `live` data with Results today empty and three homepage previews.
+        case previews
 
         /// The one mock switch: every mock in the app asks this, and nil means real data.
         static var current: MockScenario? {
@@ -39,9 +41,9 @@ extension HomeRaces {
             isOnSpoilerModeResultsYesterday: Bool
         ) -> HomeRacesDomain {
             let races = nextToFinish(now: now)
-            return HomeRacesDomain(
+            var domain = HomeRacesDomain(
                 nextToFinishRaces: races,
-                todayRaces: Self.resultsToday,
+                todayRaces: self == .previews ? [] : Self.resultsToday,
                 yesterdayResults: Self.resultsYesterday,
                 historyResults: self == .history ? Self.resultsHistory : [],
                 tomorrowRaces: [],
@@ -55,6 +57,10 @@ extension HomeRaces {
                     isOffline: true
                 ) : nil
             )
+            if self == .previews {
+                domain.previews = Self.mockPreviews
+            }
+            return domain
         }
 
         private func nextToFinish(now: Date) -> [DTO.NextToFinishResult] {
@@ -63,7 +69,7 @@ extension HomeRaces {
             let coppa = race("Coppa Bernocchi", in: 217, category: "ME", raceType: "1.1", flag: "it", path: "race/coppa-bernocchi/2026/result", now: now)
             let montreal = race("GP de Montréal", in: 427, category: "ME", raceType: "1.UWT", flag: "ca", path: "race/gp-de-montreal/2026/result", now: now)
             switch self {
-            case .live, .stale, .history: return [montreal, coppa, cro, chrono]
+            case .live, .stale, .history, .previews: return [montreal, coppa, cro, chrono]
             case .later: return [montreal, chrono]
             case .one: return [cro]
             case .empty: return []
@@ -71,7 +77,7 @@ extension HomeRaces {
         }
 
         private func liveStats(for races: [DTO.NextToFinishResult]) -> [DTO.LiveStatsRace] {
-            guard self == .live || self == .stale || self == .one || self == .history else { return [] }
+            guard self == .live || self == .stale || self == .one || self == .history || self == .previews else { return [] }
             let liveNames: Set<String> = self == .one ? ["CRO Race - S1"] : ["CRO Race - S1", "Coppa Bernocchi"]
             return races
                 .filter { liveNames.contains($0.name) }
@@ -196,6 +202,65 @@ extension HomeRaces {
                     winner: ("co", "MOCK Rider Twelve", "4:22:40")
                 )
             ]
+        }
+
+        private static let previewBase = "https://www.procyclingstats.com/race/"
+
+        private static var mockPreviews: [DTO.Preview] {
+            [
+                DTO.Preview(
+                    countdown: "2h",
+                    name: "MOCK Tour de Langkawi - S6",
+                    url: URL(string: previewBase + "tour-de-langkawi/2026/stage-6/live")
+                ),
+                DTO.Preview(
+                    countdown: "5h",
+                    name: "MOCK Gran Piemonte",
+                    url: URL(string: previewBase + "gran-piemonte/2026/result/live")
+                ),
+                DTO.Preview(
+                    countdown: "9h",
+                    name: "MOCK Paris-Bourges",
+                    url: URL(string: previewBase + "paris-bourges/2026/result/live")
+                )
+            ]
+        }
+
+        /// A fixed pre-race page for any mock preview URL; `nil` for any other URL.
+        static func previewPage(for url: URL) -> DTO.PreviewPage? {
+            guard mockPreviews.contains(where: { $0.url == url }) else {
+                return nil
+            }
+            return DTO.PreviewPage(
+                stage: "MOCK Stage 6",
+                from: "MOCK Kuala Kubu Bharu",
+                to: "MOCK Ipoh",
+                distance: "154.5 km",
+                start: "02/10 09:12",
+                startCET: "03:12",
+                keypoints: [
+                    DTO.PreviewPage.Keypoint(km: "42.0", type: "Sprint", name: "MOCK Sprint Town"),
+                    DTO.PreviewPage.Keypoint(km: "88.5", type: "KOM", name: "MOCK Climb Pass"),
+                    DTO.PreviewPage.Keypoint(km: "154.5", type: "Finish", name: "MOCK Finish Line")
+                ],
+                facts: [
+                    DTO.PreviewPage.Fact(
+                        text: "MOCK fact: the peloton expects a bunch sprint.",
+                        header: [],
+                        rows: []
+                    ),
+                    DTO.PreviewPage.Fact(
+                        text: "MOCK favourites for the stage",
+                        header: ["Rider", "Odds"],
+                        rows: [["MOCK Rider One", "2.5"], ["MOCK Rider Two", "4.0"]]
+                    ),
+                    DTO.PreviewPage.Fact(
+                        text: "MOCK fact: the last time here was in 2024.",
+                        header: [],
+                        rows: []
+                    )
+                ]
+            )
         }
 
         /// The result page behind a mock race: its winner, then stand-ins; `nil` for any other URL.

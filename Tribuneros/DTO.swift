@@ -16,6 +16,7 @@ enum DTO {
         let liveStats: [LiveStatsRace]
         /// Set only when the page is an expired cached copy (offline or a failed fetch): when it was fetched.
         var staleCopySavedAt: Date? = nil
+        var previews: [Preview] = []
     }
 
     struct LiveStatsRace: Codable, Equatable {
@@ -160,6 +161,44 @@ extension DTO {
         let to: String?
         let distance: String?
         let rows: [Row]
+    }
+}
+
+// MARK: - Race previews -
+
+extension DTO {
+    /// A homepage "Previews" entry: the countdown ("5h") and the race's LiveStats page.
+    struct Preview: Codable, Equatable, Hashable, Sendable {
+        let countdown: String
+        let name: String
+        let url: URL?
+    }
+
+    /// The pre-race state of a race's LiveStats page. Every part is best-effort.
+    struct PreviewPage: Equatable, Sendable {
+        struct Keypoint: Equatable, Sendable {
+            let km: String
+            let type: String
+            let name: String
+        }
+
+        /// One `li.event` text, with the small table under it when PCS has one.
+        struct Fact: Equatable, Sendable {
+            let text: String
+            let header: [String]
+            let rows: [[String]]
+        }
+
+        let stage: String?
+        let from: String?
+        let to: String?
+        let distance: String?
+        /// "02/10 09:12" in the race's time zone.
+        let start: String?
+        /// "03:12"
+        let startCET: String?
+        let keypoints: [Keypoint]
+        let facts: [Fact]
     }
 }
 

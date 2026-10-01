@@ -66,7 +66,8 @@ struct Service {
                 yesterdayResults: yesterdayResults,
                 tomorrowRaces: tomorrowRaces,
                 liveStats: liveStatsRaces,
-                staleCopySavedAt: staleCopySavedAt
+                staleCopySavedAt: staleCopySavedAt,
+                previews: parsePreviews(from: document)
             )
 
         } catch {

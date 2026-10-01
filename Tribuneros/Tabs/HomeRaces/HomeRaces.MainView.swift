@@ -44,6 +44,11 @@ struct HomeRacesView: View {
                     raceFinished: raceFinished,
                     router: viewModel.router
                 )
+            case .racePreview(let preview):
+                RacePreviewDetailView(
+                    preview: preview,
+                    router: viewModel.router
+                )
             case .whereToWatch(let raceKey):
                 WhereToWatchView(
                     raceKey: raceKey,
@@ -142,6 +147,7 @@ extension HomeRaces {
 
                     ResultsTodaySection(
                         races: sections.racesFinished,
+                        previews: sections.previews,
                         isSpoilerModeOn: sections.spoilerMode.isSpoilerModeResultsToday,
                         action: action
                     )

@@ -1,0 +1,16 @@
+# Previews stay hidden when Results today has results (mock scenario "live", Debug build only).
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- extendedWaitUntil:
+    visible:
+      id: "home.results.spoiler"
+    timeout: 20000
+- assertNotVisible:
+    id: "home.previews.row.0"

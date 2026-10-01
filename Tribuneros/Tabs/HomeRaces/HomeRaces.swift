@@ -99,6 +99,14 @@ enum HomeRaces {
             let racesFinished: [RaceFinished]
             let yesterdayResults: [RaceFinished]
             let historyResults: [RaceFinished]
+            var previews: [RacePreview] = []
+        }
+        /// A homepage "Previews" entry; the `racePreview` route's payload.
+        struct RacePreview: Identifiable, Hashable, Sendable {
+            let id = UUID()
+            let countdown: String
+            let name: String
+            let url: URL?
         }
         /// Hashable because it is the `raceResultDetail` route's payload (and `Action.openRaceResult`'s).
         struct RaceFinished: Identifiable, Hashable, Sendable {
@@ -208,6 +216,7 @@ enum HomeRaces {
         case navigate(Navigate)
         case openLink(URL)
         case openRaceResult(Representable.RaceFinished)
+        case openRacePreview(Representable.RacePreview)
     }
 
     enum Navigate: Hashable, Sendable {

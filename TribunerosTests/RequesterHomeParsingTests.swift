@@ -28,6 +28,30 @@ final class RequesterHomeParsingTests: XCTestCase {
         value.range(of: "^[a-z]{2}$", options: .regularExpression) != nil
     }
 
+    // MARK: - Previews
+
+    func testPreviewsParseRealMarkup() throws {
+        let document = try loadFixtureDocument()
+        let previews = Service.parsePreviews(from: document)
+
+        XCTAssertEqual(previews.count, 2)
+        XCTAssertEqual(previews.map(\.countdown), ["5h", "8h"])
+        XCTAssertEqual(
+            previews.map(\.name),
+            ["World Championships WU - ITT", "World Championships MU - ITT"]
+        )
+        XCTAssertEqual(
+            previews.first?.url?.absoluteString,
+            "https://www.procyclingstats.com/race/world-championships-wu-itt/2026/result/live"
+        )
+        for preview in previews {
+            XCTAssertTrue(
+                preview.url?.absoluteString.hasPrefix("https://www.procyclingstats.com/") == true,
+                "Preview URL must be absolute on PCS, got \(String(describing: preview.url))"
+            )
+        }
+    }
+
     // MARK: - Next to finish
 
     func testNextToFinishParsesRealMarkup() throws {
