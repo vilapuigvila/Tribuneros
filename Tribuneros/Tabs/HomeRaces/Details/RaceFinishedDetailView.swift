@@ -2,196 +2,341 @@
 //  RaceFinishedDetailView.swift
 //  Tribuneros
 //
-//  A native SwiftUI view for displaying race result details using Vapor design tokens.
-//  Displays race title, winner information with photo, and full podium results.
+//  The race result screen opened from a Results today, Yesterday or History card (route
+//  `raceResultDetail`). See `HomeRaces.RaceResult` for what it shows and where it comes from.
 //
 
 import SwiftUI
 
-/// A detailed view for displaying race results with Vapor design system styling.
-///
-/// This view shows:
-/// - Race title and additional details
-/// - Winner image
-/// - Complete podium with positions, rider names, times, and country flags
-///
-/// Styling uses Vapor design tokens throughout.
 struct RaceFinishedDetailView: View {
-    /// The race result data
-    let raceFinished: HomeRaces.Representable.RaceFinished
+    private typealias RaceResult = HomeRaces.RaceResult
 
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                // Header section with title and details
-                headerSection
+    @StateObject private var viewModel: RaceResult.ViewModel<RaceResult.InteractorImpl>
 
-                // Divider
-                Divider()
-                    .padding(.horizontal, 16)
-
-                // Winner image and podium
-                if !raceFinished.podium.isEmpty {
-                    contentSection
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
+    init(
+        raceFinished: HomeRaces.Representable.RaceFinished,
+        router: Router,
+        loadPage: @escaping (URL) async -> DTO.RaceResultPage? = {
+            await Service.getCachedRaceResultPage(url: $0)
         }
-        .background(Color.tribuneru(.vaporPageBackground))
-        .navigationTitle("Race Result")
-        .navigationBarTitleDisplayMode(.inline)
+    ) {
+        _viewModel = StateObject(
+            wrappedValue: RaceResult.ViewModel(
+                race: raceFinished,
+                router: router,
+                interactor: RaceResult.InteractorImpl(
+                    descriptor: RaceResult.Descriptor(
+                        name: raceFinished.race,
+                        details: raceFinished.raceDetails,
+                        url: raceFinished.raceURL
+                    ),
+                    loadPage: loadPage
+                )
+            )
+        )
     }
 
-    // MARK: - Header Section
+    var body: some View {
+        let state = viewModel.stateView
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                header(state)
 
-    private var headerSection: some View {
+                if let imageURL = state.winnerImgURL {
+                    CachedImageView(
+                        imageUrl: imageURL,
+                        cornerRadius: 12,
+                        presentation: .racePhoto
+                    )
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 200)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+
+                if !state.classifications.isEmpty {
+                    ClassificationChips(
+                        classifications: state.classifications,
+                        selected: state.selected
+                    ) {
+                        viewModel.action(.select($0))
+                    }
+                }
+
+                ResultTable(table: state.table)
+
+                if state.fullResultsURL != nil {
+                    Button {
+                        viewModel.action(.openFullResults)
+                    } label: {
+                        VaporCard {
+                            VaporMoreInfoLink(title: "View full results")
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(16)
+            .padding(.bottom, 24)
+        }
+        .background(Color.tribuneru(.vaporPageBackground))
+        .preferredColorScheme(.dark)
+        .navigationTitle("Race Result")
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            viewModel.action(.onAppear)
+        }
+    }
+
+    private func header(_ state: RaceResult.ViewState) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             TribuneruText(
-                content: raceFinished.race,
+                content: state.title,
                 style: .vaporHeading,
                 color: .tribuneru(.vaporTextPrimary),
                 lineLimit: 3
             )
+            .accessibilityAddTraits(.isHeader)
 
-            if !raceFinished.raceDetails.isEmpty {
+            if !state.subtitle.isEmpty {
                 TribuneruText(
-                    content: raceFinished.raceDetails,
+                    content: state.subtitle,
                     style: .vaporRowMeta,
                     color: .tribuneru(.vaporTextSecondary),
                     lineLimit: 2
                 )
             }
         }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(
+            maxWidth: .infinity,
+            alignment: .leading
+        )
     }
+}
 
-    // MARK: - Content Section
+// MARK: - Stage / GC chips -
 
-    private var contentSection: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Winner image
-            if let imageURL = raceFinished.winnerImgURL {
-                CachedImageView(
-                    imageUrl: imageURL,
-                    cornerRadius: 12
-                )
-                .frame(maxWidth: .infinity)
-                .frame(height: 200)
-                .padding(16)
-            }
+private struct ClassificationChips: View {
+    let classifications: [HomeRaces.RaceResult.Classification]
+    let selected: HomeRaces.RaceResult.Classification
+    let select: (HomeRaces.RaceResult.Classification) -> Void
 
-            // Podium rows
-            VStack(alignment: .leading, spacing: 0) {
-                ForEach(Array(raceFinished.podium.enumerated()), id: \.element.id) { index, winner in
-                    podiumRow(winner)
-                    if index < raceFinished.podium.count - 1 {
-                        Divider()
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                    }
+    var body: some View {
+        HStack(spacing: 8) {
+            ForEach(classifications, id: \.self) { classification in
+                let isSelected = classification == selected
+                Button {
+                    select(classification)
+                } label: {
+                    TribuneruText(
+                        content: classification.title.uppercased(),
+                        style: .vaporSpoilerChip,
+                        color: isSelected ? .tribuneru(.vaporPageBackground) : .tribuneru(.vaporTextPrimary),
+                        lineLimit: 1
+                    )
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(
+                        isSelected
+                        ? Color.tribuneru(.vaporAccent)
+                        : Color.tribuneru(.vaporCardSurface)
+                    )
+                    .clipShape(Capsule())
+                    .frame(minHeight: 44)
+                    .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
+                .accessibilityLabel(classification == .gc ? "General classification" : "Stage result")
+                .accessibilityAddTraits(isSelected ? .isSelected : [])
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            Spacer(minLength: 0)
         }
     }
+}
 
-    // MARK: - Podium Row
+// MARK: - Results -
 
-    private func podiumRow(_ winner: HomeRaces.Representable.RaceFinished.Winner) -> some View {
-        HStack(alignment: .center, spacing: 12) {
-            // Position
-            VStack(alignment: .center) {
+private struct ResultTable: View {
+    let table: HomeRaces.RaceResult.ViewState.Table
+
+    var body: some View {
+        switch table {
+        case .loading:
+            ResultRows(rows: HomeRaces.RaceResult.ViewState.Row.placeholders)
+                .redacted(reason: .placeholder)
+                .disabled(true)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Loading the results")
+        case .loaded(let rows):
+            ResultRows(rows: rows)
+        case .unavailable(let fallback, let message):
+            VStack(alignment: .leading, spacing: 12) {
                 TribuneruText(
-                    content: winner.position,
-                    style: .vaporRowTitle,
+                    content: message,
+                    style: .vaporRowMeta,
+                    color: .tribuneru(.vaporTextMuted),
+                    lineLimit: 2
+                )
+                if !fallback.isEmpty {
+                    ResultRows(rows: fallback)
+                }
+            }
+        }
+    }
+}
+
+private struct ResultRows: View {
+    let rows: [HomeRaces.RaceResult.ViewState.Row]
+
+    var body: some View {
+        VaporCard(spacing: 0) {
+            ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in
+                if index > 0 {
+                    TribunerosDivider(
+                        height: 1,
+                        color: Color.tribuneru(.vaporTextPrimary).opacity(0.08)
+                    )
+                }
+                RaceResultRow(row: row)
+            }
+        }
+    }
+}
+
+struct RaceResultRow: View {
+    let row: HomeRaces.RaceResult.ViewState.Row
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 12) {
+            TribuneruText(
+                content: row.position,
+                style: .vaporPill,
+                color: .tribuneru(.vaporTextSecondary),
+                lineLimit: 1
+            )
+            .frame(
+                width: 28,
+                alignment: .leading
+            )
+
+            VStack(alignment: .leading, spacing: 2) {
+                TribuneruText(
+                    content: row.name,
+                    style: .vaporRaceNameNext,
                     color: .tribuneru(.vaporTextPrimary),
                     lineLimit: 1
                 )
-            }
-            .frame(width: 32)
-
-            // Flag and name
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 6) {
+                if !row.team.isEmpty {
                     TribuneruText(
-                        content: winner.name,
-                        style: .vaporRowTitle,
-                        color: .tribuneru(.vaporTextPrimary),
+                        content: row.team,
+                        style: .vaporRowMeta,
+                        color: .tribuneru(.vaporTextSecondary),
                         lineLimit: 1
                     )
-
-                    if let flagURL = winner.flag {
-                        CachedImageView(
-                            imageUrl: flagURL,
-                            cornerRadius: 2
-                        )
-                        .frame(width: 20, height: 14)
-                    }
                 }
+            }
+            .frame(
+                maxWidth: .infinity,
+                alignment: .leading
+            )
 
+            if !row.time.isEmpty {
                 TribuneruText(
-                    content: winner.team,
-                    style: .vaporRowMeta,
+                    content: row.time,
+                    style: .vaporResultTime,
                     color: .tribuneru(.vaporTextSecondary),
                     lineLimit: 1
                 )
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            // Time
-            if !winner.time.isEmpty {
-                TribuneruText(
-                    content: winner.time,
-                    style: .vaporRowMeta,
-                    color: .tribuneru(.vaporTextMuted),
-                    lineLimit: 1
-                )
-            }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 10)
+        .accessibilityElement(children: .combine)
     }
 }
 
-#Preview {
-    let mockPodium: [HomeRaces.Representable.RaceFinished.Winner] = [
-        HomeRaces.Representable.RaceFinished.Winner(
-            position: "1",
-            flag: URL(string: "https://flagcdn.com/w40/be.png"),
-            countryCode: "BE",
-            name: "Remco Evenepoel",
-            team: "Soudal QuickStep",
-            time: "6:28:35"
-        ),
-        HomeRaces.Representable.RaceFinished.Winner(
-            position: "2",
-            flag: URL(string: "https://flagcdn.com/w40/nl.png"),
-            countryCode: "NL",
-            name: "Mathieu van der Poel",
-            team: "Alpecin-Deceuninck",
-            time: "+00:34"
-        ),
-        HomeRaces.Representable.RaceFinished.Winner(
-            position: "3",
-            flag: URL(string: "https://flagcdn.com/w40/it.png"),
-            countryCode: "IT",
-            name: "Filippo Ganna",
-            team: "Ineos Grenadiers",
-            time: "+00:45"
-        )
-    ]
+// MARK: - Previews -
 
-    let mockRace = HomeRaces.Representable.RaceFinished(
-        race: "Tour of Flanders",
-        raceDetails: "Elite Men | Belgium | 265.8 km",
-        winnerImgURL: URL(string: "https://www.procyclingstats.com/images/riders/bp/ee/remco-evenepoel-2025.jpg"),
-        podium: mockPodium,
-        isCancel: false,
-        raceURL: URL(string: "https://www.procyclingstats.com/race/tour-of-flanders")
-    )
-
+#Preview("Stage") {
     NavigationStack {
-        RaceFinishedDetailView(raceFinished: mockRace)
+        RaceFinishedDetailView(
+            raceFinished: .previewStage,
+            router: Router(),
+            loadPage: { _ in .previewStage }
+        )
     }
+}
+
+#Preview("Loading") {
+    NavigationStack {
+        RaceFinishedDetailView(
+            raceFinished: .previewStage,
+            router: Router(),
+            loadPage: { _ in
+                try? await Task.sleep(for: .seconds(3600))
+                return nil
+            }
+        )
+    }
+}
+
+#Preview("Failed") {
+    NavigationStack {
+        RaceFinishedDetailView(
+            raceFinished: .previewStage,
+            router: Router(),
+            loadPage: { _ in nil }
+        )
+    }
+}
+
+private extension HomeRaces.Representable.RaceFinished {
+    static let previewStage = HomeRaces.Representable.RaceFinished(
+        race: "Skoda Tour de Luxembourg (2.Pro)",
+        raceDetails: "Stage 5 | Mersch - Luxembourg-Limpertsberg (177km)",
+        winnerImgURL: nil,
+        podium: [
+            .init(
+                position: "1",
+                flag: nil,
+                countryCode: "nl",
+                name: "VAN DER POEL Mathieu",
+                team: "Alpecin - Premier Tech",
+                time: "4:12:05"
+            ),
+            .init(
+                position: "2",
+                flag: nil,
+                countryCode: "fr",
+                name: "GACHIGNARD Thomas",
+                team: "TotalEnergies",
+                time: "0:00"
+            ),
+            .init(
+                position: "3",
+                flag: nil,
+                countryCode: "it",
+                name: "PIGANZOLI Davide",
+                team: "Visma | Lease a Bike",
+                time: "0:04"
+            )
+        ],
+        isCancel: false,
+        raceURL: URL(string: "https://www.procyclingstats.com/race/tour-de-luxembourg/2026/stage-5")
+    )
+}
+
+private extension DTO.RaceResultPage {
+    static let previewStage = DTO.RaceResultPage(
+        stage: "Stage 5",
+        from: "Mersch",
+        to: "Luxembourg-Limpertsberg",
+        distance: "177km",
+        rows: (1...10).map {
+            Row(
+                position: "\($0)",
+                name: "RIDER \($0)",
+                team: "Team \($0)",
+                time: $0 == 1 ? "4:12:05" : ($0 < 4 ? ",," : "0:\(10 + $0)")
+            )
+        }
+    )
 }

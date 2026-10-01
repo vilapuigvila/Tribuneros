@@ -164,24 +164,6 @@ struct Service {
         return Array(results.prefix(historyLimit))
     }
 
-    /// Fetches a race result page with 1-day caching.
-    /// Used to load full details of a race result page from PCS with persistent cache.
-    ///
-    /// - Parameter url: The race result URL to fetch
-    /// - Returns: The HTML document for the race result page
-    /// - Throws: Network or parsing errors
-    static func getCachedRaceResultPage(url: URL) async throws -> Document {
-        let (data, _) = try await Requester
-            .makeRequest(url.absoluteString)
-            .ttl(86400) // 1 day cache
-            .cacheControlBehavior(.ignoreServer)
-            .send()
-        guard let htmlContent = String(data: data, encoding: .utf8) else {
-            throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
-        }
-        return try SwiftSoup.parse(htmlContent)
-    }
-
     static func getHomepageDocument() async throws -> Document {
         try await getHomepageCopy().document
     }
@@ -847,19 +829,6 @@ struct Service {
             }
             throw NSError(domain: "Impossible parsing", code: 0, userInfo: nil)
         }
-    }
-
-    /// Fetch and cache race result detail page with 1-day TTL
-    static func getCachedRaceResult(url: URL) async throws -> Document {
-        let (data, _) = try await Requester
-            .makeRequest(url.absoluteString)
-            .ttl(86400) // 1 day = 86400 seconds
-            .cacheControlBehavior(.ignoreServer)
-            .send()
-        guard let htmlContent = String(data: data, encoding: .utf8) else {
-            throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
-        }
-        return try SwiftSoup.parse(htmlContent)
     }
 }
 

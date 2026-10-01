@@ -143,6 +143,24 @@ extension DTO {
         let type: ProfileImageType
         let url: String
     }
+
+    /// A PCS race result page (`race/<slug>/<year>/result`, `/stage-3`, `/stage-3-gc`, `/gc`):
+    /// the top of its first results table, plus the route when the page lists it.
+    /// Times are as PCS prints them: the leader's time, then gaps ("0:12", or ",," for same time).
+    struct RaceResultPage: Equatable, Sendable {
+        struct Row: Equatable, Sendable {
+            let position: String
+            let name: String
+            let team: String
+            let time: String
+        }
+
+        let stage: String?
+        let from: String?
+        let to: String?
+        let distance: String?
+        let rows: [Row]
+    }
 }
 
 // MARK: - Paddock -
