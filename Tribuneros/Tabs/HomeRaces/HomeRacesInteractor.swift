@@ -23,6 +23,8 @@ struct HomeRacesDomain: Equatable {
     private(set) var loading: Bool
     var staleCopy: HomeRaces.StaleCopy? = nil
     var previews: [DTO.Preview] = []
+    /// Start times by race URL; the homepage has none, so they come from each race's page.
+    var startTimes: [String: String] = [:]
 
     static let empty: HomeRacesDomain = .init(
         nextToFinishRaces: [],
@@ -91,6 +93,7 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                         isOnSpoilerModeResultsYesterday: UserSettings.spoilerModeResultsYesterday ?? false
                     )
                 )
+                loadHeroStartTime()
                 return
             }
             #endif
@@ -128,6 +131,7 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                             previews: result.previews
                         )
                     )
+                    self?.loadHeroStartTime()
                 } catch {
                     self?.subject.send(
                         Domain(
@@ -148,6 +152,31 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
         case .cancelRequestStation:
             task?.cancel()
             task = nil
+        }
+    }
+
+    /// Only the hero card shows a start time, so only its race page is fetched (30 min cache).
+    private func loadHeroStartTime() {
+        let domain = subject.value
+        guard let urlPath = HomeRaces.TodayRaces.build(
+            nextToFinish: domain.nextToFinishRaces,
+            liveStats: domain.liveStatsRaces
+        ).first?.urlPath,
+              domain.startTimes[urlPath] == nil
+        else {
+            return
+        }
+        Task { @MainActor [weak self] in
+            guard let detail = try? await Service.getNextToFinishRaceDetail(urlPath),
+                  let startTime = HomeRaces.TodayRaces.siteStartTime(detail.startTime),
+                  let self,
+                  self.subject.value.nextToFinishRaces == domain.nextToFinishRaces
+            else {
+                return
+            }
+            var updated = self.subject.value
+            updated.startTimes[urlPath] = startTime
+            self.subject.send(updated)
         }
     }
 }

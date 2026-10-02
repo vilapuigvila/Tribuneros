@@ -120,7 +120,8 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
     private func nextToFinish(_ domain: HomeRacesDomain) -> [HomeRaces.Representable.RaceNext] {
         HomeRaces.TodayRaces.build(
             nextToFinish: domain.nextToFinishRaces,
-            liveStats: domain.liveStatsRaces
+            liveStats: domain.liveStatsRaces,
+            startTimes: domain.startTimes
         )
     }
     

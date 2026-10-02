@@ -38,9 +38,12 @@ extension HomeRaces.Representable.RaceNext {
         var parts = [
             title,
             subtitle,
-            isLive ? "live now" : "later today",
-            "expected finish \(eta)"
+            isLive ? "live now" : "later today"
         ]
+        if let startTime {
+            parts.append("started at \(startTime)")
+        }
+        parts.append("expected finish \(eta)")
         if let remaining = remainingTimeDescription() {
             parts.append("in \(remaining)")
         }
@@ -99,9 +102,21 @@ extension HomeRaces {
 extension HomeRaces {
     enum TodayRaces {
 
+        /// PCS writes a race page's start time as local time, then site time: "08:00  (16:00 CET)".
+        /// The homepage ETAs are in site time, so that's the one to show; a lone time is used as is.
+        static func siteStartTime(_ raw: String) -> String? {
+            let pattern = "([0-9]{1,2}:[0-9]{2})"
+            if let cet = raw.range(of: "\\(\\s*" + pattern + "\\s*CES?T\\s*\\)", options: .regularExpression),
+               let time = raw[cet].range(of: pattern, options: .regularExpression) {
+                return String(raw[cet][time])
+            }
+            return raw.range(of: pattern, options: .regularExpression).map { String(raw[$0]) }
+        }
+
         static func build(
             nextToFinish: [DTO.NextToFinishResult],
             liveStats: [DTO.LiveStatsRace],
+            startTimes: [String: String] = [:],
             now: Date = Date()
         ) -> [Representable.RaceNext] {
             nextToFinish
@@ -119,7 +134,8 @@ extension HomeRaces {
                             urlPath: race.urlPath.isEmpty ? nil : race.urlPath,
                             flagCode: race.flagCode,
                             isLive: isLive(race, in: liveStats),
-                            finishDate: finishDate(eta: race.eta, duration: race.duration, now: now)
+                            finishDate: finishDate(eta: race.eta, duration: race.duration, now: now),
+                            startTime: startTimes[race.urlPath]
                         )
                     )
                 }

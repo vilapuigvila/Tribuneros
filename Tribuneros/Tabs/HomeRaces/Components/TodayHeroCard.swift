@@ -101,26 +101,22 @@ struct TodayHeroCard: View {
 
     private var stats: some View {
         HStack(spacing: 8) {
-            HStack(spacing: 8) {
-                statIcon("clock")
-                TribuneruText(
-                    content: race.eta,
-                    style: .vaporStatTime,
-                    color: .tribuneru(.vaporTextPrimary)
+            if let startTime = race.startTime {
+                statTime(
+                    icon: "clock",
+                    time: startTime,
+                    label: "START"
                 )
-                TribuneruText(
-                    content: "ETA",
-                    style: .vaporMeta,
-                    color: .tribuneru(.vaporTextSecondary)
-                )
+                Spacer(minLength: 8)
             }
+            statTime(
+                icon: "flag.checkered",
+                time: race.eta,
+                label: "ETA"
+            )
             Spacer(minLength: 8)
             if !race.raceType.isEmpty {
                 statValue(icon: "trophy", value: race.raceType)
-                Spacer(minLength: 8)
-            }
-            if !race.category.isEmpty {
-                statValue(icon: "person", value: race.category)
                 Spacer(minLength: 8)
             }
             Image(systemName: "chevron.right")
@@ -129,6 +125,26 @@ struct TodayHeroCard: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
+    }
+
+    private func statTime(
+        icon: String,
+        time: String,
+        label: String
+    ) -> some View {
+        HStack(spacing: 8) {
+            statIcon(icon)
+            TribuneruText(
+                content: time,
+                style: .vaporStatTime,
+                color: .tribuneru(.vaporTextPrimary)
+            )
+            TribuneruText(
+                content: label,
+                style: .vaporMeta,
+                color: .tribuneru(.vaporTextSecondary)
+            )
+        }
     }
 
     private func statValue(icon: String, value: String) -> some View {

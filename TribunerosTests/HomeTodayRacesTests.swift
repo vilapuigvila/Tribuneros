@@ -319,4 +319,11 @@ final class HomeTodayRacesTests: XCTestCase {
         }
         XCTAssertEqual(representable.staleCopy, staleCopy)
     }
+
+    func testStartTimeUsesTheSiteTimeInParentheses() {
+        XCTAssertEqual(HomeRaces.TodayRaces.siteStartTime("08:00  (16:00 CET)"), "16:00")
+        XCTAssertEqual(HomeRaces.TodayRaces.siteStartTime("11:09  (05:09 CET)"), "05:09")
+        XCTAssertEqual(HomeRaces.TodayRaces.siteStartTime("12:00"), "12:00")
+        XCTAssertNil(HomeRaces.TodayRaces.siteStartTime("-"))
+    }
 }

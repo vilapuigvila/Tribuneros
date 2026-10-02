@@ -141,6 +141,7 @@ enum HomeRaces {
             let flagCode: String
             var isLive: Bool = false
             var finishDate: Date? = nil
+            var startTime: String? = nil
         }
         let sections: Section
         var staleCopy: StaleCopy? = nil
