@@ -29,7 +29,7 @@ struct YesterdaySection: View {
 
     var body: some View {
         HomeSection(
-            title: "Yesterday",
+            title: "Results yesterday",
             seeAll: seeAll,
             seeAllIdentifier: "home.yesterday.seeAll",
             spoiler: spoiler

@@ -17,7 +17,7 @@ tags:
     id: "home.header"
 - assertVisible: "Today"
 - scrollUntilVisible:
-    element: "Yesterday"
+    element: "Results yesterday"
     timeout: 20000
 # The mock has no history rows, so History shows its banner under the title.
 - scrollUntilVisible:

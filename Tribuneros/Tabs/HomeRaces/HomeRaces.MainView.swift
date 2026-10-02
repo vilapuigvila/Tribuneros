@@ -63,6 +63,8 @@ struct HomeRacesView: View {
             }
         }
         .navigationTitle("Races")
+        // iOS 26 keeps a hidden large title inside the scroll view; inline avoids its collapse tracking.
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .navigationBar)
     }
 }
@@ -135,6 +137,7 @@ extension HomeRaces {
                 VStack(alignment: .leading, spacing: 30) {
                     VStack(alignment: .leading, spacing: 8) {
                         HomeScreenHeader(date: Date())
+                            .padding(.top, 16)
                         if let staleCopy = representable.staleCopy {
                             StaleCopyNotice(staleCopy: staleCopy)
                         }

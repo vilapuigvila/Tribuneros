@@ -72,6 +72,11 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
+            key = "MOCKING"
+            value = "YES"
+            isEnabled = "NO">
+         </EnvironmentVariable>
+         <EnvironmentVariable
             key = "ASSERT_NON_FATAL_CRASHLYTICS"
             value = "YES"
             isEnabled = "NO">
@@ -82,13 +87,18 @@
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
-            key = "MOCK_SCENARIO"
-            value = "live"
+            key = "HOME_MOCK"
+            value = "YES"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "CT_COURSEDUJOUR_NATIVE"
             value = "YES"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "MOCK_SCENARIO"
+            value = ""
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

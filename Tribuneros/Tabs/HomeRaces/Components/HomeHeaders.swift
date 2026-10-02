@@ -141,12 +141,18 @@ struct HomeSection<Content: View>: View {
 
     private func header(reservesTapHeight: Bool) -> some View {
         HStack(spacing: 12) {
-            TribuneruText(
-                content: title,
-                style: .vaporHeading,
-                color: .tribuneru(.vaporTextPrimary),
-                lineLimit: 1
-            )
+            HStack(spacing: 8) {
+                TribuneruText(
+                    content: title,
+                    style: .vaporHeading,
+                    color: .tribuneru(.vaporTextPrimary),
+                    lineLimit: 1
+                )
+                // A spoiler chip only exists when there are results; the dot hints at them while hidden.
+                if let spoiler, !spoiler.isOn {
+                    PulsingBullet()
+                }
+            }
             Spacer(minLength: 0)
             if let seeAll {
                 Button(action: seeAll) {
@@ -165,6 +171,30 @@ struct HomeSection<Content: View>: View {
             }
         }
         .frame(minHeight: reservesTapHeight ? 44 : nil)
+    }
+}
+
+private struct PulsingBullet: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        let dot = Circle()
+            .fill(Color.tribuneru(.vaporAccent))
+            .frame(
+                width: 8,
+                height: 8
+            )
+            .accessibilityHidden(true)
+        if reduceMotion {
+            dot
+        } else {
+            // Fade out to 0, hold 0.5s, fade back in, forever.
+            dot.phaseAnimator([true, false]) { content, isShown in
+                content.opacity(isShown ? 1 : 0)
+            } animation: { isShown in
+                isShown ? .easeInOut(duration: 1.6).delay(0.5) : .easeInOut(duration: 1.6)
+            }
+        }
     }
 }
 
