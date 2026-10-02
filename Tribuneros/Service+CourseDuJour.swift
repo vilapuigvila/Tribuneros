@@ -15,6 +15,19 @@ extension Service {
         return courseDuJourURL.appending(path: "day/\(date)/")
     }
 
+    /// Alfy fixes the expiry when the copy is stored, so the day's first fetch lasts until 00:01.
+    static func courseDuJourTTL(
+        now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> TimeInterval {
+        let expiry = calendar.nextDate(
+            after: now,
+            matching: DateComponents(hour: 0, minute: 1),
+            matchingPolicy: .nextTime
+        ) ?? now.addingTimeInterval(60*60*12)
+        return expiry.timeIntervalSince(now)
+    }
+
     /// The site's today when `date` is nil, otherwise that day ("yyyy-MM-dd").
     static func getCourseDuJourPage(date: String? = nil) async -> DTO.CourseDuJourPage? {
         #if DEBUG
@@ -25,7 +38,7 @@ extension Service {
         do {
             let (data, _) = try await Requester
                 .makeRequest(courseDuJourURL(date: date).absoluteString)
-                .ttl(60*60*12)
+                .ttl(courseDuJourTTL())
                 .cacheControlBehavior(.ignoreServer)
                 .send()
             guard let html = String(data: data, encoding: .utf8),
