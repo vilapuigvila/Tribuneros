@@ -61,21 +61,3 @@ struct ImageScrim: View {
         }
     }
 }
-
-/// Content that is built, and its images fetched, only while shown; it grows and fades in and out.
-struct FoldingContent<Content: View>: View {
-    let isShown: Bool
-    @ViewBuilder let content: () -> Content
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            if isShown {
-                content()
-                    .transition(.opacity)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .clipped()
-        .animation(.interpolatingSpring(.smooth, initialVelocity: 0.5), value: isShown)
-    }
-}

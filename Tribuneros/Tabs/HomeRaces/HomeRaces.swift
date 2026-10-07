@@ -173,7 +173,7 @@ enum HomeRaces {
             )
         )
 
-        private static let placeholderResults: [RaceFinished] = (1...4).map { _ in
+        static let placeholderResults: [RaceFinished] = (1...4).map { _ in
             RaceFinished(
                 race: "Race name placeholder",
                 raceDetails: "",
@@ -193,6 +193,13 @@ enum HomeRaces {
         }
     }
     
+    /// How a result card shows its values: as they are, hidden behind the spoiler chip (title kept), or fully redacted.
+    enum ResultVisibility {
+        case shown
+        case hidden
+        case placeholder
+    }
+
     /// The page shown is an expired cached copy: when it was fetched, and whether the device is offline.
     struct StaleCopy: Equatable {
         let savedAt: Date

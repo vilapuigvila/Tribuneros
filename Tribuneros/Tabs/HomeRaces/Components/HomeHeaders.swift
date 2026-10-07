@@ -129,7 +129,7 @@ struct HomeSection<Content: View>: View {
                         identifier: spoiler.identifier
                     )
                 }
-                FoldingContent(isShown: spoiler.isOn, content: content)
+                content()
             }
         } else {
             VStack(alignment: .leading, spacing: 14) {
@@ -246,24 +246,5 @@ struct HomeSpoilerChip: View {
             .accessibilityIdentifier(identifier)
             Spacer(minLength: 0)
         }
-    }
-}
-
-struct HomeEmptyNote: View {
-    let text: String
-
-    var body: some View {
-        HStack {
-            TribuneruText(
-                content: text,
-                style: .vaporRowMeta,
-                color: .tribuneru(.vaporTextSecondary),
-                lineLimit: 1
-            )
-            Spacer(minLength: 0)
-        }
-        .padding(.horizontal, 16)
-        .frame(height: 64)
-        .homeCard()
     }
 }

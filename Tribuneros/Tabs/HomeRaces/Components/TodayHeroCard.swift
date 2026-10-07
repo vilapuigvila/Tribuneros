@@ -102,11 +102,15 @@ struct TodayHeroCard: View {
     private var stats: some View {
         HStack(spacing: 8) {
             if let startTime = race.startTime {
-                statTime(
-                    icon: "clock",
-                    time: startTime,
-                    label: "START"
-                )
+                TimelineView(.everyMinute) { context in
+                    let hasStarted = race.hasStarted(now: context.date)
+                    statTime(
+                        icon: "clock",
+                        time: startTime,
+                        label: hasStarted ? "STARTED" : "START",
+                        labelColor: hasStarted ? .tribuneru(.vaporLiveRed) : .tribuneru(.vaporTextSecondary)
+                    )
+                }
                 Spacer(minLength: 8)
             }
             statTime(
@@ -115,8 +119,11 @@ struct TodayHeroCard: View {
                 label: "ETA"
             )
             Spacer(minLength: 8)
-            if !race.raceType.isEmpty {
-                statValue(icon: "trophy", value: race.raceType)
+            if let genderLabel = race.genderLabel {
+                statValue(
+                    icon: "person.fill",
+                    value: genderLabel
+                )
                 Spacer(minLength: 8)
             }
             Image(systemName: "chevron.right")
@@ -130,7 +137,8 @@ struct TodayHeroCard: View {
     private func statTime(
         icon: String,
         time: String,
-        label: String
+        label: String,
+        labelColor: Color = .tribuneru(.vaporTextSecondary)
     ) -> some View {
         HStack(spacing: 8) {
             statIcon(icon)
@@ -142,7 +150,7 @@ struct TodayHeroCard: View {
             TribuneruText(
                 content: label,
                 style: .vaporMeta,
-                color: .tribuneru(.vaporTextSecondary)
+                color: labelColor
             )
         }
     }

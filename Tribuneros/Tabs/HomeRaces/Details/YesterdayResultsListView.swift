@@ -28,13 +28,12 @@ struct YesterdayResultsListView: View {
                         identifier: "yesterdayResults.spoiler"
                     )
                 }
-                FoldingContent(isShown: isSpoilerModeOn) {
-                    YesterdayResultsCard(
-                        races: races,
-                        identifierPrefix: "yesterdayResults"
-                    ) { race in
-                        action(.openRaceResult(race))
-                    }
+                YesterdayResultsCard(
+                    races: races,
+                    visibility: isSpoilerModeOn ? .shown : .hidden,
+                    identifierPrefix: "yesterdayResults"
+                ) { race in
+                    action(.openRaceResult(race))
                 }
             }
         }

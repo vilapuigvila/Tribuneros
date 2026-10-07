@@ -34,15 +34,14 @@ struct YesterdaySection: View {
             seeAllIdentifier: "home.yesterday.seeAll",
             spoiler: spoiler
         ) {
-            if races.isEmpty {
-                HomeEmptyNote(text: "No results")
-            } else {
-                YesterdayResultsCard(
-                    races: Array(races.prefix(Self.previewLimit)),
-                    identifierPrefix: "home.yesterday"
-                ) { race in
-                    action(.openRaceResult(race))
-                }
+            YesterdayResultsCard(
+                races: races.isEmpty
+                    ? Array(HomeRaces.Representable.placeholderResults.prefix(Self.previewLimit))
+                    : Array(races.prefix(Self.previewLimit)),
+                visibility: races.isEmpty ? .placeholder : (isSpoilerModeOn ? .shown : .hidden),
+                identifierPrefix: races.isEmpty ? "home.yesterday.placeholder" : "home.yesterday"
+            ) { race in
+                action(.openRaceResult(race))
             }
         }
     }
@@ -50,6 +49,7 @@ struct YesterdaySection: View {
 
 struct YesterdayResultsCard: View {
     let races: [HomeRaces.Representable.RaceFinished]
+    let visibility: HomeRaces.ResultVisibility
     let identifierPrefix: String
     let open: (HomeRaces.Representable.RaceFinished) -> Void
 
@@ -63,7 +63,11 @@ struct YesterdayResultsCard: View {
                         color: Color.tribuneru(.vaporTextPrimary).opacity(0.08)
                     )
                 }
-                YesterdayResultRow(race: race, open: open)
+                YesterdayResultRow(
+                    race: race,
+                    visibility: visibility,
+                    open: open
+                )
                     .accessibilityIdentifier("\(identifierPrefix).row.\(index)")
             }
         }
@@ -75,45 +79,56 @@ struct YesterdayResultsCard: View {
 
 struct YesterdayResultRow: View {
     let race: HomeRaces.Representable.RaceFinished
+    var visibility: HomeRaces.ResultVisibility = .shown
     let open: (HomeRaces.Representable.RaceFinished) -> Void
 
+    @ViewBuilder
     var body: some View {
-        Button {
-            open(race)
-        } label: {
+        if visibility == .shown {
+            Button {
+                open(race)
+            } label: {
+                row
+            }
+            .buttonStyle(.plain)
+        } else {
             row
         }
-        .buttonStyle(.plain)
+    }
+
+    private var shownRace: HomeRaces.Representable.RaceFinished {
+        race.shown(visibility)
     }
 
     private var row: some View {
         HStack(spacing: 14) {
             WinnerPhoto(
-                url: race.winnerImgURL,
+                url: shownRace.winnerImgURL,
                 size: CGSize(width: 72, height: 72)
             )
             .clipShape(RoundedRectangle(cornerRadius: 12))
             VStack(alignment: .leading, spacing: 4) {
                 TribuneruText(
-                    content: race.race,
+                    content: shownRace.race,
                     style: .vaporResultTitle,
                     color: .tribuneru(.vaporTextPrimary),
                     lineLimit: 1
                 )
-                if !race.raceDetails.isEmpty {
+                .unredacted(if: visibility == .hidden)
+                if !shownRace.raceDetails.isEmpty {
                     TribuneruText(
-                        content: race.raceDetails,
+                        content: shownRace.raceDetails,
                         style: .vaporRowMeta,
                         color: .tribuneru(.vaporTextSecondary),
                         lineLimit: 1
                     )
                 }
-                if let winner = race.winner {
+                if let winner = shownRace.winner {
                     winnerLine(winner)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            if race.raceURL != nil {
+            if visibility == .shown, race.raceURL != nil {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(.tribuneru(.vaporTextSecondary))
@@ -122,6 +137,10 @@ struct YesterdayResultRow: View {
         .padding(.vertical, 12)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
+        .redactedResult(
+            visibility,
+            title: race.race
+        )
     }
 
     private func winnerLine(_ winner: HomeRaces.Representable.RaceFinished.Winner) -> some View {

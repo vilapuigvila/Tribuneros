@@ -20,6 +20,32 @@ extension HomeRaces.Representable.RaceNext {
         stageLabel ?? HomeRaces.Stage.oneDayLabel
     }
 
+    /// PCS's category code starts with the gender: "ME" men elite, "WU" women U23.
+    var genderLabel: String? {
+        switch category.uppercased().first {
+        case "M": "MEN"
+        case "W": "WOMEN"
+        default: nil
+        }
+    }
+
+    /// The start time falls on the finish day, before the finish (a night start is the day before).
+    func hasStarted(now: Date = Date()) -> Bool {
+        let calendar = Calendar.current
+        let parts = startTime?.split(separator: ":") ?? []
+        guard parts.count == 2,
+              let hour = Int(parts[0]),
+              let minute = Int(parts[1]),
+              var start = calendar.date(bySettingHour: hour, minute: minute, second: 0, of: finishDate ?? now)
+        else {
+            return false
+        }
+        if let finishDate, start > finishDate {
+            start = calendar.date(byAdding: .day, value: -1, to: start) ?? start
+        }
+        return now >= start
+    }
+
     func remainingTimeDescription(now: Date = Date()) -> String? {
         guard let finishDate else { return nil }
         let seconds = finishDate.timeIntervalSince(now)
@@ -40,6 +66,9 @@ extension HomeRaces.Representable.RaceNext {
             subtitle,
             isLive ? "live now" : "later today"
         ]
+        if let genderLabel {
+            parts.append(genderLabel.lowercased())
+        }
         if let startTime {
             parts.append("started at \(startTime)")
         }

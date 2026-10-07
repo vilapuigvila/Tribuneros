@@ -43,8 +43,8 @@ extension HomeRaces {
             let races = nextToFinish(now: now)
             var domain = HomeRacesDomain(
                 nextToFinishRaces: races,
-                todayRaces: Self.resultsToday,
-                yesterdayResults: Self.resultsYesterday,
+                todayRaces: self == .empty ? [] : Self.resultsToday,
+                yesterdayResults: self == .empty ? [] : Self.resultsYesterday,
                 historyResults: self == .history ? Self.resultsHistory : [],
                 tomorrowRaces: [],
                 liveStatsRaces: liveStats(for: races),

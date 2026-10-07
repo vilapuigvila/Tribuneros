@@ -1,6 +1,7 @@
 # Results today and Yesterday behind their spoiler chips, the Yesterday list, and the History
-# banner (mock scenario "live", Debug build only). Spoilers start off, so the results are folded
-# away until the chip is tapped; the setting is shared with the Yesterday list.
+# banner (mock scenario "live", Debug build only). Spoilers start off: the cards and rows show
+# with their race title only, and no tap opens them, until the chip is tapped; the setting is
+# shared with the Yesterday list.
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -15,12 +16,17 @@ tags:
       id: "home.results.spoiler"
     timeout: 20000
 
-# Results today: folded away by default, cards after the chip is tapped, folded again on a second tap
+# Results today: redacted by default (title only, no winner, no tap), revealed by the chip
 - assertVisible:
     id: "home.results.spoiler"
     text: "Spoiler is off"
-- assertNotVisible:
+- assertVisible:
     id: "home.results.card.0"
+    text: "Giro della Toscana.*"
+- assertNotVisible: ".*MOCK Rider One.*"
+- tapOn:
+    id: "home.results.card.0"
+- assertNotVisible: "Race Result"
 - tapOn:
     id: "home.results.spoiler"
 - assertVisible:
@@ -28,24 +34,31 @@ tags:
     text: "Spoiler is on"
 - assertVisible:
     id: "home.results.card.0"
-    text: "Giro della Toscana.*"
+    text: "Giro della Toscana.*MOCK Rider One.*"
 - tapOn:
     id: "home.results.spoiler"
 - assertVisible:
     id: "home.results.spoiler"
     text: "Spoiler is off"
-- assertNotVisible:
+- assertVisible:
     id: "home.results.card.0"
+    text: "Giro della Toscana.*"
+- assertNotVisible: ".*MOCK Rider One.*"
 
-# Yesterday: folded away by default, a preview of three rows after the chip is tapped
+# Yesterday: redacted rows by default, winners after the chip is tapped
 - scrollUntilVisible:
     element:
       id: "home.yesterday.spoiler"
 - assertVisible:
     id: "home.yesterday.spoiler"
     text: "Spoiler is off"
-- assertNotVisible:
+- assertVisible:
     id: "home.yesterday.row.0"
+    text: "Tour de Langkawi.*"
+- assertNotVisible: ".*MOCK Rider Four.*"
+- tapOn:
+    id: "home.yesterday.row.0"
+- assertNotVisible: "Race Result"
 - tapOn:
     id: "home.yesterday.spoiler"
 - assertVisible:
@@ -53,7 +66,7 @@ tags:
     text: "Spoiler is on"
 - assertVisible:
     id: "home.yesterday.row.0"
-    text: "Tour de Langkawi.*"
+    text: "Tour de Langkawi.*MOCK Rider Four.*"
 - scrollUntilVisible:
     element:
       id: "home.yesterday.row.2"
@@ -76,18 +89,24 @@ tags:
     timeout: 10000
 - assertVisible:
     id: "yesterdayResults.row.3"
-    text: "Tre Valli Varesine.*"
+    text: "Tre Valli Varesine.*MOCK Rider Seven.*"
 - tapOn:
     id: "yesterdayResults.spoiler"
 - assertVisible:
     id: "yesterdayResults.spoiler"
     text: "Spoiler is off"
-- assertNotVisible:
+- assertVisible:
     id: "yesterdayResults.row.3"
+    text: "Tre Valli Varesine.*"
+- assertNotVisible: ".*MOCK Rider Seven.*"
+- tapOn:
+    id: "yesterdayResults.row.3"
+- assertNotVisible: "Race Result"
 - tapOn:
     id: "yesterdayResults.spoiler"
 - assertVisible:
     id: "yesterdayResults.row.3"
+    text: "Tre Valli Varesine.*MOCK Rider Seven.*"
 - swipe:
     start: 1%, 50%
     end: 70%, 50%

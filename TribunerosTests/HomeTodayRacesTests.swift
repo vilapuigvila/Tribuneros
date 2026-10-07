@@ -326,4 +326,66 @@ final class HomeTodayRacesTests: XCTestCase {
         XCTAssertEqual(HomeRaces.TodayRaces.siteStartTime("12:00"), "12:00")
         XCTAssertNil(HomeRaces.TodayRaces.siteStartTime("-"))
     }
+
+    func testGenderLabelComesFromTheCategoryCode() {
+        func race(_ category: String) -> HomeRaces.Representable.RaceNext {
+            HomeRaces.Representable.RaceNext(
+                eta: "16:00",
+                duration: "2H",
+                name: "Race",
+                category: category,
+                raceType: "1.1",
+                distance: "",
+                urlPath: nil,
+                flagCode: ""
+            )
+        }
+        XCTAssertEqual(race("ME").genderLabel, "MEN")
+        XCTAssertEqual(race("WU").genderLabel, "WOMEN")
+        XCTAssertNil(race("").genderLabel)
+    }
+
+    func testHasStartedComparesTheStartTimeOnTheFinishDay() {
+        let calendar = Calendar.current
+        let noon = calendar.date(bySettingHour: 12, minute: 0, second: 0, of: Date())!
+        func race(start: String?) -> HomeRaces.Representable.RaceNext {
+            HomeRaces.Representable.RaceNext(
+                eta: "16:00",
+                duration: "4H",
+                name: "Race",
+                category: "ME",
+                raceType: "1.1",
+                distance: "",
+                urlPath: nil,
+                flagCode: "",
+                finishDate: calendar.date(bySettingHour: 16, minute: 0, second: 0, of: noon),
+                startTime: start
+            )
+        }
+        XCTAssertTrue(race(start: "11:30").hasStarted(now: noon))
+        XCTAssertFalse(race(start: "12:30").hasStarted(now: noon))
+        XCTAssertFalse(race(start: nil).hasStarted(now: noon))
+    }
+
+    func testHasStartedBetweenTheStartAndTheFinish() {
+        let calendar = Calendar.current
+        let now = calendar.date(bySettingHour: 23, minute: 30, second: 0, of: Date())!
+        func race(start: String, finishIn minutes: Double) -> HomeRaces.Representable.RaceNext {
+            HomeRaces.Representable.RaceNext(
+                eta: "",
+                duration: "",
+                name: "Race",
+                category: "ME",
+                raceType: "1.1",
+                distance: "",
+                urlPath: nil,
+                flagCode: "",
+                finishDate: now.addingTimeInterval(minutes * 60),
+                startTime: start
+            )
+        }
+        XCTAssertTrue(race(start: "20:00", finishIn: 60).hasStarted(now: now))
+        XCTAssertFalse(race(start: "23:45", finishIn: 60).hasStarted(now: now))
+        XCTAssertFalse(race(start: "-", finishIn: 60).hasStarted(now: now))
+    }
 }

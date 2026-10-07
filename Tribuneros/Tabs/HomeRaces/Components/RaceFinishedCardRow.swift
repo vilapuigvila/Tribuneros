@@ -224,3 +224,56 @@ struct WinnerPhoto: View {
         .clipped()
     }
 }
+
+extension HomeRaces.Representable.RaceFinished {
+    /// Built from placeholder values, so nothing real reaches the view tree, photo loader or VoiceOver.
+    func shown(_ visibility: HomeRaces.ResultVisibility) -> Self {
+        let blank = HomeRaces.Representable.placeholderResults[0]
+        switch visibility {
+        case .shown:
+            return self
+        case .hidden:
+            return Self(
+                race: race,
+                raceDetails: raceDetails.isEmpty ? "" : "Race details placeholder",
+                winnerImgURL: nil,
+                podium: blank.podium,
+                isCancel: isCancel
+            )
+        case .placeholder:
+            return blank
+        }
+    }
+}
+
+extension View {
+    /// Redacts a result card's values; its title stays readable when hidden behind the spoiler.
+    @ViewBuilder
+    func redactedResult(
+        _ visibility: HomeRaces.ResultVisibility,
+        title: String
+    ) -> some View {
+        if visibility == .shown {
+            self
+        } else {
+            redacted(reason: .placeholder)
+                .accessibilityHidden(true)
+                .overlay {
+                    Color.clear
+                        .accessibilityElement()
+                        .accessibilityLabel(visibility == .hidden ? title : "Loading results")
+                }
+        }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func unredacted(if condition: Bool) -> some View {
+        if condition {
+            unredacted()
+        } else {
+            self
+        }
+    }
+}
