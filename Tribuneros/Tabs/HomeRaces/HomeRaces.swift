@@ -145,6 +145,7 @@ enum HomeRaces {
         }
         let sections: Section
         var staleCopy: StaleCopy? = nil
+        var showSpoilerHint = false
 
         /// Stand-ins shaped like a real page, drawn redacted while it loads. Spoiler mode is on
         /// so the result sections show their cards.
@@ -221,6 +222,7 @@ enum HomeRaces {
         case onDisappear
         case spoilerModeResultToday
         case spoilerModeResultYesterday
+        case dismissSpoilerHint
         case navigate(Navigate)
         case openLink(URL)
         case openRaceResult(Representable.RaceFinished)

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="100" viewBox="0 0 160 100">
+<rect width="160" height="100" fill="#22C7FF"/>
+<g transform="translate(44 0)">
+<path d="M-11 56 L-21 18" fill="none" stroke="#FF9EC4" stroke-width="7" stroke-linecap="round"/>
+<path d="M11 56 L21 18" fill="none" stroke="#FF9EC4" stroke-width="7" stroke-linecap="round"/>
+<circle cx="-21" cy="15" r="5" fill="#FF9EC4"/>
+<circle cx="21" cy="15" r="5" fill="#FF9EC4"/>
+<rect x="-4" y="42" width="8" height="12" fill="#FF9EC4"/>
+<path d="M-18 100 L-16 56 Q0 49 16 56 L18 100 Z" fill="#FFFFFF"/>
+<rect x="-16.4" y="66" width="32.8" height="2.4" fill="#2563EB"/>
+<rect x="-16.4" y="68.4" width="32.8" height="2.4" fill="#E11D48"/>
+<rect x="-16.4" y="70.8" width="32.8" height="2.4" fill="#111111"/>
+<rect x="-16.4" y="73.2" width="32.8" height="2.4" fill="#FACC15"/>
+<rect x="-16.4" y="75.6" width="32.8" height="2.4" fill="#16A34A"/>
+<circle cx="0" cy="34" r="10" fill="#FF9EC4"/>
+<rect x="-14" y="30" width="28" height="7" fill="#0B0B0B"/>
+<g transform="translate(1.6 -1.2)" fill="none" stroke="#111111" stroke-width="1.4">
+<circle cx="0" cy="34" r="10"/>
+<path d="M-18 100 L-16 56 Q0 49 16 56 L18 100"/>
+</g>
+</g>
+<g transform="translate(116 0)">
+<path d="M-11 56 L-21 18" fill="none" stroke="#FF9EC4" stroke-width="7" stroke-linecap="round"/>
+<path d="M11 56 L21 18" fill="none" stroke="#FF9EC4" stroke-width="7" stroke-linecap="round"/>
+<circle cx="-21" cy="15" r="5" fill="#FF9EC4"/>
+<circle cx="21" cy="15" r="5" fill="#FF9EC4"/>
+<rect x="-4" y="42" width="8" height="12" fill="#FF9EC4"/>
+<path d="M-18 100 L-16 56 Q0 49 16 56 L18 100 Z" fill="#FFFFFF"/>
+<rect x="-16.4" y="66" width="32.8" height="2.4" fill="#2563EB"/>
+<rect x="-16.4" y="68.4" width="32.8" height="2.4" fill="#E11D48"/>
+<rect x="-16.4" y="70.8" width="32.8" height="2.4" fill="#111111"/>
+<rect x="-16.4" y="73.2" width="32.8" height="2.4" fill="#FACC15"/>
+<rect x="-16.4" y="75.6" width="32.8" height="2.4" fill="#16A34A"/>
+<circle cx="0" cy="34" r="10" fill="#FF9EC4"/>
+<rect x="-14" y="30" width="28" height="7" fill="#0B0B0B"/>
+<g transform="translate(1.6 -1.2)" fill="none" stroke="#111111" stroke-width="1.4">
+<circle cx="0" cy="34" r="10"/>
+<path d="M-18 100 L-16 56 Q0 49 16 56 L18 100"/>
+</g>
+</g>
+<g transform="translate(80 0)">
+<path d="M-11 56 L-21 18" fill="none" stroke="#FF9EC4" stroke-width="7" stroke-linecap="round"/>
+<path d="M11 56 L21 18" fill="none" stroke="#FF9EC4" stroke-width="7" stroke-linecap="round"/>
+<circle cx="-21" cy="15" r="5" fill="#FF9EC4"/>
+<circle cx="21" cy="15" r="5" fill="#FF9EC4"/>
+<rect x="-4" y="42" width="8" height="12" fill="#FF9EC4"/>
+<path d="M-18 100 L-16 56 Q0 49 16 56 L18 100 Z" fill="#FFFFFF"/>
+<rect x="-16.4" y="66" width="32.8" height="2.4" fill="#2563EB"/>
+<rect x="-16.4" y="68.4" width="32.8" height="2.4" fill="#E11D48"/>
+<rect x="-16.4" y="70.8" width="32.8" height="2.4" fill="#111111"/>
+<rect x="-16.4" y="73.2" width="32.8" height="2.4" fill="#FACC15"/>
+<rect x="-16.4" y="75.6" width="32.8" height="2.4" fill="#16A34A"/>
+<circle cx="0" cy="34" r="10" fill="#FF9EC4"/>
+<rect x="-14" y="30" width="28" height="7" fill="#0B0B0B"/>
+<g transform="translate(1.6 -1.2)" fill="none" stroke="#111111" stroke-width="1.4">
+<circle cx="0" cy="34" r="10"/>
+<path d="M-18 100 L-16 56 Q0 49 16 56 L18 100"/>
+</g>
+</g>
+</svg>

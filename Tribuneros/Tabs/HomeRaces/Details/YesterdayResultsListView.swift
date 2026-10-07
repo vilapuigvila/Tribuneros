@@ -22,19 +22,15 @@ struct YesterdayResultsListView: View {
                     )
                     .accessibilityAddTraits(.isHeader)
                     .padding(.horizontal, 2)
-                    HomeSpoilerChip(
-                        isSpoilerModeOn: isSpoilerModeOn,
-                        action: { action(.spoilerModeResultYesterday) },
-                        identifier: "yesterdayResults.spoiler"
-                    )
                 }
                 YesterdayResultsCard(
                     races: races,
                     visibility: isSpoilerModeOn ? .shown : .hidden,
-                    identifierPrefix: "yesterdayResults"
-                ) { race in
-                    action(.openRaceResult(race))
-                }
+                    identifierPrefix: "yesterdayResults",
+                    open: { race in action(.openRaceResult(race)) },
+                    toggle: { action(.spoilerModeResultYesterday) }
+                )
+                .spoilerCrossfade(isSpoilerModeOn)
             }
         }
     }

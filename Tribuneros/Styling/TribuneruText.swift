@@ -60,7 +60,7 @@ struct TribuneruText: View {
             "SpaceMono-Bold"
         case .vaporFinishTime, .vaporETALine, .vaporMonoMeta, .vaporGroupLabel:
             "SpaceMono-Regular"
-        case .vaporHeading, .vaporHeroTitle, .vaporTag, .vaporTagSmall, .vaporResultTitle, .vaporBannerTitle:
+        case .vaporHeading, .vaporHeroTitle, .vaporTag, .vaporTagSmall, .vaporResultTitle, .vaporBannerTitle, .vaporSeeAll:
             "SpaceGrotesk-Bold"
         case .vaporHeroSubtitle:
             "SpaceGrotesk-Medium"
@@ -105,7 +105,7 @@ struct TribuneruText: View {
         case .vaporTagSmall: 11
         case .vaporPill: 13
         case .vaporStatTime: 15
-        case .vaporLink: 14
+        case .vaporLink, .vaporSeeAll: 14
         case .vaporRowTitle: 16
         case .vaporRowMeta: 12
         case .vaporRowCountdown: 12
@@ -131,7 +131,7 @@ struct TribuneruText: View {
         case .vaporScreenTitle, .vaporSectionTitle, .vaporSpoilerChip,
              .vaporFeedTag, .vaporChangeSign, .vaporAge,
              .vaporHeading, .vaporHeroTitle, .vaporTag, .vaporTagSmall, .vaporPill, .vaporStatTime,
-             .vaporRowTime, .vaporResultTitle, .vaporResultTime, .vaporBannerTitle:
+             .vaporRowTime, .vaporResultTitle, .vaporResultTime, .vaporBannerTitle, .vaporSeeAll:
             .bold
         case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporTabLabel, .vaporPressName,
              .vaporLink, .vaporRowTitle, .vaporRowCountdown:
@@ -228,6 +228,7 @@ extension TribuneruText {
         case vaporResultTime
         case vaporBannerTitle
         case vaporBannerSubtitle
+        case vaporSeeAll
     }
 }
 

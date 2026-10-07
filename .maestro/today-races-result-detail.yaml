@@ -13,12 +13,16 @@ tags:
       mockScenario: history
 - extendedWaitUntil:
     visible:
-      id: "home.results.spoiler"
+      id: "home.results.card.0"
     timeout: 20000
-
-# Results today card -> result screen
-- tapOn:
-    id: "home.results.spoiler"
+# Results today card -> result screen (revealed by a double tap first)
+- doubleTapOn:
+    id: "home.results.card.0"
+    retryTapIfNoChange: false
+    delay: 1
+- assertVisible:
+    id: "home.results.card.0"
+    text: "Giro della Toscana.*MOCK Rider One.*"
 - tapOn:
     id: "home.results.card.0"
 - extendedWaitUntil:
@@ -31,13 +35,17 @@ tags:
 - swipe:
     start: 1%, 50%
     end: 70%, 50%
-
 # Yesterday row -> result screen
 - scrollUntilVisible:
     element:
-      id: "home.yesterday.spoiler"
-- tapOn:
-    id: "home.yesterday.spoiler"
+      id: "home.yesterday.row.0"
+- doubleTapOn:
+    id: "home.yesterday.row.0"
+    retryTapIfNoChange: false
+    delay: 1
+- assertVisible:
+    id: "home.yesterday.row.0"
+    text: "Tour de Langkawi.*MOCK Rider Four.*"
 - tapOn:
     id: "home.yesterday.row.0"
 - extendedWaitUntil:
@@ -48,7 +56,6 @@ tags:
 - swipe:
     start: 1%, 50%
     end: 70%, 50%
-
 # Yesterday "See all" row -> result screen
 - scrollUntilVisible:
     element:
@@ -73,7 +80,6 @@ tags:
 - swipe:
     start: 1%, 50%
     end: 70%, 50%
-
 # History: a preview of three rows instead of the banner, each opening the result screen
 - scrollUntilVisible:
     element:
@@ -104,7 +110,6 @@ tags:
 - swipe:
     start: 1%, 50%
     end: 70%, 50%
-
 # History "See all" -> every history row
 - tapOn:
     id: "home.history.seeAll"

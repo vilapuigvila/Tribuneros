@@ -45,6 +45,8 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
             interactor.useCase(.spoilerModeResultToday)
         case .spoilerModeResultYesterday:
             interactor.useCase(.spoilerModeResultYesterday)
+        case .dismissSpoilerHint:
+            interactor.useCase(.dismissSpoilerHint)
         case .openLink(let url):
             router.routeTo(.web(url))
         case .openRaceResult(let raceFinished):
@@ -99,7 +101,8 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
                             historyResults: finishedRaces(domain.historyResults),
                             previews: previews(domain)
                         ),
-                        staleCopy: domain.staleCopy
+                        staleCopy: domain.staleCopy,
+                        showSpoilerHint: domain.showSpoilerHint
                     )
                 )
             }

@@ -1,0 +1,43 @@
+# The spoiler art in the photo slot of Results today card 0 and Yesterday row 0 while spoilers
+# are off, gone once a card or row is double tapped (mock scenario "live", Debug build only).
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- extendedWaitUntil:
+    visible:
+      id: "home.results.spoilerArt.0"
+    timeout: 20000
+- assertNotVisible:
+    id: "home.results.spoiler"
+- scrollUntilVisible:
+    element:
+      id: "home.yesterday.spoilerArt.0"
+- assertVisible:
+    id: "home.yesterday.spoilerArt.0"
+- scrollUntilVisible:
+    element:
+      id: "home.results.spoilerArt.0"
+    direction: UP
+- doubleTapOn:
+    id: "home.results.spoilerArt.0"
+    retryTapIfNoChange: false
+    delay: 1
+- assertNotVisible:
+    id: "home.results.spoilerArt.0"
+- scrollUntilVisible:
+    element:
+      id: "home.yesterday.spoilerArt.0"
+- assertVisible:
+    id: "home.yesterday.spoilerArt.0"
+- doubleTapOn:
+    id: "home.yesterday.spoilerArt.0"
+    retryTapIfNoChange: false
+    delay: 1
+- assertNotVisible:
+    id: "home.yesterday.spoilerArt.0"

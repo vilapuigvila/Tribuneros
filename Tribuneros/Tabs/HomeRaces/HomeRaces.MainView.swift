@@ -159,12 +159,14 @@ extension HomeRaces {
                     ResultsTodaySection(
                         races: sections.racesFinished,
                         isSpoilerModeOn: sections.spoilerMode.isSpoilerModeResultsToday,
+                        isHintAnchor: representable.showSpoilerHint && !sections.racesFinished.isEmpty,
                         action: action
                     )
 
                     YesterdaySection(
                         races: sections.yesterdayResults,
                         isSpoilerModeOn: sections.spoilerMode.isSpoilerModeResultsYesterday,
+                        isHintAnchor: representable.showSpoilerHint && sections.racesFinished.isEmpty && !sections.yesterdayResults.isEmpty,
                         action: action
                     )
 
@@ -179,6 +181,25 @@ extension HomeRaces {
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
                 .disabled(isPlaceholder)
+                .overlayPreferenceValue(SpoilerHintAnchorKey.self) { anchor in
+                    GeometryReader { proxy in
+                        if representable.showSpoilerHint,
+                           let anchor {
+                            let rect = proxy[anchor]
+                            let fitsBelow = proxy.frame(in: .global).minY + rect.maxY + 110 < UIScreen.main.bounds.height - 120
+                            SpoilerHintCallout(pointsUp: fitsBelow) {
+                                action(.dismissSpoilerHint)
+                            }
+                            .position(
+                                x: min(
+                                    max(rect.midX, 140),
+                                    proxy.size.width - 140
+                                ),
+                                y: fitsBelow ? rect.maxY + 34 : rect.minY - 34
+                            )
+                        }
+                    }
+                }
             }
             .background(Color.tribuneru(.vaporPageBackground))
             .overlay(alignment: .top) {

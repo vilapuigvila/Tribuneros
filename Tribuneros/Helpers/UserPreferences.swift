@@ -13,6 +13,8 @@ enum UserPreferencesKey: String {
     case spoilerModeResultsToday
     case spoilerModeResultsYesterday
     case spoilerModeResultsTomorrow
+    case spoilerHintFirstShown
+    case spoilerHintShownCount
 }
 
 @propertyWrapper
@@ -135,6 +137,12 @@ struct UserSettings {
     static var spoilerModeResultsYesterday: Bool?
     @UserDefault(UserPreferencesKey.spoilerModeResultsTomorrow.rawValue, defaultValue: false)
     static var spoilerModeResultsTomorrow: Bool?
+
+    @UserDefault(UserPreferencesKey.spoilerHintFirstShown.rawValue, defaultValue: nil)
+    static var spoilerHintFirstShown: Date?
+
+    @UserDefault(UserPreferencesKey.spoilerHintShownCount.rawValue, defaultValue: 0)
+    static var spoilerHintShownCount: Int?
 }
 
 

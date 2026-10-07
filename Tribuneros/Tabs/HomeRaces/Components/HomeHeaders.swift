@@ -101,58 +101,29 @@ struct StatusBarScrim: View {
     }
 }
 
-struct HomeSpoiler {
-    let isOn: Bool
-    let identifier: String
-    let action: () -> Void
-}
-
-/// A title row and its content. With a spoiler chip under the title the content folds away (and is
-/// not built) while spoilers are off; without one the content sits 14pt under the title.
+/// A title row and its content, 14pt under the title.
 struct HomeSection<Content: View>: View {
     let title: String
     var seeAll: (() -> Void)?
     var seeAllIdentifier: String = ""
     var showsInertSeeAll: Bool = false
-    var spoiler: HomeSpoiler?
     @ViewBuilder let content: () -> Content
 
-    @ViewBuilder
     var body: some View {
-        if let spoiler {
-            VStack(alignment: .leading, spacing: 6) {
-                VStack(alignment: .leading, spacing: 0) {
-                    header(reservesTapHeight: false)
-                    HomeSpoilerChip(
-                        isSpoilerModeOn: spoiler.isOn,
-                        action: spoiler.action,
-                        identifier: spoiler.identifier
-                    )
-                }
-                content()
-            }
-        } else {
-            VStack(alignment: .leading, spacing: 14) {
-                header(reservesTapHeight: true)
-                content()
-            }
+        VStack(alignment: .leading, spacing: 14) {
+            header
+            content()
         }
     }
 
-    private func header(reservesTapHeight: Bool) -> some View {
+    private var header: some View {
         HStack(spacing: 12) {
-            HStack(spacing: 8) {
-                TribuneruText(
-                    content: title,
-                    style: .vaporHeading,
-                    color: .tribuneru(.vaporTextPrimary),
-                    lineLimit: 1
-                )
-                // A spoiler chip only exists when there are results; the dot hints at them while hidden.
-                if let spoiler, !spoiler.isOn {
-                    PulsingBullet()
-                }
-            }
+            TribuneruText(
+                content: title,
+                style: .vaporHeading,
+                color: .tribuneru(.vaporTextPrimary),
+                lineLimit: 1
+            )
             Spacer(minLength: 0)
             if let seeAll {
                 Button(action: seeAll) {
@@ -161,8 +132,7 @@ struct HomeSection<Content: View>: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .padding(.vertical, reservesTapHeight ? 0 : -8)
-                .accessibilityLabel("See all \(title)")
+                                .accessibilityLabel("See all \(title)")
                 .accessibilityIdentifier(seeAllIdentifier)
             } else if showsInertSeeAll {
                 SeeAllLabel()
@@ -170,31 +140,7 @@ struct HomeSection<Content: View>: View {
                     .accessibilityHidden(true)
             }
         }
-        .frame(minHeight: reservesTapHeight ? 44 : nil)
-    }
-}
-
-private struct PulsingBullet: View {
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    var body: some View {
-        let dot = Circle()
-            .fill(Color.tribuneru(.vaporAccent))
-            .frame(
-                width: 8,
-                height: 8
-            )
-            .accessibilityHidden(true)
-        if reduceMotion {
-            dot
-        } else {
-            // Fade out to 0, hold 0.5s, fade back in, forever.
-            dot.phaseAnimator([true, false]) { content, isShown in
-                content.opacity(isShown ? 1 : 0)
-            } animation: { isShown in
-                isShown ? .easeInOut(duration: 1.6).delay(0.5) : .easeInOut(duration: 1.6)
-            }
-        }
+        .frame(minHeight: 44)
     }
 }
 
@@ -218,33 +164,33 @@ struct HomeListScreen<Content: View>: View {
 
 private struct SeeAllLabel: View {
     var body: some View {
-        HStack(spacing: 2) {
+        HStack(spacing: 4) {
             TribuneruText(
                 content: "See all",
-                style: .vaporLink,
+                style: .vaporSeeAll,
                 color: .tribuneru(.vaporAccent),
                 lineLimit: 1
             )
             Image(systemName: "chevron.right")
-                .font(.system(size: 11, weight: .semibold))
+                .font(
+                    .system(
+                        size: 12,
+                        weight: .bold
+                    )
+                )
                 .foregroundColor(.tribuneru(.vaporAccent))
         }
-    }
-}
-
-struct HomeSpoilerChip: View {
-    let isSpoilerModeOn: Bool
-    let action: () -> Void
-    let identifier: String
-
-    var body: some View {
-        HStack(spacing: 0) {
-            VaporSpoilerChip(
-                isSpoilerModeOn: isSpoilerModeOn,
-                action: action
-            )
-            .accessibilityIdentifier(identifier)
-            Spacer(minLength: 0)
-        }
+        .padding(
+            .horizontal,
+            10
+        )
+        .padding(
+            .vertical,
+            5
+        )
+        .background(
+            Capsule()
+                .fill(Color.tribuneru(.vaporAccent).opacity(0.14))
+        )
     }
 }

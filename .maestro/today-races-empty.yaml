@@ -1,6 +1,6 @@
 # Today section on a day without races (mock scenario "empty", Debug build only): the resting
 # scene replaces the hero, there is no "See all", and the results sections show redacted
-# placeholder cards (no spoiler chip) instead of an empty note.
+# placeholder cards (no spoiler chip, no double tap) instead of an empty note.
 appId: com.pskmoons.Tribuneros
 tags:
   - home

@@ -9,12 +9,14 @@ enum RaceArt {
     case day
     case night
     case banner
+    case spoiler
 
     var assetName: String {
         switch self {
         case .day: "RaceArtDay"
         case .night: "RaceArtNight"
         case .banner: "RaceArtBanner"
+        case .spoiler: "SpoilerArt"
         }
     }
 }

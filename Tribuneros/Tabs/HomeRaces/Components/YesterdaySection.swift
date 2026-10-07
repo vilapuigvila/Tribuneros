@@ -10,6 +10,7 @@ struct YesterdaySection: View {
 
     let races: [HomeRaces.Representable.RaceFinished]
     let isSpoilerModeOn: Bool
+    var isHintAnchor = false
     let action: (HomeRaces.Action) -> Void
 
     private var seeAll: (() -> Void)? {
@@ -17,32 +18,24 @@ struct YesterdaySection: View {
         return { action(.navigate(.yesterdayResults)) }
     }
 
-    private var spoiler: HomeSpoiler? {
-        guard !races.isEmpty else { return nil }
-        return HomeSpoiler(
-            isOn: isSpoilerModeOn,
-            identifier: "home.yesterday.spoiler"
-        ) {
-            action(.spoilerModeResultYesterday)
-        }
-    }
-
     var body: some View {
         HomeSection(
             title: "Results yesterday",
             seeAll: seeAll,
-            seeAllIdentifier: "home.yesterday.seeAll",
-            spoiler: spoiler
+            seeAllIdentifier: "home.yesterday.seeAll"
         ) {
             YesterdayResultsCard(
                 races: races.isEmpty
                     ? Array(HomeRaces.Representable.placeholderResults.prefix(Self.previewLimit))
                     : Array(races.prefix(Self.previewLimit)),
                 visibility: races.isEmpty ? .placeholder : (isSpoilerModeOn ? .shown : .hidden),
-                identifierPrefix: races.isEmpty ? "home.yesterday.placeholder" : "home.yesterday"
-            ) { race in
-                action(.openRaceResult(race))
-            }
+                identifierPrefix: races.isEmpty ? "home.yesterday.placeholder" : "home.yesterday",
+                artIdentifierPrefix: "home.yesterday.spoilerArt",
+                hintAnchorIndex: isHintAnchor ? 0 : nil,
+                open: { race in action(.openRaceResult(race)) },
+                toggle: { action(.spoilerModeResultYesterday) }
+            )
+            .spoilerCrossfade(isSpoilerModeOn)
         }
     }
 }
@@ -51,7 +44,10 @@ struct YesterdayResultsCard: View {
     let races: [HomeRaces.Representable.RaceFinished]
     let visibility: HomeRaces.ResultVisibility
     let identifierPrefix: String
+    var artIdentifierPrefix: String?
+    var hintAnchorIndex: Int?
     let open: (HomeRaces.Representable.RaceFinished) -> Void
+    let toggle: () -> Void
 
     var body: some View {
         // Not lazy: re-estimated row heights resize the page mid-scroll and make it jump at the top.
@@ -65,10 +61,21 @@ struct YesterdayResultsCard: View {
                 }
                 YesterdayResultRow(
                     race: race,
-                    visibility: visibility,
-                    open: open
+                    visibility: visibility
                 )
                     .accessibilityIdentifier("\(identifierPrefix).row.\(index)")
+                    .spoilerHintAnchor(hintAnchorIndex == index)
+                    .spoilerArt(
+                        visibility,
+                        size: CGSize(width: 72, height: 72),
+                        alignment: .leading,
+                        identifier: artIdentifierPrefix.map { "\($0).\(index)" }
+                    )
+                    .resultGestures(
+                        visibility,
+                        open: { open(race) },
+                        toggle: toggle
+                    )
             }
         }
         .padding(.horizontal, 14)
@@ -80,20 +87,9 @@ struct YesterdayResultsCard: View {
 struct YesterdayResultRow: View {
     let race: HomeRaces.Representable.RaceFinished
     var visibility: HomeRaces.ResultVisibility = .shown
-    let open: (HomeRaces.Representable.RaceFinished) -> Void
 
-    @ViewBuilder
     var body: some View {
-        if visibility == .shown {
-            Button {
-                open(race)
-            } label: {
-                row
-            }
-            .buttonStyle(.plain)
-        } else {
-            row
-        }
+        row
     }
 
     private var shownRace: HomeRaces.Representable.RaceFinished {
@@ -104,7 +100,8 @@ struct YesterdayResultRow: View {
         HStack(spacing: 14) {
             WinnerPhoto(
                 url: shownRace.winnerImgURL,
-                size: CGSize(width: 72, height: 72)
+                size: CGSize(width: 72, height: 72),
+                isHiddenBySpoiler: visibility == .hidden
             )
             .clipShape(RoundedRectangle(cornerRadius: 12))
             VStack(alignment: .leading, spacing: 4) {

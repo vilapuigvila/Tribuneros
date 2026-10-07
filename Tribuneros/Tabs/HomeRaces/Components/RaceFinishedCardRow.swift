@@ -209,8 +209,21 @@ struct CachedImageView: View {
 struct WinnerPhoto: View {
     let url: URL?
     let size: CGSize
+    var isHiddenBySpoiler = false
 
     var body: some View {
+        if isHiddenBySpoiler {
+            Color.clear
+                .frame(
+                    width: size.width,
+                    height: size.height
+                )
+        } else {
+            photo
+        }
+    }
+
+    private var photo: some View {
         CachedImageView(
             imageUrl: url,
             cornerRadius: 0,
@@ -264,6 +277,115 @@ extension View {
                         .accessibilityLabel(visibility == .hidden ? title : "Loading results")
                 }
         }
+    }
+}
+
+extension View {
+    func resultGestures(
+        _ visibility: HomeRaces.ResultVisibility,
+        open: @escaping () -> Void,
+        toggle: @escaping () -> Void
+    ) -> some View {
+        modifier(
+            ResultTapModifier(
+                visibility: visibility,
+                open: open,
+                toggle: toggle
+            )
+        )
+    }
+}
+
+/// Own double-tap window (0.5s, native is 0.35s) so UI-test drivers whose taps land ~0.35s apart still count.
+private struct ResultTapModifier: ViewModifier {
+    private static let window: TimeInterval = 0.5
+
+    let visibility: HomeRaces.ResultVisibility
+    let open: () -> Void
+    let toggle: () -> Void
+
+    @State private var lastTap: Date?
+    @State private var pendingOpen: Task<Void, Never>?
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        switch visibility {
+        case .placeholder:
+            content
+        case .hidden:
+            content
+                .contentShape(Rectangle())
+                .onTapGesture(perform: handleTap)
+                .accessibilityAction(named: "Show results", toggle)
+        case .shown:
+            content
+                .contentShape(Rectangle())
+                .onTapGesture(perform: handleTap)
+                .accessibilityAddTraits(.isButton)
+                .accessibilityAction(named: "Hide results", toggle)
+        }
+    }
+
+    private func handleTap() {
+        let now = Date()
+        if let lastTap, now.timeIntervalSince(lastTap) < Self.window {
+            self.lastTap = nil
+            pendingOpen?.cancel()
+            toggle()
+            return
+        }
+        lastTap = now
+        guard visibility == .shown else { return }
+        pendingOpen = Task {
+            try? await Task.sleep(for: .seconds(Self.window))
+            guard !Task.isCancelled else { return }
+            open()
+        }
+    }
+}
+
+extension View {
+    /// Drawn outside the redacted, combined card so it stays unredacted and visible to accessibility tools.
+    @ViewBuilder
+    func spoilerArt(
+        _ visibility: HomeRaces.ResultVisibility,
+        size: CGSize,
+        alignment: Alignment,
+        identifier: String?
+    ) -> some View {
+        if visibility == .hidden {
+            overlay(alignment: alignment) {
+                RaceArtView(art: .spoiler)
+                    .frame(
+                        width: size.width,
+                        height: size.height
+                    )
+                    .transition(.opacity)
+                    .accessibilityElement()
+                    .accessibilityLabel("Result hidden")
+                    .accessibilityIdentifier(identifier ?? "spoilerArt")
+            }
+        } else {
+            self
+        }
+    }
+}
+
+struct SpoilerCrossfade: ViewModifier {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let isSpoilerModeOn: Bool
+
+    func body(content: Content) -> some View {
+        content.animation(
+            reduceMotion ? nil : .easeInOut(duration: 0.25),
+            value: isSpoilerModeOn
+        )
+    }
+}
+
+extension View {
+    func spoilerCrossfade(_ isSpoilerModeOn: Bool) -> some View {
+        modifier(SpoilerCrossfade(isSpoilerModeOn: isSpoilerModeOn))
     }
 }
 

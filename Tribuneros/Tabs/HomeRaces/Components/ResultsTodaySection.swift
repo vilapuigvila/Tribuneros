@@ -8,20 +8,11 @@ import SwiftUI
 struct ResultsTodaySection: View {
     let races: [HomeRaces.Representable.RaceFinished]
     let isSpoilerModeOn: Bool
+    var isHintAnchor = false
     let action: (HomeRaces.Action) -> Void
 
-    private var spoiler: HomeSpoiler? {
-        guard !races.isEmpty else { return nil }
-        return HomeSpoiler(
-            isOn: isSpoilerModeOn,
-            identifier: "home.results.spoiler"
-        ) {
-            action(.spoilerModeResultToday)
-        }
-    }
-
     var body: some View {
-        HomeSection(title: "Results today", spoiler: spoiler) {
+        HomeSection(title: "Results today") {
             cards
         }
     }
@@ -42,10 +33,21 @@ struct ResultsTodaySection: View {
                     ResultHighlightCard(
                         race: race,
                         visibility: visibility
-                    ) {
-                        action(.openRaceResult(race))
-                    }
+                    )
                     .accessibilityIdentifier("home.results.\(races.isEmpty ? "placeholder" : "card").\(index)")
+                    .spoilerHintAnchor(isHintAnchor && index == 0)
+                    .spoilerArt(
+                        visibility,
+                        size: CGSize(width: 180, height: 112),
+                        alignment: .top,
+                        identifier: "home.results.spoilerArt.\(index)"
+                    )
+                    .resultGestures(
+                        visibility,
+                        open: { action(.openRaceResult(race)) },
+                        toggle: { action(.spoilerModeResultToday) }
+                    )
+                    .spoilerCrossfade(isSpoilerModeOn)
                 }
             }
             .fixedSize(horizontal: false, vertical: true)
@@ -64,20 +66,9 @@ struct ResultHighlightCard: View {
 
     let race: HomeRaces.Representable.RaceFinished
     var visibility: HomeRaces.ResultVisibility = .shown
-    let open: () -> Void
 
-    @ViewBuilder
     var body: some View {
-        if visibility == .shown {
-            Button {
-                open()
-            } label: {
-                card
-            }
-            .buttonStyle(.plain)
-        } else {
-            card
-        }
+        card
     }
 
     private var shownRace: HomeRaces.Representable.RaceFinished {
@@ -88,7 +79,8 @@ struct ResultHighlightCard: View {
         VStack(alignment: .leading, spacing: 0) {
             WinnerPhoto(
                 url: shownRace.winnerImgURL,
-                size: CGSize(width: Sizes.width, height: Sizes.photoHeight)
+                size: CGSize(width: Sizes.width, height: Sizes.photoHeight),
+                isHiddenBySpoiler: visibility == .hidden
             )
             details
         }

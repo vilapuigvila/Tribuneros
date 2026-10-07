@@ -97,12 +97,22 @@ struct TodayRaceRow: View {
     let race: HomeRaces.Representable.RaceNext
 
     var body: some View {
-        HStack(spacing: 14) {
+        TimelineView(.everyMinute) { context in
+            row(now: context.date)
+        }
+    }
+
+    private func row(now: Date) -> some View {
+        let isFinished = race.isFinished(now: now)
+        return HStack(spacing: 14) {
             RaceArtView.fallback
                 .frame(width: Sizes.artSide, height: Sizes.artSide)
                 .overlay(alignment: .topLeading) {
-                    RaceStatusTag(kind: race.statusKind, size: .small)
-                        .padding(6)
+                    RaceStatusTag(
+                        kind: isFinished ? .finished : race.statusKind,
+                        size: .small
+                    )
+                    .padding(6)
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             VStack(alignment: .leading, spacing: 6) {
@@ -133,7 +143,7 @@ struct TodayRaceRow: View {
                         color: .tribuneru(.vaporTextSecondary)
                     )
                     Spacer(minLength: 0)
-                    remaining
+                    remaining(now: now)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -144,22 +154,21 @@ struct TodayRaceRow: View {
         .padding(12)
         .homeCard(cornerRadius: 18)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(race.accessibilityDescription)
+        .accessibilityLabel(isFinished ? race.accessibilityDescription + ", finished" : race.accessibilityDescription)
         .accessibilityAddTraits(.isButton)
     }
 
-    private var remaining: some View {
-        TimelineView(.everyMinute) { context in
-            if let remaining = race.remainingTimeDescription(now: context.date) {
-                TribuneruText(
-                    content: "\(remaining) left",
-                    style: .vaporRowCountdown,
-                    color: race.isLive
-                        ? Color.tribuneru(.vaporAccent)
-                        : Color.tribuneru(.vaporTextPrimary).opacity(0.55),
-                    lineLimit: 1
-                )
-            }
+    @ViewBuilder
+    private func remaining(now: Date) -> some View {
+        if let remaining = race.remainingTimeDescription(now: now) {
+            TribuneruText(
+                content: "\(remaining) left",
+                style: .vaporRowCountdown,
+                color: race.isLive
+                    ? Color.tribuneru(.vaporAccent)
+                    : Color.tribuneru(.vaporTextPrimary).opacity(0.55),
+                lineLimit: 1
+            )
         }
     }
 

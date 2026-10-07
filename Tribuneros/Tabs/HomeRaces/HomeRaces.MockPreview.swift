@@ -145,7 +145,7 @@ private struct HomeRacesMockHarness: View {
             case .spoilerModeResultYesterday:
                 isSpoilerModeResultsYesterday.toggle()
                 rebuild()
-            case .onAppear, .onDisappear, .navigate, .openLink, .openRaceResult, .openRacePreview:
+            case .onAppear, .onDisappear, .dismissSpoilerHint, .navigate, .openLink, .openRaceResult, .openRacePreview:
                 break
             }
         }

@@ -112,6 +112,41 @@ final class HomeTodayRacesTests: XCTestCase {
         XCTAssertNil(passed.remainingTimeDescription(now: now))
     }
 
+    func testARacePastItsFinishIsFinished() {
+        let now = date(14, 28)
+        XCTAssertTrue(next(eta: "14:00", duration: "-", now: now).isFinished(now: now))
+        XCTAssertTrue(next(eta: "14:00", duration: "-", now: now).isFinished(now: calendar.date(byAdding: .hour, value: 2, to: now)!))
+    }
+
+    func testARaceBeforeItsFinishIsNotFinished() {
+        let now = date(14, 28)
+        XCTAssertFalse(next(eta: "16:42", now: now).isFinished(now: now))
+    }
+
+    func testARaceWithoutAFinishDateIsNotFinished() {
+        let now = date(14, 28)
+        let unknown = next(eta: "-", duration: "-", now: now)
+        XCTAssertNil(unknown.finishDate)
+        XCTAssertFalse(unknown.isFinished(now: now))
+    }
+
+    func testARaceIsFinishedExactlyAtItsFinishTime() {
+        let now = date(14, 28)
+        let atFinish = RaceNext(
+            eta: "14:28",
+            duration: "",
+            name: "Race",
+            category: "",
+            raceType: "",
+            distance: "",
+            urlPath: nil,
+            flagCode: "",
+            finishDate: now
+        )
+        XCTAssertTrue(atFinish.isFinished(now: now))
+        XCTAssertFalse(atFinish.isFinished(now: calendar.date(byAdding: .second, value: -1, to: now)!))
+    }
+
     // MARK: - Order
 
     func testRacesAreOrderedByFinishTimeAndTiesKeepThePageOrder() {

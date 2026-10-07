@@ -10,12 +10,14 @@ struct RaceStatusTag: View {
         case live
         case today
         case noRaces
+        case finished
 
         var title: String {
             switch self {
             case .live: "LIVE"
             case .today: "TODAY"
             case .noRaces: "NO RACES"
+            case .finished: "FINISHED"
             }
         }
     }

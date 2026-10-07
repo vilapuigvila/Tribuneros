@@ -25,6 +25,7 @@ struct HomeRacesDomain: Equatable {
     var previews: [DTO.Preview] = []
     /// Start times by race URL; the homepage has none, so they come from each race's page.
     var startTimes: [String: String] = [:]
+    var showSpoilerHint = false
 
     static let empty: HomeRacesDomain = .init(
         nextToFinishRaces: [],
@@ -68,6 +69,8 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
     }
     var domain: Domain { subject.value }
     private var task: Task<Void, Never>?
+    private var hintEvaluated = false
+    private var hintVisible = false
     
     init() {
         
@@ -78,11 +81,16 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
         case .spoilerModeResultToday:
             let toggle = !(UserSettings.spoilerModeResultsToday ?? false)
             UserSettings.spoilerModeResultsToday = toggle
-            subject.send(domain.copy(spoilerModeResultsToday: toggle))
+            hintVisible = false
+            subject.send(applyingHint(domain.copy(spoilerModeResultsToday: toggle)))
         case .spoilerModeResultYesterday:
             let toggle = !(UserSettings.spoilerModeResultsYesterday ?? false)
             UserSettings.spoilerModeResultsYesterday = toggle
-            subject.send(domain.copy(isOnSpoilerModeResultsYesterday: toggle))
+            hintVisible = false
+            subject.send(applyingHint(domain.copy(isOnSpoilerModeResultsYesterday: toggle)))
+        case .dismissSpoilerHint:
+            hintVisible = false
+            subject.send(applyingHint(domain))
         case .requestDayRaces(_):
             guard task == nil else { return }
             #if DEBUG
@@ -93,6 +101,7 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                         isOnSpoilerModeResultsYesterday: UserSettings.spoilerModeResultsYesterday ?? false
                     )
                 )
+                evaluateSpoilerHint()
                 loadHeroStartTime()
                 return
             }
@@ -131,6 +140,7 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                             previews: result.previews
                         )
                     )
+                    self?.evaluateSpoilerHint()
                     self?.loadHeroStartTime()
                 } catch {
                     self?.subject.send(
@@ -152,6 +162,35 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
         case .cancelRequestStation:
             task?.cancel()
             task = nil
+        }
+    }
+
+    private func applyingHint(_ domain: Domain) -> Domain {
+        var updated = domain
+        updated.showSpoilerHint = hintVisible
+        return updated
+    }
+
+    private func evaluateSpoilerHint() {
+        let current = subject.value
+        if !hintEvaluated,
+           current.error == nil,
+           !current.todayRaces.isEmpty || !current.yesterdayResults.isEmpty {
+            hintEvaluated = true
+            let count = UserSettings.spoilerHintShownCount ?? 0
+            let now = Date()
+            if HomeRaces.SpoilerHint.shouldShow(
+                now: now,
+                firstShown: UserSettings.spoilerHintFirstShown,
+                count: count
+            ) {
+                UserSettings.spoilerHintFirstShown = UserSettings.spoilerHintFirstShown ?? now
+                UserSettings.spoilerHintShownCount = count + 1
+                hintVisible = true
+            }
+        }
+        if current.showSpoilerHint != hintVisible {
+            subject.send(applyingHint(current))
         }
     }
 
@@ -187,6 +226,7 @@ extension HomeRaces {
         case cancelRequestStation
         case spoilerModeResultToday
         case spoilerModeResultYesterday
+        case dismissSpoilerHint
 //        case navigate(HomeRaces.Navigate)
     }
     

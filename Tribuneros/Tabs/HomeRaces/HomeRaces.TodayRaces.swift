@@ -60,6 +60,11 @@ extension HomeRaces.Representable.RaceNext {
         return "\(minutes)m"
     }
 
+    func isFinished(now: Date = Date()) -> Bool {
+        guard let finishDate else { return false }
+        return finishDate <= now
+    }
+
     var accessibilityDescription: String {
         var parts = [
             title,
