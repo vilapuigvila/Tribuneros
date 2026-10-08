@@ -200,31 +200,36 @@ extension HomeRaces {
                     "Tre Valli Varesine (1.Pro)",
                     "Busto Arsizio - Varese (198km)",
                     slug: "tre-valli-varesine-history",
-                    winner: ("it", "MOCK Rider Eight", "4:29:31")
+                    winner: ("it", "MOCK Rider Eight", "4:29:31"),
+                    raceCountryCode: "it"
                 ),
                 result(
                     "Il Lombardia (1.UWT)",
                     "Bergamo - Como (238km)",
                     slug: "il-lombardia",
-                    winner: ("si", "MOCK Rider Nine", "5:41:12")
+                    winner: ("si", "MOCK Rider Nine", "5:41:12"),
+                    raceCountryCode: "it"
                 ),
                 result(
                     "Milano-Torino (1.Pro)",
                     "Mortara - Superga (179km)",
                     slug: "milano-torino",
-                    winner: ("be", "MOCK Rider Ten", "4:07:50")
+                    winner: ("be", "MOCK Rider Ten", "4:07:50"),
+                    raceCountryCode: "it"
                 ),
                 result(
                     "Gran Premio Bruno Beghelli (1.Pro)",
                     "Monteveglio - Bologna (197km)",
                     slug: "gran-premio-bruno-beghelli",
-                    winner: ("it", "MOCK Rider Eleven", "4:15:03")
+                    winner: ("it", "MOCK Rider Eleven", "4:15:03"),
+                    raceCountryCode: "it"
                 ),
                 result(
                     "Memorial Marco Pantani (1.1)",
                     "Cesenatico - Cesenatico (190km)",
                     slug: "memorial-marco-pantani",
-                    winner: ("co", "MOCK Rider Twelve", "4:22:40")
+                    winner: ("co", "MOCK Rider Twelve", "4:22:40"),
+                    raceCountryCode: "it"
                 )
             ]
         }
@@ -298,14 +303,16 @@ extension HomeRaces {
                 position: "1",
                 name: winner.name,
                 team: "MOCK Team",
-                time: winner.time
+                time: winner.time,
+                countryCode: winner.countryCode ?? ""
             )
             let chasers = (2...Service.raceResultRowLimit).map { position in
                 DTO.RaceResultPage.Row(
                     position: "\(position)",
                     name: "MOCK Chaser \(position)",
                     team: "MOCK Team",
-                    time: position < 4 ? ",," : String(format: "0:%02d", position * 3)
+                    time: position < 4 ? ",," : String(format: "0:%02d", position * 3),
+                    countryCode: ["be", "nl", "fr", "it"][position % 4]
                 )
             }
             return DTO.RaceResultPage(
@@ -321,7 +328,8 @@ extension HomeRaces {
             _ name: String,
             _ details: String,
             slug: String,
-            winner: (flag: String, name: String, time: String)
+            winner: (flag: String, name: String, time: String),
+            raceCountryCode: String? = nil
         ) -> DTO.TodayResult {
             DTO.TodayResult(
                 raceName: name,
@@ -338,7 +346,8 @@ extension HomeRaces {
                         time: winner.time
                     )
                 ],
-                additionalDetails: []
+                additionalDetails: [],
+                raceCountryCode: raceCountryCode
             )
         }
     }

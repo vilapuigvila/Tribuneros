@@ -67,9 +67,17 @@ extension Service {
         )
     }
 
+    /// Final-GC pages hold several `div.resultCont` and hide all but the shown one; the first
+    /// visible container's table wins, then the `div.resTab` handling below.
     /// A stage page holds one `div.resTab` per classification and hides all but the current one,
     /// so the first visible tab's table is this page's result.
     private static func raceResultTable(_ document: Document) -> Element? {
+        let containers = (try? document.select("div.resultCont").array()) ?? []
+        for container in containers where !container.hasClass("hide") {
+            if let table = try? container.select("table.results").first() {
+                return table
+            }
+        }
         let tabs = (try? document.select("div.resTab").array()) ?? []
         for tab in tabs where !tab.hasClass("hide") {
             if let table = try? tab.select("table.results").first() {
@@ -83,9 +91,11 @@ extension Service {
         _ table: Element,
         limit: Int
     ) -> [DTO.RaceResultPage.Row] {
-        let headers = ((try? table.select("thead th").array()) ?? [])
-            .map { raceResultText($0).lowercased() }
-        let columns = RaceResultColumns(headers: headers)
+        let headerCells = (try? table.select("thead th").array()) ?? []
+        let columns = RaceResultColumns(
+            headers: headerCells.map { raceResultText($0).lowercased() },
+            codes: headerCells.map { ((try? $0.attr("data-code")) ?? "").lowercased() }
+        )
         let rows = (try? table.select("tbody > tr").array()) ?? []
 
         var result: [DTO.RaceResultPage.Row] = []
@@ -120,13 +130,18 @@ extension Service {
                 return raceResultText(link ?? cell)
             }()
             let time = cells.indices.contains(timeIndex) ? raceResultTime(cells[timeIndex]) : ""
+            let countryCode = (try? riderCell.select("span.flag").first()?.className())?
+                .split(separator: " ")
+                .map(String.init)
+                .first { $0.lowercased() != "flag" } ?? ""
 
             result.append(
                 DTO.RaceResultPage.Row(
                     position: position,
                     name: name,
                     team: team,
-                    time: time
+                    time: time,
+                    countryCode: countryCode
                 )
             )
         }
@@ -197,10 +212,15 @@ private struct RaceResultColumns {
     let team: Int?
     let time: Int?
 
-    init(headers: [String]) {
-        rank = headers.firstIndex { ["rnk", "pos", "#", "rank"].contains($0) }
-        rider = headers.firstIndex(of: "rider")
-        team = headers.firstIndex(of: "team")
-        time = headers.firstIndex(of: "time") ?? headers.firstIndex { $0.contains("time") }
+    /// `codes` are the headers' `data-code`s (empty strings when absent); they win over the texts,
+    /// since "time" text also matches the GC `gc_timelag` column.
+    init(headers: [String], codes: [String] = []) {
+        rank = codes.firstIndex(of: "rnk")
+            ?? headers.firstIndex { ["rnk", "pos", "#", "rank"].contains($0) }
+        rider = codes.firstIndex(of: "rider") ?? headers.firstIndex(of: "rider")
+        team = codes.firstIndex { ["riderteam", "team"].contains($0) } ?? headers.firstIndex(of: "team")
+        time = codes.firstIndex(of: "timelag")
+            ?? headers.firstIndex(of: "time")
+            ?? headers.firstIndex { $0.contains("time") }
     }
 }

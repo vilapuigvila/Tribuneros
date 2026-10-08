@@ -33,7 +33,9 @@ struct TribunerosApp: App {
     
     var body: some Scene {
         WindowGroup {
-            TabBarView()
+            MaintenanceHost {
+                TabBarView()
+            }
         }
         .modelContainer(sharedModelContainer)
     }

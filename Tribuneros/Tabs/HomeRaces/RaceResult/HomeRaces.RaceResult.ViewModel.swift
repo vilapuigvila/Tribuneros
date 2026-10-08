@@ -91,7 +91,8 @@ extension HomeRaces.RaceResult {
                                 position: $0.position,
                                 name: $0.name,
                                 team: $0.team,
-                                time: $0.time
+                                time: $0.time,
+                                countryCode: $0.countryCode
                             )
                         }
                     )
@@ -107,7 +108,8 @@ extension HomeRaces.RaceResult {
                                     position: $0.position,
                                     name: $0.name,
                                     team: $0.team,
-                                    time: $0.time
+                                    time: $0.time,
+                                    countryCode: $0.countryCode
                                 )
                             }
                         ),
@@ -123,7 +125,7 @@ extension HomeRaces.RaceResult {
         }
 
         private static func rows(
-            _ entries: [(position: String, name: String, team: String, time: String)]
+            _ entries: [(position: String, name: String, team: String, time: String, countryCode: String)]
         ) -> [ViewState.Row] {
             entries.enumerated().map { index, entry in
                 ViewState.Row(
@@ -133,7 +135,8 @@ extension HomeRaces.RaceResult {
                     time: displayTime(
                         entry.time,
                         isLeader: index == 0
-                    )
+                    ),
+                    countryCode: entry.countryCode
                 )
             }
         }

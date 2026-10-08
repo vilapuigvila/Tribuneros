@@ -230,6 +230,7 @@ extension HomeRaces {
                 let name: String
                 let team: String
                 let time: String
+                var countryCode: String = ""
 
                 /// Stand-ins drawn redacted while the result page loads.
                 static let placeholders: [Row] = (1...10).map {

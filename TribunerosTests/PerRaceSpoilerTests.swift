@@ -67,10 +67,7 @@ final class PerRaceSpoilerTests: XCTestCase {
         func useCase(_ useCase: HomeRaces.UseCase) {}
     }
 
-    private func visibilities(
-        _ domain: HomeRacesDomain,
-        in keyPath: KeyPath<HomeRaces.Representable.Section, [HomeRaces.Representable.RaceFinished]>
-    ) throws -> [HomeRaces.ResultVisibility] {
+    private func representable(_ domain: HomeRacesDomain) throws -> HomeRaces.Representable {
         let interactor = StubInteractor()
         let viewModel = HomeRacesViewModel(
             interactor: interactor,
@@ -89,7 +86,14 @@ final class PerRaceSpoilerTests: XCTestCase {
         guard case .loaded(let representable) = viewModel.stateView else {
             throw XCTSkip("not loaded")
         }
-        return representable.sections[keyPath: keyPath].map(\.visibility)
+        return representable
+    }
+
+    private func visibilities(
+        _ domain: HomeRacesDomain,
+        in keyPath: KeyPath<HomeRaces.Representable.Section, [HomeRaces.Representable.RaceFinished]>
+    ) throws -> [HomeRaces.ResultVisibility] {
+        try representable(domain).sections[keyPath: keyPath].map(\.visibility)
     }
 
     private func domain(
@@ -107,6 +111,27 @@ final class PerRaceSpoilerTests: XCTestCase {
         )
         revealed.forEach { domain = domain.togglingReveal($0) }
         return domain
+    }
+
+    func testRaceCountryCodeReachesTheHistoryRows() throws {
+        var withFlag = result("A", url: raceA)
+        withFlag.raceCountryCode = "my"
+        var domain = domain(revealed: [])
+        domain = HomeRacesDomain(
+            nextToFinishRaces: [],
+            todayRaces: [],
+            yesterdayResults: [],
+            historyResults: [withFlag, result("B", url: raceB)],
+            tomorrowRaces: [],
+            liveStatsRaces: [],
+            error: nil,
+            loading: false
+        )
+
+        XCTAssertEqual(
+            try representable(domain).sections.historyResults.map(\.raceCountryCode),
+            ["my", ""]
+        )
     }
 
     func testAFreshInteractorStartsWithNothingRevealed() {

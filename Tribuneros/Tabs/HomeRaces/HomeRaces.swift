@@ -128,6 +128,7 @@ enum HomeRaces {
             let isCancel: Bool
             var raceURL: URL? = nil
             var visibility: ResultVisibility = .shown
+            var raceCountryCode: String = ""
         }
         struct RaceNext: Identifiable {
             let id = UUID()

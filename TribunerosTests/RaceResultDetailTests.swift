@@ -110,13 +110,44 @@ final class RaceResultDetailTests: XCTestCase {
                 position: "1",
                 name: "VAN DER POEL Mathieu",
                 team: "Alpecin Premier Tech",
-                time: "4:12:05"
+                time: "4:12:05",
+                countryCode: "be"
             )
         )
         XCTAssertEqual(page.rows[1].time, ",,", "the hidden absolute time must not leak into the gap")
         XCTAssertEqual(page.rows[2].time, "0:04")
         XCTAssertEqual(page.rows.last?.position, "10")
         XCTAssertFalse(page.rows.contains { $0.name == "GC LEADER" }, "the hidden GC tab is not this page's result")
+    }
+
+    /// The saved Venezuela stage 3 page (URLSession, 2026-10-08), trimmed to its first table.
+    func testRealStagePagePicksTheStageTimeNotTheGCGap() throws {
+        guard let url = Bundle(for: type(of: self)).url(forResource: "pcs_stage_result", withExtension: "html") else {
+            throw XCTSkip("Missing pcs_stage_result.html fixture in the test bundle")
+        }
+        let page = try parse(String(contentsOf: url, encoding: .utf8))
+
+        XCTAssertEqual(page.rows.count, 10)
+        XCTAssertEqual(page.rows[0].name, "URIAN Jose Misael")
+        XCTAssertEqual(page.rows[0].countryCode, "co")
+        XCTAssertEqual(page.rows[0].team, "Team Sistecredito")
+        XCTAssertEqual(page.rows[0].time, "4:04:37")
+        XCTAssertEqual(page.rows[1].time, "0:10", "the stage gap, not the GC +0:07")
+    }
+
+    /// The saved El Djazair `-gc` page (URLSession, 2026-10-08): a hidden stage container comes first.
+    func testRealGCPageSkipsTheHiddenStageContainer() throws {
+        guard let url = Bundle(for: type(of: self)).url(forResource: "pcs_gc_result", withExtension: "html") else {
+            throw XCTSkip("Missing pcs_gc_result.html fixture in the test bundle")
+        }
+        let document = try SwiftSoup.parse(String(contentsOf: url, encoding: .utf8))
+        let page = Service.parseRaceResultPage(document, limit: .max)
+
+        XCTAssertEqual(page.rows.count, 75)
+        XCTAssertEqual(page.rows[0].name, "MINTEGI Iker")
+        XCTAssertEqual(page.rows[0].time, "7:43:23")
+        XCTAssertNotEqual(page.rows[0].name, "HENNEQUIN Paul")
+        XCTAssertNotEqual(page.rows[0].time, "2:39:32")
     }
 
     func testStagePageReadsTheRouteFactsAndStage() throws {
@@ -162,6 +193,18 @@ final class RaceResultDetailTests: XCTestCase {
             ]
         )
         XCTAssertNil(page.stage)
+    }
+
+    func testRiderCellFlagCodeIsParsedAndMissingFlagIsEmpty() throws {
+        let html = """
+        <table class="results"><tbody>\
+        <tr><td>1</td><td><span class="flag nl"></span><a href="rider/a">A</a></td><td><a href="team/x">X</a></td><td class="time">1:00:00</td></tr>\
+        <tr><td>2</td><td><a href="rider/b">B</a></td><td><a href="team/y">Y</a></td><td class="time">,,</td></tr>\
+        </tbody></table>
+        """
+        let page = try parse(html)
+
+        XCTAssertEqual(page.rows.map(\.countryCode), ["nl", ""])
     }
 
     func testAPageWithoutAResultsTableGivesNoRowsInsteadOfThrowing() throws {
@@ -335,6 +378,7 @@ final class RaceResultDetailTests: XCTestCase {
         }
         XCTAssertEqual(rows.count, 10)
         XCTAssertEqual(rows.prefix(4).map(\.time), ["4:12:05", "s.t.", "+0:04", "+0:14"])
+        XCTAssertEqual(rows.map(\.countryCode), Array(repeating: "be", count: 10))
     }
 
     @MainActor
@@ -374,6 +418,7 @@ final class RaceResultDetailTests: XCTestCase {
         }
         XCTAssertEqual(fallback.map(\.name), ["VAN DER POEL Mathieu", "GACHIGNARD Thomas", "PIGANZOLI Davide"])
         XCTAssertEqual(fallback.map(\.time), ["4:12:05", "s.t.", "+0:04"])
+        XCTAssertEqual(fallback.map(\.countryCode), ["nl", "fr", "it"])
         XCTAssertEqual(fallback.map(\.team), ["", "", ""], "the homepage's '#' placeholder is not a team")
         XCTAssertEqual(state.fullResultsURL?.lastPathComponent, "stage-5")
     }

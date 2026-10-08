@@ -140,14 +140,12 @@ struct Service {
                 return nil
             }
             let raceClass = (try? cells[2].text()) ?? ""
-            let flagCode = (try? cells[3].select("span.flag").first()?.className())?
-                .split(separator: " ")
-                .map(String.init)
-                .first { $0.lowercased() != "flag" }
+            let raceCountryCode = spanFlagCode(in: cells[1])
+            let flagCode = spanFlagCode(in: cells[3])
             return DTO.TodayResult(
                 raceName: raceClass.isEmpty ? raceName : "\(raceName) (\(raceClass))",
                 raceDetails: output.string(from: date),
-                raceURL: URL(string: baseStringURL + href),
+                raceURL: URL(string: baseStringURL + historyStageHref(href, raceName: raceName)),
                 winner: nil,
                 podium: [
                     DTO.TodayResult.Winner(
@@ -159,10 +157,36 @@ struct Service {
                         time: ""
                     )
                 ],
-                additionalDetails: []
+                additionalDetails: [],
+                raceCountryCode: raceCountryCode
             )
         }
         return Array(results.prefix(historyLimit))
+    }
+
+    /// PCS links stage-race rows to `race/<slug>-<year>-gc`, whose results table is filled by
+    /// JavaScript; `race/<slug>/<year>/stage-N` has the rows in the HTML.
+    private static func historyStageHref(
+        _ href: String,
+        raceName: String
+    ) -> String {
+        guard let link = href.range(of: "^race/(.+)-([0-9]{4})-gc$", options: .regularExpression),
+              let stage = raceName.range(of: "Stage [0-9]+", options: .regularExpression)
+        else {
+            return href
+        }
+        let parts = String(href[link]).dropFirst("race/".count).dropLast("-gc".count)
+        let slug = parts.dropLast("-0000".count)
+        let year = parts.suffix(4)
+        let number = raceName[stage].dropFirst("Stage ".count)
+        return "race/\(slug)/\(year)/stage-\(number)"
+    }
+
+    private static func spanFlagCode(in cell: Element) -> String? {
+        (try? cell.select("span.flag").first()?.className())?
+            .split(separator: " ")
+            .map(String.init)
+            .first { $0.lowercased() != "flag" }
     }
 
     static func getHomepageDocument() async throws -> Document {

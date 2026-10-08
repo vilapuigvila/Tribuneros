@@ -142,7 +142,8 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
                 winnerImgURL: race.winner,
                 podium: race.podium.map { HomeRaces.Representable.RaceFinished.Winner($0) },
                 isCancel: false,
-                raceURL: race.raceURL
+                raceURL: race.raceURL,
+                raceCountryCode: race.raceCountryCode ?? ""
             )
             finished.visibility = revealed.contains(finished.revealKey) ? .shown : .hidden
             return finished

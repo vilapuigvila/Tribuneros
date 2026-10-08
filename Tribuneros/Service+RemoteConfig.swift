@@ -11,6 +11,7 @@ import FirebaseRemoteConfig
 extension Service {
     static let pressURLsKey = "press_urls"
     static let courseDuJourNativeKey = "ct_coursedujour_native"
+    static let underMaintenanceKey = "remote_config_under_maintenance"
 
     private static let defaultPressURLs = """
     [
@@ -33,7 +34,8 @@ extension Service {
         config.configSettings = settings
         config.setDefaults([
             pressURLsKey: defaultPressURLs as NSString,
-            courseDuJourNativeKey: false as NSNumber
+            courseDuJourNativeKey: false as NSNumber,
+            underMaintenanceKey: false as NSNumber
         ])
         return config
     }()
@@ -72,6 +74,20 @@ extension Service {
             .map { ["1", "on", "true", "yes"].contains($0.lowercased()) }
     }
     #endif
+
+    /// The last activated maintenance flag (false on first launch and offline), no network round trip.
+    static func cachedUnderMaintenance() -> Bool {
+        Maintenance.isActive(
+            remoteValue: remoteConfig.configValue(forKey: underMaintenanceKey).boolValue,
+            override: Maintenance.debugOverride
+        )
+    }
+
+    /// Fetches and activates Remote Config, then returns the maintenance flag; a failed fetch keeps the cached one.
+    static func fetchUnderMaintenance() async -> Bool {
+        _ = try? await remoteConfig.fetchAndActivate()
+        return cachedUnderMaintenance()
+    }
 
     static func getPressLinks() async -> [DTO.PressLink] {
         #if DEBUG

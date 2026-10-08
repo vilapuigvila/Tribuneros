@@ -41,12 +41,17 @@ struct HistoryResultCard: View {
     var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: 8) {
-                TribuneruText(
-                    content: race.race,
-                    style: .vaporRowTitle,
-                    color: .tribuneru(.white(level: 1)),
-                    lineLimit: 1
-                )
+                HStack(spacing: 8) {
+                    if !race.raceCountryCode.isEmpty {
+                        VaporFlagView(countryCode: race.raceCountryCode)
+                    }
+                    TribuneruText(
+                        content: race.race,
+                        style: .vaporRowTitle,
+                        color: .tribuneru(.white(level: 1)),
+                        lineLimit: 1
+                    )
+                }
 
                 if !race.raceDetails.isEmpty {
                     TribuneruText(
@@ -67,14 +72,6 @@ struct HistoryResultCard: View {
                                 lineLimit: 1
                             )
                             .frame(width: 20)
-
-                            if let flagURL = winner.flag {
-                                CachedImageView(
-                                    imageUrl: flagURL,
-                                    cornerRadius: 2
-                                )
-                                .frame(width: 16, height: 12)
-                            }
 
                             VStack(alignment: .leading, spacing: 2) {
                                 TribuneruText(

@@ -79,6 +79,7 @@ enum DTO {
         let winner: URL?
         let podium: [Winner]
         let additionalDetails: [AdditionalDetails]
+        var raceCountryCode: String? = nil
     }
     
     struct TomorrowRace: Codable, Equatable {
@@ -154,6 +155,7 @@ extension DTO {
             let name: String
             let team: String
             let time: String
+            var countryCode: String = ""
         }
 
         let stage: String?

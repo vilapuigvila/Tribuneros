@@ -218,6 +218,10 @@ struct RaceResultRow: View {
                 alignment: .leading
             )
 
+            if !row.countryCode.isEmpty {
+                VaporFlagView(countryCode: row.countryCode)
+            }
+
             VStack(alignment: .leading, spacing: 2) {
                 TribuneruText(
                     content: row.name,
@@ -335,7 +339,8 @@ private extension DTO.RaceResultPage {
                 position: "\($0)",
                 name: "RIDER \($0)",
                 team: "Team \($0)",
-                time: $0 == 1 ? "4:12:05" : ($0 < 4 ? ",," : "0:\(10 + $0)")
+                time: $0 == 1 ? "4:12:05" : ($0 < 4 ? ",," : "0:\(10 + $0)"),
+                countryCode: ["be", "nl", "fr", "it"][$0 % 4]
             )
         }
     )
