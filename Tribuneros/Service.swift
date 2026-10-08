@@ -739,6 +739,36 @@ struct Service {
         }
     }
     
+    /// A race page's "Race information" as (label, value): `<li>` rows of two divs, or the newer
+    /// `div.lineh16` run of a bold label div followed by value divs up to the next `<br>`.
+    static func raceInfoPairs(_ doc: Document) throws -> [(key: String, value: String)] {
+        var pairs: [(key: String, value: String)] = []
+        for item in try doc.select("li") {
+            let divs = try item.select("div")
+            guard divs.count >= 2 else { continue }
+            pairs.append((
+                key: try divs[0].text().trimmingCharacters(in: .whitespacesAndNewlines),
+                value: try divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)
+            ))
+        }
+        for label in try doc.select("div.lineh16 > div.bold") {
+            var values: [String] = []
+            var sibling = try label.nextElementSibling()
+            while let element = sibling, element.tagName() != "br", !element.hasClass("bold") {
+                let text = try element.text().trimmingCharacters(in: .whitespacesAndNewlines)
+                if !text.isEmpty {
+                    values.append(text)
+                }
+                sibling = try element.nextElementSibling()
+            }
+            pairs.append((
+                key: try label.text().trimmingCharacters(in: .whitespacesAndNewlines),
+                value: values.joined(separator: " ")
+            ))
+        }
+        return pairs
+    }
+
     static func getNextToFinishRaceDetail(_ urlString: String) async throws -> DTO.RaceDetailInfo? {
         #if DEBUG
         if HomeRaces.MockScenario.current != nil {
@@ -778,30 +808,26 @@ struct Service {
                     var arrival: String = ""
                     var verticalMeters: String = ""
                     
-                    let items = try doc.select("li")
-                    for item in items {
-                        let divs = try item.select("div")
-                        if divs.count >= 2 {
-                            let key = try divs[0].text().trimmingCharacters(in: .whitespacesAndNewlines)
-                            switch key {
-                            case _ where key.lowercased().contains("date"):
-                                date = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
-                            case _ where key.lowercased().contains("start time"):
-                                startTime = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
-                            case _ where key.lowercased().contains("classification"):
-                                classification = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
-                            case _ where key.lowercased().contains("category"):
-                                category = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
-                            case _ where key.lowercased().contains("distance"):
-                                distance = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
-                            case _ where key.lowercased().contains("departure"):
-                                departure = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
-                            case _ where key.lowercased().contains("arrival"):
-                                arrival = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
-                            case _ where key.lowercased().contains("vertical meters"):
-                                verticalMeters = (try? divs[1].text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
-                            default: break
-                            }
+                    for (key, value) in try raceInfoPairs(doc) where !value.isEmpty {
+                        switch key.lowercased() {
+                        case let key where key.contains("date") && date.isEmpty:
+                            date = value
+                        case let key where key.contains("start time") && startTime.isEmpty:
+                            startTime = value
+                        case let key where key.contains("classification") && classification.isEmpty:
+                            classification = value
+                        case let key where key.contains("category") && category.isEmpty:
+                            category = value
+                        case let key where key.contains("distance") && distance.isEmpty:
+                            distance = value
+                        case let key where key.contains("departure") && departure.isEmpty:
+                            departure = value
+                        case let key where key.contains("arrival") && arrival.isEmpty:
+                            arrival = value
+                        case let key where key.contains("vertical meters") && verticalMeters.isEmpty:
+                            verticalMeters = value
+                        default:
+                            break
                         }
                     }
                     let title: String = {

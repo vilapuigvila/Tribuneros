@@ -100,7 +100,7 @@ struct TodayHeroCard: View {
     }
 
     private var stats: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 0) {
             if let startTime = race.startTime {
                 TimelineView(.everyMinute) { context in
                     let hasStarted = race.hasStarted(now: context.date)
@@ -111,20 +111,20 @@ struct TodayHeroCard: View {
                         labelColor: hasStarted ? .tribuneru(.vaporLiveRed) : .tribuneru(.vaporTextSecondary)
                     )
                 }
-                Spacer(minLength: 8)
+                Spacer(minLength: 12)
             }
             statTime(
                 icon: "flag.checkered",
                 time: race.eta,
                 label: "ETA"
             )
-            Spacer(minLength: 8)
+            Spacer(minLength: 12)
             if let genderLabel = race.genderLabel {
                 statValue(
                     icon: "person.fill",
                     value: genderLabel
                 )
-                Spacer(minLength: 8)
+                Spacer(minLength: 12)
             }
             Image(systemName: "chevron.right")
                 .font(.system(size: 12, weight: .semibold))
@@ -147,6 +147,7 @@ struct TodayHeroCard: View {
                 style: .vaporStatTime,
                 color: .tribuneru(.vaporTextPrimary)
             )
+            .fixedSize()
             TribuneruText(
                 content: label,
                 style: .vaporMeta,
@@ -163,6 +164,7 @@ struct TodayHeroCard: View {
                 style: .vaporRaceNameNext,
                 color: .tribuneru(.vaporTextPrimary)
             )
+            .fixedSize()
         }
     }
 

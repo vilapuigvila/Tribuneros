@@ -54,7 +54,19 @@ struct ResultsTodaySection: View {
 
 /// Results today before the first finish: the empty podium painting, full width, with the expected time.
 struct ResultsAwaitingCard: View {
+    private static let bands: [Color.Palette] = [
+        .championBlue,
+        .championRed,
+        .championBlack,
+        .championYellow,
+        .championGreen
+    ]
+
     var firstFinishExpected: String?
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var labelColor: Color.Palette = .vaporTextPrimary
+    @State private var hasPlayedBands = false
 
     var body: some View {
         RaceArtView(
@@ -82,18 +94,31 @@ struct ResultsAwaitingCard: View {
     private func label(_ time: String) -> some View {
         TribuneruText(
             content: "First finish expected \(time)",
-            style: .vaporMeta,
-            color: .tribuneru(.vaporTextPrimary),
+            style: .vaporAwaitingLabel,
+            color: .tribuneru(labelColor),
             lineLimit: 1
         )
+        .contentTransition(.interpolate)
         .opacity(0.8)
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
-        .frame(
-            maxWidth: .infinity,
-            alignment: .leading
-        )
+        .frame(maxWidth: .infinity)
         .background(Color.tribuneru(.vaporPageBackground).opacity(0.6))
+        .task { await playBands() }
+    }
+
+    /// One pass through the jersey's bands: 1s fade into each, held 2s, then back to the usual color.
+    private func playBands() async {
+        guard !hasPlayedBands, !reduceMotion else { return }
+        hasPlayedBands = true
+        for band in Self.bands {
+            withAnimation(.easeInOut(duration: 1)) { labelColor = band }
+            guard (try? await Task.sleep(for: .seconds(3))) != nil else {
+                labelColor = .vaporTextPrimary
+                return
+            }
+        }
+        withAnimation(.easeInOut(duration: 1)) { labelColor = .vaporTextPrimary }
     }
 }
 

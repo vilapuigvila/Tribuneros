@@ -55,6 +55,16 @@ extension Color {
             Color(hex: 0xD3DCE8)
         case .vaporTextMuted:
             Color(hex: 0xB7C2CF)
+        case .championBlue:
+            Color(hex: 0x2563EB)
+        case .championRed:
+            Color(hex: 0xE11D48)
+        case .championBlack:
+            Color(hex: 0x111111)
+        case .championYellow:
+            Color(hex: 0xFACC15)
+        case .championGreen:
+            Color(hex: 0x16A34A)
         }
     }
 
@@ -84,6 +94,12 @@ extension Color {
         case vaporTagNeutral
         case vaporTagNeutralText
         case vaporTextMuted
+        /// The world champion jersey's bands, as drawn in the spoiler paintings.
+        case championBlue
+        case championRed
+        case championBlack
+        case championYellow
+        case championGreen
     }
 }
 

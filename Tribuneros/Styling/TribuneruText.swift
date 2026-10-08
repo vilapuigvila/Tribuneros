@@ -62,7 +62,7 @@ struct TribuneruText: View {
             "SpaceMono-Regular"
         case .vaporHeading, .vaporHeroTitle, .vaporTag, .vaporTagSmall, .vaporResultTitle, .vaporBannerTitle, .vaporSeeAll:
             "SpaceGrotesk-Bold"
-        case .vaporHeroSubtitle:
+        case .vaporHeroSubtitle, .vaporAwaitingLabel:
             "SpaceGrotesk-Medium"
         case .vaporLink, .vaporRowTitle, .vaporRowCountdown:
             "SpaceGrotesk-SemiBold"
@@ -114,6 +114,7 @@ struct TribuneruText: View {
         case .vaporResultTime: 12
         case .vaporBannerTitle: 18
         case .vaporBannerSubtitle: 13
+        case .vaporAwaitingLabel: 13
         }
     }
     private var weight: Font.Weight {
@@ -136,7 +137,7 @@ struct TribuneruText: View {
         case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporTabLabel, .vaporPressName,
              .vaporLink, .vaporRowTitle, .vaporRowCountdown:
             .semibold
-        case .vaporHeroSubtitle:
+        case .vaporHeroSubtitle, .vaporAwaitingLabel:
             .medium
         case .vaporScreenDate, .vaporMeta, .vaporFinishTime, .vaporETALine,
              .vaporFeedDetail, .vaporMonoMeta, .vaporGroupLabel,
@@ -160,6 +161,7 @@ struct TribuneruText: View {
         case .vaporHeroTitle: -0.6
         case .vaporTag: 0.9
         case .vaporTagSmall: 0.7
+        case .vaporAwaitingLabel: 1.2
         default: 0
         }
     }
@@ -229,6 +231,7 @@ extension TribuneruText {
         case vaporBannerTitle
         case vaporBannerSubtitle
         case vaporSeeAll
+        case vaporAwaitingLabel
     }
 }
 
