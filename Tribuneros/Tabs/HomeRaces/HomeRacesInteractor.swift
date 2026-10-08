@@ -17,8 +17,6 @@ struct HomeRacesDomain: Equatable {
     let historyResults: [DTO.TodayResult]
     let tomorrowRaces: [DTO.TomorrowRace]
     let liveStatsRaces: [DTO.LiveStatsRace]
-    private(set) var isOnSpoilerModeResultsToday: Bool
-    private(set) var isOnSpoilerModeResultsYesterday: Bool
     let error: EquatableError?
     private(set) var loading: Bool
     var staleCopy: HomeRaces.StaleCopy? = nil
@@ -26,6 +24,8 @@ struct HomeRacesDomain: Equatable {
     /// Start times by race URL; the homepage has none, so they come from each race's page.
     var startTimes: [String: String] = [:]
     var showSpoilerHint = false
+    /// Race keys revealed this session; never persisted, so every launch starts spoiler-safe.
+    private(set) var revealedRaces: Set<String> = []
 
     static let empty: HomeRacesDomain = .init(
         nextToFinishRaces: [],
@@ -34,17 +34,23 @@ struct HomeRacesDomain: Equatable {
         historyResults: [],
         tomorrowRaces: [],
         liveStatsRaces: [],
-        isOnSpoilerModeResultsToday: false,
-        isOnSpoilerModeResultsYesterday: false,
         error: nil,
         loading: false
     )
     
-    func copy(loading: Bool? = nil, spoilerModeResultsToday: Bool? = nil, isOnSpoilerModeResultsYesterday: Bool? = nil) -> Self {
+    func copy(loading: Bool? = nil) -> Self {
         var copy = self
         copy.loading = loading ?? self.loading
-        copy.isOnSpoilerModeResultsToday = spoilerModeResultsToday ?? self.isOnSpoilerModeResultsToday
-        copy.isOnSpoilerModeResultsYesterday = isOnSpoilerModeResultsYesterday ?? self.isOnSpoilerModeResultsYesterday
+        return copy
+    }
+
+    func togglingReveal(_ key: String) -> Self {
+        var copy = self
+        if copy.revealedRaces.contains(key) {
+            copy.revealedRaces.remove(key)
+        } else {
+            copy.revealedRaces.insert(key)
+        }
         return copy
     }
 }
@@ -78,16 +84,9 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
     
     func useCase(_ useCase: UseCase) {
         switch useCase {
-        case .spoilerModeResultToday:
-            let toggle = !(UserSettings.spoilerModeResultsToday ?? false)
-            UserSettings.spoilerModeResultsToday = toggle
+        case .toggleReveal(let key):
             hintVisible = false
-            subject.send(applyingHint(domain.copy(spoilerModeResultsToday: toggle)))
-        case .spoilerModeResultYesterday:
-            let toggle = !(UserSettings.spoilerModeResultsYesterday ?? false)
-            UserSettings.spoilerModeResultsYesterday = toggle
-            hintVisible = false
-            subject.send(applyingHint(domain.copy(isOnSpoilerModeResultsYesterday: toggle)))
+            subject.send(applyingHint(domain.togglingReveal(key)))
         case .dismissSpoilerHint:
             hintVisible = false
             subject.send(applyingHint(domain))
@@ -95,12 +94,7 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
             guard task == nil else { return }
             #if DEBUG
             if let scenario = HomeRaces.MockScenario.current {
-                subject.send(
-                    scenario.domain(
-                        isOnSpoilerModeResultsToday: UserSettings.spoilerModeResultsToday ?? false,
-                        isOnSpoilerModeResultsYesterday: UserSettings.spoilerModeResultsYesterday ?? false
-                    )
-                )
+                subject.send(scenario.domain(revealedRaces: domain.revealedRaces))
                 evaluateSpoilerHint()
                 loadHeroStartTime()
                 return
@@ -131,13 +125,12 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                             historyResults: historyResults,
                             tomorrowRaces: result.tomorrowRaces,
                             liveStatsRaces: result.liveStats,
-                            isOnSpoilerModeResultsToday: UserSettings.spoilerModeResultsToday ?? false,
-                            isOnSpoilerModeResultsYesterday: UserSettings.spoilerModeResultsYesterday ?? false,
                             error: (result.nextToFinish.isEmpty && result.today.isEmpty && result.yesterdayResults.isEmpty && result.tomorrowRaces.isEmpty && result.liveStats.isEmpty) ?
                                 HomeRaces.ErrorReason.emptyResponse.toEquatableError() : nil,
                             loading: false,
                             staleCopy: staleCopy,
-                            previews: result.previews
+                            previews: result.previews,
+                            revealedRaces: self?.domain.revealedRaces ?? []
                         )
                     )
                     self?.evaluateSpoilerHint()
@@ -151,10 +144,9 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                             historyResults: [],
                             tomorrowRaces: [],
                             liveStatsRaces: [],
-                            isOnSpoilerModeResultsToday: UserSettings.spoilerModeResultsToday ?? false,
-                            isOnSpoilerModeResultsYesterday: UserSettings.spoilerModeResultsYesterday ?? false,
                             error: error.toEquatableError(),
-                            loading: false
+                            loading: false,
+                            revealedRaces: self?.domain.revealedRaces ?? []
                         )
                     )
                 }
@@ -224,8 +216,7 @@ extension HomeRaces {
     enum UseCase: Sendable {
         case requestDayRaces(date: Date)
         case cancelRequestStation
-        case spoilerModeResultToday
-        case spoilerModeResultYesterday
+        case toggleReveal(key: String)
         case dismissSpoilerHint
 //        case navigate(HomeRaces.Navigate)
     }

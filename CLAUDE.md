@@ -21,7 +21,7 @@ scraped server-side by a Firebase Cloud Function and read from Firestore (see "D
 - Run a single test: add `-only-testing:TribunerosTests/<TestClass>/<testMethod>` to the `test` invocation above.
 - Test plan (`Tribuneros/Tribuneros.xctestplan`) skips the placeholder `TribunerosTests.testExample`.
 - If Swift Package resolution breaks: Xcode → File → Packages → Reset Package Caches, then clear DerivedData.
-- Debug-only launch env flags: `MOCK_SCENARIO=live|later|one|empty|stale|history|previews` (or a `mockScenario` launch argument, which is what the Maestro flows pass) is the one switch for all mock data: fixed Today Races data instead of the PCS fetch, the race info stubs, the race result pages it opens (a mock top 10), the Course du Jour schedule, the Paddock feed, press list and rider pages, and the CX Zone documents and detail pages (no PCS, cyclocross24, Firestore, `cxDetail` or YouTube request), see `HomeRaces.MockScenario.swift`; unset or unknown means real data. `CT_COURSEDUJOUR_NATIVE` (or `ctCoursedujourNative`) only overrides the Remote Config flag `isCourseDuJourNativeEnabled`, it never turns on mocks. `DEBUG_BACKGROUND=1` (highlights view backgrounds via `.debugBackground()`) and `FIREBASE_EMULATOR=1` (Firestore and `cxDetail` on the local emulators, see `Service.useFirebaseEmulatorIfEnabled()`; seed `cx/*` by calling `runCxScrape` with `FIRESTORE_EMULATOR_HOST` set). From the CLI: `SIMCTL_CHILD_FIREBASE_EMULATOR=1 xcrun simctl launch <device> com.pskmoons.Tribuneros`.
+- Debug-only launch env flags: `MOCK_SCENARIO=live|later|one|empty|stale|history|previews|pending` (or a `mockScenario` launch argument, which is what the Maestro flows pass) is the one switch for all mock data: fixed Today Races data instead of the PCS fetch, the race info stubs, the race result pages it opens (a mock top 10), the Course du Jour schedule, the Paddock feed, press list and rider pages, and the CX Zone documents and detail pages (no PCS, cyclocross24, Firestore, `cxDetail` or YouTube request), see `HomeRaces.MockScenario.swift`; unset or unknown means real data. `CT_COURSEDUJOUR_NATIVE` (or `ctCoursedujourNative`) only overrides the Remote Config flag `isCourseDuJourNativeEnabled`, it never turns on mocks. `DEBUG_BACKGROUND=1` (highlights view backgrounds via `.debugBackground()`) and `FIREBASE_EMULATOR=1` (Firestore and `cxDetail` on the local emulators, see `Service.useFirebaseEmulatorIfEnabled()`; seed `cx/*` by calling `runCxScrape` with `FIRESTORE_EMULATOR_HOST` set). From the CLI: `SIMCTL_CHILD_FIREBASE_EMULATOR=1 xcrun simctl launch <device> com.pskmoons.Tribuneros`.
 
 ### Tests
 
@@ -140,10 +140,14 @@ bar), then four sections:
   fixture's list is), so TODAY is the common tag; the old LiveStats cards are gone. A " - S2"
   suffix on the name is the stage (`title` / `stageLabel`); without one it reads "One-day race". The
   "in 2h 14m" text is computed from the ETA and refreshed by `TimelineView(.everyMinute)`.
-- **Results today** and **Yesterday**: the title, a `VaporSpoilerChip` under it, then highlight
-  cards / one card of rows. Spoilers default off and fold the content away (`FoldingContent` doesn't even build it, so no images load; one setting each, in
-  `UserSettings`). Yesterday previews 3 rows; its "See all" pushes `YesterdayResultsListView`
-  behind the same chip. Cards and rows open the race's PCS results page in Safari
+- **Results today** and **Yesterday**: the title, then highlight cards / one card of rows.
+  Results start hidden: each card or row shows the `SpoilerArt` painting over redacted stand-in
+  data (no real names or images reach the view), and a double tap reveals or hides that one race
+  (`Domain.revealedRaces`, keyed by `raceURL` or name, in memory only, so every launch starts
+  hidden). A one-time `SpoilerHint` callout explains the double tap. An empty Results today shows
+  the `EmptyPodiumArt` card with "First finish expected HH:MM"; an empty Yesterday says "No
+  results yesterday". Yesterday previews 3 rows; its "See all" pushes `YesterdayResultsListView`,
+  with the same per-race reveal. Cards and rows open the race's PCS results page in Safari
   (`DTO.TodayResult.raceURL`). Both results parsers split the title (`<b>`) from the route and
   distance (`<span>`).
 - **History**: a placeholder banner (`HistoryBanner`) with an inert "See all" until there is data.

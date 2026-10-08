@@ -147,6 +147,15 @@ extension HomeRaces {
             return raw.range(of: pattern, options: .regularExpression).map { String(raw[$0]) }
         }
 
+        /// The earliest finish among today's races as "HH:mm", or nil when none has a finish time.
+        static func firstFinishTime(_ races: [Representable.RaceNext]) -> String? {
+            guard let first = races.compactMap(\.finishDate).min() else { return nil }
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.dateFormat = "HH:mm"
+            return formatter.string(from: first)
+        }
+
         static func build(
             nextToFinish: [DTO.NextToFinishResult],
             liveStats: [DTO.LiveStatsRace],

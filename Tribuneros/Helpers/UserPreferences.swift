@@ -10,8 +10,6 @@ import Combine
 
 enum UserPreferencesKey: String {
     case lastListStationsRequest
-    case spoilerModeResultsToday
-    case spoilerModeResultsYesterday
     case spoilerModeResultsTomorrow
     case spoilerHintFirstShown
     case spoilerHintShownCount
@@ -127,14 +125,6 @@ struct UserSettings {
     @UserDefault(UserPreferencesKey.lastHomeStationRequest.rawValue, defaultValue: nil)
     static var lastHomeStationRequest: PREF.LastRequests?*/
     
-//    @UserDefault(UserPreferencesKey.spoilerModeResultsToday.rawValue, defaultValue: nil)
-//    static var lastListStationsRequest: TimeInterval?
-    
-    @UserDefault(UserPreferencesKey.spoilerModeResultsToday.rawValue, defaultValue: false)
-    static var spoilerModeResultsToday: Bool?
-    
-    @UserDefault(UserPreferencesKey.spoilerModeResultsYesterday.rawValue, defaultValue: false)
-    static var spoilerModeResultsYesterday: Bool?
     @UserDefault(UserPreferencesKey.spoilerModeResultsTomorrow.rawValue, defaultValue: false)
     static var spoilerModeResultsTomorrow: Bool?
 

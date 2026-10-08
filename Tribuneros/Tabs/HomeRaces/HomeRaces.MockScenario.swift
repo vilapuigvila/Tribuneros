@@ -18,6 +18,8 @@ extension HomeRaces {
         case history
         /// No races today, so the resting card shrinks, plus three homepage previews.
         case previews
+        /// `live` races still to finish, before any result today: the empty podium with its expected time.
+        case pending
 
         /// The one mock switch: every mock in the app asks this, and nil means real data.
         static var current: MockScenario? {
@@ -37,25 +39,23 @@ extension HomeRaces {
 
         func domain(
             now: Date = Date(),
-            isOnSpoilerModeResultsToday: Bool,
-            isOnSpoilerModeResultsYesterday: Bool
+            revealedRaces: Set<String> = []
         ) -> HomeRacesDomain {
             let races = nextToFinish(now: now)
             var domain = HomeRacesDomain(
                 nextToFinishRaces: races,
-                todayRaces: self == .empty ? [] : Self.resultsToday,
+                todayRaces: self == .empty || self == .pending ? [] : Self.resultsToday,
                 yesterdayResults: self == .empty ? [] : Self.resultsYesterday,
                 historyResults: self == .history ? Self.resultsHistory : [],
                 tomorrowRaces: [],
                 liveStatsRaces: liveStats(for: races),
-                isOnSpoilerModeResultsToday: isOnSpoilerModeResultsToday,
-                isOnSpoilerModeResultsYesterday: isOnSpoilerModeResultsYesterday,
                 error: nil,
                 loading: false,
                 staleCopy: self == .stale ? HomeRaces.StaleCopy(
                     savedAt: now.addingTimeInterval(-3 * 3600),
                     isOffline: true
-                ) : nil
+                ) : nil,
+                revealedRaces: revealedRaces
             )
             if self == .previews || self == .live {
                 domain.previews = Self.mockPreviews
@@ -69,7 +69,7 @@ extension HomeRaces {
             let coppa = race("Coppa Bernocchi", in: 217, category: "ME", raceType: "1.1", flag: "it", path: "race/coppa-bernocchi/2026/result", now: now)
             let montreal = race("GP de Montréal", in: 427, category: "ME", raceType: "1.UWT", flag: "ca", path: "race/gp-de-montreal/2026/result", now: now)
             switch self {
-            case .live, .stale, .history: return [montreal, coppa, cro, chrono]
+            case .live, .stale, .history, .pending: return [montreal, coppa, cro, chrono]
             case .later: return [montreal, chrono]
             case .one: return [cro]
             case .empty, .previews: return []

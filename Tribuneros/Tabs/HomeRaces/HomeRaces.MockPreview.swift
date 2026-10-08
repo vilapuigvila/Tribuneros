@@ -17,35 +17,32 @@ import SwiftUI
 extension HomeRaces.Representable {
     /// A fully populated Home screen: every section has data, so every
     /// card shape (next to finish, results with a 3-rider podium)
-    /// renders at once without touching the network.
-    ///
-    /// Spoiler mode starts ON (results visible) — `false` is the real app's
-    /// own default for a first-time user (matches a fresh `HomeRacesDomain`),
-    /// but that's the wrong default for a review mock: it would hide two of
-    /// the four sections behind a tap, and while something else is driving
-    /// `HomeRaces.MainView` with a fixed `.mockFull` (rather than through
-    /// `HomeRacesMockHarness`, where the toggle is wired up) that tap is a
-    /// no-op — so hidden-by-default would mean permanently hidden. Use
-    /// `mockFull(spoilerModeOn: false)` to deliberately check that state.
+    /// renders at once without touching the network. Results are shown;
+    /// use `mockFull(spoilerModeOn: false)` to check the hidden state.
     static var mockFull: HomeRaces.Representable {
         mockFull(spoilerModeOn: true)
     }
 
-    /// Same data, both spoiler toggles set explicitly.
+    /// Same data, every result shown (`true`) or hidden (`false`).
     static func mockFull(spoilerModeOn: Bool) -> HomeRaces.Representable {
-        .init(
+        let visibility: HomeRaces.ResultVisibility = spoilerModeOn ? .shown : .hidden
+        return .init(
             sections: .init(
                 title: "",
-                spoilerMode: .init(
-                    isSpoilerModeResultsToday: spoilerModeOn,
-                    isSpoilerModeResultsYesterday: spoilerModeOn
-                ),
                 nextToFinish: RaceNext.mockFullList,
-                racesFinished: RaceFinished.mockToday,
-                yesterdayResults: RaceFinished.mockYesterday,
+                racesFinished: RaceFinished.mockToday.map { $0.with(visibility) },
+                yesterdayResults: RaceFinished.mockYesterday.map { $0.with(visibility) },
                 historyResults: []
             )
         )
+    }
+}
+
+extension HomeRaces.Representable.RaceFinished {
+    func with(_ visibility: HomeRaces.ResultVisibility) -> Self {
+        var copy = self
+        copy.visibility = visibility
+        return copy
     }
 }
 
@@ -122,53 +119,39 @@ extension HomeRaces.Representable.RaceFinished {
 /// decoupled state/action contract the ViewModel itself renders through).
 private struct HomeRacesMockHarness: View {
     @State private var viewState: HomeRaces.ViewState
-    @State private var isSpoilerModeResultsToday: Bool
-    @State private var isSpoilerModeResultsYesterday: Bool
 
     init(initialState: HomeRaces.ViewState = .loaded(.mockFull)) {
         _viewState = State(initialValue: initialState)
-        if case .loaded(let representable) = initialState {
-            _isSpoilerModeResultsToday = State(initialValue: representable.sections.spoilerMode.isSpoilerModeResultsToday)
-            _isSpoilerModeResultsYesterday = State(initialValue: representable.sections.spoilerMode.isSpoilerModeResultsYesterday)
-        } else {
-            _isSpoilerModeResultsToday = State(initialValue: false)
-            _isSpoilerModeResultsYesterday = State(initialValue: false)
-        }
     }
 
     var body: some View {
         HomeRaces.MainView(state: viewState) { action in
             switch action {
-            case .spoilerModeResultToday:
-                isSpoilerModeResultsToday.toggle()
-                rebuild()
-            case .spoilerModeResultYesterday:
-                isSpoilerModeResultsYesterday.toggle()
-                rebuild()
+            case .toggleReveal(let race):
+                toggle(race)
             case .onAppear, .onDisappear, .dismissSpoilerHint, .navigate, .openLink, .openRaceResult, .openRacePreview:
                 break
             }
         }
     }
 
-    private func rebuild() {
-        guard case .loaded(let representable) = viewState else { return }
-        viewState = .loaded(
-            HomeRaces.Representable(
-                sections: .init(
-                    title: representable.sections.title,
-                    spoilerMode: .init(
-                        isSpoilerModeResultsToday: isSpoilerModeResultsToday,
-                        isSpoilerModeResultsYesterday: isSpoilerModeResultsYesterday
-                    ),
-                    nextToFinish: representable.sections.nextToFinish,
-                    racesFinished: representable.sections.racesFinished,
-                    yesterdayResults: representable.sections.yesterdayResults,
-                    historyResults: representable.sections.historyResults
-                ),
-                staleCopy: representable.staleCopy
-            )
+    private func toggle(_ race: HomeRaces.Representable.RaceFinished) {
+        guard case .loaded(var representable) = viewState else { return }
+        func flipped(_ races: [HomeRaces.Representable.RaceFinished]) -> [HomeRaces.Representable.RaceFinished] {
+            races.map { $0.revealKey == race.revealKey ? $0.with($0.visibility == .shown ? .hidden : .shown) : $0 }
+        }
+        let sections = representable.sections
+        representable = HomeRaces.Representable(
+            sections: .init(
+                title: sections.title,
+                nextToFinish: sections.nextToFinish,
+                racesFinished: flipped(sections.racesFinished),
+                yesterdayResults: flipped(sections.yesterdayResults),
+                historyResults: sections.historyResults
+            ),
+            staleCopy: representable.staleCopy
         )
+        viewState = .loaded(representable)
     }
 }
 

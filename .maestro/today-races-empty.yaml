@@ -1,6 +1,6 @@
 # Today section on a day without races (mock scenario "empty", Debug build only): the resting
-# scene replaces the hero, there is no "See all", and the results sections show redacted
-# placeholder cards (no spoiler chip, no double tap) instead of an empty note.
+# scene replaces the hero, there is no "See all", and the results sections show their empty-state
+# cards once loaded (no grey placeholders, no double tap).
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -23,17 +23,23 @@ tags:
     id: "home.today.seeAll"
 - assertVisible: "Results today"
 - assertVisible:
+    id: "home.results.empty"
+    text: "No results yet.*"
+- assertNotVisible:
     id: "home.results.placeholder.0"
-    text: "Loading results"
 - assertNotVisible:
     id: "home.results.spoiler"
 - assertNotVisible: "Race name placeholder"
 - scrollUntilVisible:
     element:
-      id: "home.yesterday.placeholder.row.0"
+      id: "home.yesterday.empty"
 - assertVisible: "Results yesterday"
 - assertVisible:
+    id: "home.yesterday.empty"
+    text: "No results yesterday.*"
+- assertNotVisible:
     id: "home.yesterday.placeholder.row.0"
-    text: "Loading results"
+- assertNotVisible:
+    id: "home.yesterday.seeAll"
 - assertNotVisible:
     id: "home.yesterday.spoiler"

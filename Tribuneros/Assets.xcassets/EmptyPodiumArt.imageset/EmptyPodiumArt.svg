@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100" viewBox="0 0 200 100">
+<rect width="200" height="100" fill="#FACC15"/>
+<g transform="translate(20 0)">
+<g transform="translate(80 4) scale(0.75) translate(-80 -7)">
+<path d="M76 13 Q76 7 80 7 Q84 7 84 11 Q84 14 80 16" fill="none" stroke="#111111" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M64 24 L80 16 L96 24" fill="none" stroke="#111111" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M68 23 L57 30 L61 39 L68 35 L68 52 L92 52 L92 35 L99 39 L103 30 L92 23 Q80 30 68 23 Z" fill="#FFFFFF"/>
+<rect x="68" y="36" width="24" height="1.8" fill="#2563EB"/>
+<rect x="68" y="37.8" width="24" height="1.8" fill="#E11D48"/>
+<rect x="68" y="39.6" width="24" height="1.8" fill="#111111"/>
+<rect x="68" y="41.4" width="24" height="1.8" fill="#FACC15"/>
+<rect x="68" y="43.2" width="24" height="1.8" fill="#16A34A"/>
+<path transform="translate(1.6 -1.2)" d="M68 23 L57 30 L61 39 L68 35 L68 52 L92 52 L92 35 L99 39 L103 30 L92 23 Q80 30 68 23 Z" fill="none" stroke="#111111" stroke-width="1.6"/>
+</g>
+<rect x="22" y="54" width="40" height="46" fill="#FFFFFF"/>
+<rect x="60" y="40" width="40" height="60" fill="#FFFFFF"/>
+<rect x="98" y="60" width="40" height="40" fill="#FFFFFF"/>
+<g fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M38.5 60.5 Q38.5 58 42 58 Q45.5 58 45.5 60.8 Q45.5 63 38.5 68 L45.5 68"/>
+<path d="M77.5 45.5 L80.5 44 L80.5 54"/>
+<path d="M114.5 65.5 Q115 64 118 64 Q121.5 64 121.5 66.6 Q121.5 69 118 69 Q121.5 69 121.5 71.6 Q121.5 74 118 74 Q115 74 114.5 72.5"/>
+</g>
+<path transform="translate(1.6 -1.2)" d="M22 100 L22 54 L60 54 L60 40 L100 40 L100 60 L138 60 L138 100" fill="none" stroke="#111111" stroke-width="1.4"/>
+</g>
+</svg>

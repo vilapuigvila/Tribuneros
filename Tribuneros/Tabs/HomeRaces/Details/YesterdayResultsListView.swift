@@ -7,7 +7,6 @@ import SwiftUI
 
 struct YesterdayResultsListView: View {
     let races: [HomeRaces.Representable.RaceFinished]
-    let isSpoilerModeOn: Bool
     let action: (HomeRaces.Action) -> Void
 
     var body: some View {
@@ -25,12 +24,10 @@ struct YesterdayResultsListView: View {
                 }
                 YesterdayResultsCard(
                     races: races,
-                    visibility: isSpoilerModeOn ? .shown : .hidden,
                     identifierPrefix: "yesterdayResults",
                     open: { race in action(.openRaceResult(race)) },
-                    toggle: { action(.spoilerModeResultYesterday) }
+                    toggle: { race in action(.toggleReveal(race)) }
                 )
-                .spoilerCrossfade(isSpoilerModeOn)
             }
         }
     }

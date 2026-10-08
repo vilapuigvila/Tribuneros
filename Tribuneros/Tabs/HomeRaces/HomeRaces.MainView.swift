@@ -34,8 +34,7 @@ struct HomeRacesView: View {
                 }
             case .yesterdayResults:
                 YesterdayResultsListView(
-                    races: sections.yesterdayResults,
-                    isSpoilerModeOn: sections.spoilerMode.isSpoilerModeResultsYesterday
+                    races: sections.yesterdayResults
                 ) {
                     viewModel.action($0)
                 }
@@ -158,14 +157,13 @@ extension HomeRaces {
 
                     ResultsTodaySection(
                         races: sections.racesFinished,
-                        isSpoilerModeOn: sections.spoilerMode.isSpoilerModeResultsToday,
+                        firstFinishExpected: sections.firstFinishExpected,
                         isHintAnchor: representable.showSpoilerHint && !sections.racesFinished.isEmpty,
                         action: action
                     )
 
                     YesterdaySection(
                         races: sections.yesterdayResults,
-                        isSpoilerModeOn: sections.spoilerMode.isSpoilerModeResultsYesterday,
                         isHintAnchor: representable.showSpoilerHint && sections.racesFinished.isEmpty && !sections.yesterdayResults.isEmpty,
                         action: action
                     )

@@ -373,19 +373,19 @@ extension View {
 
 struct SpoilerCrossfade: ViewModifier {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    let isSpoilerModeOn: Bool
+    let visibility: HomeRaces.ResultVisibility
 
     func body(content: Content) -> some View {
         content.animation(
             reduceMotion ? nil : .easeInOut(duration: 0.25),
-            value: isSpoilerModeOn
+            value: visibility
         )
     }
 }
 
 extension View {
-    func spoilerCrossfade(_ isSpoilerModeOn: Bool) -> some View {
-        modifier(SpoilerCrossfade(isSpoilerModeOn: isSpoilerModeOn))
+    func spoilerCrossfade(_ visibility: HomeRaces.ResultVisibility) -> some View {
+        modifier(SpoilerCrossfade(visibility: visibility))
     }
 }
 

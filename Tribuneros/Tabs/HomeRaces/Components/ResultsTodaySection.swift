@@ -7,53 +7,131 @@ import SwiftUI
 
 struct ResultsTodaySection: View {
     let races: [HomeRaces.Representable.RaceFinished]
-    let isSpoilerModeOn: Bool
+    var firstFinishExpected: String?
     var isHintAnchor = false
     let action: (HomeRaces.Action) -> Void
 
     var body: some View {
         HomeSection(title: "Results today") {
-            cards
+            if races.isEmpty {
+                ResultsAwaitingCard(firstFinishExpected: firstFinishExpected)
+            } else {
+                cards
+            }
         }
-    }
-
-    private var visibility: HomeRaces.ResultVisibility {
-        if races.isEmpty { return .placeholder }
-        return isSpoilerModeOn ? .shown : .hidden
-    }
-
-    private var shownRaces: [HomeRaces.Representable.RaceFinished] {
-        races.isEmpty ? Array(HomeRaces.Representable.placeholderResults.prefix(2)) : races
     }
 
     private var cards: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                ForEach(Array(shownRaces.enumerated()), id: \.offset) { index, race in
+                ForEach(Array(races.enumerated()), id: \.offset) { index, race in
                     ResultHighlightCard(
                         race: race,
-                        visibility: visibility
+                        visibility: race.visibility
                     )
-                    .accessibilityIdentifier("home.results.\(races.isEmpty ? "placeholder" : "card").\(index)")
+                    .accessibilityIdentifier("home.results.\(race.visibility == .placeholder ? "placeholder" : "card").\(index)")
                     .spoilerHintAnchor(isHintAnchor && index == 0)
                     .spoilerArt(
-                        visibility,
+                        race.visibility,
                         size: CGSize(width: 180, height: 112),
                         alignment: .top,
                         identifier: "home.results.spoilerArt.\(index)"
                     )
                     .resultGestures(
-                        visibility,
+                        race.visibility,
                         open: { action(.openRaceResult(race)) },
-                        toggle: { action(.spoilerModeResultToday) }
+                        toggle: { action(.toggleReveal(race)) }
                     )
-                    .spoilerCrossfade(isSpoilerModeOn)
+                    .spoilerCrossfade(race.visibility)
                 }
             }
             .fixedSize(horizontal: false, vertical: true)
         }
         .contentMargins(.horizontal, 16, for: .scrollContent)
         .padding(.horizontal, -16)
+    }
+}
+
+/// Results today before the first finish: the empty podium painting, full width, with the expected time.
+struct ResultsAwaitingCard: View {
+    var firstFinishExpected: String?
+
+    var body: some View {
+        RaceArtView(
+            art: .emptyPodium,
+            alignment: .top
+        )
+        .frame(maxWidth: .infinity)
+        .frame(height: 180)
+        .overlay(alignment: .bottom) {
+            if let firstFinishExpected {
+                label(firstFinishExpected)
+            }
+        }
+        .homeCard(cornerRadius: 16)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityText)
+        .accessibilityIdentifier("home.results.empty")
+    }
+
+    private var accessibilityText: String {
+        guard let firstFinishExpected else { return "No results yet" }
+        return "No results yet, first finish expected \(firstFinishExpected)"
+    }
+
+    private func label(_ time: String) -> some View {
+        TribuneruText(
+            content: "First finish expected \(time)",
+            style: .vaporMeta,
+            color: .tribuneru(.vaporTextPrimary),
+            lineLimit: 1
+        )
+        .opacity(0.8)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .frame(
+            maxWidth: .infinity,
+            alignment: .leading
+        )
+        .background(Color.tribuneru(.vaporPageBackground).opacity(0.6))
+    }
+}
+
+/// A section with nothing to list yet; same footprint as one of its result cards, no gestures.
+struct ResultsEmptyCard: View {
+    let title: String
+    var subtitle: String?
+    let size: CGSize
+    let identifier: String
+    var isFullWidth = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            TribuneruText(
+                content: title,
+                style: .vaporResultTitle,
+                color: .tribuneru(.vaporTextPrimary),
+                lineLimit: 1
+            )
+            if let subtitle {
+                TribuneruText(
+                    content: subtitle,
+                    style: .vaporMeta,
+                    color: .tribuneru(.vaporTextSecondary),
+                    lineLimit: 2
+                )
+            }
+        }
+        .padding(16)
+        .frame(
+            maxWidth: isFullWidth ? .infinity : size.width,
+            minHeight: size.height,
+            maxHeight: size.height,
+            alignment: .leading
+        )
+        .homeCard(cornerRadius: 16)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier(identifier)
     }
 }
 

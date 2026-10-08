@@ -84,7 +84,7 @@ enum HomeRaces {
         
         var result: Representable {
             guard case .loaded(let result) = self else {
-                return .init(sections: .init(title: "", spoilerMode: .empty, nextToFinish: [], racesFinished: [], yesterdayResults: [], historyResults: []))
+                return .init(sections: .init(title: "", nextToFinish: [], racesFinished: [], yesterdayResults: [], historyResults: []))
             }
             return result
         }
@@ -94,12 +94,12 @@ enum HomeRaces {
         struct Section: Identifiable {
             let id = UUID()
             let title: String
-            let spoilerMode: SpoilerMode
             let nextToFinish: [RaceNext]
             let racesFinished: [RaceFinished]
             let yesterdayResults: [RaceFinished]
             let historyResults: [RaceFinished]
             var previews: [RacePreview] = []
+            var firstFinishExpected: String? = nil
         }
         /// A homepage "Previews" entry; the `racePreview` route's payload.
         struct RacePreview: Identifiable, Hashable, Sendable {
@@ -127,6 +127,7 @@ enum HomeRaces {
             let podium: [Winner]
             let isCancel: Bool
             var raceURL: URL? = nil
+            var visibility: ResultVisibility = .shown
         }
         struct RaceNext: Identifiable {
             let id = UUID()
@@ -147,15 +148,10 @@ enum HomeRaces {
         var staleCopy: StaleCopy? = nil
         var showSpoilerHint = false
 
-        /// Stand-ins shaped like a real page, drawn redacted while it loads. Spoiler mode is on
-        /// so the result sections show their cards.
+        /// Stand-ins shaped like a real page, drawn redacted while it loads.
         static let placeholders = Representable(
             sections: Section(
                 title: "",
-                spoilerMode: SpoilerMode(
-                    isSpoilerModeResultsToday: true,
-                    isSpoilerModeResultsYesterday: true
-                ),
                 nextToFinish: (1...2).map { _ in
                     RaceNext(
                         eta: "00:00",
@@ -189,7 +185,8 @@ enum HomeRaces {
                         time: "0:00:00"
                     )
                 ],
-                isCancel: false
+                isCancel: false,
+                visibility: .placeholder
             )
         }
     }
@@ -207,21 +204,10 @@ enum HomeRaces {
         let isOffline: Bool
     }
 
-    struct SpoilerMode: Identifiable {
-        let id = UUID()
-        let isSpoilerModeResultsToday: Bool
-        let isSpoilerModeResultsYesterday: Bool
-        
-        static var empty: Self {
-            .init(isSpoilerModeResultsToday: false, isSpoilerModeResultsYesterday: false)
-        }
-    }
-    
     enum Action: Hashable, Sendable {
         case onAppear
         case onDisappear
-        case spoilerModeResultToday
-        case spoilerModeResultYesterday
+        case toggleReveal(Representable.RaceFinished)
         case dismissSpoilerHint
         case navigate(Navigate)
         case openLink(URL)
@@ -320,6 +306,11 @@ struct DemoView: View {
 }
 
 extension HomeRaces.Representable.RaceFinished {
+    /// The PCS results page identifies a race across Results today and yesterday; `id` changes every load.
+    var revealKey: String {
+        raceURL?.absoluteString ?? race
+    }
+
     var winner: Winner? {
         podium.first.flatMap { $0.name.isEmpty ? nil : $0 }
     }

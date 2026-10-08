@@ -1,0 +1,23 @@
+# Results today before the first finish (mock scenario "pending", Debug build only): races are on
+# today's list but none has finished, so the empty podium card shows the expected first finish.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: pending
+- extendedWaitUntil:
+    visible:
+      id: "home.results.empty"
+    timeout: 20000
+- assertVisible:
+    id: "home.results.empty"
+    text: "No results yet, first finish expected \\d{2}:\\d{2}"
+- assertVisible: "First finish expected \\d{2}:\\d{2}"
+- assertNotVisible:
+    id: "home.results.placeholder.0"
+- assertNotVisible:
+    id: "home.results.spoilerArt.0"

@@ -1,5 +1,6 @@
-# The spoiler art in the photo slot of Results today card 0 and Yesterday row 0 while spoilers
-# are off, gone once a card or row is double tapped (mock scenario "live", Debug build only).
+# The spoiler art in the photo slot of every Results today card and Yesterday row while hidden;
+# a double tap removes it from that one race only, and a second double tap brings it back (mock
+# scenario "live", Debug build only).
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -13,31 +14,41 @@ tags:
     visible:
       id: "home.results.spoilerArt.0"
     timeout: 20000
-- assertNotVisible:
-    id: "home.results.spoiler"
-- scrollUntilVisible:
-    element:
-      id: "home.yesterday.spoilerArt.0"
+- tapOn:
+    id: home.spoilerHint
+    optional: true
 - assertVisible:
-    id: "home.yesterday.spoilerArt.0"
-- scrollUntilVisible:
-    element:
-      id: "home.results.spoilerArt.0"
-    direction: UP
+    id: "home.results.spoilerArt.1"
 - doubleTapOn:
     id: "home.results.spoilerArt.0"
     retryTapIfNoChange: false
     delay: 1
 - assertNotVisible:
     id: "home.results.spoilerArt.0"
+- assertVisible:
+    id: "home.results.spoilerArt.1"
+- doubleTapOn:
+    id: "home.results.card.0"
+    retryTapIfNoChange: false
+    delay: 1
+- assertVisible:
+    id: "home.results.spoilerArt.0"
 - scrollUntilVisible:
     element:
       id: "home.yesterday.spoilerArt.0"
 - assertVisible:
-    id: "home.yesterday.spoilerArt.0"
+    id: "home.yesterday.spoilerArt.1"
 - doubleTapOn:
     id: "home.yesterday.spoilerArt.0"
     retryTapIfNoChange: false
     delay: 1
 - assertNotVisible:
+    id: "home.yesterday.spoilerArt.0"
+- assertVisible:
+    id: "home.yesterday.spoilerArt.1"
+- doubleTapOn:
+    id: "home.yesterday.row.0"
+    retryTapIfNoChange: false
+    delay: 1
+- assertVisible:
     id: "home.yesterday.spoilerArt.0"

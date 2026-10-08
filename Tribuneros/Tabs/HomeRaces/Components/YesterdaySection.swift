@@ -9,7 +9,6 @@ struct YesterdaySection: View {
     static let previewLimit = 3
 
     let races: [HomeRaces.Representable.RaceFinished]
-    let isSpoilerModeOn: Bool
     var isHintAnchor = false
     let action: (HomeRaces.Action) -> Void
 
@@ -24,30 +23,34 @@ struct YesterdaySection: View {
             seeAll: seeAll,
             seeAllIdentifier: "home.yesterday.seeAll"
         ) {
-            YesterdayResultsCard(
-                races: races.isEmpty
-                    ? Array(HomeRaces.Representable.placeholderResults.prefix(Self.previewLimit))
-                    : Array(races.prefix(Self.previewLimit)),
-                visibility: races.isEmpty ? .placeholder : (isSpoilerModeOn ? .shown : .hidden),
-                identifierPrefix: races.isEmpty ? "home.yesterday.placeholder" : "home.yesterday",
-                artIdentifierPrefix: "home.yesterday.spoilerArt",
-                hintAnchorIndex: isHintAnchor ? 0 : nil,
-                open: { race in action(.openRaceResult(race)) },
-                toggle: { action(.spoilerModeResultYesterday) }
-            )
-            .spoilerCrossfade(isSpoilerModeOn)
+            if races.isEmpty {
+                ResultsEmptyCard(
+                    title: "No results yesterday",
+                    size: CGSize(width: 0, height: 108),
+                    identifier: "home.yesterday.empty",
+                    isFullWidth: true
+                )
+            } else {
+                YesterdayResultsCard(
+                    races: Array(races.prefix(Self.previewLimit)),
+                    identifierPrefix: "home.yesterday",
+                    artIdentifierPrefix: "home.yesterday.spoilerArt",
+                    hintAnchorIndex: isHintAnchor ? 0 : nil,
+                    open: { race in action(.openRaceResult(race)) },
+                    toggle: { race in action(.toggleReveal(race)) }
+                )
+            }
         }
     }
 }
 
 struct YesterdayResultsCard: View {
     let races: [HomeRaces.Representable.RaceFinished]
-    let visibility: HomeRaces.ResultVisibility
     let identifierPrefix: String
     var artIdentifierPrefix: String?
     var hintAnchorIndex: Int?
     let open: (HomeRaces.Representable.RaceFinished) -> Void
-    let toggle: () -> Void
+    let toggle: (HomeRaces.Representable.RaceFinished) -> Void
 
     var body: some View {
         // Not lazy: re-estimated row heights resize the page mid-scroll and make it jump at the top.
@@ -61,21 +64,22 @@ struct YesterdayResultsCard: View {
                 }
                 YesterdayResultRow(
                     race: race,
-                    visibility: visibility
+                    visibility: race.visibility
                 )
-                    .accessibilityIdentifier("\(identifierPrefix).row.\(index)")
+                    .accessibilityIdentifier("\(identifierPrefix)\(race.visibility == .placeholder ? ".placeholder" : "").row.\(index)")
                     .spoilerHintAnchor(hintAnchorIndex == index)
                     .spoilerArt(
-                        visibility,
+                        race.visibility,
                         size: CGSize(width: 72, height: 72),
                         alignment: .leading,
                         identifier: artIdentifierPrefix.map { "\($0).\(index)" }
                     )
                     .resultGestures(
-                        visibility,
+                        race.visibility,
                         open: { open(race) },
-                        toggle: toggle
+                        toggle: { toggle(race) }
                     )
+                    .spoilerCrossfade(race.visibility)
             }
         }
         .padding(.horizontal, 14)

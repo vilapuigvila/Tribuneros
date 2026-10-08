@@ -41,10 +41,8 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
             interactor.useCase(.requestDayRaces(date: Date()))
         case .onDisappear:
             break
-        case .spoilerModeResultToday:
-            interactor.useCase(.spoilerModeResultToday)
-        case .spoilerModeResultYesterday:
-            interactor.useCase(.spoilerModeResultYesterday)
+        case .toggleReveal(let race):
+            interactor.useCase(.toggleReveal(key: race.revealKey))
         case .dismissSpoilerHint:
             interactor.useCase(.dismissSpoilerHint)
         case .openLink(let url):
@@ -94,12 +92,12 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
                     HomeRaces.Representable(
                         sections: .init(
                             title: "",
-                            spoilerMode: spoilerMode(domain),
                             nextToFinish: nextToFinish(domain),
-                            racesFinished: finishedRaces(domain.todayRaces),
-                            yesterdayResults: finishedRaces(domain.yesterdayResults),
-                            historyResults: finishedRaces(domain.historyResults),
-                            previews: previews(domain)
+                            racesFinished: finishedRaces(domain.todayRaces, revealed: domain.revealedRaces),
+                            yesterdayResults: finishedRaces(domain.yesterdayResults, revealed: domain.revealedRaces),
+                            historyResults: finishedRaces(domain.historyResults, revealed: domain.revealedRaces),
+                            previews: previews(domain),
+                            firstFinishExpected: HomeRaces.TodayRaces.firstFinishTime(nextToFinish(domain))
                         ),
                         staleCopy: domain.staleCopy,
                         showSpoilerHint: domain.showSpoilerHint
@@ -111,13 +109,6 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
     private static func errorDueEmptyData(_ domain: HomeRacesDomain) -> Bool {
         domain.nextToFinishRaces.isEmpty && domain.todayRaces.isEmpty &&
         domain.yesterdayResults.isEmpty && domain.tomorrowRaces.isEmpty
-    }
-    
-    private func spoilerMode(_ domain: HomeRacesDomain) -> HomeRaces.SpoilerMode {
-        HomeRaces.SpoilerMode(
-            isSpoilerModeResultsToday: domain.isOnSpoilerModeResultsToday,
-            isSpoilerModeResultsYesterday: domain.isOnSpoilerModeResultsYesterday
-        )
     }
     
     private func nextToFinish(_ domain: HomeRacesDomain) -> [HomeRaces.Representable.RaceNext] {
@@ -140,9 +131,12 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
         }
     }
 
-    private func finishedRaces(_ results: [DTO.TodayResult]) -> [HomeRaces.Representable.RaceFinished] {
+    private func finishedRaces(
+        _ results: [DTO.TodayResult],
+        revealed: Set<String>
+    ) -> [HomeRaces.Representable.RaceFinished] {
         results.map { race in
-            HomeRaces.Representable.RaceFinished(
+            var finished = HomeRaces.Representable.RaceFinished(
                 race: race.raceName,
                 raceDetails: race.raceDetails,
                 winnerImgURL: race.winner,
@@ -150,6 +144,8 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
                 isCancel: false,
                 raceURL: race.raceURL
             )
+            finished.visibility = revealed.contains(finished.revealKey) ? .shown : .hidden
+            return finished
         }
     }
 }
