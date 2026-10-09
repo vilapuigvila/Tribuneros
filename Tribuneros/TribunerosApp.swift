@@ -25,6 +25,7 @@ struct TribunerosApp: App {
     }()
     
     init() {
+        PreferencesReset.runAtLaunch()
         CrashlyticsManager.shared.configure()
         Service.useFirebaseEmulatorIfEnabled()
         Service.refreshRemoteConfig()

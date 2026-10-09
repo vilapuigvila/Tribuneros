@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-enum UserPreferencesKey: String {
+enum UserPreferencesKey: String, CaseIterable {
     case lastListStationsRequest
     case spoilerModeResultsTomorrow
     case spoilerHintFirstShown
@@ -16,6 +16,7 @@ enum UserPreferencesKey: String {
     case onboardingFirstShown
     case onboardingShownCount
     case appLanguage
+    case preferencesResetVersion
 }
 
 @propertyWrapper
@@ -118,6 +119,9 @@ enum PREF {
 }
 
 struct UserSettings {
+    /// Bump it to reset every tester's preferences once, on their next launch.
+    static let currentPreferencesResetVersion = 1
+
     /*
     @UserDefault(UserPreferencesKey.homeStation.rawValue, defaultValue: nil)
     static var homeStation: PREF.HomeStation?

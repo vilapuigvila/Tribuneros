@@ -1,0 +1,75 @@
+# Preferences reset (Debug build): the first launch after an update clears the app's preferences once.
+# Onboarding is the probe: its showing is stored, survives a relaunch, is cleared by a simulated
+# update, and the reset doesn't repeat on the next launch.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+  - onboarding
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+      onboarding: "on"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding"
+    timeout: 15000
+- tapOn:
+    id: "onboarding.next"
+- tapOn:
+    id: "onboarding.next"
+- tapOn:
+    id: "onboarding.next"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.done"
+    timeout: 5000
+- tapOn:
+    id: "onboarding.done"
+- extendedWaitUntil:
+    visible:
+      id: "home.results.card.0"
+    timeout: 20000
+
+- launchApp:
+    stopApp: true
+    arguments:
+      mockScenario: live
+      onboarding: "on"
+- extendedWaitUntil:
+    visible:
+      id: "home.results.card.0"
+    timeout: 20000
+- assertNotVisible:
+    id: "onboarding"
+
+- launchApp:
+    stopApp: true
+    arguments:
+      mockScenario: live
+      onboarding: "on"
+      simulateAppUpdate: "on"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding"
+    timeout: 15000
+- tapOn:
+    id: "onboarding.skip"
+- extendedWaitUntil:
+    visible:
+      id: "home.results.card.0"
+    timeout: 20000
+
+- launchApp:
+    stopApp: true
+    arguments:
+      mockScenario: live
+      onboarding: "on"
+- extendedWaitUntil:
+    visible:
+      id: "home.results.card.0"
+    timeout: 20000
+- assertNotVisible:
+    id: "onboarding"
