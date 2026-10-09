@@ -1,5 +1,5 @@
-# No Previews section without previews (mock scenario "empty": full-size resting card) or when
-# Today has races, even with previews listed (mock scenario "live": full-size hero). Debug build only.
+# No Previews section without previews (mock scenario "empty": full-size resting card).
+# Debug build only.
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -16,15 +16,3 @@ tags:
 - assertNotVisible: "Previews"
 - assertNotVisible:
     id: "home.previews.row.0"
-
-- launchApp:
-    clearState: true
-    arguments:
-      mockScenario: live
-- extendedWaitUntil:
-    visible:
-      id: "home.today.hero"
-    timeout: 20000
-- assertNotVisible:
-    id: "home.previews.row.0"
-- assertNotVisible: "Previews"

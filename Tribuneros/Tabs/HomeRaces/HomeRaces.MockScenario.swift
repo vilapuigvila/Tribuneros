@@ -8,6 +8,7 @@ import Foundation
 
 extension HomeRaces {
     enum MockScenario: String {
+        /// Races today plus the three homepage previews, shown under the Today hero.
         case live
         case later
         case one
