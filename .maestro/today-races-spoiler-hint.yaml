@@ -1,4 +1,4 @@
-# One-time double tap hint on the Today Races tab (mock scenario "live", Debug build only):
+# One-time long press hint on the Today Races tab (mock scenario "live", Debug build only):
 # shown on the first launch with results, dismissed by tapping it, not shown on the next launch.
 appId: com.pskmoons.Tribuneros
 tags:

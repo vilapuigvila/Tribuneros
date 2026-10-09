@@ -1,5 +1,5 @@
 # The spoiler art in the photo slot of every Results today card and Yesterday row while hidden;
-# a double tap removes it from that one race only, and a second double tap brings it back (mock
+# a long press removes it from that one race only, and a second long press brings it back (mock
 # scenario "live", Debug build only).
 appId: com.pskmoons.Tribuneros
 tags:
@@ -19,7 +19,7 @@ tags:
     optional: true
 - assertVisible:
     id: "home.results.spoilerArt.1"
-- doubleTapOn:
+- longPressOn:
     id: "home.results.spoilerArt.0"
     retryTapIfNoChange: false
     delay: 1
@@ -27,7 +27,7 @@ tags:
     id: "home.results.spoilerArt.0"
 - assertVisible:
     id: "home.results.spoilerArt.1"
-- doubleTapOn:
+- longPressOn:
     id: "home.results.card.0"
     retryTapIfNoChange: false
     delay: 1
@@ -38,7 +38,7 @@ tags:
       id: "home.yesterday.spoilerArt.0"
 - assertVisible:
     id: "home.yesterday.spoilerArt.1"
-- doubleTapOn:
+- longPressOn:
     id: "home.yesterday.spoilerArt.0"
     retryTapIfNoChange: false
     delay: 1
@@ -46,7 +46,7 @@ tags:
     id: "home.yesterday.spoilerArt.0"
 - assertVisible:
     id: "home.yesterday.spoilerArt.1"
-- doubleTapOn:
+- longPressOn:
     id: "home.yesterday.row.0"
     retryTapIfNoChange: false
     delay: 1

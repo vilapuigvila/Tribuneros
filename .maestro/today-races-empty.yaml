@@ -1,6 +1,6 @@
 # Today section on a day without races (mock scenario "empty", Debug build only): the resting
 # scene replaces the hero, there is no "See all", and the results sections show their empty-state
-# cards once loaded (no grey placeholders, no double tap).
+# cards once loaded (no grey placeholders, no long press).
 appId: com.pskmoons.Tribuneros
 tags:
   - home

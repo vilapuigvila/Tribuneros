@@ -15,8 +15,8 @@ tags:
     visible:
       id: "home.results.card.0"
     timeout: 20000
-# Results today card -> result screen (revealed by a double tap first)
-- doubleTapOn:
+# Results today card -> result screen (revealed by a long press first)
+- longPressOn:
     id: "home.results.card.0"
     retryTapIfNoChange: false
     delay: 1
@@ -39,7 +39,7 @@ tags:
 - scrollUntilVisible:
     element:
       id: "home.yesterday.row.0"
-- doubleTapOn:
+- longPressOn:
     id: "home.yesterday.row.0"
     retryTapIfNoChange: false
     delay: 1
@@ -67,6 +67,10 @@ tags:
     visible:
       id: "yesterdayResults.row.3"
     timeout: 10000
+- longPressOn:
+    id: "yesterdayResults.row.3"
+    retryTapIfNoChange: false
+    delay: 1
 - tapOn:
     id: "yesterdayResults.row.3"
 - extendedWaitUntil:

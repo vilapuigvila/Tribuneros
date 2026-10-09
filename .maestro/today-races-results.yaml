@@ -1,6 +1,6 @@
 # Results today and Yesterday, one race at a time (mock scenario "live", Debug build only). Every
-# race starts hidden (title only, spoiler art, no tap opens it); a double tap on a card or row
-# reveals only that race, and a second double tap hides it again. Also the Yesterday list and the
+# race starts hidden (title only, spoiler art, no tap opens it); a long press on a card or row
+# reveals only that race, and a second long press hides it again. Also the Yesterday list and the
 # History banner.
 appId: com.pskmoons.Tribuneros
 tags:
@@ -18,7 +18,7 @@ tags:
 - tapOn:
     id: home.spoilerHint
     optional: true
-# Results today: redacted by default (title only, no winner, no tap), revealed by a double tap
+# Results today: redacted by default (title only, no winner, no tap), revealed by a long press
 - assertNotVisible:
     id: "home.results.spoiler"
 - assertVisible:
@@ -30,7 +30,7 @@ tags:
 - tapOn:
     id: "home.results.card.0"
 - assertNotVisible: "Race Result"
-- doubleTapOn:
+- longPressOn:
     id: "home.results.card.0"
     retryTapIfNoChange: false
     delay: 1
@@ -42,7 +42,7 @@ tags:
 - assertVisible:
     id: "home.results.spoilerArt.1"
 - assertNotVisible: ".*MOCK Rider Two.*"
-- doubleTapOn:
+- longPressOn:
     id: "home.results.card.0"
     retryTapIfNoChange: false
     delay: 1
@@ -50,7 +50,7 @@ tags:
     id: "home.results.card.0"
     text: "Giro della Toscana.*"
 - assertNotVisible: ".*MOCK Rider One.*"
-# Yesterday: redacted rows by default, one winner per double tap
+# Yesterday: redacted rows by default, one winner per long press
 - scrollUntilVisible:
     element:
       id: "home.yesterday.row.0"
@@ -63,7 +63,7 @@ tags:
 - tapOn:
     id: "home.yesterday.row.0"
 - assertNotVisible: "Race Result"
-- doubleTapOn:
+- longPressOn:
     id: "home.yesterday.row.0"
     retryTapIfNoChange: false
     delay: 1
@@ -101,14 +101,14 @@ tags:
     id: "yesterdayResults.row.3"
     text: "Tre Valli Varesine.*"
 - assertNotVisible: ".*MOCK Rider Seven.*"
-- doubleTapOn:
+- longPressOn:
     id: "yesterdayResults.row.3"
     retryTapIfNoChange: false
     delay: 1
 - assertVisible:
     id: "yesterdayResults.row.3"
     text: "Tre Valli Varesine.*MOCK Rider Seven.*"
-- doubleTapOn:
+- longPressOn:
     id: "yesterdayResults.row.3"
     retryTapIfNoChange: false
     delay: 1

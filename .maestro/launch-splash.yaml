@@ -1,0 +1,28 @@
+# Launch splash (Debug build): mocked launches skip it, so launchSplash turns it on.
+# It stays at least 5 s, then fades to the Today Races tab.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+  - splash
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+      launchSplash: "on"
+- evalScript: ${output.launchedAt = Date.now()}
+- assertVisible:
+    id: "launch.splash"
+# No plain sleep in Maestro: busy-wait until 4 s after launch (the first assert alone takes ~2 s).
+- evalScript: ${while (Date.now() < output.launchedAt + 4000) {}}
+- assertVisible:
+    id: "launch.splash"
+- extendedWaitUntil:
+    notVisible:
+      id: "launch.splash"
+    timeout: 10000
+- extendedWaitUntil:
+    visible:
+      id: "home.results.card.0"
+    timeout: 10000

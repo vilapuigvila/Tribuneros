@@ -1,0 +1,115 @@
+# Onboarding (Debug build): mocked launches skip it, so the onboarding argument turns it on.
+# First launch shows it (Next through every page, then Let's ride); the next launch, days earlier
+# than a week, doesn't. onboardingSecondShowing fakes a first showing a week ago: it shows once
+# more (Welcome back), Skip counts as seen, and it never shows a third time.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+  - onboarding
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+      onboarding: "on"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding"
+    timeout: 15000
+- assertVisible:
+    id: "onboarding.page.0"
+- assertVisible: "Welcome to Tribuneros"
+- assertVisible:
+    id: "onboarding.skip"
+- tapOn:
+    id: "onboarding.next"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.page.1"
+    timeout: 5000
+- swipe:
+    direction: RIGHT
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.page.0"
+    timeout: 5000
+- swipe:
+    direction: LEFT
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.page.1"
+    timeout: 5000
+- tapOn:
+    id: "onboarding.next"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.page.2"
+    timeout: 5000
+- tapOn:
+    id: "onboarding.next"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.page.3"
+    timeout: 5000
+- assertNotVisible:
+    id: "onboarding.skip"
+- assertNotVisible:
+    id: "onboarding.next"
+- tapOn:
+    id: "onboarding.done"
+- extendedWaitUntil:
+    notVisible:
+      id: "onboarding"
+    timeout: 5000
+- extendedWaitUntil:
+    visible:
+      id: "home.results.card.0"
+    timeout: 20000
+
+- launchApp:
+    stopApp: true
+    arguments:
+      mockScenario: live
+      onboarding: "on"
+- extendedWaitUntil:
+    visible:
+      id: "home.results.card.0"
+    timeout: 20000
+- assertNotVisible:
+    id: "onboarding"
+
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+      onboarding: "on"
+      onboardingSecondShowing: "on"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding"
+    timeout: 15000
+- assertVisible: "Welcome back to Tribuneros"
+- tapOn:
+    id: "onboarding.skip"
+- extendedWaitUntil:
+    notVisible:
+      id: "onboarding"
+    timeout: 5000
+- extendedWaitUntil:
+    visible:
+      id: "home.results.card.0"
+    timeout: 20000
+
+- launchApp:
+    stopApp: true
+    arguments:
+      mockScenario: live
+      onboarding: "on"
+      onboardingSecondShowing: "on"
+- extendedWaitUntil:
+    visible:
+      id: "home.results.card.0"
+    timeout: 20000
+- assertNotVisible:
+    id: "onboarding"
