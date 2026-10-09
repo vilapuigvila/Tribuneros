@@ -111,7 +111,7 @@
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
-            key = "ONBOARDING_SECOND_SHOWING"
+            key = "RESET_ONBOARDING"
             value = "1"
             isEnabled = "NO">
          </EnvironmentVariable>
