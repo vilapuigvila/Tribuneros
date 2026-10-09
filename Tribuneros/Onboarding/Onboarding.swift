@@ -179,6 +179,12 @@ extension Onboarding {
             showing = next.count
         }
 
+        /// On demand from Settings: ignores `isEnabled` and the schedule, saves nothing, shows the "Welcome back" page.
+        func replay() {
+            guard showing == nil else { return }
+            showing = Schedule.maxShowings
+        }
+
         func dismiss(_ dismissal: Dismissal) {
             showing = nil
         }
@@ -205,7 +211,7 @@ extension Onboarding {
                 id: 0,
                 animation: "onboarding_welcome",
                 stillProgress: 0.3,
-                title: showing > 1 ? "Welcome back to Tribuneros" : "Welcome to Tribuneros",
+                title: showing > 1 ? "Welcome back to Cycling Tribune" : "Welcome to Cycling Tribune",
                 body: "Road and cyclocross results, calendars and cycling news, all in one place."
             ),
             Page(

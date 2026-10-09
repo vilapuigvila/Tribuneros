@@ -36,6 +36,7 @@ final class Router: ObservableObject {
         case detail(Detail)
         case cxZone(CXZone)
         case paddockRider(Paddock.RiderContext)
+        case settingsLanguage
         /// The native schedule behind "Where to watch", opened on the race's day with the race pinned.
         case whereToWatch(HomeRaces.WhereToWatch.RaceKey?)
         case web(URL)

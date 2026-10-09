@@ -276,6 +276,16 @@ Alfy's `Requester` notes:
   rider"). No delay, no minimum display, no `ProgressView`. Parts already known when the screen
   opens keep their real data; error states are unchanged.
 
+### Settings tab
+
+A fourth tab (`Tabs/Settings/`, `Tab.settings`, last in `CustomTabBar`, own `Router`) with two rows.
+"Show onboarding again" calls the `replayOnboarding` environment closure that `OnboardingHost` sets
+(`Presenter.replay()`): it bypasses `isEnabled` (so mocked launches show it), never saves, leaves the
+two-showing schedule alone and opens on the "Welcome back" page. "Language" pushes
+`Router.Destination.settingsLanguage`, a list of `Settings.Domain.supportedLanguages` (one entry,
+English; adding a language is one entry) stored in `UserSettings.appLanguage` (default `en`). It is a
+stored preference only: the app has no localization yet.
+
 ### "Vapor" design system
 
 The dark, blue-grey "Vapor" look now covers all three tabs and the tab bar. Its tokens are the

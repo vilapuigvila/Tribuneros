@@ -9,7 +9,7 @@ import SwiftUI
 import UIKit
 
 enum Tab {
-    case home, paddock, cxZone
+    case home, paddock, cxZone, settings
 }
 
 struct TabBarView: View {
@@ -20,18 +20,22 @@ struct TabBarView: View {
     @StateObject private var homeRouter: Router
     @StateObject private var cxRouter: Router
     @StateObject private var paddockRouter: Router
+    @StateObject private var settingsRouter: Router
 
     let homeRacesViewModel: HomeRacesViewModel<HomeRacesInteractorImpl>
     let cxRacesViewModel: CXRaces.ViewModel<CXRaces.InteractorImpl>
     let paddockViewModel: Paddock.ViewModel<Paddock.InteractorImpl>
+    let settingsViewModel: Settings.ViewModel<Settings.InteractorImpl>
 
     init() {
         let homeRouter = Router()
         let cxRouter = Router()
         let paddockRouter = Router()
+        let settingsRouter = Router()
         _homeRouter = StateObject(wrappedValue: homeRouter)
         _cxRouter = StateObject(wrappedValue: cxRouter)
         _paddockRouter = StateObject(wrappedValue: paddockRouter)
+        _settingsRouter = StateObject(wrappedValue: settingsRouter)
         homeRacesViewModel = HomeRacesViewModel(
             interactor: HomeRacesInteractorImpl(),
             router: homeRouter
@@ -43,6 +47,10 @@ struct TabBarView: View {
         paddockViewModel = Paddock.ViewModel(
             router: paddockRouter,
             interactor: Paddock.InteractorImpl()
+        )
+        settingsViewModel = Settings.ViewModel(
+            router: settingsRouter,
+            interactor: Settings.InteractorImpl()
         )
     }
     
@@ -71,6 +79,14 @@ struct TabBarView: View {
             }
             .webPage($paddockRouter.webPage)
             .tag(Tab.paddock)
+
+            // Settings -
+
+            NavigationStack(path: $settingsRouter.navPath) {
+                SettingsView(viewModel: settingsViewModel)
+            }
+            .webPage($settingsRouter.webPage)
+            .tag(Tab.settings)
         }
         .toolbar(.hidden, for: .tabBar)
         .safeAreaInset(edge: .bottom) {
@@ -112,6 +128,8 @@ struct TabBarView: View {
             paddockRouter.popToRoot()
         case .cxZone:
             cxRouter.popToRoot()
+        case .settings:
+            settingsRouter.popToRoot()
         }
     }
 
@@ -161,8 +179,19 @@ private struct CustomTabBar: View {
                 ) {
                     onTabTap(.paddock)
                 }
+
+                Spacer(minLength: 0)
+
+                TabBarButton(
+                    title: "Settings",
+                    systemImage: "gearshape",
+                    isSelected: selectedTab == .settings
+                ) {
+                    onTabTap(.settings)
+                }
+                .accessibilityIdentifier("tab.settings")
             }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, 12)
             .padding(.top, 10)
             .padding(.bottom, 10)
             .background(Color.tribuneru(.vaporPageBackground).opacity(0.95))
@@ -204,7 +233,7 @@ private struct TabBarButton: View {
                     lineLimit: 1
                 )
             }
-            .frame(minWidth: 72)
+            .frame(minWidth: 64)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

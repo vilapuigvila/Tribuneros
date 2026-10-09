@@ -10,7 +10,7 @@ import SwiftUI
 enum LaunchSplash {
     static let minimumDuration: Duration = .seconds(5)
     static let fadeDuration: TimeInterval = 0.4
-    static let title = "Tribuneros"
+    static let title = "Cycling Tribune"
 
     static func isEnabled(
         override: Bool?,
