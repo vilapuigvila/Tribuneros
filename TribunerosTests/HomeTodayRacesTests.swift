@@ -303,6 +303,39 @@ final class HomeTodayRacesTests: XCTestCase {
         XCTAssertEqual(representable.sections.nextToFinish.map(\.isLive), [true, false])
     }
 
+    func testPreviewsShowAlongsideTodaysRaces() throws {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "HH:mm"
+        let soon = formatter.string(from: Date().addingTimeInterval(60 * 60))
+
+        var domain = HomeRacesDomain(
+            nextToFinishRaces: [
+                race("Soon", eta: soon, duration: "1h", urlPath: "https://www.procyclingstats.com/race/soon/2026/result")
+            ],
+            todayRaces: [],
+            yesterdayResults: [],
+            historyResults: [],
+            tomorrowRaces: [],
+            liveStatsRaces: [],
+            error: nil,
+            loading: false
+        )
+        domain.previews = [
+            DTO.Preview(
+                countdown: "5h",
+                name: "Tomorrow Classic",
+                url: URL(string: "https://www.procyclingstats.com/race/tomorrow-classic/2026/result/live")
+            )
+        ]
+
+        guard case .loaded(let representable) = state(after: domain) else {
+            return XCTFail("Expected a loaded state")
+        }
+        XCTAssertEqual(representable.sections.nextToFinish.map(\.name), ["Soon"])
+        XCTAssertEqual(representable.sections.previews.map(\.name), ["Tomorrow Classic"])
+    }
+
     private func response(_ headers: [String: String]) -> HTTPURLResponse {
         HTTPURLResponse(
             url: URL(string: "https://www.procyclingstats.com/index.php")!,

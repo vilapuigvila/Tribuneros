@@ -1,6 +1,8 @@
 # No races today but PCS has previews (mock scenario "previews", Debug build only): the resting
 # card shrinks to half height, a Previews section sits between Today and Results today, and a row
 # opens the preview detail screen. The preview page is mocked (MOCK-prefixed route), no PCS request.
+# With races today as well (mock scenario "live"), the first race keeps the Today hero and the
+# Previews section follows it.
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -45,3 +47,22 @@ tags:
     end: 70%, 50%
 - assertVisible:
     id: "home.previews.row.0"
+
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- extendedWaitUntil:
+    visible:
+      id: "home.today.hero"
+    timeout: 20000
+- assertNotVisible:
+    id: "home.today.empty"
+- scrollUntilVisible:
+    element:
+      id: "home.previews.row.0"
+    direction: DOWN
+- assertVisible: "Previews"
+- assertVisible:
+    id: "home.previews.row.0"
+    text: ".*MOCK Tour de Langkawi.*"

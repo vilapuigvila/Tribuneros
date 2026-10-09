@@ -119,10 +119,10 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
         )
     }
     
-    /// Previews fill the Today gap, so they only show while it has no races.
+    /// Previews show whenever PCS lists any: under the resting card when Today has no races,
+    /// otherwise under the Today hero (the first race keeps the first section).
     private func previews(_ domain: HomeRacesDomain) -> [HomeRaces.Representable.RacePreview] {
-        guard domain.nextToFinishRaces.isEmpty else { return [] }
-        return domain.previews.map {
+        domain.previews.map {
             HomeRaces.Representable.RacePreview(
                 countdown: $0.countdown,
                 name: $0.name,
