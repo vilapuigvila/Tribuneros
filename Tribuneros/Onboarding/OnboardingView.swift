@@ -6,6 +6,18 @@
 import Lottie
 import SwiftUI
 
+private struct ReplayOnboardingKey: EnvironmentKey {
+    static let defaultValue: () -> Void = {}
+}
+
+extension EnvironmentValues {
+    /// Shows the onboarding again, set by `OnboardingHost`; used by Settings.
+    var replayOnboarding: () -> Void {
+        get { self[ReplayOnboardingKey.self] }
+        set { self[ReplayOnboardingKey.self] = newValue }
+    }
+}
+
 /// Owns the onboarding state so showing it re-renders only this view; `content` is built once, like `MaintenanceHost`.
 struct OnboardingHost<Content: View>: View {
     @StateObject private var presenter = Onboarding.Presenter()
@@ -18,6 +30,10 @@ struct OnboardingHost<Content: View>: View {
     var body: some View {
         ZStack {
             content
+                .environment(
+                    \.replayOnboarding,
+                    replay
+                )
                 .accessibilityHidden(presenter.showing != nil)
             if let showing = presenter.showing {
                 OnboardingView(
@@ -38,6 +54,12 @@ struct OnboardingHost<Content: View>: View {
                     resets: Onboarding.resetsAtLaunch
                 )
             }
+        }
+    }
+
+    private func replay() {
+        withAnimation(.easeOut(duration: 0.35)) {
+            presenter.replay()
         }
     }
 

@@ -15,6 +15,7 @@ enum UserPreferencesKey: String {
     case spoilerHintShownCount
     case onboardingFirstShown
     case onboardingShownCount
+    case appLanguage
 }
 
 @propertyWrapper
@@ -141,6 +142,9 @@ struct UserSettings {
 
     @UserDefault(UserPreferencesKey.onboardingShownCount.rawValue, defaultValue: 0)
     static var onboardingShownCount: Int?
+
+    @UserDefault(UserPreferencesKey.appLanguage.rawValue, defaultValue: "en")
+    static var appLanguage: String?
 }
 
 

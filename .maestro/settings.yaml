@@ -1,0 +1,71 @@
+# Settings tab (Debug build, mocked launch): both rows, the on-demand onboarding replay (shows even
+# though mocked launches skip it) and the Language screen with English selected.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+  - settings
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- extendedWaitUntil:
+    visible:
+      id: "home.results.card.0"
+    timeout: 20000
+- assertNotVisible:
+    id: "onboarding"
+- tapOn:
+    id: "tab.settings"
+- assertVisible:
+    id: "settings.onboarding"
+- assertVisible:
+    id: "settings.language"
+- tapOn:
+    id: "settings.onboarding"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding"
+    timeout: 5000
+- assertVisible: "Welcome back to Cycling Tribune"
+- tapOn:
+    id: "onboarding.next"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.page.1"
+    timeout: 5000
+- tapOn:
+    id: "onboarding.next"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.page.2"
+    timeout: 5000
+- tapOn:
+    id: "onboarding.next"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.page.3"
+    timeout: 5000
+- tapOn:
+    id: "onboarding.done"
+- extendedWaitUntil:
+    notVisible:
+      id: "onboarding"
+    timeout: 5000
+- assertVisible:
+    id: "settings.onboarding"
+- tapOn:
+    id: "settings.language"
+- extendedWaitUntil:
+    visible:
+      id: "settings.language.english"
+    timeout: 5000
+- assertVisible: "More languages are coming."
+- assertVisible:
+    id: "settings.language.english"
+    selected: true
+- tapOn:
+    text: "SETTINGS"
+- assertVisible:
+    id: "settings.onboarding"

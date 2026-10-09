@@ -179,6 +179,12 @@ extension Onboarding {
             showing = next.count
         }
 
+        /// On demand from Settings: ignores `isEnabled` and the schedule, saves nothing, shows the "Welcome back" page.
+        func replay() {
+            guard showing == nil else { return }
+            showing = Schedule.maxShowings
+        }
+
         func dismiss(_ dismissal: Dismissal) {
             showing = nil
         }
