@@ -64,6 +64,10 @@
             argument = "-FIRDebugEnabled"
             isEnabled = "YES">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "onboardingSecondShowing"
+            isEnabled = "NO">
+         </CommandLineArgument>
       </CommandLineArguments>
       <EnvironmentVariables>
          <EnvironmentVariable
@@ -103,6 +107,11 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "CT_MAINTENANCE"
+            value = "1"
+            isEnabled = "NO">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "ONBOARDING_SECOND_SHOWING"
             value = "1"
             isEnabled = "NO">
          </EnvironmentVariable>

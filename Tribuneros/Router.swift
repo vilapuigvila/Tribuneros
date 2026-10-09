@@ -47,6 +47,10 @@ final class Router: ObservableObject {
     /// The web page shown full screen over this tab (see `View.webPage(_:)`).
     @Published var webPage: WebPage?
 
+    // NavigationPath can't be inspected: a same-destination push is a double tap only while the path is still the length it was right after that push.
+    private var lastPushed: Destination?
+    private var countAfterLastPush = 0
+
     func routeTo(_ destination: Destination) {
         switch destination {
         case .web(let url):
@@ -57,7 +61,10 @@ final class Router: ObservableObject {
                 prefersReader: true
             )
         default:
+            if destination == lastPushed, navPath.count == countAfterLastPush { return }
             navPath.append(destination)
+            lastPushed = destination
+            countAfterLastPush = navPath.count
         }
     }
     

@@ -10,6 +10,13 @@ final class SpoilerHintTests: XCTestCase {
     private let first = Date(timeIntervalSince1970: 1_800_000_000)
     private let hour: TimeInterval = 3600
 
+    func testTextAsksForALongPress() {
+        XCTAssertEqual(
+            HomeRaces.SpoilerHint.text,
+            "Press and hold a result to show or hide spoilers"
+        )
+    }
+
     func testFirstLaunchShows() {
         XCTAssertTrue(
             HomeRaces.SpoilerHint.shouldShow(

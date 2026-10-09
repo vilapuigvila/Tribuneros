@@ -220,6 +220,7 @@ struct WinnerPhoto: View {
                 )
         } else {
             photo
+                .transition(.opacity)
         }
     }
 
@@ -296,88 +297,155 @@ extension View {
     }
 }
 
-/// Own double-tap window (0.5s, native is 0.35s) so UI-test drivers whose taps land ~0.35s apart still count.
-private struct ResultTapModifier: ViewModifier {
-    private static let window: TimeInterval = 0.5
+enum SpoilerHold {
+    static let duration: TimeInterval = 0.65
+    static let hideDuration: TimeInterval = 0.075
+    static let revealDuration: TimeInterval = 0.75
+}
 
+private struct ResultTapModifier: ViewModifier {
     let visibility: HomeRaces.ResultVisibility
     let open: () -> Void
     let toggle: () -> Void
 
-    @State private var lastTap: Date?
-    @State private var pendingOpen: Task<Void, Never>?
+    @State private var longPressCompleted = false
 
-    @ViewBuilder
+    // One stable view tree for every state: swapping branches would rebuild the card and skip the reveal transitions.
     func body(content: Content) -> some View {
-        switch visibility {
-        case .placeholder:
-            content
-        case .hidden:
-            content
-                .contentShape(Rectangle())
-                .onTapGesture(perform: handleTap)
-                .accessibilityAction(named: "Show results", toggle)
-        case .shown:
-            content
-                .contentShape(Rectangle())
-                .onTapGesture(perform: handleTap)
-                .accessibilityAddTraits(.isButton)
-                .accessibilityAction(named: "Hide results", toggle)
+        content
+            .contentShape(Rectangle())
+            .onTapGesture(perform: handleTap)
+            .onLongPressGesture(
+                minimumDuration: visibility == .shown ? SpoilerHold.hideDuration : SpoilerHold.duration,
+                perform: handleLongPress,
+                onPressingChanged: handlePressing
+            )
+            .accessibilityAddTraits(visibility == .shown ? .isButton : [])
+            .accessibilityActions {
+                switch visibility {
+                case .placeholder:
+                    EmptyView()
+                case .hidden:
+                    Button("Show results", action: toggle)
+                case .shown:
+                    Button("Hide results", action: toggle)
+                }
+            }
+    }
+
+    private func handlePressing(_ pressing: Bool) {
+        if pressing {
+            longPressCompleted = false
         }
     }
 
+    private func handleLongPress() {
+        guard visibility != .placeholder else { return }
+        longPressCompleted = true
+        if visibility == .hidden {
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+        } else {
+            UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+        }
+        toggle()
+    }
+
     private func handleTap() {
-        let now = Date()
-        if let lastTap, now.timeIntervalSince(lastTap) < Self.window {
-            self.lastTap = nil
-            pendingOpen?.cancel()
-            toggle()
-            return
-        }
-        lastTap = now
-        guard visibility == .shown else { return }
-        pendingOpen = Task {
-            try? await Task.sleep(for: .seconds(Self.window))
-            guard !Task.isCancelled else { return }
-            open()
-        }
+        // A completed long press must not also navigate when the finger lifts.
+        guard visibility == .shown, !longPressCompleted else { return }
+//        UIImpactFeedbackGenerator(style: .light).impactOccurred() 
+        open()
     }
 }
 
 extension View {
     /// Drawn outside the redacted, combined card so it stays unredacted and visible to accessibility tools.
-    @ViewBuilder
     func spoilerArt(
         _ visibility: HomeRaces.ResultVisibility,
         size: CGSize,
         alignment: Alignment,
         identifier: String?
     ) -> some View {
-        if visibility == .hidden {
-            overlay(alignment: alignment) {
-                RaceArtView(art: .spoiler)
-                    .frame(
-                        width: size.width,
-                        height: size.height
-                    )
-                    .transition(.opacity)
-                    .accessibilityElement()
-                    .accessibilityLabel("Result hidden")
-                    .accessibilityIdentifier(identifier ?? "spoilerArt")
+        modifier(
+            SpoilerArtOverlay(
+                visibility: visibility,
+                size: size,
+                alignment: alignment,
+                identifier: identifier
+            )
+        )
+    }
+}
+
+private struct SpoilerArtOverlay: ViewModifier {
+    let visibility: HomeRaces.ResultVisibility
+    let size: CGSize
+    let alignment: Alignment
+    let identifier: String?
+
+    @State private var artOpacity: Double
+
+    init(
+        visibility: HomeRaces.ResultVisibility,
+        size: CGSize,
+        alignment: Alignment,
+        identifier: String?
+    ) {
+        self.visibility = visibility
+        self.size = size
+        self.alignment = alignment
+        self.identifier = identifier
+        _artOpacity = State(initialValue: visibility == .hidden ? 1 : 0)
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .overlay(alignment: alignment) {
+                ZStack {
+                    if visibility != .placeholder {
+                        RaceArtView(art: .spoiler)
+                            .frame(
+                                width: size.width,
+                                height: size.height
+                            )
+                            .opacity(artOpacity)
+                            .allowsHitTesting(false)
+                            .accessibilityElement()
+                            .accessibilityLabel("Result hidden")
+                            .accessibilityIdentifier(identifier ?? "spoilerArt")
+                            .accessibilityHidden(visibility != .hidden)
+                    }
+                }
+                .frame(
+                    width: size.width,
+                    height: size.height
+                )
+                .clipped()
             }
-        } else {
-            self
-        }
+            .onChange(of: visibility) { _, newValue in
+                // The parent's update arrives outside any animation, so the fade is driven from local state.
+                if newValue == .shown {
+                    withAnimation(.easeInOut(duration: SpoilerHold.revealDuration)) { artOpacity = 0 }
+                } else {
+                    var transaction = Transaction()
+                    transaction.disablesAnimations = true
+                    withTransaction(transaction) { artOpacity = newValue == .hidden ? 1 : 0 }
+                }
+            }
     }
 }
 
 struct SpoilerCrossfade: ViewModifier {
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let visibility: HomeRaces.ResultVisibility
+
+    // Only a reveal animates; hiding (and the loading placeholder) switch at once.
+    static func animation(for visibility: HomeRaces.ResultVisibility) -> Animation? {
+        visibility == .shown ? .easeInOut(duration: SpoilerHold.revealDuration) : nil
+    }
 
     func body(content: Content) -> some View {
         content.animation(
-            reduceMotion ? nil : .easeInOut(duration: 0.25),
+            Self.animation(for: visibility),
             value: visibility
         )
     }

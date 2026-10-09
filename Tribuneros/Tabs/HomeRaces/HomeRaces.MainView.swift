@@ -184,7 +184,7 @@ extension HomeRaces {
                         if representable.showSpoilerHint,
                            let anchor {
                             let rect = proxy[anchor]
-                            let fitsBelow = proxy.frame(in: .global).minY + rect.maxY + 110 < UIScreen.main.bounds.height - 120
+                            let fitsBelow = proxy.frame(in: .global).minY + rect.maxY + 204 < UIScreen.main.bounds.height - 120
                             SpoilerHintCallout(pointsUp: fitsBelow) {
                                 action(.dismissSpoilerHint)
                             }
@@ -193,7 +193,7 @@ extension HomeRaces {
                                     max(rect.midX, 140),
                                     proxy.size.width - 140
                                 ),
-                                y: fitsBelow ? rect.maxY + 34 : rect.minY - 34
+                                y: fitsBelow ? rect.maxY + 98 : rect.minY - 98
                             )
                         }
                     }

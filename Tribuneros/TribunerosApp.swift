@@ -33,8 +33,12 @@ struct TribunerosApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MaintenanceHost {
-                TabBarView()
+            LaunchSplashHost {
+                OnboardingHost {
+                    MaintenanceHost {
+                        TabBarView()
+                    }
+                }
             }
         }
         .modelContainer(sharedModelContainer)

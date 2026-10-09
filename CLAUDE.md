@@ -22,6 +22,7 @@ scraped server-side by a Firebase Cloud Function and read from Firestore (see "D
 - Test plan (`Tribuneros/Tribuneros.xctestplan`) skips the placeholder `TribunerosTests.testExample`.
 - If Swift Package resolution breaks: Xcode → File → Packages → Reset Package Caches, then clear DerivedData.
 - Debug-only launch env flags: `MOCK_SCENARIO=live|later|one|empty|stale|history|previews|pending` (or a `mockScenario` launch argument, which is what the Maestro flows pass) is the one switch for all mock data: fixed Today Races data instead of the PCS fetch, the race info stubs, the race result pages it opens (a mock top 10), the Course du Jour schedule, the Paddock feed, press list and rider pages, and the CX Zone documents and detail pages (no PCS, cyclocross24, Firestore, `cxDetail` or YouTube request), see `HomeRaces.MockScenario.swift`; unset or unknown means real data. `CT_COURSEDUJOUR_NATIVE` (or `ctCoursedujourNative`) only overrides the Remote Config flag `isCourseDuJourNativeEnabled`, it never turns on mocks. `DEBUG_BACKGROUND=1` (highlights view backgrounds via `.debugBackground()`) and `FIREBASE_EMULATOR=1` (Firestore and `cxDetail` on the local emulators, see `Service.useFirebaseEmulatorIfEnabled()`; seed `cx/*` by calling `runCxScrape` with `FIRESTORE_EMULATOR_HOST` set). From the CLI: `SIMCTL_CHILD_FIREBASE_EMULATOR=1 xcrun simctl launch <device> com.pskmoons.Tribuneros`.
+- Onboarding (`Tribuneros/Onboarding/`): four full-screen pages (welcome, spoiler-safe results, CX Zone, Paddock), each with a hand-authored shape-only Lottie (`onboarding_*.json`, made by a script outside the repo; all text is SwiftUI). `OnboardingHost` (between `LaunchSplashHost` and `MaintenanceHost`, content built once) decides once per cold launch, after `Onboarding.splashDelay` (the splash's time on screen): `Onboarding.Schedule` shows it on the first launch, once more at least 7 days after that first showing, never a third time (`UserSettings.onboardingFirstShown` / `onboardingShownCount`, recorded when it shows, so Skip and "Let's ride" both count). Debug: a mock scenario skips it unless `ONBOARDING=1` (or an `onboarding` launch argument) turns it on, and `ONBOARDING_SECOND_SHOWING=1` (or `onboardingSecondShowing`) makes a fresh install act as if the first showing was a week ago. `RESET_ONBOARDING=1` (or `resetOnboarding`) clears both stored values at launch, so that launch is a first run again (it works even when a mock scenario skips the onboarding). Release follows the schedule only. Maestro: `.maestro/onboarding.yaml`.
 
 ### Tests
 
@@ -39,6 +40,7 @@ scraped server-side by a Firebase Cloud Function and read from Firestore (see "D
 - Two tests hit the live network and are slow/flaky by nature, not a sign your change broke
   something: `RequesterHomeParsingTests.testGetLatestResultsParsesRealWebsite` (PCS) and
   `RequesterCxTests` (cyclocross24.com + YouTube, retries for up to 10s).
+- Lottie (`lottie-spm`) is linked into the app target only, for the same reason. The spoiler hint callout plays `Tribuneros/spoiler_long_press.json` (hand-authored shapes, ~3.8 s loop: a hand presses and holds a result card for 1.5 s, the spoiler painting fades out over 0.75 s, the hand lifts, the painting snaps back); with Reduce Motion it shows one still frame. The JSON loads via `LottieAnimation.named`, so check it in the running app, not in tests.
 - The `TribunerosTests` target links `Alfy` and `SwiftSoup` explicitly. **Don't link
   `FirebaseFirestore` into it**: sharing the Firestore package between the app and test targets
   fails at link time (missing gRPC/abseil symbols). If a test needs Firestore, call app-target code
@@ -142,9 +144,9 @@ bar), then four sections:
   "in 2h 14m" text is computed from the ETA and refreshed by `TimelineView(.everyMinute)`.
 - **Results today** and **Yesterday**: the title, then highlight cards / one card of rows.
   Results start hidden: each card or row shows the `SpoilerArt` painting over redacted stand-in
-  data (no real names or images reach the view), and a double tap reveals or hides that one race
+  data (no real names or images reach the view), and a long press (1.5 s to reveal, 0.8 s to hide; `SpoilerHold`) reveals or hides that one race: nothing animates while the finger is down; on completion (success haptic on reveal, soft impact on hide) a reveal fades the painting from opacity 1 to 0 over 1.5 s (`SpoilerHold.revealDuration`) while the winner photo fades in, and hiding is instant, with no animation (`SpoilerCrossfade.animation(for:)` animates only when the new state is shown, Reduce Motion included)
   (`Domain.revealedRaces`, keyed by `raceURL` or name, in memory only, so every launch starts
-  hidden). A one-time `SpoilerHint` callout explains the double tap. An empty Results today shows
+  hidden). A one-time `SpoilerHint` callout explains the long press (a plain tap on a shown result opens it at once). An empty Results today shows
   the `EmptyPodiumArt` card with "First finish expected HH:MM"; an empty Yesterday says "No
   results yesterday". Yesterday previews 3 rows; its "See all" pushes `YesterdayResultsListView`,
   with the same per-race reveal. Cards and rows open the race's PCS results page in Safari

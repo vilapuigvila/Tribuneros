@@ -3,11 +3,12 @@
 //  Tribuneros
 //
 
+import Lottie
 import SwiftUI
 
 extension HomeRaces {
     enum SpoilerHint {
-        static let text = "Double tap a result to show or hide spoilers"
+        static let text = "Press and hold a result to show or hide spoilers"
         static let repeatInterval: TimeInterval = 48 * 3600
         static let maxShowings = 2
 
@@ -63,6 +64,26 @@ struct SpoilerHintCallout: View {
     var pointsUp = true
     let dismiss: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var animation: some View {
+        LottieView(animation: .named("spoiler_long_press"))
+            .playbackMode(
+                reduceMotion
+                    ? .paused(at: .progress(0.65))
+                    : .playing(.fromProgress(
+                        0,
+                        toProgress: 1,
+                        loopMode: .loop
+                    ))
+            )
+            .frame(
+                width: 200,
+                height: 120
+            )
+            .accessibilityHidden(true)
+    }
+
     private var pointer: some View {
         HintPointer()
             .fill(Color.tribuneru(.vaporAccent))
@@ -77,13 +98,16 @@ struct SpoilerHintCallout: View {
             if pointsUp {
                 pointer
             }
-            TribuneruText(
-                content: HomeRaces.SpoilerHint.text,
-                style: .vaporLink,
-                color: .tribuneru(.vaporPageBackground),
-                lineLimit: 2
-            )
-            .multilineTextAlignment(.center)
+            VStack(spacing: 6) {
+                animation
+                TribuneruText(
+                    content: HomeRaces.SpoilerHint.text,
+                    style: .vaporLink,
+                    color: .tribuneru(.vaporPageBackground),
+                    lineLimit: 2
+                )
+                .multilineTextAlignment(.center)
+            }
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
             .background(
