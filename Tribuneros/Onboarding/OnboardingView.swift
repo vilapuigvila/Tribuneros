@@ -121,7 +121,7 @@ struct OnboardingView: View {
                 .foregroundColor(.tribuneru(.vaporAccent))
                 .accessibilityHidden(true)
             TribuneruText(
-                content: "TRIBUNEROS",
+                content: "CYCLING TRIBUNE",
                 style: .vaporGroupLabel,
                 color: .tribuneru(.vaporTextSecondary)
             )

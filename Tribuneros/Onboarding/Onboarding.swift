@@ -205,7 +205,7 @@ extension Onboarding {
                 id: 0,
                 animation: "onboarding_welcome",
                 stillProgress: 0.3,
-                title: showing > 1 ? "Welcome back to Tribuneros" : "Welcome to Tribuneros",
+                title: showing > 1 ? "Welcome back to Cycling Tribune" : "Welcome to Cycling Tribune",
                 body: "Road and cyclocross results, calendars and cycling news, all in one place."
             ),
             Page(

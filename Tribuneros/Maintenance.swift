@@ -86,7 +86,7 @@ struct MaintenanceAlertView: View {
                     color: .tribuneru(.vaporTextPrimary)
                 )
                 TribuneruText(
-                    content: "Tribuneros is being updated. Please try again in a few minutes.",
+                    content: "Cycling Tribune is being updated. Please try again in a few minutes.",
                     style: .vaporHeroSubtitle,
                     color: .tribuneru(.vaporTextSecondary),
                     lineLimit: 4
@@ -104,7 +104,7 @@ struct MaintenanceAlertView: View {
         .onAppear {
             UIAccessibility.post(
                 notification: .screenChanged,
-                argument: "Under maintenance. Tribuneros is being updated. Please try again in a few minutes."
+                argument: "Under maintenance. Cycling Tribune is being updated. Please try again in a few minutes."
             )
         }
     }

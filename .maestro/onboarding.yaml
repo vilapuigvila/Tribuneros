@@ -19,7 +19,7 @@ tags:
     timeout: 15000
 - assertVisible:
     id: "onboarding.page.0"
-- assertVisible: "Welcome to Tribuneros"
+- assertVisible: "Welcome to Cycling Tribune"
 - assertVisible:
     id: "onboarding.skip"
 - tapOn:
@@ -89,7 +89,7 @@ tags:
     visible:
       id: "onboarding"
     timeout: 15000
-- assertVisible: "Welcome back to Tribuneros"
+- assertVisible: "Welcome back to Cycling Tribune"
 - tapOn:
     id: "onboarding.skip"
 - extendedWaitUntil:
