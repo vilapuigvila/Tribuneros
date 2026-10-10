@@ -211,29 +211,31 @@ extension Onboarding {
                 id: 0,
                 animation: "onboarding_welcome",
                 stillProgress: 0.3,
-                title: showing > 1 ? "Welcome back to Cycling Tribune" : "Welcome to Cycling Tribune",
-                body: "Road and cyclocross results, calendars and cycling news, all in one place."
+                title: showing > 1
+                    ? L10n.tr("Welcome back to Cycling Tribune")
+                    : L10n.tr("Welcome to Cycling Tribune"),
+                body: L10n.tr("Road and cyclocross results, calendars and cycling news, all in one place.")
             ),
             Page(
                 id: 1,
                 animation: "onboarding_spoilers",
                 stillProgress: 0.6,
-                title: "Results without spoilers",
-                body: "Results start hidden behind a painting. Press and hold one to reveal or hide it, then tap to open it."
+                title: L10n.tr("Results without spoilers"),
+                body: L10n.tr("Results start hidden behind a painting. Press and hold one to reveal or hide it, then tap to open it.")
             ),
             Page(
                 id: 2,
                 animation: "onboarding_cx",
                 stillProgress: 0.5,
-                title: "CX Zone",
-                body: "Cyclocross races, results, standings and the whole season calendar."
+                title: L10n.tr("CX Zone"),
+                body: L10n.tr("Cyclocross races, results, standings and the whole season calendar.")
             ),
             Page(
                 id: 3,
                 animation: "onboarding_paddock",
                 stillProgress: 0.5,
-                title: "The Paddock",
-                body: "Transfers, race program changes, birthdays and the best cycling press."
+                title: L10n.tr("The Paddock"),
+                body: L10n.tr("Transfers, race program changes, birthdays and the best cycling press.")
             ),
         ]
     }

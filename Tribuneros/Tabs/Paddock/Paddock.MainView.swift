@@ -25,7 +25,7 @@ struct PaddockView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("PADDOCK")
+        .navigationTitle("PADDOCK") // l10n:ignore: the section's brand name, like Cycling Tribune
     }
 }
 

@@ -1,0 +1,185 @@
+{
+  "All": {
+    "ca": "Tot",
+    "comment": "Paddock filter chip"
+  },
+  "Transfers": {
+    "ca": "Fitxatges",
+    "comment": "Paddock filter chip"
+  },
+  "Programs": {
+    "ca": "Programes",
+    "comment": "Paddock filter chip"
+  },
+  "Birthdays": {
+    "ca": "Aniversaris",
+    "comment": "Paddock filter chip"
+  },
+  "Today": {
+    "ca": "Avui",
+    "comment": "Paddock day group"
+  },
+  "Yesterday": {
+    "ca": "Ahir",
+    "comment": "Paddock day group"
+  },
+  "Earlier": {
+    "ca": "Abans",
+    "comment": "Paddock day group"
+  },
+  "The press": {
+    "ca": "La premsa",
+    "comment": "Paddock press panel title"
+  },
+  "%lld sites": {
+    "plural": {
+      "en": {
+        "one": "%lld site",
+        "other": "%lld sites"
+      },
+      "ca": {
+        "one": "%lld web",
+        "other": "%lld webs"
+      }
+    }
+  },
+  "Loading the paddock": {
+    "ca": "S’està carregant el paddock",
+    "comment": "Paddock feed accessibility label"
+  },
+  "Nothing new in the paddock.": {
+    "ca": "Res de nou al paddock.",
+    "comment": "Paddock feed empty state"
+  },
+  "Couldn't load the paddock from ProCyclingStats.": {
+    "ca": "No s’ha pogut carregar el paddock de ProCyclingStats.",
+    "comment": "Paddock feed error state"
+  },
+  "Try again": {
+    "ca": "Torna-ho a provar"
+  },
+  "Nothing here for this filter.": {
+    "ca": "No hi ha res amb aquest filtre.",
+    "comment": "Paddock feed empty filter"
+  },
+  "TRANSFER": {
+    "ca": "FITXATGE",
+    "comment": "Paddock feed card tag"
+  },
+  "PROGRAM": {
+    "ca": "PROGRAMA",
+    "comment": "Paddock feed card tag"
+  },
+  "BIRTHDAYS": {
+    "ca": "ANIVERSARIS",
+    "comment": "Paddock feed card tag"
+  },
+  "Added": {
+    "ca": "Afegida",
+    "comment": "Paddock program change: race added"
+  },
+  "Dropped": {
+    "ca": "Descartada",
+    "comment": "Paddock program change: race dropped"
+  },
+  "today": {
+    "ca": "avui",
+    "comment": "Paddock birthdays card time"
+  },
+  "Loading the rider": {
+    "ca": "S’està carregant el ciclista",
+    "comment": "Rider screen accessibility label"
+  },
+  "rider page on ProCyclingStats": {
+    "ca": "pàgina del ciclista a ProCyclingStats",
+    "comment": "Rider screen link"
+  },
+  "Rider": {
+    "ca": "Ciclista",
+    "comment": "Rider screen title"
+  },
+  "Transfer": {
+    "ca": "Fitxatge",
+    "comment": "Rider screen header"
+  },
+  "Program update": {
+    "ca": "Canvi de programa",
+    "comment": "Rider screen header"
+  },
+  "JOINS": {
+    "ca": "S’UNEIX",
+    "comment": "Rider screen transfer label"
+  },
+  "Announced": {
+    "ca": "Anunciat",
+    "comment": "Rider screen transfer date tile"
+  },
+  "%@ ago": {
+    "ca": "fa %@",
+    "comment": "Relative time, e.g. fa 16h"
+  },
+  "Welcome to Cycling Tribune": {
+    "ca": "Et donem la benvinguda a Cycling Tribune",
+    "comment": "Onboarding first page"
+  },
+  "Welcome back to Cycling Tribune": {
+    "ca": "Et tornem a donar la benvinguda a Cycling Tribune",
+    "comment": "Onboarding second showing"
+  },
+  "Road and cyclocross results, calendars and cycling news, all in one place.": {
+    "ca": "Resultats de carretera i de ciclocròs, calendaris i notícies del ciclisme, tot en un sol lloc.",
+    "comment": "Onboarding page 1 body"
+  },
+  "Results without spoilers": {
+    "ca": "Resultats sense espòilers",
+    "comment": "Onboarding page 2 title"
+  },
+  "Results start hidden behind a painting. Press and hold one to reveal or hide it, then tap to open it.": {
+    "ca": "Els resultats apareixen amagats darrere d’una pintura. Mantén premut un per mostrar-lo o amagar-lo i, després, toca’l per obrir-lo.",
+    "comment": "Onboarding page 2 body"
+  },
+  "Cyclocross races, results, standings and the whole season calendar.": {
+    "ca": "Curses de ciclocròs, resultats, classificacions i el calendari de tota la temporada.",
+    "comment": "Onboarding page 3 body"
+  },
+  "The Paddock": {
+    "ca": "El Paddock",
+    "comment": "Onboarding page 4 title"
+  },
+  "Transfers, race program changes, birthdays and the best cycling press.": {
+    "ca": "Fitxatges, canvis de programa de les curses, aniversaris i la millor premsa del ciclisme.",
+    "comment": "Onboarding page 4 body"
+  },
+  "Skip": {
+    "ca": "Omet",
+    "comment": "Onboarding button"
+  },
+  "Skip the introduction": {
+    "ca": "Omet la introducció",
+    "comment": "Onboarding skip accessibility label"
+  },
+  "Let's ride": {
+    "ca": "Som-hi!",
+    "comment": "Onboarding last page button"
+  },
+  "Next": {
+    "ca": "Següent",
+    "comment": "Onboarding button"
+  },
+  "Under maintenance": {
+    "ca": "En manteniment",
+    "comment": "Maintenance alert title"
+  },
+  "Cycling Tribune is being updated. Please try again in a few minutes.": {
+    "ca": "Cycling Tribune s’està actualitzant. Torna-ho a provar d’aquí a uns minuts.",
+    "comment": "Maintenance alert body"
+  },
+  "Under maintenance. Cycling Tribune is being updated. Please try again in a few minutes.": {
+    "ca": "En manteniment. Cycling Tribune s’està actualitzant. Torna-ho a provar d’aquí a uns minuts.",
+    "comment": "Maintenance VoiceOver announcement"
+  },
+  "turns": {
+    "ca": "compleix",
+    "comment": "Birthday row, before the age in large type: “turns 28”"
+  }
+}
