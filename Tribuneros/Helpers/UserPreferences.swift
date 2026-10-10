@@ -13,6 +13,8 @@ enum UserPreferencesKey: String, CaseIterable {
     case spoilerModeResultsTomorrow
     case spoilerHintFirstShown
     case spoilerHintShownCount
+    case liveHintFirstShown
+    case liveHintShownCount
     case onboardingFirstShown
     case onboardingShownCount
     case appLanguage
@@ -140,6 +142,12 @@ struct UserSettings {
 
     @UserDefault(UserPreferencesKey.spoilerHintShownCount.rawValue, defaultValue: 0)
     static var spoilerHintShownCount: Int?
+
+    @UserDefault(UserPreferencesKey.liveHintFirstShown.rawValue, defaultValue: nil)
+    static var liveHintFirstShown: Date?
+
+    @UserDefault(UserPreferencesKey.liveHintShownCount.rawValue, defaultValue: 0)
+    static var liveHintShownCount: Int?
 
     @UserDefault(UserPreferencesKey.onboardingFirstShown.rawValue, defaultValue: nil)
     static var onboardingFirstShown: Date?

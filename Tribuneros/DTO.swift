@@ -204,6 +204,81 @@ extension DTO {
     }
 }
 
+// MARK: - Live race -
+
+extension DTO {
+    /// A race's PCS live page (`<race path>/live`) while it runs: the KPI strip, the profile, the
+    /// situation (groups on the road) and the timeline. Every part is best-effort and may be empty.
+    struct LivePage: Equatable, Sendable {
+        /// One `ul.ls5b-kpi > li`: "KM to go" / "121.2". The div's class ("kmtogo") is `key`.
+        struct Stat: Equatable, Sendable {
+            let key: String
+            let label: String
+            let value: String
+        }
+
+        /// The `.bigProfile` elevation line: points in 0...1 (x left to right, y bottom to top).
+        struct Profile: Equatable, Sendable {
+            struct Point: Equatable, Sendable {
+                let x: Double
+                let y: Double
+            }
+
+            /// `.kp5_cont`: a climb (type "1"), sprint ("2") or other marker at `x` (0...1).
+            struct Keypoint: Equatable, Sendable {
+                let x: Double
+                let name: String
+                let type: String
+            }
+
+            let points: [Point]
+            /// `.kmdone.profilePerc` width, 0...1: how much of the route is done.
+            let progress: Double
+            /// The `.hoogteTitle` labels, e.g. ["0", "250"] (metres).
+            let elevationLabels: [String]
+            let keypoints: [Keypoint]
+        }
+
+        /// One group in `ul.situ5b`: "PELOTON", "BREAK"... with its gap and riders.
+        struct Group: Equatable, Sendable {
+            struct Rider: Equatable, Sendable {
+                let bib: String
+                let name: String
+                let countryCode: String
+            }
+
+            let name: String
+            /// "+1:24", empty for the head of the race or when PCS shows none.
+            let gap: String
+            /// "P", "1"... the round badge PCS draws next to the group.
+            let badge: String
+            let riders: [Rider]
+        }
+
+        /// One `ul.timeline3 > li.event`.
+        struct Event: Equatable, Sendable {
+            /// `data-uid`; stable across polls, so the view can diff on it.
+            let id: String
+            /// The round badge: the km to go ("223") or "P" before the start.
+            let badge: String
+            let text: String
+            /// `div.timeago2[data-ts]`, seconds since 1970; nil when PCS gives none (or 0).
+            let timestamp: Date?
+            /// The small table under the text ("Youngest winners of..."), empty when none.
+            let header: [String]
+            let rows: [[String]]
+        }
+
+        let stats: [Stat]
+        /// `ul.ls5b-kpi[data-status]` / `.race_status`: "prerace", "racing", "finished".
+        let status: String
+        let profile: Profile?
+        let groups: [Group]
+        /// Newest first, as PCS lists them.
+        let events: [Event]
+    }
+}
+
 // MARK: - Paddock -
 
 extension DTO {
