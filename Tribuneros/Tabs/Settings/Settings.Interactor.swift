@@ -10,11 +10,20 @@ extension Settings {
     struct Domain: Equatable {
         var language: String
 
-        static let defaultLanguage = "en"
-        /// Adding a language is one entry here.
-        static let supportedLanguages: [(code: String, title: String)] = [
-            (code: "en", title: "English")
-        ]
+        /// Follow the device's languages until the user picks one.
+        static let defaultLanguage = AppLanguage.system
+        /// "System default" first, then each bundled language by its own name.
+        /// Adding a language is one entry in `AppLanguage.localizations`.
+        static var supportedLanguages: [(code: String, title: String)] {
+            AppLanguage.supported.map { (code: $0, title: title(for: $0)) }
+        }
+
+        static func title(for code: String) -> String {
+            if code == AppLanguage.system {
+                return L10n.tr("System default")
+            }
+            return AppLanguage.endonym(code) ?? code
+        }
     }
 
     enum UseCase: Sendable {
@@ -27,7 +36,12 @@ extension Settings {
 
         static let userSettings = Store(
             loadLanguage: { UserSettings.appLanguage },
-            saveLanguage: { UserSettings.appLanguage = $0 }
+            saveLanguage: { code in
+                UserSettings.appLanguage = code
+                Task { @MainActor in
+                    AppLocalization.shared.apply(stored: code)
+                }
+            }
         )
     }
 

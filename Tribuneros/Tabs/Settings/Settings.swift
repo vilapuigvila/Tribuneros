@@ -22,16 +22,11 @@ extension Settings {
         let languageTitle: String
         let languages: [Representable.Language]
 
-        static let idle = ViewState(
-            languageTitle: "English",
-            languages: [
-                Representable.Language(
-                    id: "en",
-                    title: "English",
-                    isSelected: true
-                )
-            ]
-        )
+        static var idle: ViewState {
+            ViewModel<InteractorImpl>.mapToViewState(
+                from: Domain(language: Domain.defaultLanguage)
+            )
+        }
     }
 
     enum Representable {

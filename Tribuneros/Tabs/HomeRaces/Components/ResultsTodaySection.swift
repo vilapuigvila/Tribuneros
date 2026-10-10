@@ -12,7 +12,7 @@ struct ResultsTodaySection: View {
     let action: (HomeRaces.Action) -> Void
 
     var body: some View {
-        HomeSection(title: "Results today") {
+        HomeSection(title: L10n.tr("Results today")) {
             if races.isEmpty {
                 ResultsAwaitingCard(firstFinishExpected: firstFinishExpected)
             } else {
@@ -87,13 +87,13 @@ struct ResultsAwaitingCard: View {
     }
 
     private var accessibilityText: String {
-        guard let firstFinishExpected else { return "No results yet" }
-        return "No results yet, first finish expected \(firstFinishExpected)"
+        guard let firstFinishExpected else { return L10n.tr("No results yet") }
+        return L10n.tr("No results yet, first finish expected %@", firstFinishExpected)
     }
 
     private func label(_ time: String) -> some View {
         TribuneruText(
-            content: "First finish expected \(time)",
+            content: L10n.tr("First finish expected %@", time),
             style: .vaporAwaitingLabel,
             color: .tribuneru(labelColor),
             lineLimit: 1

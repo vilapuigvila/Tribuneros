@@ -20,7 +20,7 @@ extension CXRaces {
             Group {
                 if representable.nextThreeEvents().isEmpty {
                     TribuneruText(
-                        content: "Calendar is empty.",
+                        content: L10n.tr("Calendar is empty."),
                         style: .vaporMeta,
                         color: .tribuneru(.vaporTextSecondary),
                         lineLimit: 2

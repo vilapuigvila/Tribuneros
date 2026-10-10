@@ -55,7 +55,7 @@ struct WhereToWatchView: View {
         }
         .background(Color.tribuneru(.vaporPageBackground))
         .preferredColorScheme(.dark)
-        .navigationTitle("Where to watch")
+        .navigationTitle(L10n.tr("Where to watch"))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             viewModel.action(.onAppear)
@@ -80,7 +80,7 @@ struct WhereToWatchView: View {
         .redacted(reason: .placeholder)
         .disabled(true)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Loading the schedule")
+        .accessibilityLabel(L10n.tr("Loading the schedule"))
     }
 
     private func loaded(
@@ -126,7 +126,7 @@ struct WhereToWatchView: View {
         case .race(let race):
             VStack(alignment: .leading, spacing: 12) {
                 TribuneruText(
-                    content: "YOUR RACE",
+                    content: L10n.tr("YOUR RACE"),
                     style: .vaporGroupLabel,
                     color: .tribuneru(.vaporAccent),
                     lineLimit: 1
@@ -161,7 +161,7 @@ struct WhereToWatchView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .firstTextBaseline) {
                 TribuneruText(
-                    content: section.title.uppercased(),
+                    content: section.title.uppercased(with: L10n.locale),
                     style: .vaporGroupLabel,
                     color: .tribuneru(.vaporTextSecondary),
                     lineLimit: 1
@@ -226,7 +226,7 @@ struct WhereToWatchView: View {
 
             if race.channels.isEmpty {
                 TribuneruText(
-                    content: "No broadcast listed yet",
+                    content: L10n.tr("No broadcast listed yet"),
                     style: .vaporMeta,
                     color: .tribuneru(.vaporTextMuted),
                     lineLimit: 1
@@ -324,7 +324,7 @@ struct WhereToWatchView: View {
                     }
                     .buttonStyle(.plain)
                     .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("\(day.weekday) \(day.number), \(day.count)")
+                    .accessibilityLabel(L10n.tr("%1$@ %2$@, %3$@", day.weekday, day.number, day.count))
                     .accessibilityAddTraits(day.isSelected ? .isSelected : [])
                     .accessibilityIdentifier("whereToWatch.day.\(index)")
                 }
@@ -335,7 +335,7 @@ struct WhereToWatchView: View {
     private var failed: some View {
         VaporCard {
             TribuneruText(
-                content: "Couldn't load the schedule.",
+                content: L10n.tr("Couldn't load the schedule."),
                 style: .vaporMeta,
                 color: .tribuneru(.vaporTextSecondary),
                 lineLimit: 2
@@ -344,7 +344,7 @@ struct WhereToWatchView: View {
                 viewModel.action(.retry)
             } label: {
                 TribuneruText(
-                    content: "Try again",
+                    content: L10n.tr("Try again"),
                     style: .vaporLink,
                     color: .tribuneru(.vaporAccent),
                     lineLimit: 1

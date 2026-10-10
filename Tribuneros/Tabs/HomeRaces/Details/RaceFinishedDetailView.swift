@@ -69,7 +69,7 @@ struct RaceFinishedDetailView: View {
                         viewModel.action(.openFullResults)
                     } label: {
                         VaporCard {
-                            VaporMoreInfoLink(title: "View full results")
+                            VaporMoreInfoLink(title: L10n.tr("View full results"))
                         }
                     }
                     .buttonStyle(.plain)
@@ -80,7 +80,7 @@ struct RaceFinishedDetailView: View {
         }
         .background(Color.tribuneru(.vaporPageBackground))
         .preferredColorScheme(.dark)
-        .navigationTitle("Race Result")
+        .navigationTitle(L10n.tr("Race Result"))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             viewModel.action(.onAppear)
@@ -128,7 +128,7 @@ private struct ClassificationChips: View {
                     select(classification)
                 } label: {
                     TribuneruText(
-                        content: classification.title.uppercased(),
+                        content: classification.title.uppercased(with: L10n.locale),
                         style: .vaporSpoilerChip,
                         color: isSelected ? .tribuneru(.vaporPageBackground) : .tribuneru(.vaporTextPrimary),
                         lineLimit: 1
@@ -145,7 +145,11 @@ private struct ClassificationChips: View {
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(classification == .gc ? "General classification" : "Stage result")
+                .accessibilityLabel(
+                    classification == .gc
+                        ? L10n.tr("General classification")
+                        : L10n.tr("Stage result")
+                )
                 .accessibilityAddTraits(isSelected ? .isSelected : [])
             }
             Spacer(minLength: 0)
@@ -165,7 +169,7 @@ private struct ResultTable: View {
                 .redacted(reason: .placeholder)
                 .disabled(true)
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel("Loading the results")
+                .accessibilityLabel(L10n.tr("Loading the results"))
         case .loaded(let rows):
             ResultRows(rows: rows)
         case .unavailable(let fallback, let message):

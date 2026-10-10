@@ -36,7 +36,7 @@ struct HeaderRaceCardView: View {
                 
                 if let spoilerModeAction {
                     HStack(alignment: .center, spacing: 12) {
-                        let textSpoilerBtn = isSpoilerModeOn ? "Spoiler is on" : "Spoiler is off"
+                        let textSpoilerBtn = isSpoilerModeOn ? L10n.tr("Spoiler is on") : L10n.tr("Spoiler is off")
                         buildButton(textSpoilerBtn, action: spoilerModeAction)
                     }
                 }

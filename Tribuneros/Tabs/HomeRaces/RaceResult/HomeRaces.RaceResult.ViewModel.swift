@@ -113,12 +113,12 @@ extension HomeRaces.RaceResult {
                                 )
                             }
                         ),
-                        message: "Couldn't load the full results. Showing the podium."
+                        message: L10n.tr("Couldn't load the full results. Showing the podium.")
                     )
                 case .gc:
                     return .unavailable(
                         fallback: [],
-                        message: "Couldn't load the general classification."
+                        message: L10n.tr("Couldn't load the general classification.")
                     )
                 }
             }
@@ -152,7 +152,7 @@ extension HomeRaces.RaceResult {
                 return time == ",," ? "" : time
             }
             if time == ",," || ["0:00", "00:00", "+0:00", "+00:00"].contains(time) {
-                return "s.t."
+                return L10n.tr("s.t.")
             }
             if time.isEmpty || time.hasPrefix("+") {
                 return time

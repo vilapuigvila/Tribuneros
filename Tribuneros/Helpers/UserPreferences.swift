@@ -23,7 +23,7 @@ enum UserPreferencesKey: String, CaseIterable {
 
 @propertyWrapper
 struct UserDefault<T: Codable> {
-    private let queue = DispatchQueue(label: "UserDefaultQueue_\(UUID().uuidString)")
+    private let queue = DispatchQueue(label: "UserDefaultQueue_\(UUID().uuidString)") // l10n:ignore
     private let subject: CurrentValueSubject<T?, Never>
     
     let key: String
@@ -155,7 +155,7 @@ struct UserSettings {
     @UserDefault(UserPreferencesKey.onboardingShownCount.rawValue, defaultValue: 0)
     static var onboardingShownCount: Int?
 
-    @UserDefault(UserPreferencesKey.appLanguage.rawValue, defaultValue: "en")
+    @UserDefault(UserPreferencesKey.appLanguage.rawValue, defaultValue: AppLanguage.system)
     static var appLanguage: String?
 }
 

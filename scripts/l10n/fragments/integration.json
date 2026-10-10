@@ -1,0 +1,12 @@
+{
+  "Today Races": {"ca": "Curses d’avui", "comment": "Tab bar label"},
+  "CX Zone": {"ca": "Zona CX", "comment": "Tab bar label and CX Zone title"},
+  "Paddock": {"ca": "Paddock", "comment": "Tab bar label; name of the news tab, kept as is"},
+  "Settings": {"ca": "Configuració", "comment": "Tab bar label"},
+  "SETTINGS": {"ca": "CONFIGURACIÓ", "comment": "Settings navigation title"},
+  "Show onboarding again": {"ca": "Torna a veure la presentació", "comment": "Settings row"},
+  "Language": {"ca": "Idioma", "comment": "Settings row"},
+  "LANGUAGE": {"ca": "IDIOMA", "comment": "Language screen navigation title"},
+  "System default": {"ca": "Predeterminat del sistema", "comment": "Language option: follow the device languages"},
+  "More languages are coming.": {"ca": "Aviat hi haurà més idiomes.", "comment": "Footer under the language list"}
+}

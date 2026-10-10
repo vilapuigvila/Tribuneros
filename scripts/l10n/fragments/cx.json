@@ -1,0 +1,314 @@
+{
+  "%lld categories": {
+    "plural": {
+      "ca": {
+        "one": "%lld categoria",
+        "other": "%lld categories"
+      },
+      "en": {
+        "one": "%lld category",
+        "other": "%lld categories"
+      }
+    }
+  },
+  "About": {
+    "ca": "Sobre la cursa",
+    "comment": "Race detail panel header for the summary"
+  },
+  "Age": {
+    "ca": "Edat",
+    "comment": "Stat tile label and results column header"
+  },
+  "All": {
+    "ca": "Tot",
+    "comment": "Paddock filter chip"
+  },
+  "All races": {
+    "ca": "Totes les curses",
+    "comment": "CX Zone calendar screen title"
+  },
+  "CX ZONE": {
+    "ca": "ZONA CX",
+    "comment": "CX Zone screen title (all caps)"
+  },
+  "Calendar is empty.": {
+    "ca": "El calendari està buit.",
+    "comment": "CX Zone calendar empty state"
+  },
+  "Cancelled": {
+    "ca": "Cancel·lada",
+    "comment": "Tag on a cancelled race"
+  },
+  "Championships": {
+    "ca": "Campionats",
+    "comment": "Series filter chip"
+  },
+  "Class": {
+    "ca": "Classe",
+    "comment": "Race detail info row label (UCI class)"
+  },
+  "Continental Championships": {
+    "ca": "Campionats continentals",
+    "comment": "UCI class description CC"
+  },
+  "Couldn’t load the cyclocross races. Check your connection and try again.": {
+    "ca": "No s’han pogut carregar les curses de ciclocròs. Comprova la connexió i torna-ho a provar.",
+    "comment": "CX Zone error card message"
+  },
+  "Couldn’t load the results. Check your connection and try again.": {
+    "ca": "No s’han pogut carregar els resultats. Comprova la connexió i torna-ho a provar.",
+    "comment": "Race results error message"
+  },
+  "Country": {
+    "ca": "País",
+    "comment": "Race detail info row label"
+  },
+  "Date": {
+    "ca": "Data",
+    "comment": "Race detail info row label"
+  },
+  "Finished": {
+    "ca": "Acabada",
+    "comment": "Status tag: race already run"
+  },
+  "In %lld days": {
+    "plural": {
+      "ca": {
+        "one": "D’aquí a %lld dia",
+        "other": "D’aquí a %lld dies"
+      },
+      "en": {
+        "one": "In %lld day",
+        "other": "In %lld days"
+      }
+    }
+  },
+  "Latest results": {
+    "ca": "Últims resultats",
+    "comment": "CX Zone latest results header and screen title"
+  },
+  "Links": {
+    "ca": "Enllaços",
+    "comment": "Race detail panel header"
+  },
+  "Loading cyclocross": {
+    "ca": "S’està carregant el ciclocròs",
+    "comment": "CX Zone placeholder accessibility label"
+  },
+  "Loading the race": {
+    "ca": "S’està carregant la cursa",
+    "comment": "Race detail placeholder accessibility label"
+  },
+  "Loading the results": {
+    "ca": "S’estan carregant els resultats",
+    "comment": "Race results placeholder accessibility label"
+  },
+  "Loading the rider": {
+    "ca": "S’està carregant el ciclista",
+    "comment": "Rider screen accessibility label"
+  },
+  "MEN ELITE · TOP %lld": {
+    "ca": "ELIT MASCULINA · TOP %lld",
+    "comment": "Results panel label, %lld = number of rows (all caps)"
+  },
+  "Men Elite": {
+    "ca": "Elit masculina",
+    "comment": "Men's elite category label (hardcoded in CX detail screens)"
+  },
+  "National Championships": {
+    "ca": "Campionats nacionals",
+    "comment": "UCI class description CN"
+  },
+  "Next races": {
+    "ca": "Properes curses",
+    "comment": "CX Zone calendar section header"
+  },
+  "No categories": {
+    "ca": "Sense categories",
+    "comment": "Standings ranking without categories"
+  },
+  "No categories found for this standings item.": {
+    "ca": "No s’han trobat categories per a aquesta classificació.",
+    "comment": "Standings ranking without categories, expanded"
+  },
+  "No categories found.": {
+    "ca": "No s’han trobat categories.",
+    "comment": "Standings card without categories"
+  },
+  "No race videos available": {
+    "ca": "Sense vídeos de la cursa",
+    "comment": "Floating button when the race has no video"
+  },
+  "No races in this series.": {
+    "ca": "No hi ha curses en aquesta sèrie.",
+    "comment": "Calendar empty state for a series filter"
+  },
+  "No races match “%@”.": {
+    "ca": "No hi ha curses que coincideixin amb “%@”.",
+    "comment": "Calendar search empty state, %@ = search text"
+  },
+  "No results available": {
+    "ca": "Encara no hi ha resultats",
+    "comment": "Race results empty state"
+  },
+  "No results found.": {
+    "ca": "No s’han trobat resultats.",
+    "comment": "Latest results empty state"
+  },
+  "No riders or standings match “%@”.": {
+    "ca": "Cap ciclista ni classificació coincideix amb “%@”.",
+    "comment": "Standings search empty state, %@ = search text"
+  },
+  "No standings found.": {
+    "ca": "No s’han trobat classificacions.",
+    "comment": "CX Zone standings empty state"
+  },
+  "Official website": {
+    "ca": "Web oficial",
+    "comment": "Race detail link"
+  },
+  "Other Belgian": {
+    "ca": "Altres belgues",
+    "comment": "Series filter chip"
+  },
+  "Others": {
+    "ca": "Altres",
+    "comment": "Series filter chip"
+  },
+  "Past winners": {
+    "ca": "Guanyadors anteriors",
+    "comment": "Race detail panel header"
+  },
+  "Points": {
+    "ca": "Punts",
+    "comment": "Stat tile label"
+  },
+  "Position": {
+    "ca": "Posició",
+    "comment": "Stat tile label"
+  },
+  "Profile": {
+    "ca": "Perfil",
+    "comment": "Rider profile panel header"
+  },
+  "Race page on cyclocross24": {
+    "ca": "Pàgina de la cursa a cyclocross24",
+    "comment": "Race detail link"
+  },
+  "Race video": {
+    "ca": "Vídeo de la cursa",
+    "comment": "Race detail link"
+  },
+  "Race videos": {
+    "ca": "Vídeos de la cursa",
+    "comment": "Floating button for the race videos"
+  },
+  "Race videos unavailable": {
+    "ca": "Vídeos no disponibles",
+    "comment": "Floating button when the results failed to load"
+  },
+  "Race, country, winner...": {
+    "ca": "Cursa, país, guanyador...",
+    "comment": "Calendar search prompt"
+  },
+  "Recent results": {
+    "ca": "Resultats recents",
+    "comment": "Rider panel header for recent results"
+  },
+  "Result": {
+    "ca": "Resultat",
+    "comment": "Rider screen panel header for a result"
+  },
+  "Results": {
+    "ca": "Resultats",
+    "comment": "Race detail results panel header"
+  },
+  "Rider": {
+    "ca": "Ciclista",
+    "comment": "Rider screen title"
+  },
+  "Rider, ranking, category...": {
+    "ca": "Ciclista, rànquing, categoria...",
+    "comment": "Standings search prompt"
+  },
+  "Series": {
+    "ca": "Sèrie",
+    "comment": "Stat tile label for the race series"
+  },
+  "Standing": {
+    "ca": "Classificació",
+    "comment": "Rider screen panel header for the standing"
+  },
+  "Standings": {
+    "ca": "Classificacions",
+    "comment": "CX Zone standings header and screen title"
+  },
+  "Starts": {
+    "ca": "Comença",
+    "comment": "Race detail info row label for the countdown"
+  },
+  "Team": {
+    "ca": "Equip",
+    "comment": "Results column header"
+  },
+  "Time": {
+    "ca": "Temps",
+    "comment": "Stat tile label and results column header"
+  },
+  "Today": {
+    "ca": "Avui",
+    "comment": "Paddock day group"
+  },
+  "Today Races": {
+    "ca": "Curses d’avui",
+    "comment": "Tab bar label"
+  },
+  "Tomorrow": {
+    "ca": "Demà",
+    "comment": "Countdown: race is tomorrow"
+  },
+  "UCI Class 1": {
+    "ca": "Classe 1 de l’UCI",
+    "comment": "UCI class description C1"
+  },
+  "UCI Class 2": {
+    "ca": "Classe 2 de l’UCI",
+    "comment": "UCI class description C2"
+  },
+  "UCI Class 3": {
+    "ca": "Classe 3 de l’UCI",
+    "comment": "UCI class description C3"
+  },
+  "UCI World Championships": {
+    "ca": "Campionats del món UCI",
+    "comment": "UCI class description CM"
+  },
+  "UCI World Cup": {
+    "ca": "Copa del Món UCI",
+    "comment": "UCI class description CDM"
+  },
+  "Upcoming": {
+    "ca": "Pròximament",
+    "comment": "Status tag: race not yet run"
+  },
+  "Victory": {
+    "ca": "Victòria",
+    "comment": "Victory panel header on the rider and winner screens"
+  },
+  "Winner": {
+    "ca": "Guanyador",
+    "comment": "Winner tag and screen title"
+  },
+  "World Cup": {
+    "ca": "Copa del Món",
+    "comment": "Series filter chip"
+  },
+  "full results": {
+    "ca": "resultats complets",
+    "comment": "Race detail link to the full results page"
+  },
+  "rider page on cyclocross24": {
+    "ca": "pàgina del ciclista a cyclocross24",
+    "comment": "Rider screen link to the cyclocross24 page"
+  }
+}

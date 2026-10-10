@@ -29,7 +29,7 @@ struct NextToFinishRaceView: View {
     private func buildNextToFinish(_ races: [HomeRaces.Representable.RaceNext]) -> some View {
         VStack(spacing: 12) {
             HeaderRaceCardView(
-                title: "Today - Next to finish",
+                title: L10n.tr("Today - Next to finish"),
                 isSpoilerModeOn: false
             )
             VStack(spacing: 12) {
@@ -57,7 +57,7 @@ struct NextToFinishRaceView: View {
                         infoBtnOpacity = true
                     }
                 } label: {
-                    Text(isFullList ? "Show less" : "More info")
+                    Text(isFullList ? L10n.tr("Show less") : L10n.tr("More info"))
                         .font(.system(size: 12, weight: .semibold, design: .default))
                         .foregroundStyle(.link.opacity(0.8))
                         .padding(.vertical, 8)
@@ -85,10 +85,10 @@ struct NextToFinishRaceView: View {
         
     private func buildHeaderNextToFinishSection(_ width: CGFloat) -> some View {
         HStack(spacing: 0) {
-            buildTextForHeaderView("ETA", width: width * 0.23)
-            buildTextForHeaderView("Race", width: width * 0.54)
-            buildTextForHeaderView("CAT.", width: width * 0.0925)
-            buildTextForHeaderView("KM", width: width * 0.0925)
+            buildTextForHeaderView(L10n.tr("ETA"), width: width * 0.23)
+            buildTextForHeaderView(L10n.tr("Race"), width: width * 0.54)
+            buildTextForHeaderView(L10n.tr("CAT."), width: width * 0.0925)
+            buildTextForHeaderView(L10n.tr("KM"), width: width * 0.0925)
         }
         .overlay(
             RoundedRectangle(cornerRadius: 2)

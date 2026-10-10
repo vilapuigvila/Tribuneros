@@ -143,7 +143,7 @@ struct OnboardingView: View {
                 .foregroundColor(.tribuneru(.vaporAccent))
                 .accessibilityHidden(true)
             TribuneruText(
-                content: "CYCLING TRIBUNE",
+                content: "CYCLING TRIBUNE", // l10n:ignore: brand name
                 style: .vaporGroupLabel,
                 color: .tribuneru(.vaporTextSecondary)
             )
@@ -155,7 +155,7 @@ struct OnboardingView: View {
                     dismiss(.skip)
                 } label: {
                     TribuneruText(
-                        content: "Skip",
+                        content: L10n.tr("Skip"),
                         style: .vaporLink,
                         color: .tribuneru(.vaporTextSecondary)
                     )
@@ -163,7 +163,7 @@ struct OnboardingView: View {
                     .padding(.vertical, 8)
                     .contentShape(Rectangle())
                 }
-                .accessibilityLabel("Skip the introduction")
+                .accessibilityLabel(L10n.tr("Skip the introduction"))
                 .accessibilityIdentifier("onboarding.skip")
                 .transition(.opacity)
             }
@@ -190,7 +190,7 @@ struct OnboardingView: View {
         } label: {
             HStack(spacing: 8) {
                 TribuneruText(
-                    content: isLastPage ? "Let's ride" : "Next",
+                    content: isLastPage ? L10n.tr("Let's ride") : L10n.tr("Next"),
                     style: .vaporBannerTitle,
                     color: .tribuneru(.vaporPageBackground)
                 )
@@ -208,7 +208,7 @@ struct OnboardingView: View {
             .contentShape(Capsule())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(isLastPage ? "Let's ride" : "Next")
+        .accessibilityLabel(isLastPage ? L10n.tr("Let's ride") : L10n.tr("Next"))
         .accessibilityIdentifier(isLastPage ? "onboarding.done" : "onboarding.next")
     }
 }

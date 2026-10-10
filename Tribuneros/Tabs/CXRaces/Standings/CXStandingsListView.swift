@@ -21,8 +21,8 @@ struct CXStandingsListView: View {
             if filtered.items.isEmpty {
                 TribuneruText(
                     content: standings.items.isEmpty
-                        ? "No standings found."
-                        : "No riders or standings match \u{201C}\(searchText)\u{201D}.",
+                        ? L10n.tr("No standings found.")
+                        : L10n.tr("No riders or standings match “%@”.", searchText),
                     style: .vaporMeta,
                     color: .tribuneru(.vaporTextSecondary),
                     lineLimit: 2
@@ -52,7 +52,7 @@ struct CXStandingsListView: View {
         .searchable(
             text: $searchText,
             placement: .navigationBarDrawer(displayMode: .always),
-            prompt: "Rider, ranking, category..."
+            prompt: L10n.tr("Rider, ranking, category...")
         )
     }
 }
@@ -89,7 +89,7 @@ struct CyclocrossStandingsCardView: View {
                 }
             } else {
                 TribuneruText(
-                    content: "No categories found.",
+                    content: L10n.tr("No categories found."),
                     style: .vaporMeta,
                     color: .tribuneru(.vaporTextSecondary),
                     lineLimit: 2
@@ -127,7 +127,7 @@ private struct StandingsItemView: View {
                     .truncationMode(.tail)
 
                     TribuneruText(
-                        content: item.categories.isEmpty ? "No categories" : "\(item.categories.count) categories",
+                        content: item.categories.isEmpty ? L10n.tr("No categories") : L10n.tr("%lld categories", item.categories.count),
                         style: .vaporMeta,
                         color: .tribuneru(.vaporTextSecondary)
                     )
@@ -152,7 +152,7 @@ private struct StandingsItemView: View {
 
             if item.categories.isEmpty {
                 TribuneruText(
-                    content: "No categories found for this standings item.",
+                    content: L10n.tr("No categories found for this standings item."),
                     style: .vaporMeta,
                     color: .tribuneru(.vaporTextSecondary),
                     lineLimit: 2
@@ -298,7 +298,7 @@ private struct StandingsTabsView: View {
                         selectedCategoryIndex = idx
                     } label: {
                         TribuneruText(
-                            content: category.title.uppercased(),
+                            content: category.title.uppercased(with: L10n.locale),
                             style: .vaporSpoilerChip,
                             color: isSelected(idx) ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary),
                             lineLimit: 1
@@ -397,7 +397,7 @@ private struct StandingsCategorySummaryView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             TribuneruText(
-                content: category.title.uppercased(),
+                content: category.title.uppercased(with: L10n.locale),
                 style: .vaporMeta,
                 color: .tribuneru(.vaporTextSecondary)
             )

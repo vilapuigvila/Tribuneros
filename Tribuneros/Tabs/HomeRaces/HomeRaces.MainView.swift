@@ -66,7 +66,7 @@ struct HomeRacesView: View {
                 EmptyView()
             }
         }
-        .navigationTitle("Races")
+        .navigationTitle(L10n.tr("Races"))
         // iOS 26 keeps a hidden large title inside the scroll view; inline avoids its collapse tracking.
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .navigationBar)
@@ -95,7 +95,7 @@ extension HomeRaces {
                     )
                     .redacted(reason: .placeholder)
                     .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("Loading the races")
+                    .accessibilityLabel(L10n.tr("Loading the races"))
                 case .loaded(let representable):
                     content(representable)
                 case .error(let errorView):
@@ -111,7 +111,7 @@ extension HomeRaces {
                             }
                         default:
                             ErrorCardView.generic(
-                                message: "\(errorView)",
+                                message: errorView.message,
                                 showTryAgainButton: retryCount < 3
                             ) {
                                 retryCount += 1

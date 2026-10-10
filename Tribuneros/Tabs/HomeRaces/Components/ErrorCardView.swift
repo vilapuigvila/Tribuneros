@@ -83,20 +83,20 @@ struct ErrorCardView: View {
     
     static func emptyData(showTryAgainButton: Bool, action: @escaping () -> Void) -> Self {
         ErrorCardView(
-            title: "No info available",
-            message: "We couldn’t find any race data right now. Try again in a moment.",
+            title: L10n.tr("No info available"),
+            message: L10n.tr("We couldn’t find any race data right now. Try again in a moment."),
             icon: "exclamationmark.triangle.fill",
-            primaryButtonTitle: "Try again",
+            primaryButtonTitle: L10n.tr("Try again"),
             showTryAgainButton: showTryAgainButton,
             primaryAction: action
         )
     }
     static func generic(message: String, showTryAgainButton: Bool, action: @escaping () -> Void) -> Self {
         ErrorCardView(
-            title: "Something went wrong",
+            title: L10n.tr("Something went wrong"),
             message: message,
             icon: "xmark.octagon.fill",
-            primaryButtonTitle: "Try again",
+            primaryButtonTitle: L10n.tr("Try again"),
             showTryAgainButton: showTryAgainButton,
             primaryAction: action
         )

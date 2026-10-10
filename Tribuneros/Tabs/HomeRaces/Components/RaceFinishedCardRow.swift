@@ -275,7 +275,7 @@ extension View {
                 .overlay {
                     Color.clear
                         .accessibilityElement()
-                        .accessibilityLabel(visibility == .hidden ? title : "Loading results")
+                        .accessibilityLabel(visibility == .hidden ? title : L10n.tr("Loading results"))
                 }
         }
     }
@@ -326,9 +326,9 @@ private struct ResultTapModifier: ViewModifier {
                 case .placeholder:
                     EmptyView()
                 case .hidden:
-                    Button("Show results", action: toggle)
+                    Button(L10n.tr("Show results"), action: toggle)
                 case .shown:
-                    Button("Hide results", action: toggle)
+                    Button(L10n.tr("Hide results"), action: toggle)
                 }
             }
     }
@@ -411,7 +411,7 @@ private struct SpoilerArtOverlay: ViewModifier {
                             .opacity(artOpacity)
                             .allowsHitTesting(false)
                             .accessibilityElement()
-                            .accessibilityLabel("Result hidden")
+                            .accessibilityLabel(L10n.tr("Result hidden"))
                             .accessibilityIdentifier(identifier ?? "spoilerArt")
                             .accessibilityHidden(visibility != .hidden)
                     }

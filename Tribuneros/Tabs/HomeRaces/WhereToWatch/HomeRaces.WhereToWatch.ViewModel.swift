@@ -17,12 +17,6 @@ extension HomeRaces.WhereToWatch {
             return formatter
         }()
 
-        static let relative: RelativeDateTimeFormatter = {
-            let formatter = RelativeDateTimeFormatter()
-            formatter.unitsStyle = .full
-            return formatter
-        }()
-
         static let day: DateFormatter = {
             let formatter = DateFormatter()
             formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -83,7 +77,7 @@ extension HomeRaces.WhereToWatch {
                             day.date,
                             calendar: calendar
                         ),
-                        count: day.raceCount == 1 ? "1 race" : "\(day.raceCount) races",
+                        count: L10n.tr("%lld races", day.raceCount),
                         isSelected: day.date == domain.selected
                     )
                 }
@@ -101,7 +95,10 @@ extension HomeRaces.WhereToWatch {
                     content: .loaded(
                         heading: page.heading,
                         updated: page.updatedAt.map {
-                            "Coverage updated " + Formatters.relative.localizedString(for: $0, relativeTo: now)
+                            L10n.tr(
+                                "Coverage updated %@",
+                                L10n.relativeFormatter(unitsStyle: .full).localizedString(for: $0, relativeTo: now)
+                            )
                         },
                         featured: featured(
                             key: key,
@@ -129,7 +126,7 @@ extension HomeRaces.WhereToWatch {
         ) -> ViewState.Featured? {
             guard let key else { return nil }
             guard let matched = page.sections.flatMap(\.races).first(where: { $0.id == matchedID }) else {
-                return .notListed("\(key.title) isn't in this day's TV listings.")
+                return .notListed(L10n.tr("%@ isn't in this day's TV listings.", key.title))
             }
             return .race(
                 race(
@@ -186,7 +183,7 @@ extension HomeRaces.WhereToWatch {
             let spoken = [
                 title,
                 meta,
-                isLive ? "live now" : isFinished ? "finished" : nil,
+                isLive ? L10n.tr("live now") : isFinished ? L10n.tr("finished") : nil,
                 time.isEmpty ? nil : time
             ]
             return ViewState.Race(
@@ -219,9 +216,11 @@ extension HomeRaces.WhereToWatch {
         ) -> String {
             guard let day = Formatters.day.date(from: date) else { return "" }
             if calendar.isDate(day, inSameDayAs: now) {
-                return "TODAY"
+                return L10n.tr("TODAY")
             }
-            return day.formatted(.dateTime.weekday(.abbreviated)).uppercased()
+            return day
+                .formatted(.dateTime.weekday(.abbreviated).locale(L10n.locale))
+                .uppercased(with: L10n.locale)
         }
 
         private static func dayNumber(

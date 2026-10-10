@@ -18,7 +18,7 @@ struct HistorySection: View {
 
     var body: some View {
         HomeSection(
-            title: "History",
+            title: L10n.tr("History"),
             seeAll: seeAll,
             seeAllIdentifier: "home.history.seeAll"
         ) {
@@ -122,14 +122,14 @@ struct HistoryBanner: View {
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
                     TribuneruText(
-                        content: "Browse past seasons",
+                        content: L10n.tr("Browse past seasons"),
                         style: .vaporBannerTitle,
                         color: .tribuneru(.white(level: 1)),
                         lineLimit: 1
                     )
                     .artTitleShadow()
                     TribuneruText(
-                        content: "Results, standings and more",
+                        content: L10n.tr("Results, standings and more"),
                         style: .vaporBannerSubtitle,
                         color: Color.tribuneru(.vaporTextPrimary).opacity(0.85),
                         lineLimit: 1

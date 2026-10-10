@@ -30,10 +30,10 @@ extension Paddock {
 
         var title: String {
             switch self {
-            case .all: "All"
-            case .transfers: "Transfers"
-            case .programs: "Programs"
-            case .birthdays: "Birthdays"
+            case .all: L10n.tr("All")
+            case .transfers: L10n.tr("Transfers")
+            case .programs: L10n.tr("Programs")
+            case .birthdays: L10n.tr("Birthdays")
             }
         }
     }
@@ -85,8 +85,18 @@ extension Paddock {
 
     struct Section: Identifiable, Equatable {
         var id: String { title }
+        /// The English day name ("Today", "Yesterday", "Earlier"): the view model groups by it.
         let title: String
         let cards: [Card]
+
+        /// The day name in the active language, for the view.
+        var displayTitle: String {
+            switch title {
+            case "Yesterday": L10n.tr("Yesterday")
+            case "Earlier": L10n.tr("Earlier")
+            default: L10n.tr("Today")
+            }
+        }
 
         /// Stand-ins shaped like a real feed, drawn redacted while it loads.
         static let placeholders: [Section] = {
@@ -97,7 +107,7 @@ extension Paddock {
             )
             return [
                 .init(
-                    title: "Today",
+                    title: "Today", // l10n:ignore: English day key, the same as the feed grouping
                     cards: [
                         .transfer(
                             .init(

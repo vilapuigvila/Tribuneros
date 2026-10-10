@@ -17,9 +17,9 @@ extension Paddock {
 
         var body: some View {
             VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-                VaporSectionHeader(title: "The press") {
+                VaporSectionHeader(title: L10n.tr("The press")) {
                     TribuneruText(
-                        content: items.count == 1 ? "1 site" : "\(items.count) sites",
+                        content: L10n.tr("%lld sites", items.count),
                         style: .vaporScreenDate,
                         color: .tribuneru(.vaporTextSecondary)
                     )
@@ -117,17 +117,17 @@ extension Paddock {
                 }
                 .redacted(reason: .placeholder)
                 .disabled(true)
-                .accessibilityLabel("Loading the paddock")
+                .accessibilityLabel(L10n.tr("Loading the paddock"))
             case .empty:
-                message("Nothing new in the paddock.")
+                message(L10n.tr("Nothing new in the paddock."))
             case .error:
                 VStack(alignment: .leading, spacing: 12) {
-                    message("Couldn't load the paddock from ProCyclingStats.")
+                    message(L10n.tr("Couldn't load the paddock from ProCyclingStats."))
                     Button {
                         action(.didRequestRefresh)
                     } label: {
                         ChipLabel(
-                            title: "Try again",
+                            title: L10n.tr("Try again"),
                             isSelected: true
                         )
                     }
@@ -135,7 +135,7 @@ extension Paddock {
                 }
             case .loaded(let sections):
                 if sections.isEmpty {
-                    message("Nothing here for this filter.")
+                    message(L10n.tr("Nothing here for this filter."))
                 } else {
                     ForEach(sections) { section in
                         FeedSectionView(
@@ -208,7 +208,7 @@ extension Paddock {
         var body: some View {
             VStack(alignment: .leading, spacing: 10) {
                 TribuneruText(
-                    content: section.title.uppercased(),
+                    content: section.displayTitle.uppercased(with: L10n.locale),
                     style: .vaporGroupLabel,
                     color: .tribuneru(.vaporTextSecondary)
                 )
@@ -247,7 +247,7 @@ extension Paddock {
             } label: {
                 VaporCard(spacing: 8) {
                     Kicker(
-                        tag: "TRANSFER",
+                        tag: L10n.tr("TRANSFER"),
                         tagColor: .tribuneru(.vaporTextSecondary),
                         time: card.date
                     )
@@ -278,7 +278,7 @@ extension Paddock {
             } label: {
                 VaporCard(spacing: 8) {
                     Kicker(
-                        tag: "PROGRAM",
+                        tag: L10n.tr("PROGRAM"),
                         tagColor: .tribuneru(.vaporAccent),
                         time: card.timeAgo
                     )
@@ -292,7 +292,7 @@ extension Paddock {
                                     color: change.isAdded ? .tribuneru(.vaporLive) : .tribuneru(.vaporNegative)
                                 )
                                 .frame(width: 10, alignment: .leading)
-                                .accessibilityLabel(change.isAdded ? "Added" : "Dropped")
+                                .accessibilityLabel(change.isAdded ? L10n.tr("Added") : L10n.tr("Dropped"))
                                 TribuneruText(
                                     content: change.raceName,
                                     style: .vaporFeedDetail,
@@ -315,9 +315,9 @@ extension Paddock {
         var body: some View {
             VaporCard(spacing: 10) {
                 Kicker(
-                    tag: "BIRTHDAYS",
+                    tag: L10n.tr("BIRTHDAYS"),
                     tagColor: .tribuneru(.vaporTextSecondary),
-                    time: "today"
+                    time: L10n.tr("today")
                 )
                 ForEach(Array(card.entries.enumerated()), id: \.offset) { _, entry in
                     Button {
@@ -327,7 +327,7 @@ extension Paddock {
                             RiderLine(rider: entry.rider)
                             Spacer(minLength: 8)
                             TribuneruText(
-                                content: "turns",
+                                content: L10n.tr("turns"),
                                 style: .vaporMeta,
                                 color: .tribuneru(.vaporTextSecondary)
                             )

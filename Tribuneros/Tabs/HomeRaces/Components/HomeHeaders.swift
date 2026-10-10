@@ -8,12 +8,6 @@ import SwiftUI
 struct HomeScreenHeader: View {
     let date: Date
 
-    private static let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.setLocalizedDateFormatFromTemplate("EEEddMMM")
-        return formatter
-    }()
-
     var body: some View {
         HStack(spacing: 12) {
             HStack(spacing: 10) {
@@ -21,7 +15,7 @@ struct HomeScreenHeader: View {
                     .font(.system(size: 26, weight: .regular))
                     .foregroundColor(.tribuneru(.vaporTextPrimary))
                 TribuneruText(
-                    content: "Races",
+                    content: L10n.tr("Races"),
                     style: .vaporSectionTitle,
                     color: .tribuneru(.vaporTextPrimary),
                     lineLimit: 1
@@ -29,7 +23,7 @@ struct HomeScreenHeader: View {
             }
             Spacer(minLength: 0)
             TribuneruText(
-                content: Self.dateFormatter.string(from: date),
+                content: L10n.dateFormatter(template: "EEEddMMM").string(from: date),
                 style: .vaporScreenDate,
                 color: .tribuneru(.vaporTextSecondary),
                 lineLimit: 1
@@ -43,12 +37,6 @@ struct HomeScreenHeader: View {
 /// Under the header when the page is an old cached copy, since the header always shows today's date.
 struct StaleCopyNotice: View {
     let staleCopy: HomeRaces.StaleCopy
-
-    private static let formatter: RelativeDateTimeFormatter = {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .abbreviated
-        return formatter
-    }()
 
     var body: some View {
         TimelineView(.everyMinute) { context in
@@ -69,12 +57,12 @@ struct StaleCopyNotice: View {
     }
 
     private func text(now: Date) -> String {
-        let reason = staleCopy.isOffline ? "Offline" : "Couldn't refresh"
-        let updated = Self.formatter.localizedString(
+        let reason = staleCopy.isOffline ? L10n.tr("Offline") : L10n.tr("Couldn't refresh")
+        let updated = L10n.relativeFormatter().localizedString(
             for: min(staleCopy.savedAt, now),
             relativeTo: now
         )
-        return "\(reason) · updated \(updated)"
+        return L10n.tr("%1$@ · updated %2$@", reason, updated)
     }
 }
 
@@ -132,7 +120,7 @@ struct HomeSection<Content: View>: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                                .accessibilityLabel("See all \(title)")
+                                .accessibilityLabel(L10n.tr("See all %@", title))
                 .accessibilityIdentifier(seeAllIdentifier)
             } else if showsInertSeeAll {
                 SeeAllLabel()
@@ -166,7 +154,7 @@ private struct SeeAllLabel: View {
     var body: some View {
         HStack(spacing: 4) {
             TribuneruText(
-                content: "See all",
+                content: L10n.tr("See all"),
                 style: .vaporSeeAll,
                 color: .tribuneru(.vaporAccent),
                 lineLimit: 1

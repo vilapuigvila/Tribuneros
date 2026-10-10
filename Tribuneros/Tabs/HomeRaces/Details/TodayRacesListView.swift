@@ -40,7 +40,7 @@ struct TodayRacesListView: View {
     private var heading: some View {
         VStack(alignment: .leading, spacing: 6) {
             TribuneruText(
-                content: "Today's races",
+                content: L10n.tr("Today's races"),
                 style: .vaporSectionTitle,
                 color: .tribuneru(.vaporTextPrimary),
                 lineLimit: 1
@@ -57,7 +57,7 @@ struct TodayRacesListView: View {
                                     .stroke(Color.tribuneru(.vaporLiveRed).opacity(0.25), lineWidth: 3)
                             )
                         TribuneruText(
-                            content: "\(liveCount) live",
+                            content: L10n.tr("%lld live", liveCount),
                             style: .vaporHeroSubtitle,
                             color: .tribuneru(.vaporTextPrimary),
                             lineLimit: 1
@@ -89,7 +89,9 @@ struct TodayRacesListView: View {
 
     private var summary: String {
         let later = races.count - liveCount
-        return later > 0 ? "\(later) later today · by finish time" : "by finish time"
+        return later > 0
+            ? L10n.tr("%lld later today · by finish time", later)
+            : L10n.tr("by finish time")
     }
 }
 
@@ -142,7 +144,7 @@ struct TodayRaceRow: View {
                         color: .tribuneru(.vaporTextPrimary)
                     )
                     TribuneruText(
-                        content: "ETA",
+                        content: L10n.tr("ETA"),
                         style: .vaporMeta,
                         color: .tribuneru(.vaporTextSecondary)
                     )
@@ -158,7 +160,11 @@ struct TodayRaceRow: View {
         .padding(12)
         .homeCard(cornerRadius: 18)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(isFinished ? race.accessibilityDescription + ", finished" : race.accessibilityDescription)
+        .accessibilityLabel(
+            isFinished
+                ? L10n.tr("%@, finished", race.accessibilityDescription)
+                : race.accessibilityDescription
+        )
         .accessibilityAddTraits(.isButton)
     }
 
@@ -166,7 +172,7 @@ struct TodayRaceRow: View {
     private func remaining(now: Date) -> some View {
         if let remaining = race.remainingTimeDescription(now: now) {
             TribuneruText(
-                content: "\(remaining) left",
+                content: L10n.tr("%@ left", remaining),
                 style: .vaporRowCountdown,
                 color: race.isLive
                     ? Color.tribuneru(.vaporAccent)

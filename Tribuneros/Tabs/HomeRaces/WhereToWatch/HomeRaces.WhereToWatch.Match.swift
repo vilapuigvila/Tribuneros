@@ -43,9 +43,9 @@ extension HomeRaces.WhereToWatch {
                 let shown = names.prefix(3).joined(separator: " · ")
                 return names.count > 3 ? "\(shown) +\(names.count - 3)" : shown
             case .noBroadcast:
-                return "Listed, no broadcast yet"
+                return L10n.tr("Listed, no broadcast yet")
             case .notListed:
-                return "Not in the TV listings"
+                return L10n.tr("Not in the TV listings")
             }
         }
     }

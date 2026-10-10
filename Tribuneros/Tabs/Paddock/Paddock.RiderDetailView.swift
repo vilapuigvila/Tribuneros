@@ -55,7 +55,7 @@ extension Paddock {
                             .redacted(reason: .placeholder)
                             .disabled(true)
                             .accessibilityElement(children: .ignore)
-                            .accessibilityLabel("Loading the rider")
+                            .accessibilityLabel(L10n.tr("Loading the rider"))
                     } else if let facts = page?.facts, !facts.isEmpty {
                         CXRiderFactsPanel(facts: facts)
                     }
@@ -65,7 +65,7 @@ extension Paddock {
                             openURL(riderURL)
                         } label: {
                             VaporCard {
-                                VaporMoreInfoLink(title: "rider page on ProCyclingStats")
+                                VaporMoreInfoLink(title: L10n.tr("rider page on ProCyclingStats"))
                             }
                         }
                         .buttonStyle(.plain)
@@ -76,7 +76,7 @@ extension Paddock {
             }
             .background(Color.tribuneru(.vaporPageBackground))
             .preferredColorScheme(.dark)
-            .navigationTitle("Rider")
+            .navigationTitle(L10n.tr("Rider"))
             .task {
                 guard isLoading, let url = context.rider.url else { return }
                 page = await loadPage(url)
@@ -129,8 +129,8 @@ extension Paddock {
 
         private var tag: String {
             switch context {
-            case .transfer: "Transfer"
-            case .program: "Program update"
+            case .transfer: L10n.tr("Transfer")
+            case .program: L10n.tr("Program update")
             }
         }
 
@@ -149,12 +149,12 @@ private extension Paddock {
 
         var body: some View {
             VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-                VaporSectionHeader(title: "Transfer")
+                VaporSectionHeader(title: L10n.tr("Transfer"))
             } content: {
                 VStack(alignment: .leading, spacing: 10) {
                     VaporCard(spacing: 6) {
                         TribuneruText(
-                            content: "JOINS",
+                            content: L10n.tr("JOINS"),
                             style: .vaporGroupLabel,
                             color: .tribuneru(.vaporTextSecondary),
                             lineLimit: 1
@@ -172,7 +172,7 @@ private extension Paddock {
                         }
                     }
                     CXStatTile(
-                        label: "Announced",
+                        label: L10n.tr("Announced"),
                         value: card.date
                     )
                 }
@@ -185,9 +185,9 @@ private extension Paddock {
 
         var body: some View {
             VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-                VaporSectionHeader(title: "Program update") {
+                VaporSectionHeader(title: L10n.tr("Program update")) {
                     TribuneruText(
-                        content: "\(card.timeAgo) ago",
+                        content: L10n.tr("%@ ago", card.timeAgo),
                         style: .vaporScreenDate,
                         color: .tribuneru(.vaporTextSecondary)
                     )
@@ -196,11 +196,11 @@ private extension Paddock {
             } content: {
                 VStack(alignment: .leading, spacing: 10) {
                     changes(
-                        title: "Added",
+                        title: L10n.tr("Added"),
                         isAdded: true
                     )
                     changes(
-                        title: "Dropped",
+                        title: L10n.tr("Dropped"),
                         isAdded: false
                     )
                 }
@@ -218,7 +218,7 @@ private extension Paddock {
             if !races.isEmpty {
                 VaporCard(spacing: 8) {
                     TribuneruText(
-                        content: title.uppercased(),
+                        content: title.uppercased(with: L10n.locale),
                         style: .vaporGroupLabel,
                         color: isAdded ? .tribuneru(.vaporLive) : .tribuneru(.vaporNegative),
                         lineLimit: 1
@@ -267,11 +267,11 @@ private extension DTO.PCSRiderPage {
             imageURL: URL(string: "https://www.procyclingstats.com/images/riders/bp/ee/filippo-ganna-2025.jpg"),
             team: "UAE Team Emirates - XRG",
             facts: [
-                .init(label: "Date of birth", value: "21st September 1998 (28)"),
-                .init(label: "Nationality", value: "Slovenia"),
-                .init(label: "Weight", value: "66 kg"),
-                .init(label: "Height", value: "1.76 m"),
-                .init(label: "Place of birth", value: "Komenda")
+                .init(label: "Date of birth", value: "21st September 1998 (28)"), // l10n:ignore: PCS fact label, mock data
+                .init(label: "Nationality", value: "Slovenia"), // l10n:ignore: PCS fact label, mock data
+                .init(label: "Weight", value: "66 kg"), // l10n:ignore: PCS fact label, mock data
+                .init(label: "Height", value: "1.76 m"), // l10n:ignore: PCS fact label, mock data
+                .init(label: "Place of birth", value: "Komenda") // l10n:ignore: PCS fact label, mock data
             ]
         )
     }

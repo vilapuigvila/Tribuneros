@@ -72,7 +72,7 @@ extension HomeRaces.RacePreview {
                 return ViewState(
                     title: preview.name,
                     subtitle: "",
-                    body: .unavailable("Couldn't load the race preview."),
+                    body: .unavailable(L10n.tr("Couldn't load the race preview.")),
                     pcsURL: preview.url
                 )
             }
@@ -96,7 +96,7 @@ extension HomeRaces.RacePreview {
                 keypoints: page.keypoints.map {
                     ViewState.Keypoint(
                         km: $0.km,
-                        type: $0.type,
+                        type: keypointType($0.type),
                         name: $0.name
                     )
                 },
@@ -109,6 +109,15 @@ extension HomeRaces.RacePreview {
                     )
                 }
             )
+        }
+
+        /// PCS's keypoint kinds, translated for display; any other kind is shown as PCS wrote it.
+        private static func keypointType(_ raw: String) -> String {
+            switch raw.lowercased() {
+            case "climb": L10n.tr("climb")
+            case "sprint": L10n.tr("sprint")
+            default: raw
+            }
         }
 
         /// "02/10 09:12 (03:12 CET)"

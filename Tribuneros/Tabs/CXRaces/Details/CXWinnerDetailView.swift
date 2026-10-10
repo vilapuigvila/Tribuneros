@@ -68,7 +68,7 @@ struct CXWinnerDetailView: View {
                     .redacted(reason: .placeholder)
                     .disabled(true)
                     .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("Loading the rider")
+                    .accessibilityLabel(L10n.tr("Loading the rider"))
                 } else if let page {
                     if !page.facts.isEmpty {
                         CXRiderFactsPanel(facts: page.facts)
@@ -86,7 +86,7 @@ struct CXWinnerDetailView: View {
                         openURL(riderURL)
                     } label: {
                         VaporCard {
-                            VaporMoreInfoLink(title: "rider page on cyclocross24")
+                            VaporMoreInfoLink(title: L10n.tr("rider page on cyclocross24"))
                         }
                     }
                     .buttonStyle(.plain)
@@ -97,7 +97,7 @@ struct CXWinnerDetailView: View {
         }
         .background(Color.tribuneru(.vaporPageBackground))
         .preferredColorScheme(.dark)
-        .navigationTitle("Winner")
+        .navigationTitle(L10n.tr("Winner"))
         .task {
             guard isLoading else { return }
             let detail = await loadDetail(winner)
@@ -113,10 +113,10 @@ struct CXWinnerDetailView: View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
             HStack(spacing: 6) {
                 CXDetailTag(
-                    title: "Winner",
+                    title: L10n.tr("Winner"),
                     color: .tribuneru(.vaporAccent)
                 )
-                CXDetailTag(title: "Men Elite")
+                CXDetailTag(title: L10n.tr("Men Elite"))
             }
         } content: {
             HStack(alignment: .center, spacing: 16) {
@@ -155,7 +155,7 @@ struct CXWinnerDetailView: View {
 
     private var victoryPanel: some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: "Victory")
+            VaporSectionHeader(title: L10n.tr("Victory"))
         } content: {
             VStack(alignment: .leading, spacing: 10) {
                 Button {
@@ -209,12 +209,12 @@ struct CXWinnerDetailView: View {
     private var stats: [Stat] {
         var stats: [Stat] = []
         if let time = result?.time, !time.isEmpty {
-            stats.append(.init(label: "Time", value: time))
+            stats.append(.init(label: L10n.tr("Time"), value: time))
         }
         if let age = result?.age, !age.isEmpty {
-            stats.append(.init(label: "Age", value: age))
+            stats.append(.init(label: L10n.tr("Age"), value: age))
         }
-        stats.append(.init(label: "Series", value: winner.series.title))
+        stats.append(.init(label: L10n.tr("Series"), value: winner.series.title))
         return stats
     }
 
@@ -299,9 +299,9 @@ private extension DTO.CXRiderPage {
             name: "Mathieu van der Poel",
             avatarURL: URL(string: "https://cyclocross24.com/images/rider/mathieu-van-der-poel-kL0.png"),
             facts: [
-                .init(label: "Date of birth", value: "19 January 1995"),
-                .init(label: "Nationality", value: "Netherlands"),
-                .init(label: "Team", value: "Alpecin - Deceuninck")
+                .init(label: "Date of birth", value: "19 January 1995"), // l10n:ignore
+                .init(label: "Nationality", value: "Netherlands"), // l10n:ignore
+                .init(label: "Team", value: "Alpecin - Deceuninck") // l10n:ignore
             ],
             results: [
                 .init(

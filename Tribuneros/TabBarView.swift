@@ -14,7 +14,8 @@ enum Tab {
 
 struct TabBarView: View {
 
-    @State private var selectedTab: Tab = .home
+    /// Owned by `LocalizedRoot`, so it survives a language change.
+    @Binding var selectedTab: Tab
     /// The bar hides while typing; as a bottom inset it would otherwise ride up on the keyboard.
     @State private var isKeyboardVisible = false
     @StateObject private var homeRouter: Router
@@ -22,12 +23,14 @@ struct TabBarView: View {
     @StateObject private var paddockRouter: Router
     @StateObject private var settingsRouter: Router
 
-    let homeRacesViewModel: HomeRacesViewModel<HomeRacesInteractorImpl>
-    let cxRacesViewModel: CXRaces.ViewModel<CXRaces.InteractorImpl>
-    let paddockViewModel: Paddock.ViewModel<Paddock.InteractorImpl>
-    let settingsViewModel: Settings.ViewModel<Settings.InteractorImpl>
+    // StateObject, not let: `LocalizedRoot` re-inits this view on every tab change, and fresh view models would never load.
+    @StateObject private var homeRacesViewModel: HomeRacesViewModel<HomeRacesInteractorImpl>
+    @StateObject private var cxRacesViewModel: CXRaces.ViewModel<CXRaces.InteractorImpl>
+    @StateObject private var paddockViewModel: Paddock.ViewModel<Paddock.InteractorImpl>
+    @StateObject private var settingsViewModel: Settings.ViewModel<Settings.InteractorImpl>
 
-    init() {
+    init(selectedTab: Binding<Tab>) {
+        _selectedTab = selectedTab
         let homeRouter = Router()
         let cxRouter = Router()
         let paddockRouter = Router()
@@ -36,21 +39,29 @@ struct TabBarView: View {
         _cxRouter = StateObject(wrappedValue: cxRouter)
         _paddockRouter = StateObject(wrappedValue: paddockRouter)
         _settingsRouter = StateObject(wrappedValue: settingsRouter)
-        homeRacesViewModel = HomeRacesViewModel(
-            interactor: HomeRacesInteractorImpl(),
-            router: homeRouter
+        _homeRacesViewModel = StateObject(
+            wrappedValue: HomeRacesViewModel(
+                interactor: HomeRacesInteractorImpl(),
+                router: homeRouter
+            )
         )
-        cxRacesViewModel = CXRaces.ViewModel(
-            router: cxRouter,
-            interactor: CXRaces.InteractorImpl()
+        _cxRacesViewModel = StateObject(
+            wrappedValue: CXRaces.ViewModel(
+                router: cxRouter,
+                interactor: CXRaces.InteractorImpl()
+            )
         )
-        paddockViewModel = Paddock.ViewModel(
-            router: paddockRouter,
-            interactor: Paddock.InteractorImpl()
+        _paddockViewModel = StateObject(
+            wrappedValue: Paddock.ViewModel(
+                router: paddockRouter,
+                interactor: Paddock.InteractorImpl()
+            )
         )
-        settingsViewModel = Settings.ViewModel(
-            router: settingsRouter,
-            interactor: Settings.InteractorImpl()
+        _settingsViewModel = StateObject(
+            wrappedValue: Settings.ViewModel(
+                router: settingsRouter,
+                interactor: Settings.InteractorImpl()
+            )
         )
     }
     
@@ -152,7 +163,7 @@ private struct CustomTabBar: View {
 
             HStack {
                 TabBarButton(
-                    title: "Today Races",
+                    title: L10n.tr("Today Races"),
                     systemImage: "figure.indoor.cycle",
                     isSelected: selectedTab == .home
                 ) {
@@ -162,7 +173,7 @@ private struct CustomTabBar: View {
                 Spacer(minLength: 0)
                 
                 TabBarButton(
-                    title: "CX Zone",
+                    title: L10n.tr("CX Zone"),
                     systemImage: cxZoneSymbolName,
                     isSelected: selectedTab == .cxZone,
                     animateWhenSelected: true
@@ -173,7 +184,7 @@ private struct CustomTabBar: View {
                 Spacer(minLength: 0)
                 
                 TabBarButton(
-                    title: "Paddock",
+                    title: L10n.tr("Paddock"),
                     systemImage: "megaphone.fill",
                     isSelected: selectedTab == .paddock
                 ) {
@@ -183,7 +194,7 @@ private struct CustomTabBar: View {
                 Spacer(minLength: 0)
 
                 TabBarButton(
-                    title: "Settings",
+                    title: L10n.tr("Settings"),
                     systemImage: "gearshape",
                     isSelected: selectedTab == .settings
                 ) {
@@ -255,5 +266,5 @@ private struct TabBarButton: View {
 }
 
 #Preview("Tab bar view") {
-    TabBarView()
+    TabBarView(selectedTab: .constant(.home))
 }

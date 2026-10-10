@@ -1,5 +1,5 @@
 # Settings tab (Debug build, mocked launch): both rows, the on-demand onboarding replay (shows even
-# though mocked launches skip it) and the Language screen with English selected.
+# though mocked launches skip it) and the Language screen with "System default" selected.
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -59,12 +59,16 @@ tags:
     id: "settings.language"
 - extendedWaitUntil:
     visible:
-      id: "settings.language.english"
+      id: "settings.language.system"
     timeout: 5000
 - assertVisible: "More languages are coming."
 - assertVisible:
-    id: "settings.language.english"
+    id: "settings.language.system"
     selected: true
+- assertVisible:
+    id: "settings.language.en"
+- assertVisible:
+    id: "settings.language.ca"
 - tapOn:
     text: "SETTINGS"
 - assertVisible:

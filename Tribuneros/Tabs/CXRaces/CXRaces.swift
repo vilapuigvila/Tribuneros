@@ -92,13 +92,13 @@ extension CXRaces {
 
         var title: String {
             switch self {
-            case .worldCup: "World Cup"
+            case .worldCup: L10n.tr("World Cup")
             case .superprestige: "Superprestige"
             case .x2oTrofee: "X2O Trofee"
             case .exactCross: "Exact Cross"
-            case .championships: "Championships"
-            case .otherBelgian: "Other Belgian"
-            case .others: "Others"
+            case .championships: L10n.tr("Championships")
+            case .otherBelgian: L10n.tr("Other Belgian")
+            case .others: L10n.tr("Others")
             }
         }
 
@@ -202,16 +202,33 @@ extension CXRaces {
         return .init(items: items)
     }
 
+    /// A calendar date for display in the active language: "4 January 2026" by default, or
+    /// `pattern` (e.g. "EEEE d MMMM yyyy"). Built on each call so a language switch applies at once.
+    /// Parsing stays on the calendar's own en_US_POSIX formatters.
+    /// English keeps the fixed day-first order; other languages use the pattern as a template,
+    /// so Catalan gets its own grammar ("4 de gener de 2026").
+    static func displayDate(_ date: Date, pattern: String = "d MMMM yyyy") -> String {
+        guard L10n.languageCode == "en" else {
+            return L10n.dateFormatter(
+                template: pattern.replacingOccurrences(of: " ", with: "")
+            ).string(from: date)
+        }
+        let formatter = DateFormatter()
+        formatter.locale = L10n.locale
+        formatter.dateFormat = pattern
+        return formatter.string(from: date)
+    }
+
     /// UCI class codes as shown on cyclocross24, spelled out for the detail screen.
     static func raceClassDescription(_ raceClass: String) -> String? {
         switch raceClass.uppercased().trimmingCharacters(in: .whitespaces) {
-        case "CDM": "UCI World Cup"
-        case "CM": "UCI World Championships"
-        case "CC": "Continental Championships"
-        case "CN": "National Championships"
-        case "C1": "UCI Class 1"
-        case "C2": "UCI Class 2"
-        case "C3": "UCI Class 3"
+        case "CDM": L10n.tr("UCI World Cup")
+        case "CM": L10n.tr("UCI World Championships")
+        case "CC": L10n.tr("Continental Championships")
+        case "CN": L10n.tr("National Championships")
+        case "C1": L10n.tr("UCI Class 1")
+        case "C2": L10n.tr("UCI Class 2")
+        case "C3": L10n.tr("UCI Class 3")
         default: nil
         }
     }
@@ -252,7 +269,7 @@ extension CXRaces {
             raceFlagURL = event.flagURL
             raceClass = event.raceClass
             series = event.series
-            dateText = event.eventDate.map { WinnerDate.formatter.string(from: $0) } ?? event.date
+            dateText = event.eventDate.map { CXRaces.displayDate($0) } ?? event.date
             resultsURL = event.resultsURL
             self.result = result
             raceEvent = event
@@ -315,7 +332,7 @@ extension CXRaces {
             raceFlagURL = raceEvent.flagURL
             raceClass = raceEvent.raceClass
             series = raceEvent.series
-            dateText = raceEvent.eventDate.map { WinnerDate.formatter.string(from: $0) } ?? riderResult.date
+            dateText = raceEvent.eventDate.map { CXRaces.displayDate($0) } ?? riderResult.date
             resultsURL = raceEvent.resultsURL
             result = nil
             // A race built from the row has no winner yet; give it this rider so its detail
@@ -333,15 +350,6 @@ extension CXRaces {
         let riderURL: URL?
         let flagURL: URL?
         let country: String?
-    }
-
-    private enum WinnerDate {
-        static let formatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "d MMMM yyyy"
-            formatter.locale = Locale(identifier: "en_US_POSIX")
-            return formatter
-        }()
     }
 }
 
@@ -441,7 +449,7 @@ extension CXRaces {
             event: DTO.CXCalendarEvent
         ) {
             self.result = result
-            category = "Men Elite"
+            category = L10n.tr("Men Elite")
             raceTitle = event.race
             raceFlagURL = event.flagURL
             raceMeta = [event.date, event.raceCountry ?? ""]
@@ -499,7 +507,7 @@ extension CXRaces {
             case .standing(let standing): standing.category
             case .podium(let podium): podium.category
             case .result(let result): result.category
-            case .win: "Men Elite"
+            case .win: L10n.tr("Men Elite")
             }
         }
 
@@ -626,5 +634,12 @@ extension DTO.CXCalendarEvent {
 extension CXRaces {
     enum ErrorView: Error {
         case unknown
+
+        /// What the CX Zone error card says, instead of the error's own description.
+        var message: String {
+            switch self {
+            case .unknown: L10n.tr("Couldn’t load the cyclocross races. Check your connection and try again.")
+            }
+        }
     }
 }

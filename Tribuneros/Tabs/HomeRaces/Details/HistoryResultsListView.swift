@@ -13,7 +13,7 @@ struct HistoryResultsListView: View {
         HomeListScreen {
             VStack(alignment: .leading, spacing: 6) {
                 TribuneruText(
-                    content: "History",
+                    content: L10n.tr("History"),
                     style: .vaporSectionTitle,
                     color: .tribuneru(.vaporTextPrimary),
                     lineLimit: 1

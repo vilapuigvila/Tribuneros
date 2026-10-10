@@ -43,12 +43,12 @@ struct RaceDetailView: View {
                         .redacted(reason: .placeholder)
                         .disabled(true)
                         .accessibilityElement(children: .ignore)
-                        .accessibilityLabel("Loading the results")
+                        .accessibilityLabel(L10n.tr("Loading the results"))
                     } else if let error = errorMessage {
                         TribuneruText(
-                            content: "Error: \(error)",
+                            content: error,
                             style: .vaporMeta,
-                            color: .red
+                            color: .tribuneru(.vaporNegative)
                         )
                         .padding()
                     } else {
@@ -78,7 +78,7 @@ struct RaceDetailView: View {
             do {
                 categoryResults = try await Service.getCxRaceCategoryResults(race)
             } catch {
-                errorMessage = error.localizedDescription
+                errorMessage = L10n.tr("Couldn’t load the results. Check your connection and try again.")
             }
             isLoading = false
         }
@@ -131,7 +131,7 @@ struct RaceDetailView: View {
                 ForEach(race.categories.indices, id: \.self) { index in
                     let category = race.categories[index]
                     CategoryTabButton(
-                        title: category.title.uppercased(),
+                        title: category.title.uppercased(with: L10n.locale),
                         isSelected: selectedCategory == index
                     ) {
                         selectedCategory = index
@@ -150,7 +150,7 @@ struct RaceDetailView: View {
 
                 if results.isEmpty {
                     TribuneruText(
-                        content: "No results available",
+                        content: L10n.tr("No results available"),
                         style: .vaporMeta,
                         color: .tribuneru(.vaporTextSecondary)
                     )
@@ -199,28 +199,28 @@ struct RaceDetailView: View {
             .frame(width: 16, alignment: .leading)
 
             TribuneruText(
-                content: "Rider",
+                content: L10n.tr("Rider"),
                 style: .vaporMeta,
                 color: .tribuneru(.vaporTextSecondary)
             )
             .frame(maxWidth: .infinity, alignment: .leading)
 
             TribuneruText(
-                content: "Age",
+                content: L10n.tr("Age"),
                 style: .vaporMeta,
                 color: .tribuneru(.vaporTextSecondary)
             )
             .frame(width: 40, alignment: .center)
 
             TribuneruText(
-                content: "Team",
+                content: L10n.tr("Team"),
                 style: .vaporMeta,
                 color: .tribuneru(.vaporTextSecondary)
             )
             .frame(width: 92, alignment: .leading)
 
             TribuneruText(
-                content: "Time",
+                content: L10n.tr("Time"),
                 style: .vaporMeta,
                 color: .tribuneru(.vaporTextSecondary)
             )
@@ -242,7 +242,7 @@ struct RaceDetailView: View {
     private var raceVideosButtonState: (title: String, systemImage: String, url: URL?) {
         if isLoading {
             return (
-                title: "Race videos",
+                title: L10n.tr("Race videos"),
                 systemImage: "play.rectangle.fill",
                 url: nil
             )
@@ -250,7 +250,7 @@ struct RaceDetailView: View {
         
         if errorMessage != nil {
             return (
-                title: "Race videos unavailable",
+                title: L10n.tr("Race videos unavailable"),
                 systemImage: "video.slash",
                 url: nil
             )
@@ -258,14 +258,14 @@ struct RaceDetailView: View {
         
         if let videosURL = raceVideosURL {
             return (
-                title: "Race videos",
+                title: L10n.tr("Race videos"),
                 systemImage: "play.rectangle.fill",
                 url: videosURL
             )
         }
         
         return (
-            title: "No race videos available",
+            title: L10n.tr("No race videos available"),
             systemImage: "video.slash",
             url: nil
         )

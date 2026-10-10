@@ -17,7 +17,7 @@ struct TodaySection: View {
 
     var body: some View {
         HomeSection(
-            title: "Today",
+            title: L10n.tr("Today"),
             seeAll: seeAll,
             seeAllIdentifier: "home.today.seeAll"
         ) {
@@ -111,7 +111,7 @@ struct TodayHeroCard: View {
                     statTime(
                         icon: "clock",
                         time: startTime,
-                        label: hasStarted ? "STARTED" : "START",
+                        label: hasStarted ? L10n.tr("STARTED") : L10n.tr("START"),
                         labelColor: hasStarted ? .tribuneru(.vaporLiveRed) : .tribuneru(.vaporTextSecondary)
                     )
                 }
@@ -120,7 +120,7 @@ struct TodayHeroCard: View {
             statTime(
                 icon: "flag.checkered",
                 time: race.eta,
-                label: "ETA"
+                label: L10n.tr("ETA")
             )
             Spacer(minLength: 12)
             if let genderLabel = race.genderLabel {
@@ -186,7 +186,7 @@ struct RemainingPill: View {
         TimelineView(.everyMinute) { context in
             if let remaining = race.remainingTimeDescription(now: context.date) {
                 TribuneruText(
-                    content: "in \(remaining)",
+                    content: L10n.tr("in %@", remaining),
                     style: .vaporPill,
                     color: .tribuneru(.vaporTextPrimary),
                     lineLimit: 1
@@ -225,14 +225,14 @@ struct TodayEmptyCard: View {
                 Spacer(minLength: 0)
                 VStack(alignment: .leading, spacing: 6) {
                     TribuneruText(
-                        content: "The peloton is resting",
+                        content: L10n.tr("The peloton is resting"),
                         style: .vaporHeroTitle,
                         color: .tribuneru(.white(level: 1)),
                         lineLimit: 2
                     )
                     .artTitleShadow()
                     TribuneruText(
-                        content: "Nothing on today's list yet. New races show up here as soon as they're listed.",
+                        content: L10n.tr("Nothing on today's list yet. New races show up here as soon as they're listed."),
                         style: .vaporBannerSubtitle,
                         color: Color.tribuneru(.vaporTextPrimary).opacity(0.8),
                         lineLimit: isCompact ? 2 : 3

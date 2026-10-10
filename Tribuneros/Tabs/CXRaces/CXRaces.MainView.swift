@@ -29,12 +29,12 @@ extension CXRaces {
                     )
                     .redacted(reason: .placeholder)
                     .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("Loading cyclocross")
+                    .accessibilityLabel(L10n.tr("Loading cyclocross"))
                 case .error(let error):
                     VStack(spacing: 20) {
                         Spacer(minLength: safeAreaInsets.top + 20)
                         ErrorCardView.generic(
-                            message: error.localizedDescription,
+                            message: error.message,
                             showTryAgainButton: true
                         ) {
                             action(.didAppeared)
@@ -63,7 +63,7 @@ extension CXRaces {
                 LazyVGrid(columns: columns, spacing: 20) {
                     /// calendar
                     VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-                        VaporSectionHeader(title: "Next races")
+                        VaporSectionHeader(title: L10n.tr("Next races"))
                     } content: {
                         CalendarView(representable: representable) {
                             action(.didTapOnNextRaces)
@@ -72,7 +72,7 @@ extension CXRaces {
 
                     /// latests results
                     VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-                        VaporSectionHeader(title: "Latest results")
+                        VaporSectionHeader(title: L10n.tr("Latest results"))
                     } content: {
                         LatestResultsView(
                             races: representable.races,
@@ -86,7 +86,7 @@ extension CXRaces {
 
                     /// standings
                     VaporPanel(panelColor: .tribuneru(.vaporPanelYesterday)) {
-                        VaporSectionHeader(title: "Standings")
+                        VaporSectionHeader(title: L10n.tr("Standings"))
                     } content: {
                         CyclocrossStandingsSectionView(
                             standings: representable.standings,
@@ -179,10 +179,10 @@ extension CXRaces.Representable {
         let races = DTO.CX24Homepage(
             sections: [
                 .init(
-                    title: "Latest results",
+                    title: "Latest results", // l10n:ignore
                     races: [
                         .init(
-                            title: "UCI World Cup Zonhoven (CDM)",
+                            title: "UCI World Cup Zonhoven (CDM)", // l10n:ignore
                             country: "Belgium",
                             countryFlagURL: URL(string: "https://cyclocross24.com/images/flag/32/Belgium.png")!,
                             date: "4 January 2026",
@@ -190,7 +190,7 @@ extension CXRaces.Representable {
                             raceURL: nil,
                             categories: [
                                 .init(
-                                    title: "Men Elite",
+                                    title: "Men Elite", // l10n:ignore
                                     categoryURL: nil,
                                     winnerImageURL: URL(string: "https://cyclocross24.com/images/rider/mathieu-van-der-poel-kL0.png"),
                                     podium: [
@@ -221,7 +221,7 @@ extension CXRaces.Representable {
                                     ]
                                 ),
                                 .init(
-                                    title: "Women Elite",
+                                    title: "Women Elite", // l10n:ignore
                                     categoryURL: nil,
                                     winnerImageURL: URL(string: "https://cyclocross24.com/cx24logo.jpg"),
                                     podium: [
@@ -375,24 +375,24 @@ extension CXRaces.Representable {
         let standings = DTO.CXStandings(
             items: [
                 .init(
-                    title: "UCI Ranking Cyclocross",
+                    title: "UCI Ranking Cyclocross", // l10n:ignore
                     url: URL(string: "https://cyclocross24.com/uciranking/"),
                     logoURL: URL(string: "https://cyclocross24.com/images/flag/32/UCI.png"),
                     categories: [
                         .init(
-                            title: "Men Elite",
+                            title: "Men Elite", // l10n:ignore
                             url: URL(string: "https://cyclocross24.com/uciranking/2025-2026/ME/"),
                             leaders: uciMenElite,
                             leaderImageURL: URL(string: "https://cyclocross24.com/images/rider/michael-vanthourenhout-sX4.png")
                         ),
                         .init(
-                            title: "Women Elite",
+                            title: "Women Elite", // l10n:ignore
                             url: URL(string: "https://cyclocross24.com/uciranking/2025-2026/WE/"),
                             leaders: uciWomenElite,
                             leaderImageURL: nil
                         ),
                         .init(
-                            title: "Men Junior",
+                            title: "Men Junior", // l10n:ignore
                             url: URL(string: "https://cyclocross24.com/uciranking/2025-2026/MJ/"),
                             leaders: uciMenJunior,
                             leaderImageURL: nil
@@ -400,19 +400,19 @@ extension CXRaces.Representable {
                     ]
                 ),
                 .init(
-                    title: "UCI World Cup",
+                    title: "UCI World Cup", // l10n:ignore
                     url: URL(string: "https://cyclocross24.com/standings/uci-world-cup/"),
                     logoURL: nil,
                     categories: []
                 ),
                 .init(
-                    title: "Superprestige",
+                    title: "Superprestige", // l10n:ignore
                     url: URL(string: "https://cyclocross24.com/standings/superprestige/"),
                     logoURL: nil,
                     categories: []
                 ),
                 .init(
-                    title: "X2O Badkamers Trofee",
+                    title: "X2O Badkamers Trofee", // l10n:ignore
                     url: URL(string: "https://cyclocross24.com/standings/x2o-trofee/"),
                     logoURL: nil,
                     categories: []

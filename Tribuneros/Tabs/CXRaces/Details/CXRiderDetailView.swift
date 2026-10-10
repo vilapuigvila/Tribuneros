@@ -87,7 +87,7 @@ struct CXRiderDetailView: View {
                     .redacted(reason: .placeholder)
                     .disabled(true)
                     .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("Loading the rider")
+                    .accessibilityLabel(L10n.tr("Loading the rider"))
                 } else if let page {
                     if !page.facts.isEmpty {
                         CXRiderFactsPanel(facts: page.facts)
@@ -105,7 +105,7 @@ struct CXRiderDetailView: View {
                         openURL(riderURL)
                     } label: {
                         VaporCard {
-                            VaporMoreInfoLink(title: "rider page on cyclocross24")
+                            VaporMoreInfoLink(title: L10n.tr("rider page on cyclocross24"))
                         }
                     }
                     .buttonStyle(.plain)
@@ -116,7 +116,7 @@ struct CXRiderDetailView: View {
         }
         .background(Color.tribuneru(.vaporPageBackground))
         .preferredColorScheme(.dark)
-        .navigationTitle("Rider")
+        .navigationTitle(L10n.tr("Rider"))
         .task {
             guard isLoading else { return }
             let detail = await loadDetail(context)
@@ -174,7 +174,7 @@ struct CXRiderDetailView: View {
 
     private func standingPanel(_ standing: CXRaces.RiderStanding) -> some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: "Standing")
+            VaporSectionHeader(title: L10n.tr("Standing"))
         } content: {
             VStack(alignment: .leading, spacing: 10) {
                 Button {
@@ -214,11 +214,11 @@ struct CXRiderDetailView: View {
 
                 HStack(spacing: 10) {
                     CXStatTile(
-                        label: "Position",
+                        label: L10n.tr("Position"),
                         value: "#\(standing.position)"
                     )
                     CXStatTile(
-                        label: "Points",
+                        label: L10n.tr("Points"),
                         value: standing.points.isEmpty ? "-" : standing.points
                     )
                 }
@@ -250,7 +250,7 @@ struct CXRiderDetailView: View {
 
     private func podiumPanel(_ podium: CXRaces.RiderPodium) -> some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: "Result")
+            VaporSectionHeader(title: L10n.tr("Result"))
         } content: {
             VStack(alignment: .leading, spacing: 10) {
                 Button {
@@ -289,11 +289,11 @@ struct CXRiderDetailView: View {
 
                 HStack(spacing: 10) {
                     CXStatTile(
-                        label: "Position",
+                        label: L10n.tr("Position"),
                         value: "#\(podium.position)"
                     )
                     CXStatTile(
-                        label: "Time",
+                        label: L10n.tr("Time"),
                         value: podium.time.isEmpty ? "-" : podium.time
                     )
                 }
@@ -306,7 +306,7 @@ struct CXRiderDetailView: View {
     /// Opened from the race screen it describes, so the race card isn't a link back.
     private func resultPanel(_ result: CXRaces.RiderResult) -> some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: "Result")
+            VaporSectionHeader(title: L10n.tr("Result"))
         } content: {
             VStack(alignment: .leading, spacing: 10) {
                 VaporCard(spacing: 4) {
@@ -331,16 +331,16 @@ struct CXRiderDetailView: View {
 
                 HStack(spacing: 10) {
                     CXStatTile(
-                        label: "Position",
+                        label: L10n.tr("Position"),
                         value: "#\(result.result.position)"
                     )
                     CXStatTile(
-                        label: "Time",
+                        label: L10n.tr("Time"),
                         value: result.result.time.isEmpty ? "-" : result.result.time
                     )
                     if !result.result.age.isEmpty {
                         CXStatTile(
-                            label: "Age",
+                            label: L10n.tr("Age"),
                             value: result.result.age
                         )
                     }
@@ -354,7 +354,7 @@ struct CXRiderDetailView: View {
     /// A past edition won by this rider; the race card opens that edition.
     private func winPanel(_ winner: CXRaces.Winner) -> some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: "Victory")
+            VaporSectionHeader(title: L10n.tr("Victory"))
         } content: {
             VStack(alignment: .leading, spacing: 10) {
                 Button {
@@ -394,18 +394,18 @@ struct CXRiderDetailView: View {
                 HStack(spacing: 10) {
                     if let time = winResult?.time, !time.isEmpty {
                         CXStatTile(
-                            label: "Time",
+                            label: L10n.tr("Time"),
                             value: time
                         )
                     }
                     if let age = winResult?.age, !age.isEmpty {
                         CXStatTile(
-                            label: "Age",
+                            label: L10n.tr("Age"),
                             value: age
                         )
                     }
                     CXStatTile(
-                        label: "Series",
+                        label: L10n.tr("Series"),
                         value: winner.series.title
                     )
                 }
@@ -454,13 +454,13 @@ private extension CXRaces.RiderStanding {
                 points: "2058"
             ),
             category: .init(
-                title: "Men Elite",
+                title: "Men Elite", // l10n:ignore
                 url: URL(string: "https://cyclocross24.com/uciranking/2025-2026/ME/"),
                 leaders: [],
                 leaderImageURL: nil
             ),
             item: .init(
-                title: "UCI Ranking Cyclocross",
+                title: "UCI Ranking Cyclocross", // l10n:ignore
                 url: URL(string: "https://cyclocross24.com/uciranking/"),
                 logoURL: URL(string: "https://cyclocross24.com/images/flag/32/UCI.png"),
                 categories: []
@@ -475,9 +475,9 @@ private extension DTO.CXRiderPage {
             name: "Michael Vanthourenhout",
             avatarURL: URL(string: "https://cyclocross24.com/images/rider/michael-vanthourenhout-sX4.png"),
             facts: [
-                .init(label: "Date of birth", value: "10 December 1993"),
-                .init(label: "Nationality", value: "Belgium"),
-                .init(label: "Team", value: "Pauwels Sauzen - Cibel Clementines")
+                .init(label: "Date of birth", value: "10 December 1993"), // l10n:ignore
+                .init(label: "Nationality", value: "Belgium"), // l10n:ignore
+                .init(label: "Team", value: "Pauwels Sauzen - Cibel Clementines") // l10n:ignore
             ],
             results: [
                 .init(

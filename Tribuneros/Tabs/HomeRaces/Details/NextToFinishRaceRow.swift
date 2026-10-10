@@ -24,9 +24,9 @@ struct NextToFinishRaceRow: View {
             }
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
-                    TagView(text: "ETA - \(race.eta)")
-                    TagView(text: "Duration - \(race.duration)")
-                    TagView(text: "\(race.distance) - Kms")
+                    TagView(text: L10n.tr("ETA - %@", race.eta))
+                    TagView(text: L10n.tr("Duration - %@", race.duration))
+                    TagView(text: L10n.tr("%@ - Kms", race.distance))
                     TagView(text: race.category)
                     TagView(text: race.raceType)
                 }

@@ -1,0 +1,2894 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    "%@ - Kms" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ - km"
+          }
+        }
+      }
+    },
+    "%@ ago" : {
+      "comment" : "Relative time, e.g. fa 16h",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "fa %@"
+          }
+        }
+      }
+    },
+    "%@ isn't in this day's TV listings." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ no és a la graella de TV d’aquest dia."
+          }
+        }
+      }
+    },
+    "%@ left" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ restants"
+          }
+        }
+      }
+    },
+    "%@ m" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ m"
+          }
+        }
+      }
+    },
+    "%@, finished" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, acabada"
+          }
+        }
+      }
+    },
+    "%1$@ · updated %2$@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · actualitzat %2$@"
+          }
+        }
+      }
+    },
+    "%1$@ %2$@, %3$@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@, %3$@"
+          }
+        }
+      }
+    },
+    "%lld categories" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld categoria"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld categories"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld category"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld categories"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld later today · by finish time" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld més tard avui · per hora d’arribada"
+          }
+        }
+      }
+    },
+    "%lld live" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld en directe"
+          }
+        }
+      }
+    },
+    "%lld races" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld cursa"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld curses"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld race"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld races"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld sites" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld web"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld webs"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld site"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld sites"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lldh" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld h"
+          }
+        }
+      }
+    },
+    "%lldh %lldm" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld h %lld min"
+          }
+        }
+      }
+    },
+    "%lldm" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld min"
+          }
+        }
+      }
+    },
+    "About" : {
+      "comment" : "Race detail panel header for the summary",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sobre la cursa"
+          }
+        }
+      }
+    },
+    "Add Item" : {
+      "comment" : "A button that adds a new item.",
+      "isCommentAutoGenerated" : true
+    },
+    "Added" : {
+      "comment" : "Paddock program change: race added",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afegida"
+          }
+        }
+      }
+    },
+    "Age" : {
+      "comment" : "Stat tile label and results column header",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edat"
+          }
+        }
+      }
+    },
+    "All" : {
+      "comment" : "Paddock filter chip",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tot"
+          }
+        }
+      }
+    },
+    "All races" : {
+      "comment" : "CX Zone calendar screen title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Totes les curses"
+          }
+        }
+      }
+    },
+    "Announced" : {
+      "comment" : "Rider screen transfer date tile",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anunciat"
+          }
+        }
+      }
+    },
+    "Arrival" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arribada"
+          }
+        }
+      }
+    },
+    "Birthdays" : {
+      "comment" : "Paddock filter chip",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aniversaris"
+          }
+        }
+      }
+    },
+    "BIRTHDAYS" : {
+      "comment" : "Paddock feed card tag",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ANIVERSARIS"
+          }
+        }
+      }
+    },
+    "Browse past seasons" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explora les temporades anteriors"
+          }
+        }
+      }
+    },
+    "by finish time" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "per hora d’arribada"
+          }
+        }
+      }
+    },
+    "Calendar is empty." : {
+      "comment" : "CX Zone calendar empty state",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El calendari està buit."
+          }
+        }
+      }
+    },
+    "Cancelled" : {
+      "comment" : "Tag on a cancelled race",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel·lada"
+          }
+        }
+      }
+    },
+    "CAT." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CAT."
+          }
+        }
+      }
+    },
+    "Championships" : {
+      "comment" : "Series filter chip",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campionats"
+          }
+        }
+      }
+    },
+    "Class" : {
+      "comment" : "Race detail info row label (UCI class)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Classe"
+          }
+        }
+      }
+    },
+    "climb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "port"
+          }
+        }
+      }
+    },
+    "Climb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Port"
+          }
+        }
+      }
+    },
+    "Continental Championships" : {
+      "comment" : "UCI class description CC",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campionats continentals"
+          }
+        }
+      }
+    },
+    "Couldn’t load the cyclocross races. Check your connection and try again." : {
+      "comment" : "CX Zone error card message",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’han pogut carregar les curses de ciclocròs. Comprova la connexió i torna-ho a provar."
+          }
+        }
+      }
+    },
+    "Couldn't load the full results. Showing the podium." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’han pogut carregar els resultats complets. Es mostra el podi."
+          }
+        }
+      }
+    },
+    "Couldn't load the general classification." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’ha pogut carregar la classificació general."
+          }
+        }
+      }
+    },
+    "Couldn't load the paddock from ProCyclingStats." : {
+      "comment" : "Paddock feed error state",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’ha pogut carregar el paddock de ProCyclingStats."
+          }
+        }
+      }
+    },
+    "Couldn’t load the race info. Check your connection and try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’ha pogut carregar la informació de la cursa. Comprova la connexió i torna-ho a provar."
+          }
+        }
+      }
+    },
+    "Couldn't load the race preview." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’ha pogut carregar la prèvia de la cursa."
+          }
+        }
+      }
+    },
+    "Couldn’t load the races. Check your connection and try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’han pogut carregar les curses. Comprova la connexió i torna-ho a provar."
+          }
+        }
+      }
+    },
+    "Couldn’t load the results. Check your connection and try again." : {
+      "comment" : "Race results error message",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’han pogut carregar els resultats. Comprova la connexió i torna-ho a provar."
+          }
+        }
+      }
+    },
+    "Couldn't load the schedule." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’ha pogut carregar el calendari."
+          }
+        }
+      }
+    },
+    "Couldn't refresh" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’ha pogut actualitzar"
+          }
+        }
+      }
+    },
+    "Country" : {
+      "comment" : "Race detail info row label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "País"
+          }
+        }
+      }
+    },
+    "Coverage updated %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cobertura actualitzada %@"
+          }
+        }
+      }
+    },
+    "CX Zone" : {
+      "comment" : "Tab bar label and CX Zone title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zona CX"
+          }
+        }
+      }
+    },
+    "CX ZONE" : {
+      "comment" : "CX Zone screen title (all caps)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ZONA CX"
+          }
+        }
+      }
+    },
+    "Cycling Tribune is being updated. Please try again in a few minutes." : {
+      "comment" : "Maintenance alert body",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cycling Tribune s’està actualitzant. Torna-ho a provar d’aquí a uns minuts."
+          }
+        }
+      }
+    },
+    "Cyclocross races, results, standings and the whole season calendar." : {
+      "comment" : "Onboarding page 3 body",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Curses de ciclocròs, resultats, classificacions i el calendari de tota la temporada."
+          }
+        }
+      }
+    },
+    "Date" : {
+      "comment" : "Race detail info row label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "comment" : "A button that deletes something.",
+      "isCommentAutoGenerated" : true
+    },
+    "Departure" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sortida"
+          }
+        }
+      }
+    },
+    "Distance" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Distància"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fet"
+          }
+        }
+      }
+    },
+    "Dropped" : {
+      "comment" : "Paddock program change: race dropped",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descartada"
+          }
+        }
+      }
+    },
+    "Duration - %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durada - %@"
+          }
+        }
+      }
+    },
+    "Earlier" : {
+      "comment" : "Paddock day group",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abans"
+          }
+        }
+      }
+    },
+    "Edit" : {
+      "comment" : "A button that edits a user.",
+      "isCommentAutoGenerated" : true
+    },
+    "ETA" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ARRIBADA"
+          }
+        }
+      }
+    },
+    "ETA - %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ARRIBADA - %@"
+          }
+        }
+      }
+    },
+    "expected finish %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "arribada prevista a les %@"
+          }
+        }
+      }
+    },
+    "Finish profile" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perfil de l’arribada"
+          }
+        }
+      }
+    },
+    "finished" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "acabada"
+          }
+        }
+      }
+    },
+    "Finished" : {
+      "comment" : "Status tag: race already run",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acabada"
+          }
+        }
+      }
+    },
+    "FINISHED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ACABADA"
+          }
+        }
+      }
+    },
+    "First finish expected %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Primera arribada prevista a les %@"
+          }
+        }
+      }
+    },
+    "full results" : {
+      "comment" : "Race detail link to the full results page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "resultats complets"
+          }
+        }
+      }
+    },
+    "GC" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GC"
+          }
+        }
+      }
+    },
+    "General classification" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Classificació general"
+          }
+        }
+      }
+    },
+    "Hello, World!" : {
+      "comment" : "A placeholder text.",
+      "isCommentAutoGenerated" : true
+    },
+    "Hide results" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Amaga els resultats"
+          }
+        }
+      }
+    },
+    "History" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historial"
+          }
+        }
+      }
+    },
+    "in %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "d’aquí a %@"
+          }
+        }
+      }
+    },
+    "In %lld days" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "D’aquí a %lld dia"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "D’aquí a %lld dies"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "In %lld day"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "In %lld days"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Item at %@" : {
+      "comment" : "A row in a list that shows the date of an item.",
+      "isCommentAutoGenerated" : true
+    },
+    "JOINS" : {
+      "comment" : "Rider screen transfer label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’UNEIX"
+          }
+        }
+      }
+    },
+    "Key points" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Punts clau"
+          }
+        }
+      }
+    },
+    "KM" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "KM"
+          }
+        }
+      }
+    },
+    "Language" : {
+      "comment" : "Settings row",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Idioma"
+          }
+        }
+      }
+    },
+    "LANGUAGE" : {
+      "comment" : "Language screen navigation title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IDIOMA"
+          }
+        }
+      }
+    },
+    "later today" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "més tard avui"
+          }
+        }
+      }
+    },
+    "Latest results" : {
+      "comment" : "CX Zone latest results header and screen title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Últims resultats"
+          }
+        }
+      }
+    },
+    "Let's ride" : {
+      "comment" : "Onboarding last page button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Som-hi!"
+          }
+        }
+      }
+    },
+    "Links" : {
+      "comment" : "Race detail panel header",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enllaços"
+          }
+        }
+      }
+    },
+    "Listed, no broadcast yet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llistada, sense retransmissió encara"
+          }
+        }
+      }
+    },
+    "LIVE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EN DIRECTE"
+          }
+        }
+      }
+    },
+    "live now" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "en directe ara"
+          }
+        }
+      }
+    },
+    "Loading" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’està carregant"
+          }
+        }
+      }
+    },
+    "Loading cyclocross" : {
+      "comment" : "CX Zone placeholder accessibility label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’està carregant el ciclocròs"
+          }
+        }
+      }
+    },
+    "Loading results" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’estan carregant els resultats"
+          }
+        }
+      }
+    },
+    "Loading the paddock" : {
+      "comment" : "Paddock feed accessibility label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’està carregant el paddock"
+          }
+        }
+      }
+    },
+    "Loading the race" : {
+      "comment" : "Race detail placeholder accessibility label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’està carregant la cursa"
+          }
+        }
+      }
+    },
+    "Loading the race preview" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’està carregant la prèvia de la cursa"
+          }
+        }
+      }
+    },
+    "Loading the race profile" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’està carregant el perfil de la cursa"
+          }
+        }
+      }
+    },
+    "Loading the races" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’estan carregant les curses"
+          }
+        }
+      }
+    },
+    "Loading the results" : {
+      "comment" : "Race results placeholder accessibility label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’estan carregant els resultats"
+          }
+        }
+      }
+    },
+    "Loading the rider" : {
+      "comment" : "Rider screen accessibility label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’està carregant el ciclista"
+          }
+        }
+      }
+    },
+    "Loading the schedule" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’està carregant el calendari"
+          }
+        }
+      }
+    },
+    "Local circuit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Circuit local"
+          }
+        }
+      }
+    },
+    "Map" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mapa"
+          }
+        }
+      }
+    },
+    "MEN" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HOMES"
+          }
+        }
+      }
+    },
+    "Men Elite" : {
+      "comment" : "Men's elite category label (hardcoded in CX detail screens)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elit masculina"
+          }
+        }
+      }
+    },
+    "MEN ELITE · TOP %lld" : {
+      "comment" : "Results panel label, %lld = number of rows (all caps)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ELIT MASCULINA · TOP %lld"
+          }
+        }
+      }
+    },
+    "more info" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "més informació"
+          }
+        }
+      }
+    },
+    "More info" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Més informació"
+          }
+        }
+      }
+    },
+    "More languages are coming." : {
+      "comment" : "Footer under the language list",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aviat hi haurà més idiomes."
+          }
+        }
+      }
+    },
+    "National Championships" : {
+      "comment" : "UCI class description CN",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campionats nacionals"
+          }
+        }
+      }
+    },
+    "Next" : {
+      "comment" : "Onboarding button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Següent"
+          }
+        }
+      }
+    },
+    "Next races" : {
+      "comment" : "CX Zone calendar section header",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Properes curses"
+          }
+        }
+      }
+    },
+    "No broadcast listed yet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encara no hi ha cap retransmissió"
+          }
+        }
+      }
+    },
+    "No categories" : {
+      "comment" : "Standings ranking without categories",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sense categories"
+          }
+        }
+      }
+    },
+    "No categories found for this standings item." : {
+      "comment" : "Standings ranking without categories, expanded",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’han trobat categories per a aquesta classificació."
+          }
+        }
+      }
+    },
+    "No categories found." : {
+      "comment" : "Standings card without categories",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’han trobat categories."
+          }
+        }
+      }
+    },
+    "No info available" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sense informació"
+          }
+        }
+      }
+    },
+    "No info available for this race yet." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encara no hi ha informació d’aquesta cursa."
+          }
+        }
+      }
+    },
+    "No race videos available" : {
+      "comment" : "Floating button when the race has no video",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sense vídeos de la cursa"
+          }
+        }
+      }
+    },
+    "NO RACES" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CAP CURSA"
+          }
+        }
+      }
+    },
+    "No races in this series." : {
+      "comment" : "Calendar empty state for a series filter",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hi ha curses en aquesta sèrie."
+          }
+        }
+      }
+    },
+    "No races match “%@”." : {
+      "comment" : "Calendar search empty state, %@ = search text",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hi ha curses que coincideixin amb “%@”."
+          }
+        }
+      }
+    },
+    "No results available" : {
+      "comment" : "Race results empty state",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encara no hi ha resultats"
+          }
+        }
+      }
+    },
+    "No results found." : {
+      "comment" : "Latest results empty state",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’han trobat resultats."
+          }
+        }
+      }
+    },
+    "No results yesterday" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ahir no hi va haver resultats"
+          }
+        }
+      }
+    },
+    "No results yet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encara no hi ha resultats"
+          }
+        }
+      }
+    },
+    "No results yet, first finish expected %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encara no hi ha resultats; la primera arribada és prevista a les %@"
+          }
+        }
+      }
+    },
+    "No riders or standings match “%@”." : {
+      "comment" : "Standings search empty state, %@ = search text",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cap ciclista ni classificació coincideix amb “%@”."
+          }
+        }
+      }
+    },
+    "No standings found." : {
+      "comment" : "CX Zone standings empty state",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’han trobat classificacions."
+          }
+        }
+      }
+    },
+    "none" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "cap"
+          }
+        }
+      }
+    },
+    "Not in the TV listings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No és a la graella de TV"
+          }
+        }
+      }
+    },
+    "Nothing here for this filter." : {
+      "comment" : "Paddock feed empty filter",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hi ha res amb aquest filtre."
+          }
+        }
+      }
+    },
+    "Nothing new in the paddock." : {
+      "comment" : "Paddock feed empty state",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Res de nou al paddock."
+          }
+        }
+      }
+    },
+    "Nothing on today's list yet. New races show up here as soon as they're listed." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encara no hi ha res a la llista d’avui. Les noves curses apareixeran aquí tan bon punt es publiquin."
+          }
+        }
+      }
+    },
+    "Official website" : {
+      "comment" : "Race detail link",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Web oficial"
+          }
+        }
+      }
+    },
+    "Offline" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sense connexió"
+          }
+        }
+      }
+    },
+    "One-day race" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursa d’un dia"
+          }
+        }
+      }
+    },
+    "Open on ProCyclingStats" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obre-ho a ProCyclingStats"
+          }
+        }
+      }
+    },
+    "Other Belgian" : {
+      "comment" : "Series filter chip",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altres belgues"
+          }
+        }
+      }
+    },
+    "Others" : {
+      "comment" : "Series filter chip",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altres"
+          }
+        }
+      }
+    },
+    "Paddock" : {
+      "comment" : "Tab bar label; name of the news tab, kept as is",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paddock"
+          }
+        }
+      }
+    },
+    "PADDOCK" : {
+      "comment" : "The name of the Paddock section.",
+      "isCommentAutoGenerated" : true
+    },
+    "Past winners" : {
+      "comment" : "Race detail panel header",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guanyadors anteriors"
+          }
+        }
+      }
+    },
+    "Points" : {
+      "comment" : "Stat tile label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Punts"
+          }
+        }
+      }
+    },
+    "Position" : {
+      "comment" : "Stat tile label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posició"
+          }
+        }
+      }
+    },
+    "Press and hold a result to show or hide spoilers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantén premut un resultat per mostrar o amagar els espòilers"
+          }
+        }
+      }
+    },
+    "Previews" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prèvies"
+          }
+        }
+      }
+    },
+    "Profile" : {
+      "comment" : "Rider profile panel header",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perfil"
+          }
+        }
+      }
+    },
+    "PROFILE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PERFIL"
+          }
+        }
+      }
+    },
+    "PROGRAM" : {
+      "comment" : "Paddock feed card tag",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PROGRAMA"
+          }
+        }
+      }
+    },
+    "Program update" : {
+      "comment" : "Rider screen header",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Canvi de programa"
+          }
+        }
+      }
+    },
+    "Programs" : {
+      "comment" : "Paddock filter chip",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Programes"
+          }
+        }
+      }
+    },
+    "Prologue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pròleg"
+          }
+        }
+      }
+    },
+    "Prologue %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pròleg %@"
+          }
+        }
+      }
+    },
+    "Race" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursa"
+          }
+        }
+      }
+    },
+    "Race info" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informació de la cursa"
+          }
+        }
+      }
+    },
+    "Race page on cyclocross24" : {
+      "comment" : "Race detail link",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pàgina de la cursa a cyclocross24"
+          }
+        }
+      }
+    },
+    "Race Preview" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prèvia de la cursa"
+          }
+        }
+      }
+    },
+    "Race profile" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perfil de la cursa"
+          }
+        }
+      }
+    },
+    "Race Result" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultat de la cursa"
+          }
+        }
+      }
+    },
+    "Race video" : {
+      "comment" : "Race detail link",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vídeo de la cursa"
+          }
+        }
+      }
+    },
+    "Race videos" : {
+      "comment" : "Floating button for the race videos",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vídeos de la cursa"
+          }
+        }
+      }
+    },
+    "Race videos unavailable" : {
+      "comment" : "Floating button when the results failed to load",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vídeos no disponibles"
+          }
+        }
+      }
+    },
+    "Race, country, winner..." : {
+      "comment" : "Calendar search prompt",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursa, país, guanyador..."
+          }
+        }
+      }
+    },
+    "Races" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Curses"
+          }
+        }
+      }
+    },
+    "Recent results" : {
+      "comment" : "Rider panel header for recent results",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultats recents"
+          }
+        }
+      }
+    },
+    "Result" : {
+      "comment" : "Rider screen panel header for a result",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultat"
+          }
+        }
+      }
+    },
+    "Result hidden" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultat ocult"
+          }
+        }
+      }
+    },
+    "Results" : {
+      "comment" : "Race detail results panel header",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultats"
+          }
+        }
+      }
+    },
+    "Results start hidden behind a painting. Press and hold one to reveal or hide it, then tap to open it." : {
+      "comment" : "Onboarding page 2 body",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Els resultats apareixen amagats darrere d’una pintura. Mantén premut un per mostrar-lo o amagar-lo i, després, toca’l per obrir-lo."
+          }
+        }
+      }
+    },
+    "Results today" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultats d’avui"
+          }
+        }
+      }
+    },
+    "Results without spoilers" : {
+      "comment" : "Onboarding page 2 title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultats sense espòilers"
+          }
+        }
+      }
+    },
+    "Results yesterday" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultats d’ahir"
+          }
+        }
+      }
+    },
+    "Results, standings and more" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultats, classificacions i més"
+          }
+        }
+      }
+    },
+    "Rider" : {
+      "comment" : "Rider screen title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ciclista"
+          }
+        }
+      }
+    },
+    "rider page on cyclocross24" : {
+      "comment" : "Rider screen link to the cyclocross24 page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pàgina del ciclista a cyclocross24"
+          }
+        }
+      }
+    },
+    "rider page on ProCyclingStats" : {
+      "comment" : "Rider screen link",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pàgina del ciclista a ProCyclingStats"
+          }
+        }
+      }
+    },
+    "Rider, ranking, category..." : {
+      "comment" : "Standings search prompt",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ciclista, rànquing, categoria..."
+          }
+        }
+      }
+    },
+    "Road and cyclocross results, calendars and cycling news, all in one place." : {
+      "comment" : "Onboarding page 1 body",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultats de carretera i de ciclocròs, calendaris i notícies del ciclisme, tot en un sol lloc."
+          }
+        }
+      }
+    },
+    "s.t." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "m.t."
+          }
+        }
+      }
+    },
+    "See all" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra-ho tot"
+          }
+        }
+      }
+    },
+    "See all %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra-ho tot: %@"
+          }
+        }
+      }
+    },
+    "Select an item" : {
+      "comment" : "A label displayed in the detail view of the `ContentView`.",
+      "isCommentAutoGenerated" : true
+    },
+    "Series" : {
+      "comment" : "Stat tile label for the race series",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sèrie"
+          }
+        }
+      }
+    },
+    "Settings" : {
+      "comment" : "Tab bar label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configuració"
+          }
+        }
+      }
+    },
+    "SETTINGS" : {
+      "comment" : "Settings navigation title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CONFIGURACIÓ"
+          }
+        }
+      }
+    },
+    "Show less" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra’n menys"
+          }
+        }
+      }
+    },
+    "Show onboarding again" : {
+      "comment" : "Settings row",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Torna a veure la presentació"
+          }
+        }
+      }
+    },
+    "Show results" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra els resultats"
+          }
+        }
+      }
+    },
+    "Skip" : {
+      "comment" : "Onboarding button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Omet"
+          }
+        }
+      }
+    },
+    "Skip the introduction" : {
+      "comment" : "Onboarding skip accessibility label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Omet la introducció"
+          }
+        }
+      }
+    },
+    "Something went wrong" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguna cosa ha fallat"
+          }
+        }
+      }
+    },
+    "Spoiler is off" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espòiler desactivat"
+          }
+        }
+      }
+    },
+    "Spoiler is on" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espòiler activat"
+          }
+        }
+      }
+    },
+    "sprint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "esprint"
+          }
+        }
+      }
+    },
+    "Stage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etapa"
+          }
+        }
+      }
+    },
+    "Stage %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etapa %@"
+          }
+        }
+      }
+    },
+    "Stage result" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultat de l’etapa"
+          }
+        }
+      }
+    },
+    "Standing" : {
+      "comment" : "Rider screen panel header for the standing",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Classificació"
+          }
+        }
+      }
+    },
+    "Standings" : {
+      "comment" : "CX Zone standings header and screen title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Classificacions"
+          }
+        }
+      }
+    },
+    "Start" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sortida"
+          }
+        }
+      }
+    },
+    "START" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SORTIDA"
+          }
+        }
+      }
+    },
+    "Start time" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hora de sortida"
+          }
+        }
+      }
+    },
+    "STARTED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "COMENÇADA"
+          }
+        }
+      }
+    },
+    "started at %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ha començat a les %@"
+          }
+        }
+      }
+    },
+    "Starts" : {
+      "comment" : "Race detail info row label for the countdown",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comença"
+          }
+        }
+      }
+    },
+    "System default" : {
+      "comment" : "Language option: follow the device languages",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Predeterminat del sistema"
+          }
+        }
+      }
+    },
+    "Team" : {
+      "comment" : "Results column header",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Equip"
+          }
+        }
+      }
+    },
+    "The Paddock" : {
+      "comment" : "Onboarding page 4 title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El Paddock"
+          }
+        }
+      }
+    },
+    "The peloton is resting" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El pelotó descansa"
+          }
+        }
+      }
+    },
+    "The press" : {
+      "comment" : "Paddock press panel title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La premsa"
+          }
+        }
+      }
+    },
+    "Time" : {
+      "comment" : "Stat tile label and results column header",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Temps"
+          }
+        }
+      }
+    },
+    "today" : {
+      "comment" : "Paddock birthdays card time",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "avui"
+          }
+        }
+      }
+    },
+    "Today" : {
+      "comment" : "Paddock day group",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avui"
+          }
+        }
+      }
+    },
+    "TODAY" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AVUI"
+          }
+        }
+      }
+    },
+    "Today - Next to finish" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avui - Pròxima a arribar"
+          }
+        }
+      }
+    },
+    "Today Races" : {
+      "comment" : "Tab bar label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Curses d’avui"
+          }
+        }
+      }
+    },
+    "Today's races" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Curses d’avui"
+          }
+        }
+      }
+    },
+    "Tomorrow" : {
+      "comment" : "Countdown: race is tomorrow",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demà"
+          }
+        }
+      }
+    },
+    "Transfer" : {
+      "comment" : "Rider screen header",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fitxatge"
+          }
+        }
+      }
+    },
+    "TRANSFER" : {
+      "comment" : "Paddock feed card tag",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FITXATGE"
+          }
+        }
+      }
+    },
+    "Transfers" : {
+      "comment" : "Paddock filter chip",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fitxatges"
+          }
+        }
+      }
+    },
+    "Transfers, race program changes, birthdays and the best cycling press." : {
+      "comment" : "Onboarding page 4 body",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fitxatges, canvis de programa de les curses, aniversaris i la millor premsa del ciclisme."
+          }
+        }
+      }
+    },
+    "Try again" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Torna-ho a provar"
+          }
+        }
+      }
+    },
+    "turns" : {
+      "comment" : "Birthday row, before the age in large type: “turns 28”",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "compleix"
+          }
+        }
+      }
+    },
+    "UCI Class 1" : {
+      "comment" : "UCI class description C1",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Classe 1 de l’UCI"
+          }
+        }
+      }
+    },
+    "UCI Class 2" : {
+      "comment" : "UCI class description C2",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Classe 2 de l’UCI"
+          }
+        }
+      }
+    },
+    "UCI Class 3" : {
+      "comment" : "UCI class description C3",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Classe 3 de l’UCI"
+          }
+        }
+      }
+    },
+    "UCI World Championships" : {
+      "comment" : "UCI class description CM",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campionats del món UCI"
+          }
+        }
+      }
+    },
+    "UCI World Cup" : {
+      "comment" : "UCI class description CDM",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copa del Món UCI"
+          }
+        }
+      }
+    },
+    "Under maintenance" : {
+      "comment" : "Maintenance alert title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En manteniment"
+          }
+        }
+      }
+    },
+    "Under maintenance. Cycling Tribune is being updated. Please try again in a few minutes." : {
+      "comment" : "Maintenance VoiceOver announcement",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En manteniment. Cycling Tribune s’està actualitzant. Torna-ho a provar d’aquí a uns minuts."
+          }
+        }
+      }
+    },
+    "Upcoming" : {
+      "comment" : "Status tag: race not yet run",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pròximament"
+          }
+        }
+      }
+    },
+    "Vertical" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desnivell"
+          }
+        }
+      }
+    },
+    "Victory" : {
+      "comment" : "Victory panel header on the rider and winner screens",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Victòria"
+          }
+        }
+      }
+    },
+    "View full results" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra els resultats complets"
+          }
+        }
+      }
+    },
+    "We couldn’t find any race data right now. Try again in a moment." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hem trobat dades de cap cursa ara mateix. Torna-ho a provar en un moment."
+          }
+        }
+      }
+    },
+    "Welcome back to Cycling Tribune" : {
+      "comment" : "Onboarding second showing",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Et tornem a donar la benvinguda a Cycling Tribune"
+          }
+        }
+      }
+    },
+    "Welcome to Cycling Tribune" : {
+      "comment" : "Onboarding first page",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Et donem la benvinguda a Cycling Tribune"
+          }
+        }
+      }
+    },
+    "Where to watch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On veure-ho"
+          }
+        }
+      }
+    },
+    "Winner" : {
+      "comment" : "Winner tag and screen title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guanyador"
+          }
+        }
+      }
+    },
+    "WOMEN" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DONES"
+          }
+        }
+      }
+    },
+    "World Cup" : {
+      "comment" : "Series filter chip",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copa del Món"
+          }
+        }
+      }
+    },
+    "Yesterday" : {
+      "comment" : "Paddock day group",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ahir"
+          }
+        }
+      }
+    },
+    "YOUR RACE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LA TEVA CURSA"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}

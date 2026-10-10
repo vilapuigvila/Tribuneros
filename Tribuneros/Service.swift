@@ -797,7 +797,7 @@ struct Service {
         #if DEBUG
         if HomeRaces.MockScenario.current != nil {
             return DTO.RaceDetailInfo(
-                title: "CRO Race — Stage 1",
+                title: "CRO Race — Stage 1", // l10n:ignore: mock data
                 date: "01 October 2026",
                 startTime: "12:00",
                 classification: "2.1",
