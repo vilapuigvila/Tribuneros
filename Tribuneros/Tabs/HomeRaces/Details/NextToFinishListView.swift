@@ -52,10 +52,10 @@ struct NextToFinishListView: View {
     
     private func buildHeaderNextToFinishSection(_ width: CGFloat) -> some View {
         HStack(spacing: 0) {
-            buildTextForHeaderView("ETA", width: width * 0.23)
-            buildTextForHeaderView("Race", width: width * 0.54)
-            buildTextForHeaderView("CAT.", width: width * 0.0925)
-            buildTextForHeaderView("KM", width: width * 0.0925)
+            buildTextForHeaderView(L10n.tr("ETA"), width: width * 0.23)
+            buildTextForHeaderView(L10n.tr("Race"), width: width * 0.54)
+            buildTextForHeaderView(L10n.tr("CAT."), width: width * 0.0925)
+            buildTextForHeaderView(L10n.tr("KM"), width: width * 0.0925)
         }
     }
     

@@ -10,7 +10,7 @@ struct PreviewsSection: View {
     let action: (HomeRaces.Action) -> Void
 
     var body: some View {
-        HomeSection(title: "Previews") {
+        HomeSection(title: L10n.tr("Previews")) {
             RacePreviewsCard(
                 previews: previews,
                 open: { action(.openRacePreview($0)) }

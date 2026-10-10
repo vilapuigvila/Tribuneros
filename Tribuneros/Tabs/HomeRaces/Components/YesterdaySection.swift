@@ -19,13 +19,13 @@ struct YesterdaySection: View {
 
     var body: some View {
         HomeSection(
-            title: "Results yesterday",
+            title: L10n.tr("Results yesterday"),
             seeAll: seeAll,
             seeAllIdentifier: "home.yesterday.seeAll"
         ) {
             if races.isEmpty {
                 ResultsEmptyCard(
-                    title: "No results yesterday",
+                    title: L10n.tr("No results yesterday"),
                     size: CGSize(width: 0, height: 108),
                     identifier: "home.yesterday.empty",
                     isFullWidth: true

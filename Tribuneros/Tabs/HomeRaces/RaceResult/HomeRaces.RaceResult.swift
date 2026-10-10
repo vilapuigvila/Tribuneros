@@ -20,8 +20,8 @@ extension HomeRaces {
 
             var title: String {
                 switch self {
-                case .stage: "Stage"
-                case .gc: "GC"
+                case .stage: L10n.tr("Stage")
+                case .gc: L10n.tr("GC")
                 }
             }
         }
@@ -110,9 +110,9 @@ extension HomeRaces {
                     let label = Stage.label(stage)
                     return marker.map { "\(label) \($0)" } ?? label
                 case .prologue:
-                    return marker.map { "Prologue \($0)" } ?? "Prologue"
+                    return marker.map { L10n.tr("Prologue %@", $0) } ?? L10n.tr("Prologue")
                 case .generalClassification:
-                    return "General classification"
+                    return L10n.tr("General classification")
                 }
             }
 

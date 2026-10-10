@@ -29,7 +29,7 @@ struct VaporPanel<Header: View, Content: View>: View {
 /// The small "more info" trailing link used at the bottom of a Vapor preview
 /// card (CX Zone's section previews) to point at the full list screen.
 struct VaporMoreInfoLink: View {
-    var title: String = "more info"
+    var title: String = L10n.tr("more info")
 
     var body: some View {
         HStack(spacing: 6) {
@@ -129,7 +129,7 @@ struct VaporSpoilerChip: View {
     var body: some View {
         Button(action: action) {
             TribuneruText(
-                content: isSpoilerModeOn ? "Spoiler is on" : "Spoiler is off",
+                content: isSpoilerModeOn ? L10n.tr("Spoiler is on") : L10n.tr("Spoiler is off"),
                 style: .vaporSpoilerChip,
                 color: .tribuneru(.vaporTextSecondary),
                 lineLimit: 1

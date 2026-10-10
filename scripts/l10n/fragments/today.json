@@ -1,0 +1,379 @@
+{
+  "%1$@ %2$@, %3$@": {
+    "ca": "%1$@ %2$@, %3$@"
+  },
+  "%1$@ · updated %2$@": {
+    "ca": "%1$@ · actualitzat %2$@"
+  },
+  "%@ - Kms": {
+    "ca": "%@ - km"
+  },
+  "%@ isn't in this day's TV listings.": {
+    "ca": "%@ no és a la graella de TV d’aquest dia."
+  },
+  "%@ left": {
+    "ca": "%@ restants"
+  },
+  "%@ m": {
+    "ca": "%@ m"
+  },
+  "%@, finished": {
+    "ca": "%@, acabada"
+  },
+  "%lld later today · by finish time": {
+    "ca": "%lld més tard avui · per hora d’arribada"
+  },
+  "%lld live": {
+    "ca": "%lld en directe"
+  },
+  "%lld races": {
+    "plural": {
+      "en": {
+        "one": "%lld race",
+        "other": "%lld races"
+      },
+      "ca": {
+        "one": "%lld cursa",
+        "other": "%lld curses"
+      }
+    }
+  },
+  "%lldh": {
+    "ca": "%lld h"
+  },
+  "%lldh %lldm": {
+    "ca": "%lld h %lld min"
+  },
+  "%lldm": {
+    "ca": "%lld min"
+  },
+  "Arrival": {
+    "ca": "Arribada"
+  },
+  "Browse past seasons": {
+    "ca": "Explora les temporades anteriors"
+  },
+  "CAT.": {
+    "ca": "CAT."
+  },
+  "Climb": {
+    "ca": "Port"
+  },
+  "Couldn't load the full results. Showing the podium.": {
+    "ca": "No s’han pogut carregar els resultats complets. Es mostra el podi."
+  },
+  "Couldn't load the general classification.": {
+    "ca": "No s’ha pogut carregar la classificació general."
+  },
+  "Couldn't load the race preview.": {
+    "ca": "No s’ha pogut carregar la prèvia de la cursa."
+  },
+  "Couldn't load the schedule.": {
+    "ca": "No s’ha pogut carregar el calendari."
+  },
+  "Couldn't refresh": {
+    "ca": "No s’ha pogut actualitzar"
+  },
+  "Couldn’t load the race info. Check your connection and try again.": {
+    "ca": "No s’ha pogut carregar la informació de la cursa. Comprova la connexió i torna-ho a provar."
+  },
+  "Couldn’t load the races. Check your connection and try again.": {
+    "ca": "No s’han pogut carregar les curses. Comprova la connexió i torna-ho a provar."
+  },
+  "Coverage updated %@": {
+    "ca": "Cobertura actualitzada %@"
+  },
+  "Date": {
+    "ca": "Data",
+    "comment": "Race detail info row label"
+  },
+  "Departure": {
+    "ca": "Sortida"
+  },
+  "Distance": {
+    "ca": "Distància"
+  },
+  "Done": {
+    "ca": "Fet"
+  },
+  "Duration - %@": {
+    "ca": "Durada - %@"
+  },
+  "ETA": {
+    "ca": "ARRIBADA"
+  },
+  "ETA - %@": {
+    "ca": "ARRIBADA - %@"
+  },
+  "FINISHED": {
+    "ca": "ACABADA"
+  },
+  "Finish profile": {
+    "ca": "Perfil de l’arribada"
+  },
+  "First finish expected %@": {
+    "ca": "Primera arribada prevista a les %@"
+  },
+  "GC": {
+    "ca": "GC"
+  },
+  "General classification": {
+    "ca": "Classificació general"
+  },
+  "Hide results": {
+    "ca": "Amaga els resultats"
+  },
+  "History": {
+    "ca": "Historial"
+  },
+  "KM": {
+    "ca": "KM"
+  },
+  "Key points": {
+    "ca": "Punts clau"
+  },
+  "LIVE": {
+    "ca": "EN DIRECTE"
+  },
+  "Listed, no broadcast yet": {
+    "ca": "Llistada, sense retransmissió encara"
+  },
+  "Loading": {
+    "ca": "S’està carregant"
+  },
+  "Loading results": {
+    "ca": "S’estan carregant els resultats"
+  },
+  "Loading the race": {
+    "ca": "S’està carregant la cursa",
+    "comment": "Race detail placeholder accessibility label"
+  },
+  "Loading the race preview": {
+    "ca": "S’està carregant la prèvia de la cursa"
+  },
+  "Loading the race profile": {
+    "ca": "S’està carregant el perfil de la cursa"
+  },
+  "Loading the races": {
+    "ca": "S’estan carregant les curses"
+  },
+  "Loading the results": {
+    "ca": "S’estan carregant els resultats",
+    "comment": "Race results placeholder accessibility label"
+  },
+  "Loading the schedule": {
+    "ca": "S’està carregant el calendari"
+  },
+  "Local circuit": {
+    "ca": "Circuit local"
+  },
+  "MEN": {
+    "ca": "HOMES"
+  },
+  "Map": {
+    "ca": "Mapa"
+  },
+  "More info": {
+    "ca": "Més informació"
+  },
+  "NO RACES": {
+    "ca": "CAP CURSA"
+  },
+  "No broadcast listed yet": {
+    "ca": "Encara no hi ha cap retransmissió"
+  },
+  "No info available": {
+    "ca": "Sense informació"
+  },
+  "No info available for this race yet.": {
+    "ca": "Encara no hi ha informació d’aquesta cursa."
+  },
+  "No results yesterday": {
+    "ca": "Ahir no hi va haver resultats"
+  },
+  "No results yet": {
+    "ca": "Encara no hi ha resultats"
+  },
+  "No results yet, first finish expected %@": {
+    "ca": "Encara no hi ha resultats; la primera arribada és prevista a les %@"
+  },
+  "Not in the TV listings": {
+    "ca": "No és a la graella de TV"
+  },
+  "Nothing on today's list yet. New races show up here as soon as they're listed.": {
+    "ca": "Encara no hi ha res a la llista d’avui. Les noves curses apareixeran aquí tan bon punt es publiquin."
+  },
+  "Offline": {
+    "ca": "Sense connexió"
+  },
+  "One-day race": {
+    "ca": "Cursa d’un dia"
+  },
+  "Open on ProCyclingStats": {
+    "ca": "Obre-ho a ProCyclingStats"
+  },
+  "PROFILE": {
+    "ca": "PERFIL"
+  },
+  "Press and hold a result to show or hide spoilers": {
+    "ca": "Mantén premut un resultat per mostrar o amagar els espòilers"
+  },
+  "Previews": {
+    "ca": "Prèvies"
+  },
+  "Profile": {
+    "ca": "Perfil",
+    "comment": "Rider profile panel header"
+  },
+  "Prologue": {
+    "ca": "Pròleg"
+  },
+  "Prologue %@": {
+    "ca": "Pròleg %@"
+  },
+  "Race": {
+    "ca": "Cursa"
+  },
+  "Race Preview": {
+    "ca": "Prèvia de la cursa"
+  },
+  "Race Result": {
+    "ca": "Resultat de la cursa"
+  },
+  "Race info": {
+    "ca": "Informació de la cursa"
+  },
+  "Race profile": {
+    "ca": "Perfil de la cursa"
+  },
+  "Races": {
+    "ca": "Curses"
+  },
+  "Result hidden": {
+    "ca": "Resultat ocult"
+  },
+  "Results today": {
+    "ca": "Resultats d’avui"
+  },
+  "Results yesterday": {
+    "ca": "Resultats d’ahir"
+  },
+  "Results, standings and more": {
+    "ca": "Resultats, classificacions i més"
+  },
+  "START": {
+    "ca": "SORTIDA"
+  },
+  "STARTED": {
+    "ca": "COMENÇADA"
+  },
+  "See all": {
+    "ca": "Mostra-ho tot"
+  },
+  "See all %@": {
+    "ca": "Mostra-ho tot: %@"
+  },
+  "Show less": {
+    "ca": "Mostra’n menys"
+  },
+  "Show results": {
+    "ca": "Mostra els resultats"
+  },
+  "Something went wrong": {
+    "ca": "Alguna cosa ha fallat"
+  },
+  "Spoiler is off": {
+    "ca": "Espòiler desactivat"
+  },
+  "Spoiler is on": {
+    "ca": "Espòiler activat"
+  },
+  "Stage": {
+    "ca": "Etapa"
+  },
+  "Stage %@": {
+    "ca": "Etapa %@"
+  },
+  "Stage result": {
+    "ca": "Resultat de l’etapa"
+  },
+  "Start": {
+    "ca": "Sortida"
+  },
+  "Start time": {
+    "ca": "Hora de sortida"
+  },
+  "TODAY": {
+    "ca": "AVUI"
+  },
+  "The peloton is resting": {
+    "ca": "El pelotó descansa"
+  },
+  "Today": {
+    "ca": "Avui",
+    "comment": "Paddock day group"
+  },
+  "Today - Next to finish": {
+    "ca": "Avui - Pròxima a arribar"
+  },
+  "Today's races": {
+    "ca": "Curses d’avui"
+  },
+  "Try again": {
+    "ca": "Torna-ho a provar"
+  },
+  "Vertical": {
+    "ca": "Desnivell"
+  },
+  "View full results": {
+    "ca": "Mostra els resultats complets"
+  },
+  "WOMEN": {
+    "ca": "DONES"
+  },
+  "We couldn’t find any race data right now. Try again in a moment.": {
+    "ca": "No hem trobat dades de cap cursa ara mateix. Torna-ho a provar en un moment."
+  },
+  "Where to watch": {
+    "ca": "On veure-ho"
+  },
+  "YOUR RACE": {
+    "ca": "LA TEVA CURSA"
+  },
+  "by finish time": {
+    "ca": "per hora d’arribada"
+  },
+  "climb": {
+    "ca": "port"
+  },
+  "expected finish %@": {
+    "ca": "arribada prevista a les %@"
+  },
+  "finished": {
+    "ca": "acabada"
+  },
+  "in %@": {
+    "ca": "d’aquí a %@"
+  },
+  "later today": {
+    "ca": "més tard avui"
+  },
+  "live now": {
+    "ca": "en directe ara"
+  },
+  "more info": {
+    "ca": "més informació"
+  },
+  "none": {
+    "ca": "cap"
+  },
+  "s.t.": {
+    "ca": "m.t."
+  },
+  "sprint": {
+    "ca": "esprint"
+  },
+  "started at %@": {
+    "ca": "ha començat a les %@"
+  }
+}

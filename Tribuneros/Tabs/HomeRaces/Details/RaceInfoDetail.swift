@@ -21,7 +21,7 @@ struct NextToFinishRaceDetail: View {
         let systemImage: String
         let title: String
         let value: String
-        var id: String { title }
+        var id: String { systemImage }
     }
 
     let urlInfo: String
@@ -52,7 +52,7 @@ struct NextToFinishRaceDetail: View {
                     .redacted(reason: .placeholder)
                     .disabled(true)
                     .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("Loading the race")
+                    .accessibilityLabel(L10n.tr("Loading the race"))
                 } else if let raceInfo {
                     infoPanel(raceInfo)
                     if isLoadingImages {
@@ -60,7 +60,7 @@ struct NextToFinishRaceDetail: View {
                             .redacted(reason: .placeholder)
                             .disabled(true)
                             .accessibilityElement(children: .ignore)
-                            .accessibilityLabel("Loading the race profile")
+                            .accessibilityLabel(L10n.tr("Loading the race profile"))
                     } else if !profileImages.isEmpty {
                         profilePanel
                     }
@@ -73,7 +73,7 @@ struct NextToFinishRaceDetail: View {
         }
         .background(Color.tribuneru(.vaporPageBackground))
         .preferredColorScheme(.dark)
-        .navigationTitle("Race info")
+        .navigationTitle(L10n.tr("Race info"))
         .navigationBarTitleDisplayMode(.inline)
         .task {
             isLoading = true
@@ -88,7 +88,7 @@ struct NextToFinishRaceDetail: View {
                 await downloadProfileImages(stageProfile)
                 isLoadingImages = false
             } catch {
-                errorMessage = error.localizedDescription
+                errorMessage = L10n.tr("Couldn’t load the race info. Check your connection and try again.")
                 isLoading = false
                 isLoadingImages = false
                 nonFatalCrashlytics(false, error.localizedDescription)
@@ -108,7 +108,7 @@ struct NextToFinishRaceDetail: View {
         let items = infoItems(info)
         let tags = [info.classification, info.category].filter { !$0.isEmpty }
         return VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: "Race info")
+            VaporSectionHeader(title: L10n.tr("Race info"))
         } content: {
             VStack(alignment: .leading, spacing: 12) {
                 if !tags.isEmpty {
@@ -181,7 +181,7 @@ struct NextToFinishRaceDetail: View {
                     .frame(width: 18)
                 VStack(alignment: .leading, spacing: 2) {
                     TribuneruText(
-                        content: "Where to watch",
+                        content: L10n.tr("Where to watch"),
                         style: .vaporRaceNameResult,
                         color: .tribuneru(.vaporAccent)
                     )
@@ -204,12 +204,12 @@ struct NextToFinishRaceDetail: View {
 
     private var unavailablePanel: some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: "Race info")
+            VaporSectionHeader(title: L10n.tr("Race info"))
         } content: {
             VStack(alignment: .leading, spacing: 12) {
                 VaporCard {
                     TribuneruText(
-                        content: errorMessage ?? "No info available for this race yet.",
+                        content: errorMessage ?? L10n.tr("No info available for this race yet."),
                         style: .vaporMeta,
                         color: .tribuneru(.vaporTextSecondary),
                         lineLimit: 4
@@ -222,12 +222,16 @@ struct NextToFinishRaceDetail: View {
 
     private func infoItems(_ info: DTO.RaceDetailInfo) -> [InfoItem] {
         let all = [
-            InfoItem(systemImage: "calendar", title: "Date", value: info.date),
-            InfoItem(systemImage: "clock", title: "Start time", value: info.startTime),
-            InfoItem(systemImage: "ruler", title: "Distance", value: info.distance),
-            InfoItem(systemImage: "mountain.2", title: "Vertical", value: info.verticalMeters.allSatisfy(\.isNumber) ? "\(info.verticalMeters) m" : info.verticalMeters),
-            InfoItem(systemImage: "flag", title: "Departure", value: info.departure),
-            InfoItem(systemImage: "flag.checkered", title: "Arrival", value: info.arrival)
+            InfoItem(systemImage: "calendar", title: L10n.tr("Date"), value: info.date),
+            InfoItem(systemImage: "clock", title: L10n.tr("Start time"), value: info.startTime),
+            InfoItem(systemImage: "ruler", title: L10n.tr("Distance"), value: info.distance),
+            InfoItem(
+                systemImage: "mountain.2",
+                title: L10n.tr("Vertical"),
+                value: info.verticalMeters.allSatisfy(\.isNumber) ? L10n.tr("%@ m", info.verticalMeters) : info.verticalMeters
+            ),
+            InfoItem(systemImage: "flag", title: L10n.tr("Departure"), value: info.departure),
+            InfoItem(systemImage: "flag.checkered", title: L10n.tr("Arrival"), value: info.arrival)
         ]
         return all.filter { !$0.value.isEmpty }
     }
@@ -236,7 +240,7 @@ struct NextToFinishRaceDetail: View {
 
     private var profilePanel: some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-            VaporSectionHeader(title: "Race profile")
+            VaporSectionHeader(title: L10n.tr("Race profile"))
         } content: {
             VStack(spacing: 10) {
                 ForEach(profileImages) { profile in
@@ -246,7 +250,7 @@ struct NextToFinishRaceDetail: View {
                     } label: {
                         VaporCard {
                             TribuneruText(
-                                content: profile.type.description.uppercased(),
+                                content: Self.profileTitle(profile.type).uppercased(with: L10n.locale),
                                 style: .vaporGroupLabel,
                                 color: .tribuneru(.vaporTextSecondary)
                             )
@@ -265,11 +269,11 @@ struct NextToFinishRaceDetail: View {
 
     private var profilePlaceholderPanel: some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-            VaporSectionHeader(title: "Race profile")
+            VaporSectionHeader(title: L10n.tr("Race profile"))
         } content: {
             VaporCard {
                 TribuneruText(
-                    content: "PROFILE",
+                    content: L10n.tr("PROFILE"),
                     style: .vaporGroupLabel,
                     color: .tribuneru(.vaporTextSecondary)
                 )
@@ -305,7 +309,7 @@ struct NextToFinishRaceDetail: View {
                         showZoom = false
                     } label: {
                         TribuneruText(
-                            content: "Done",
+                            content: L10n.tr("Done"),
                             style: .vaporRaceNameResult,
                             color: .tribuneru(.vaporAccent)
                         )
@@ -319,6 +323,18 @@ struct NextToFinishRaceDetail: View {
     }
 
     // MARK: - Images -
+
+    /// The title of a PCS profile image, for display. The raw values stay in `DTO.StageProfile`.
+    private static func profileTitle(_ type: ImageType) -> String {
+        switch type {
+        case .profile: L10n.tr("Profile")
+        case .finishProfile: L10n.tr("Finish profile")
+        case .climb: L10n.tr("Climb")
+        case .map: L10n.tr("Map")
+        case .localCircut: L10n.tr("Local circuit")
+        case .none: L10n.tr("none")
+        }
+    }
 
     private func downloadProfileImages(_ stageProfile: [DTO.StageProfile]) async {
         let order: [ImageType] = [.profile, .finishProfile, .climb, .map, .localCircut]
@@ -462,8 +478,8 @@ struct ZoomableMainScreen<Content: View>: View {
 extension DTO.RaceDetailInfo {
 
     /// A stand-in shaped like a real race, drawn redacted while the race loads.
-    static let placeholder = DTO.RaceDetailInfo(
-        title: "Race name placeholder",
+    static let placeholder = DTO.RaceDetailInfo( // l10n:ignore
+        title: "Race name placeholder", // l10n:ignore
         date: "00-00-0000",
         startTime: "00:00",
         classification: "Classification",

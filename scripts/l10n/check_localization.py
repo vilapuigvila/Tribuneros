@@ -112,7 +112,20 @@ def check_sources(files, entries, allowlist, errors, warnings, report_unused):
     literals_ok = set(allowlist.get("literals", []))
     used = set()
     for path in files:
-        lines = path.read_text(encoding="utf-8").splitlines()
+        source = path.read_text(encoding="utf-8")
+        lines = source.splitlines()
+        # Keys may sit on the line after `L10n.tr(`, so extract them from the whole file.
+        for match in TR_CALL.finditer(source):
+            line_text = lines[source.count("\n", 0, match.start())]
+            if line_text.lstrip().startswith("//"):
+                continue
+            where = f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}"
+            key = unquote(match.group(1))
+            used.add(key)
+            if "\\(" in match.group(1):
+                errors.append(f"{where}: L10n.tr key must be a plain literal, not interpolated")
+            elif key not in entries:
+                errors.append(f"{where}: key {key!r} missing from the fragments")
         in_preview = False
         for number, line in enumerate(lines, 1):
             if line.startswith("#Preview"):
@@ -120,13 +133,6 @@ def check_sources(files, entries, allowlist, errors, warnings, report_unused):
             where = f"{path.relative_to(ROOT)}:{number}"
             if line.lstrip().startswith("//"):
                 continue
-            for match in TR_CALL.finditer(line):
-                key = unquote(match.group(1))
-                used.add(key)
-                if "\\(" in match.group(1):
-                    errors.append(f"{where}: L10n.tr key must be a plain literal, not interpolated")
-                elif key not in entries:
-                    errors.append(f"{where}: key {key!r} missing from the fragments")
             if in_preview or "l10n:ignore" in line:
                 continue
             for match in DISPLAY_POSITIONS.finditer(line):

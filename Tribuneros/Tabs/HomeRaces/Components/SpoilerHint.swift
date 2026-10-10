@@ -8,7 +8,9 @@ import SwiftUI
 
 extension HomeRaces {
     enum SpoilerHint {
-        static let text = "Press and hold a result to show or hide spoilers"
+        static var text: String {
+            L10n.tr("Press and hold a result to show or hide spoilers")
+        }
         static let repeatInterval: TimeInterval = 48 * 3600
         static let maxShowings = 2
 

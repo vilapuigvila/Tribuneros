@@ -46,7 +46,7 @@ struct LoadingViewContainer<R: DecoupledView & View>: View {
         Group {
             switch representable {
             case .idle:
-                Text("Hello, World!")
+                Text("Hello, World!") // l10n:ignore
             case .loading:
                 ProgressView()
             case .loaded(let representable):
@@ -234,6 +234,11 @@ enum HomeRaces {
         case networkFailure
         case raceInfoFetchFailure
         case emtpyData
+
+        /// What the error screen says for a failure: never the raw case name.
+        var message: String {
+            L10n.tr("Couldn’t load the races. Check your connection and try again.")
+        }
         
         /*
         init(stationInteractorError: HomeStationInteractorImpl.ErrorReason) {
@@ -265,10 +270,10 @@ struct DemoContentView: View, DecoupledView {
             Text(representable.title)
             Text(representable.username)
             
-            Button("Edit") {
+            Button("Edit") { // l10n:ignore
                 action(.edit)
             }
-            Button("Delete") {
+            Button("Delete") { // l10n:ignore
                 action(.delete)
             }
         }
@@ -277,7 +282,7 @@ struct DemoContentView: View, DecoupledView {
 
 extension DemoContentView.Representable {
     static var mock: Self {
-        .init(title: "Title", username: "Username")
+        .init(title: "Title", username: "Username") // l10n:ignore
     }
 }
 

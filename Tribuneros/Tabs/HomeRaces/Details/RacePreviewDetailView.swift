@@ -43,7 +43,7 @@ struct RacePreviewDetailView: View {
                         viewModel.action(.openOnPCS)
                     } label: {
                         VaporCard {
-                            VaporMoreInfoLink(title: "Open on ProCyclingStats")
+                            VaporMoreInfoLink(title: L10n.tr("Open on ProCyclingStats"))
                         }
                     }
                     .buttonStyle(.plain)
@@ -54,7 +54,7 @@ struct RacePreviewDetailView: View {
         }
         .background(Color.tribuneru(.vaporPageBackground))
         .preferredColorScheme(.dark)
-        .navigationTitle("Race Preview")
+        .navigationTitle(L10n.tr("Race Preview"))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             viewModel.action(.onAppear)
@@ -95,7 +95,7 @@ struct RacePreviewDetailView: View {
                 .redacted(reason: .placeholder)
                 .disabled(true)
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel("Loading the race preview")
+                .accessibilityLabel(L10n.tr("Loading the race preview"))
         case .loaded(let content):
             PreviewSections(content: content)
         case .unavailable(let message):
@@ -117,7 +117,7 @@ private struct PreviewSections: View {
             if let start = content.start {
                 VaporCard(spacing: 4) {
                     TribuneruText(
-                        content: "Start",
+                        content: L10n.tr("Start"),
                         style: .vaporRowMeta,
                         color: .tribuneru(.vaporTextSecondary),
                         lineLimit: 1
@@ -147,7 +147,7 @@ private struct PreviewSections: View {
     private var keypoints: some View {
         VStack(alignment: .leading, spacing: 10) {
             TribuneruText(
-                content: "Key points",
+                content: L10n.tr("Key points"),
                 style: .vaporRowTitle,
                 color: .tribuneru(.vaporTextPrimary),
                 lineLimit: 1

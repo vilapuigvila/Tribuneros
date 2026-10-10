@@ -23,8 +23,8 @@ extension HomeRaces.Representable.RaceNext {
     /// PCS's category code starts with the gender: "ME" men elite, "WU" women U23.
     var genderLabel: String? {
         switch category.uppercased().first {
-        case "M": "MEN"
-        case "W": "WOMEN"
+        case "M": L10n.tr("MEN")
+        case "W": L10n.tr("WOMEN")
         default: nil
         }
     }
@@ -55,9 +55,11 @@ extension HomeRaces.Representable.RaceNext {
         let hours = totalMinutes / 60
         let minutes = totalMinutes % 60
         if hours > 0 {
-            return minutes > 0 ? "\(hours)h \(minutes)m" : "\(hours)h"
+            return minutes > 0
+                ? L10n.tr("%lldh %lldm", hours, minutes)
+                : L10n.tr("%lldh", hours)
         }
-        return "\(minutes)m"
+        return L10n.tr("%lldm", minutes)
     }
 
     func isFinished(now: Date = Date()) -> Bool {
@@ -69,17 +71,17 @@ extension HomeRaces.Representable.RaceNext {
         var parts = [
             title,
             subtitle,
-            isLive ? "live now" : "later today"
+            isLive ? L10n.tr("live now") : L10n.tr("later today")
         ]
         if let genderLabel {
-            parts.append(genderLabel.lowercased())
+            parts.append(genderLabel.lowercased(with: L10n.locale))
         }
         if let startTime {
-            parts.append("started at \(startTime)")
+            parts.append(L10n.tr("started at %@", startTime))
         }
-        parts.append("expected finish \(eta)")
+        parts.append(L10n.tr("expected finish %@", eta))
         if let remaining = remainingTimeDescription() {
-            parts.append("in \(remaining)")
+            parts.append(L10n.tr("in %@", remaining))
         }
         return parts.joined(separator: ", ")
     }
@@ -94,10 +96,12 @@ extension HomeRaces {
     /// Today Races (the " - S2" name suffix) and the race result screen (the "Stage 2b | …"
     /// details line and the `stage-2b` URL).
     enum Stage {
-        static let oneDayLabel = "One-day race"
+        static var oneDayLabel: String {
+            L10n.tr("One-day race")
+        }
 
         static func label(_ stage: String) -> String {
-            "Stage \(stage)"
+            L10n.tr("Stage %@", stage)
         }
 
         /// "Tour of Turkey - S2" → ("Tour of Turkey", "2").

@@ -14,7 +14,7 @@ struct YesterdayResultsListView: View {
             VStack(alignment: .leading, spacing: 6) {
                 VStack(alignment: .leading, spacing: 0) {
                     TribuneruText(
-                        content: "Results yesterday",
+                        content: L10n.tr("Results yesterday"),
                         style: .vaporSectionTitle,
                         color: .tribuneru(.vaporTextPrimary),
                         lineLimit: 1

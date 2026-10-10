@@ -82,7 +82,7 @@ extension HomeRaces {
             let content: Content
 
             /// Stand-ins drawn redacted until the first page is in.
-            static let placeholders = ViewState(
+            static var placeholders: ViewState { ViewState(
                 days: (0..<6).map {
                     Day(
                         id: "placeholder-\($0)",
@@ -98,12 +98,12 @@ extension HomeRaces {
                     featured: nil,
                     sections: [
                         Section(
-                            title: "Road",
-                            caption: "0 races with live coverage",
+                            title: "Road", // l10n:ignore
+                            caption: "0 races with live coverage", // l10n:ignore
                             races: (0..<2).map {
                                 Race(
                                     id: "placeholder-\($0)",
-                                    title: "Race name placeholder",
+                                    title: "Race name placeholder", // l10n:ignore
                                     meta: "Category  ·  Location placeholder",
                                     time: "00:00 – 00:00",
                                     isLive: false,
@@ -116,13 +116,14 @@ extension HomeRaces {
                                             time: nil
                                         )
                                     ],
-                                    accessibilityLabel: "Loading"
+                                    accessibilityLabel: L10n.tr("Loading")
                                 )
                             }
                         )
                     ]
                 )
             )
+            }
         }
     }
 }

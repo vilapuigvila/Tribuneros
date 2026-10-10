@@ -50,7 +50,7 @@ extension HomeRaces {
                     facts: (1...2).map {
                         Fact(
                             id: $0,
-                            text: "Fact text placeholder that runs over two lines",
+                            text: "Fact text placeholder that runs over two lines", // l10n:ignore
                             header: [],
                             rows: []
                         )

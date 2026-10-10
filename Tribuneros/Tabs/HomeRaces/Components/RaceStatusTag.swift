@@ -14,10 +14,10 @@ struct RaceStatusTag: View {
 
         var title: String {
             switch self {
-            case .live: "LIVE"
-            case .today: "TODAY"
-            case .noRaces: "NO RACES"
-            case .finished: "FINISHED"
+            case .live: L10n.tr("LIVE")
+            case .today: L10n.tr("TODAY")
+            case .noRaces: L10n.tr("NO RACES")
+            case .finished: L10n.tr("FINISHED")
             }
         }
     }
@@ -56,7 +56,7 @@ struct RaceStatusTag: View {
             y: 2
         )
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(kind.title.capitalized)
+        .accessibilityLabel(kind.title.capitalized(with: L10n.locale))
     }
 
     @ViewBuilder
