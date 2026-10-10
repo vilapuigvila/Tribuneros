@@ -3,8 +3,9 @@
 //  Tribuneros
 //
 //  The live race screen (route `liveRace`), opened from a LIVE race in the Today section. It shows
-//  the race's PCS live page in three sections: the race stats with the profile, the situation on
-//  the road and the timeline. The page is polled while the screen is open; see `HomeRaces.LiveRace`.
+//  the race's PCS live page in three sections: the profile with the race state, the race data (the
+//  KPI strip) and the situation on the road. The page is polled while the screen is open; see
+//  `HomeRaces.LiveRace`.
 //
 
 import SwiftUI
@@ -110,28 +111,16 @@ struct LiveRaceDetailView: View {
         )
     }
 
-    /// "LIVE · Updating…" while the 60 s window runs, otherwise "Paused · pull to refresh", and the time of the last update.
+    /// The polling dot, "Updating…" while the 60 s window runs (otherwise "Paused · pull to refresh"), and the last update time.
     private func statusLine(_ state: LiveRace.ViewState) -> some View {
         HStack(spacing: 8) {
-            if state.isPolling {
-                RaceStatusTag(
-                    kind: .live,
-                    size: .small
-                )
-                TribuneruText(
-                    content: "Updating…",
-                    style: .vaporMeta,
-                    color: .tribuneru(.vaporTextSecondary),
-                    lineLimit: 1
-                )
-            } else {
-                TribuneruText(
-                    content: "Paused · pull to refresh",
-                    style: .vaporMeta,
-                    color: .tribuneru(.vaporTextSecondary),
-                    lineLimit: 1
-                )
-            }
+            LiveRacePollingDot(isPolling: state.isPolling)
+            TribuneruText(
+                content: state.isPolling ? "Updating…" : "Paused · pull to refresh",
+                style: .vaporMeta,
+                color: .tribuneru(.vaporTextSecondary),
+                lineLimit: 1
+            )
             Spacer(minLength: 8)
             if !state.updatedText.isEmpty {
                 TribuneruText(
@@ -142,7 +131,7 @@ struct LiveRaceDetailView: View {
                 )
             }
         }
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("liveRace.status")
     }
 
@@ -175,81 +164,71 @@ private struct LiveRaceSections: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            raceSection
+            profileSection
+            raceDataSection
             situationSection
-            timelineSection
         }
     }
 
-    private var raceSection: some View {
+    private var profileSection: some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: "Race")
+            VaporSectionHeader(title: "Profile")
         } content: {
-            VStack(alignment: .leading, spacing: 16) {
-                if content.stats.isEmpty && content.profile == nil {
-                    emptyText("No race data on the page yet.")
-                }
-                if !content.stats.isEmpty {
-                    LazyVGrid(
-                        columns: [
-                            GridItem(
-                                .flexible(),
-                                spacing: 10
-                            ),
-                            GridItem(
-                                .flexible(),
-                                spacing: 10
-                            )
-                        ],
-                        spacing: 10
+            if let profile = content.profile {
+                LiveRaceProfileChart(profile: profile)
+            } else {
+                emptyText("No profile on the page yet.")
+            }
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("liveRace.profile")
+    }
+
+    private var raceDataSection: some View {
+        VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
+            VaporSectionHeader(title: "Race data")
+        } content: {
+            if content.stats.isEmpty {
+                emptyText("No race data on the page yet.")
+            } else {
+                ScrollView(
+                    .horizontal,
+                    showsIndicators: false
+                ) {
+                    HStack(
+                        alignment: .top,
+                        spacing: 24
                     ) {
                         ForEach(content.stats) { stat in
                             LiveRaceStatTile(stat: stat)
                         }
                     }
                 }
-                if let profile = content.profile {
-                    LiveRaceProfileCard(profile: profile)
-                }
             }
-            .accessibilityIdentifier("liveRace.stats")
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("liveRace.stats")
     }
 
     private var situationSection: some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
+        VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
             VaporSectionHeader(title: "Situation")
         } content: {
-            VStack(alignment: .leading, spacing: 12) {
-                if content.groups.isEmpty {
-                    emptyText("Nothing on the road yet.")
-                }
-                ForEach(content.groups) { group in
-                    LiveRaceGroupCard(group: group)
-                }
-            }
-            .accessibilityIdentifier("liveRace.situation")
-        }
-    }
-
-    /// The third and last section; events keep the order PCS lists them in (newest first).
-    private var timelineSection: some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelYesterday)) {
-            VaporSectionHeader(title: "Timeline")
-        } content: {
-            VStack(alignment: .leading, spacing: 0) {
-                if content.events.isEmpty {
-                    emptyText("No events yet.")
-                }
-                ForEach(Array(content.events.enumerated()), id: \.element.id) { index, event in
-                    LiveRaceTimelineRow(
-                        event: event,
-                        isLast: index == content.events.count - 1
-                    )
+            if content.groups.isEmpty {
+                emptyText("Nothing on the road yet.")
+            } else {
+                VStack(alignment: .leading, spacing: 0) {
+                    ForEach(Array(content.groups.enumerated()), id: \.offset) { index, group in
+                        LiveRaceGroupRow(
+                            group: group,
+                            isLast: index == content.groups.count - 1
+                        )
+                    }
                 }
             }
-            .accessibilityIdentifier("liveRace.timeline")
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("liveRace.situation")
     }
 
     private func emptyText(_ text: String) -> some View {
@@ -262,45 +241,70 @@ private struct LiveRaceSections: View {
     }
 }
 
-// MARK: - Race -
+// MARK: - Race data -
 
+/// A label in small caps over the bold value.
 private struct LiveRaceStatTile: View {
     let stat: LiveRace.ViewState.Stat
 
     var body: some View {
-        VaporCard(spacing: 4) {
+        VStack(
+            alignment: .leading,
+            spacing: 4
+        ) {
             TribuneruText(
                 content: stat.label,
-                style: .vaporMeta,
+                style: .vaporGroupLabel,
                 color: .tribuneru(.vaporTextSecondary),
                 lineLimit: 1
             )
             TribuneruText(
                 content: stat.value,
-                style: .vaporStatTime,
+                style: .vaporRowTime,
                 color: stat.isHighlighted
                     ? Color.tribuneru(.vaporAccent)
                     : Color.tribuneru(.vaporTextPrimary),
                 lineLimit: 1
             )
         }
+        .fixedSize()
         .accessibilityElement(children: .combine)
     }
 }
 
-private struct LiveRaceProfileCard: View {
+// MARK: - Profile -
+
+/// The race profile: the part already ridden in pale yellow-green, the rest in bright green, with
+/// the keypoints on the line, the front and the peloton on it, and the km axis underneath.
+private struct LiveRaceProfileChart: View {
+    private static let labelBand: CGFloat = 52
+    private static let plotHeight: CGFloat = 130
+    private static let axisHeight: CGFloat = 20
+    private static let chartHeight = labelBand + plotHeight + axisHeight
+    private static let rowCount = 3
+    private static let rowHeight: CGFloat = 14
+    private static let nameGap: CGFloat = 6
+
     let profile: LiveRace.ViewState.Profile
 
     var body: some View {
-        VaporCard(spacing: 8) {
-            LiveRaceProfileChart(profile: profile)
+        VStack(
+            alignment: .leading,
+            spacing: 8
+        ) {
             if !profile.elevationLabels.isEmpty {
-                elevationLabels
+                elevationScale
             }
+            GeometryReader { proxy in
+                chart(width: proxy.size.width)
+            }
+            .frame(height: Self.chartHeight)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Elevation profile, \(percentDone) percent ridden")
         }
     }
 
-    private var elevationLabels: some View {
+    private var elevationScale: some View {
         HStack(spacing: 0) {
             ForEach(Array(profile.elevationLabels.enumerated()), id: \.offset) { index, label in
                 if index > 0 {
@@ -315,116 +319,263 @@ private struct LiveRaceProfileCard: View {
             }
         }
     }
-}
 
-/// The race profile: the elevation line filled, the done part (up to `progress`) in the accent
-/// colour and the rest dimmer, with the keypoints marked along it.
-private struct LiveRaceProfileChart: View {
-    let profile: LiveRace.ViewState.Profile
+    private var percentDone: Int {
+        Int((progress * 100).rounded())
+    }
 
-    var body: some View {
-        GeometryReader { proxy in
-            ZStack(alignment: .topLeading) {
-                LiveRaceProfileShape(
-                    points: profile.points,
-                    closesToBase: true
-                )
-                .fill(Color.tribuneru(.vaporTextSecondary).opacity(0.16))
+    private var progress: Double {
+        min(max(profile.progress, 0), 1)
+    }
 
-                LiveRaceProfileShape(
-                    points: profile.points,
-                    closesToBase: true
-                )
-                .fill(Color.tribuneru(.vaporAccent).opacity(0.34))
-                .mask(alignment: .leading) {
-                    doneMask(proxy.size)
-                }
+    private func chart(width: CGFloat) -> some View {
+        let placements = keypointPlacements(width: width)
+        let kmLabels = profile.kmLabels.filter { $0.x <= 1 }
+        let plotBottom = Self.labelBand + Self.plotHeight
+        return ZStack(alignment: .topLeading) {
+            LiveRaceProfileShape(
+                points: profile.points,
+                closesToBase: true
+            )
+            .fill(Color.tribuneru(.vaporProfileFuture))
+            .frame(
+                width: width,
+                height: Self.plotHeight
+            )
+            .offset(y: Self.labelBand)
 
-                LiveRaceProfileShape(points: profile.points)
-                    .stroke(Color.tribuneru(.vaporTextSecondary), lineWidth: 1.5)
+            LiveRaceProfileShape(
+                points: profile.points,
+                closesToBase: true
+            )
+            .fill(Color.tribuneru(.vaporProfileDone))
+            .frame(
+                width: width,
+                height: Self.plotHeight
+            )
+            .mask(alignment: .leading) {
+                Rectangle()
+                    .frame(
+                        width: width * CGFloat(progress),
+                        height: Self.plotHeight
+                    )
+            }
+            .offset(y: Self.labelBand)
 
-                LiveRaceProfileShape(points: profile.points)
-                    .stroke(Color.tribuneru(.vaporAccent), lineWidth: 2)
-                    .mask(alignment: .leading) {
-                        doneMask(proxy.size)
+            Canvas { context, _ in
+                let ink = Color.tribuneru(.vaporTextPrimary)
+                for placement in placements {
+                    var stem = Path()
+                    stem.move(to: CGPoint(
+                        x: placement.stemX,
+                        y: placement.baseY
+                    ))
+                    stem.addLine(to: CGPoint(
+                        x: placement.stemX,
+                        y: Self.stemTopY(row: placement.row)
+                    ))
+                    context.stroke(stem, with: .color(ink), lineWidth: 1)
+                    if placement.isClimb {
+                        let square = CGRect(
+                            x: placement.stemX - 2.5,
+                            y: Self.stemTopY(row: placement.row) - 2.5,
+                            width: 5,
+                            height: 5
+                        )
+                        context.fill(Path(square), with: .color(ink))
                     }
-
-                ForEach(Array(profile.keypoints.enumerated()), id: \.offset) { _, keypoint in
-                    Circle()
-                        .fill(Color.tribuneru(.vaporTextPrimary))
-                        .frame(
-                            width: 6,
-                            height: 6
-                        )
-                        .position(
-                            markerPoint(
-                                keypoint,
-                                in: proxy.size
-                            )
-                        )
-                    TribuneruText(
-                        content: keypoint.name,
-                        style: .vaporMeta,
-                        color: .tribuneru(.vaporTextPrimary),
-                        lineLimit: 1
+                }
+                for label in kmLabels {
+                    let tick = CGRect(
+                        x: plotX(label.x, width: width) - 0.5,
+                        y: plotBottom,
+                        width: 1,
+                        height: 4
                     )
-                    .fixedSize()
-                    .position(
-                        labelPoint(
-                            keypoint,
-                            in: proxy.size
-                        )
-                    )
+                    context.fill(Path(tick), with: .color(Color.tribuneru(.vaporTextSecondary)))
                 }
             }
             .frame(
-                width: proxy.size.width,
-                height: proxy.size.height
+                width: width,
+                height: Self.chartHeight
             )
+
+            ForEach(placements, id: \.index) { placement in
+                TribuneruText(
+                    content: placement.name,
+                    style: .vaporMeta,
+                    color: .tribuneru(.vaporTextPrimary),
+                    lineLimit: 1
+                )
+                .fixedSize()
+                .position(
+                    x: placement.labelX,
+                    y: Self.labelCenterY(row: placement.row)
+                )
+            }
+
+            ForEach(kmLabels.filter { $0.km % 20 == 0 }, id: \.km) { label in
+                TribuneruText(
+                    content: "\(label.km)",
+                    style: .vaporMonoMeta,
+                    color: .tribuneru(.vaporTextSecondary),
+                    lineLimit: 1
+                )
+                .fixedSize()
+                .position(
+                    x: min(max(plotX(label.x, width: width), 12), width - 12),
+                    y: plotBottom + 12
+                )
+            }
+
+            if let front = frontPoint(width: width) {
+                bubble("1", fill: .vaporTextPrimary, text: .vaporPageBackground)
+                    .position(front)
+            }
+
+            if let peloton = pelotonPoint(width: width) {
+                bubble("P", fill: .vaporGroupBadge, text: .vaporTextPrimary)
+                    .position(peloton)
+            }
         }
-        .frame(height: 140)
-    }
-
-    /// Covers the part of the chart that is done, from the leading edge to `progress`.
-    private func doneMask(_ size: CGSize) -> some View {
-        Rectangle()
-            .frame(
-                width: size.width * CGFloat(min(max(profile.progress, 0), 1)),
-                height: size.height
-            )
-    }
-
-    private func markerPoint(
-        _ keypoint: DTO.LivePage.Profile.Keypoint,
-        in size: CGSize
-    ) -> CGPoint {
-        CGPoint(
-            x: size.width * CGFloat(min(max(keypoint.x, 0), 1)),
-            y: size.height * CGFloat(1 - min(max(altitude(at: keypoint.x), 0), 1))
+        .frame(
+            width: width,
+            height: Self.chartHeight,
+            alignment: .topLeading
         )
     }
 
-    /// The name sits just above its marker, kept inside the chart's width.
-    private func labelPoint(
-        _ keypoint: DTO.LivePage.Profile.Keypoint,
-        in size: CGSize
-    ) -> CGPoint {
-        let marker = markerPoint(
-            keypoint,
-            in: size
+    private func bubble(
+        _ text: String,
+        fill: Color.Palette,
+        text textColor: Color.Palette
+    ) -> some View {
+        TribuneruText(
+            content: text,
+            style: .vaporPill,
+            color: .tribuneru(textColor),
+            lineLimit: 1
         )
-        return CGPoint(
-            x: min(max(marker.x, 48), size.width - 48),
-            y: max(marker.y - 12, 8)
+        .frame(
+            width: 18,
+            height: 18
         )
+        .background(Circle().fill(Color.tribuneru(fill)))
+        .overlay(
+            Circle()
+                .stroke(
+                    Color.tribuneru(.vaporPageBackground),
+                    lineWidth: 1.5
+                )
+        )
+    }
+
+    // MARK: Geometry
+
+    private func plotX(_ x: Double, width: CGFloat) -> CGFloat {
+        width * CGFloat(min(max(x, 0), 1))
+    }
+
+    /// The chart's y for a height (0...1) of the profile.
+    private func plotY(_ altitude: Double) -> CGFloat {
+        Self.labelBand + Self.plotHeight * CGFloat(1 - min(max(altitude, 0), 1))
     }
 
     /// The profile's height (0...1) at the point nearest to `x`.
     private func altitude(at x: Double) -> Double {
-        guard let nearest = profile.points.min(by: { abs($0.x - x) < abs($1.x - x) }) else {
-            return 0
+        profile.points.min(by: { abs($0.x - x) < abs($1.x - x) })?.y ?? 0
+    }
+
+    private static func labelCenterY(row: Int) -> CGFloat {
+        labelBand - 10 - rowHeight * CGFloat(row)
+    }
+
+    /// Where a stem ends: just under its name, which sits on `row`.
+    private static func stemTopY(row: Int) -> CGFloat {
+        labelCenterY(row: row) + 9
+    }
+
+    private func frontPoint(width: CGFloat) -> CGPoint? {
+        guard let routeKm = profile.routeKm, routeKm > 0, let frontKm = profile.frontKm else {
+            return nil
         }
-        return nearest.y
+        let x = frontKm / routeKm
+        return CGPoint(
+            x: plotX(x, width: width),
+            y: plotY(altitude(at: x))
+        )
+    }
+
+    /// Estimated from the front's km and the gap: drawn below the line so it doesn't cover the front.
+    private func pelotonPoint(width: CGFloat) -> CGPoint? {
+        guard let routeKm = profile.routeKm, routeKm > 0, let pelotonKm = profile.pelotonKm else {
+            return nil
+        }
+        let x = pelotonKm / routeKm
+        let plotBottom = Self.labelBand + Self.plotHeight
+        return CGPoint(
+            x: plotX(x, width: width),
+            y: min(plotY(altitude(at: x)) + 20, plotBottom - 9)
+        )
+    }
+
+    // MARK: Keypoint names
+
+    /// A keypoint's name and stem, before the rows are chosen.
+    private struct KeypointPlacement {
+        let index: Int
+        let name: String
+        let isClimb: Bool
+        let stemX: CGFloat
+        let baseY: CGFloat
+        var row = 0
+        var labelX: CGFloat = 0
+        var halfWidth: CGFloat = 0
+
+        var labelRange: ClosedRange<CGFloat> {
+            (labelX - halfWidth - LiveRaceProfileChart.nameGap)...(labelX + halfWidth + LiveRaceProfileChart.nameGap)
+        }
+    }
+
+    private func keypointPlacements(width: CGFloat) -> [KeypointPlacement] {
+        let candidates = profile.keypoints.enumerated().map { index, keypoint in
+            KeypointPlacement(
+                index: index,
+                name: keypoint.name,
+                isClimb: keypoint.isClimb,
+                stemX: plotX(keypoint.x, width: width),
+                baseY: plotY(altitude(at: keypoint.x))
+            )
+        }
+        var placed: [KeypointPlacement] = []
+        for var candidate in candidates.sorted(by: { $0.stemX < $1.stemX }) {
+            // A rough width per character: the name is centred on its stem, kept inside the chart.
+            candidate.halfWidth = CGFloat(candidate.name.count) * 3.2 + 2
+            candidate.labelX = min(max(candidate.stemX, candidate.halfWidth), width - candidate.halfWidth)
+            for row in 0..<Self.rowCount {
+                var next = candidate
+                next.row = row
+                if placed.allSatisfy({ !conflicts(next, $0) }) {
+                    placed.append(next)
+                    break
+                }
+            }
+        }
+        return placed
+    }
+
+    /// Two names on one row, or a name and a stem crossing each other. Stems run from the profile up to their row.
+    private func conflicts(
+        _ new: KeypointPlacement,
+        _ old: KeypointPlacement
+    ) -> Bool {
+        if new.row == old.row, new.labelRange.overlaps(old.labelRange) {
+            return true
+        }
+        if old.row >= new.row, new.labelRange.contains(old.stemX) {
+            return true
+        }
+        return new.row >= old.row && old.labelRange.contains(new.stemX)
     }
 }
 
@@ -471,81 +622,104 @@ private struct LiveRaceProfileShape: Shape {
 
 // MARK: - Situation -
 
-private struct LiveRaceGroupCard: View {
+/// One group: a blue badge on a vertical line, its name and gap, then numbered rider rows.
+private struct LiveRaceGroupRow: View {
     private static let visibleRiderCount = 10
 
     let group: LiveRace.ViewState.Group
+    let isLast: Bool
 
     var body: some View {
-        VaporCard(spacing: 10) {
-            header
-            ForEach(Array(visibleRiders.enumerated()), id: \.offset) { _, rider in
-                riderRow(rider)
-            }
-            if hiddenCount > 0 {
+        HStack(
+            alignment: .top,
+            spacing: 14
+        ) {
+            VStack(spacing: 0) {
                 TribuneruText(
-                    content: "+\(hiddenCount) more",
-                    style: .vaporRowMeta,
-                    color: .tribuneru(.vaporTextSecondary),
+                    content: group.badge,
+                    style: .vaporPill,
+                    color: .tribuneru(.vaporTextPrimary),
                     lineLimit: 1
                 )
+                .frame(
+                    width: 30,
+                    height: 30
+                )
+                .background(Circle().fill(Color.tribuneru(.vaporGroupBadge)))
+                if !isLast {
+                    Rectangle()
+                        .fill(Color.tribuneru(.vaporTagNeutral))
+                        .frame(width: 2)
+                        .frame(maxHeight: .infinity)
+                }
             }
-        }
-        .accessibilityElement(children: .combine)
-    }
-
-    private var header: some View {
-        HStack(spacing: 10) {
-            TribuneruText(
-                content: group.badge,
-                style: .vaporPill,
-                color: .tribuneru(.vaporTextPrimary),
-                lineLimit: 1
-            )
+            VStack(
+                alignment: .leading,
+                spacing: 10
+            ) {
+                VStack(
+                    alignment: .leading,
+                    spacing: 2
+                ) {
+                    TribuneruText(
+                        content: group.name,
+                        style: .vaporGroupLabel,
+                        color: .tribuneru(.vaporTextSecondary),
+                        lineLimit: 1
+                    )
+                    if !group.gap.isEmpty {
+                        TribuneruText(
+                            content: group.gap,
+                            style: .vaporPill,
+                            color: .tribuneru(.vaporTextPrimary),
+                            lineLimit: 1
+                        )
+                    }
+                }
+                ForEach(Array(group.riders.prefix(Self.visibleRiderCount).enumerated()), id: \.offset) { _, rider in
+                    riderRow(rider)
+                }
+                if group.riders.count > Self.visibleRiderCount {
+                    TribuneruText(
+                        content: "+\(group.riders.count - Self.visibleRiderCount) more",
+                        style: .vaporRowMeta,
+                        color: .tribuneru(.vaporTextSecondary),
+                        lineLimit: 1
+                    )
+                }
+            }
+            .padding(.bottom, isLast ? 0 : 18)
             .frame(
-                width: 28,
-                height: 28
+                maxWidth: .infinity,
+                alignment: .leading
             )
-            .background(Circle().fill(Color.tribuneru(.vaporTagNeutral)))
-            TribuneruText(
-                content: group.name,
-                style: .vaporRowTitle,
-                color: .tribuneru(.vaporTextPrimary),
-                lineLimit: 1
-            )
-            Spacer(minLength: 8)
-            if !group.gap.isEmpty {
-                TribuneruText(
-                    content: group.gap,
-                    style: .vaporMonoMeta,
-                    color: .tribuneru(.vaporTextSecondary),
-                    lineLimit: 1
-                )
-            }
         }
     }
 
-    private var visibleRiders: [DTO.LivePage.Group.Rider] {
-        Array(group.riders.prefix(Self.visibleRiderCount))
-    }
-
-    private var hiddenCount: Int {
-        max(group.riders.count - Self.visibleRiderCount, 0)
-    }
-
-    private func riderRow(_ rider: DTO.LivePage.Group.Rider) -> some View {
+    private func riderRow(_ rider: LiveRace.ViewState.Rider) -> some View {
         HStack(spacing: 10) {
             TribuneruText(
-                content: rider.bib,
+                content: rider.position,
                 style: .vaporPill,
                 color: .tribuneru(.vaporTextSecondary),
                 lineLimit: 1
             )
             .frame(
-                width: 36,
-                alignment: .leading
+                width: 20,
+                alignment: .trailing
             )
-            VaporFlagView(countryCode: rider.countryCode)
+            TribuneruText(
+                content: rider.bib,
+                style: .vaporPill,
+                color: .tribuneru(.vaporPageBackground),
+                lineLimit: 1
+            )
+            .frame(minWidth: 36)
+            .padding(.vertical, 2)
+            .background(
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.tribuneru(.vaporTextPrimary))
+            )
             TribuneruText(
                 content: rider.name,
                 style: .vaporRaceNameNext,
@@ -556,100 +730,54 @@ private struct LiveRaceGroupCard: View {
                 maxWidth: .infinity,
                 alignment: .leading
             )
+            VaporFlagView(countryCode: rider.countryCode)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("liveRace.rider")
     }
 }
 
-// MARK: - Timeline -
+// MARK: - Polling -
 
-private struct LiveRaceTimelineRow: View {
-    let event: LiveRace.ViewState.Event
-    let isLast: Bool
+/// The status line's bullet: green and pulsing while polling, red and still when paused. Still in both states with Reduce Motion.
+private struct LiveRacePollingDot: View {
+    let isPolling: Bool
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isDimmed = false
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            VStack(spacing: 0) {
-                TribuneruText(
-                    content: event.badge,
-                    style: .vaporPill,
-                    color: .tribuneru(.vaporTextPrimary),
-                    lineLimit: 1
-                )
-                .frame(
-                    width: 34,
-                    height: 34
-                )
-                .background(Circle().fill(Color.tribuneru(.vaporTagNeutral)))
-                if !isLast {
-                    Rectangle()
-                        .fill(Color.tribuneru(.vaporTextPrimary).opacity(0.14))
-                        .frame(width: 2)
-                        .frame(maxHeight: .infinity)
-                }
-            }
-
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(alignment: .top, spacing: 8) {
-                    TribuneruText(
-                        content: event.text,
-                        style: .vaporRaceNameNext,
-                        color: .tribuneru(.vaporTextPrimary),
-                        lineLimit: 4
-                    )
-                    .frame(
-                        maxWidth: .infinity,
-                        alignment: .leading
-                    )
-                    if !event.ago.isEmpty {
-                        TribuneruText(
-                            content: event.ago,
-                            style: .vaporMonoMeta,
-                            color: .tribuneru(.vaporTextSecondary),
-                            lineLimit: 1
-                        )
-                        .fixedSize()
-                    }
-                }
-                if !event.header.isEmpty {
-                    tableRow(
-                        event.header,
-                        color: .tribuneru(.vaporTextSecondary)
-                    )
-                }
-                ForEach(Array(event.rows.enumerated()), id: \.offset) { _, row in
-                    tableRow(
-                        row,
-                        color: .tribuneru(.vaporTextPrimary)
-                    )
-                }
-            }
-            .padding(.bottom, 18)
+        Circle()
+            .fill(Color.tribuneru(isPolling ? .vaporLive : .vaporLiveRed))
             .frame(
-                maxWidth: .infinity,
-                alignment: .leading
+                width: 8,
+                height: 8
             )
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityIdentifier("liveRace.event")
+            .opacity(isDimmed ? 0.3 : 1)
+            .onAppear {
+                updatePulse()
+            }
+            .onChange(of: isPolling) { _, _ in
+                updatePulse()
+            }
+            .onChange(of: reduceMotion) { _, _ in
+                updatePulse()
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(isPolling ? "Live updates on" : "Live updates paused")
+            .accessibilityIdentifier("liveRace.pollingDot")
     }
 
-    private func tableRow(
-        _ cells: [String],
-        color: Color
-    ) -> some View {
-        HStack(spacing: 8) {
-            ForEach(Array(cells.enumerated()), id: \.offset) { _, cell in
-                TribuneruText(
-                    content: cell,
-                    style: .vaporRowMeta,
-                    color: color,
-                    lineLimit: 1
-                )
-                .frame(
-                    maxWidth: .infinity,
-                    alignment: .leading
-                )
+    private func updatePulse() {
+        guard isPolling, !reduceMotion else {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isDimmed = false
             }
+            return
+        }
+        isDimmed = false
+        withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
+            isDimmed = true
         }
     }
 }

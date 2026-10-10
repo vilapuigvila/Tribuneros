@@ -102,8 +102,8 @@ final class LivePageParsingTests: XCTestCase {
         XCTAssertEqual(
             breakaway.riders,
             [
-                DTO.LivePage.Group.Rider(bib: "101", name: "ROSSI Luca", countryCode: "it"),
-                DTO.LivePage.Group.Rider(bib: "117", name: "DE VRIES Max", countryCode: "nl")
+                DTO.LivePage.Group.Rider(position: nil, bib: "101", name: "ROSSI Luca", countryCode: "it"),
+                DTO.LivePage.Group.Rider(position: nil, bib: "117", name: "DE VRIES Max", countryCode: "nl")
             ]
         )
 
@@ -111,9 +111,11 @@ final class LivePageParsingTests: XCTestCase {
         XCTAssertEqual(peloton.badge, "P")
         XCTAssertEqual(peloton.name, "PELOTON")
         XCTAssertEqual(peloton.gap, "")
+        XCTAssertTrue(peloton.isPeloton)
+        XCTAssertNil(peloton.gapSeconds)
         XCTAssertEqual(
             peloton.riders,
-            [DTO.LivePage.Group.Rider(bib: "1", name: "VAN AERT Wout", countryCode: "be")]
+            [DTO.LivePage.Group.Rider(position: nil, bib: "1", name: "VAN AERT Wout", countryCode: "be")]
         )
     }
 

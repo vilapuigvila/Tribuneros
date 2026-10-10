@@ -388,24 +388,44 @@ final class LiveRaceTests: XCTestCase {
         )
     }
 
-    private func viewState(
-        _ domain: LiveRace.Domain,
-        now: Date
-    ) -> LiveRace.ViewState {
+    /// A racing page with a profile (so the profile fields are mapped), the given stats and groups.
+    private func racingPage(
+        stats: [DTO.LivePage.Stat] = [],
+        groups: [DTO.LivePage.Group] = []
+    ) -> DTO.LivePage {
+        DTO.LivePage(
+            stats: stats,
+            status: "racing",
+            profile: DTO.LivePage.Profile(
+                points: [
+                    DTO.LivePage.Profile.Point(x: 0, y: 0.2),
+                    DTO.LivePage.Profile.Point(x: 1, y: 0.6)
+                ],
+                progress: 0.252,
+                elevationLabels: ["200"],
+                keypoints: [],
+                routeKm: 239.4,
+                kmLabels: [DTO.LivePage.Profile.KmLabel(km: 0, x: 0)]
+            ),
+            groups: groups,
+            events: []
+        )
+    }
+
+    private func viewState(_ domain: LiveRace.Domain) -> LiveRace.ViewState {
         ViewModel.mapToViewState(
             context: context,
-            domain: domain,
-            now: now
+            domain: domain
         )
     }
 
     func testIdleAndLoadingShowTheLoadingBody() {
-        XCTAssertEqual(viewState(domain(load: .idle), now: first).body, .loading)
-        XCTAssertEqual(viewState(domain(load: .loading), now: first).body, .loading)
+        XCTAssertEqual(viewState(domain(load: .idle)).body, .loading)
+        XCTAssertEqual(viewState(domain(load: .loading)).body, .loading)
     }
 
     func testFailedShowsTheUnavailableMessageAndKeepsTheHeader() {
-        let state = viewState(domain(load: .failed), now: first)
+        let state = viewState(domain(load: .failed))
 
         XCTAssertEqual(
             state.body,
@@ -418,8 +438,8 @@ final class LiveRaceTests: XCTestCase {
         XCTAssertEqual(state.updatedText, "")
     }
 
-    func testLoadedPageHighlightsTheStatusAndAutosyncOnly() {
-        let state = viewState(domain(load: .loaded(page)), now: first)
+    func testLoadedPageHighlightsTheStatusOnly() {
+        let state = viewState(domain(load: .loaded(page)))
 
         guard case .loaded(let content) = state.body else {
             return XCTFail("expected the loaded body, got \(state.body)")
@@ -430,91 +450,126 @@ final class LiveRaceTests: XCTestCase {
         XCTAssertEqual(content.groups, [])
     }
 
-    func testAutosyncOnIsHighlighted() {
-        let autosync = DTO.LivePage(
-            stats: [
-                DTO.LivePage.Stat(
-                    key: "autosync",
-                    label: "Autosync",
-                    value: "on"
-                ),
-                DTO.LivePage.Stat(
-                    key: "autosync",
-                    label: "Autosync",
-                    value: "off"
-                )
-            ],
-            status: "racing",
-            profile: nil,
-            groups: [],
-            events: []
-        )
+    func testKpiStripKeepsTheRaceStatsInTheScreenOrder() {
+        let stats = [
+            DTO.LivePage.Stat(key: "nr_online", label: "#online", value: "9153"),
+            DTO.LivePage.Stat(key: "", label: "Start", value: "11:00"),
+            DTO.LivePage.Stat(key: "autosync", label: "Autosync", value: "on"),
+            DTO.LivePage.Stat(key: "race_status", label: "Status", value: "racing"),
+            DTO.LivePage.Stat(key: "elevation_remaining", label: "Elevation-", value: "-"),
+            DTO.LivePage.Stat(key: "avg", label: "Avg.", value: "42.6"),
+            DTO.LivePage.Stat(key: "racetime", label: "Racetime", value: "1:25:00"),
+            DTO.LivePage.Stat(key: "kmdone", label: "KM done", value: "60.4"),
+            DTO.LivePage.Stat(key: "kmtogo", label: "KM to go", value: "179.0")
+        ]
 
-        let state = viewState(domain(load: .loaded(autosync)), now: first)
+        let state = viewState(domain(load: .loaded(racingPage(stats: stats))))
 
         guard case .loaded(let content) = state.body else {
             return XCTFail("expected the loaded body, got \(state.body)")
         }
-        XCTAssertEqual(content.stats.map(\.isHighlighted), [true, false])
+        XCTAssertEqual(content.stats.map(\.label), ["KM TO GO", "KM DONE", "RACETIME", "AVG.", "START", "STATUS"])
+        XCTAssertEqual(content.stats.map(\.value), ["179.0", "60.4", "1:25:00", "42.6", "11:00", "racing"])
+        XCTAssertEqual(content.stats.map(\.isHighlighted), [false, false, false, false, false, true])
     }
 
-    func testEventsShowHowLongAgoTheyHappenedBeforeTheLastUpdate() {
-        let updated = first
-        let events = [
-            DTO.LivePage.Event(
-                id: "1",
-                badge: "223",
-                text: "Just now",
-                timestamp: updated.addingTimeInterval(-30),
-                header: [],
-                rows: []
-            ),
-            DTO.LivePage.Event(
-                id: "2",
-                badge: "220",
-                text: "Four minutes ago",
-                timestamp: updated.addingTimeInterval(-4 * 60),
-                header: [],
-                rows: []
-            ),
-            DTO.LivePage.Event(
-                id: "3",
-                badge: "P",
-                text: "Two hours ago",
-                timestamp: updated.addingTimeInterval(-2 * hour),
-                header: [],
-                rows: []
-            ),
-            DTO.LivePage.Event(
-                id: "4",
-                badge: "P",
-                text: "No time",
-                timestamp: nil,
-                header: [],
-                rows: []
-            )
+    func testElevationMinusShowsOnlyOnceKnown() {
+        let stats = [
+            DTO.LivePage.Stat(key: "elevation_remaining", label: "Elevation-", value: "1840"),
+            DTO.LivePage.Stat(key: "avg", label: "Avg.", value: "42.6")
         ]
-        let eventPage = DTO.LivePage(
-            stats: [],
-            status: "racing",
-            profile: nil,
-            groups: [],
-            events: events
-        )
 
-        let state = viewState(
-            domain(
-                load: .loaded(eventPage),
-                updatedAt: updated
-            ),
-            now: updated.addingTimeInterval(3600)
-        )
+        let state = viewState(domain(load: .loaded(racingPage(stats: stats))))
 
         guard case .loaded(let content) = state.body else {
             return XCTFail("expected the loaded body, got \(state.body)")
         }
-        XCTAssertEqual(content.events.map(\.ago), ["now", "4m", "2h", ""])
-        XCTAssertEqual(content.events.map(\.text), ["Just now", "Four minutes ago", "Two hours ago", "No time"])
+        XCTAssertEqual(content.stats.map(\.label), ["AVG.", "ELEVATION-"])
+    }
+
+    func testAutosyncAndOnlineCountAreLeftOut() {
+        let stats = [
+            DTO.LivePage.Stat(key: "autosync", label: "Autosync", value: "on"),
+            DTO.LivePage.Stat(key: "nr_online", label: "#online", value: "9153")
+        ]
+
+        let state = viewState(domain(load: .loaded(racingPage(stats: stats))))
+
+        guard case .loaded(let content) = state.body else {
+            return XCTFail("expected the loaded body, got \(state.body)")
+        }
+        XCTAssertEqual(content.stats, [])
+    }
+
+    func testGapShowsOnlyAfterTheFirstGroup() {
+        let groups = [
+            DTO.LivePage.Group(
+                name: "break",
+                gap: "+0:00",
+                gapSeconds: 0,
+                badge: "1",
+                isPeloton: false,
+                riders: [DTO.LivePage.Group.Rider(position: 1, bib: "26", name: "TIBERI Antonio", countryCode: "it")]
+            ),
+            DTO.LivePage.Group(
+                name: "Peloton",
+                gap: "+1:25",
+                gapSeconds: 85,
+                badge: "P",
+                isPeloton: true,
+                riders: []
+            )
+        ]
+
+        let state = viewState(domain(load: .loaded(racingPage(groups: groups))))
+
+        guard case .loaded(let content) = state.body else {
+            return XCTFail("expected the loaded body, got \(state.body)")
+        }
+        XCTAssertEqual(content.groups.map(\.name), ["BREAK", "PELOTON"])
+        XCTAssertEqual(content.groups.map(\.gap), ["", "+1:25"])
+        XCTAssertEqual(content.groups.map(\.isPeloton), [false, true])
+        XCTAssertEqual(content.groups[0].riders.first?.position, "1")
+        XCTAssertEqual(content.groups[0].riders.first?.bib, "26")
+    }
+
+    func testPelotonEstimateIsTheFrontKmMinusTheGapAtAverageSpeed() throws {
+        let groups = [
+            DTO.LivePage.Group(
+                name: "Peloton",
+                gap: "+1:25",
+                gapSeconds: 85,
+                badge: "P",
+                isPeloton: true,
+                riders: []
+            )
+        ]
+        let stats = [
+            DTO.LivePage.Stat(key: "kmdone", label: "KM done", value: "60.4"),
+            DTO.LivePage.Stat(key: "avg", label: "Avg.", value: "42.6")
+        ]
+
+        let state = viewState(domain(load: .loaded(racingPage(stats: stats, groups: groups))))
+
+        guard case .loaded(let content) = state.body else {
+            return XCTFail("expected the loaded body, got \(state.body)")
+        }
+        let profile = try XCTUnwrap(content.profile)
+        XCTAssertEqual(profile.frontKm, 60.4)
+        XCTAssertEqual(try XCTUnwrap(profile.pelotonKm), 60.4 - 85 * 42.6 / 3600, accuracy: 0.0001)
+        XCTAssertEqual(profile.routeKm, 239.4)
+    }
+
+    func testPelotonEstimateIsNilWhenAnInputIsUnknown() {
+        XCTAssertNil(ViewModel.estimatedPelotonKm(frontKm: nil, gapSeconds: 85, averageKmh: 42.6))
+        XCTAssertNil(ViewModel.estimatedPelotonKm(frontKm: 60.4, gapSeconds: nil, averageKmh: 42.6))
+        XCTAssertNil(ViewModel.estimatedPelotonKm(frontKm: 60.4, gapSeconds: 85, averageKmh: nil))
+
+        let state = viewState(domain(load: .loaded(racingPage(stats: []))))
+        guard case .loaded(let content) = state.body else {
+            return XCTFail("expected the loaded body, got \(state.body)")
+        }
+        XCTAssertNil(content.profile?.pelotonKm)
     }
 
     func testProfileAppearsOnlyWithPoints() {
@@ -525,7 +580,9 @@ final class LiveRaceTests: XCTestCase {
             ],
             progress: 0.4,
             elevationLabels: ["0", "250"],
-            keypoints: []
+            keypoints: [],
+            routeKm: nil,
+            kmLabels: []
         )
         let withProfile = DTO.LivePage(
             stats: [],
@@ -535,7 +592,7 @@ final class LiveRaceTests: XCTestCase {
             events: []
         )
 
-        let state = viewState(domain(load: .loaded(withProfile)), now: first)
+        let state = viewState(domain(load: .loaded(withProfile)))
 
         guard case .loaded(let content) = state.body else {
             return XCTFail("expected the loaded body, got \(state.body)")
@@ -562,8 +619,7 @@ final class LiveRaceTests: XCTestCase {
             domain(
                 load: .loaded(page),
                 updatedAt: updated
-            ),
-            now: updated
+            )
         )
 
         XCTAssertEqual(state.updatedText, "Updated 14:05:09")

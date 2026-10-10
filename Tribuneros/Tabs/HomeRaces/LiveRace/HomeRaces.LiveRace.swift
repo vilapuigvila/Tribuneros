@@ -3,9 +3,10 @@
 //  Tribuneros
 //
 //  The live race screen (`LiveRaceDetailView`, route `liveRace`), opened from a LIVE race in the
-//  Today section: the race's PCS live page (`<race path>/live`) in three sections, race stats with
-//  the profile, the situation on the road, and the timeline. There is no streaming: the page is
-//  polled every `Polling.interval` for `Polling.window`, then stops; pull to refresh polls again.
+//  Today section: the race's PCS live page (`<race path>/live`) in three sections, the profile with
+//  the race state, the race data (KPI strip) and the situation on the road. There is no streaming:
+//  the page is polled every `Polling.interval` for `Polling.window`, then stops; pull to refresh
+//  polls again.
 //
 
 import Foundation
@@ -107,45 +108,59 @@ extension HomeRaces {
         }
 
         struct ViewState: Equatable {
+            /// The KPI strip, in screen order.
             struct Stat: Identifiable, Equatable {
                 var id: String { label }
                 /// Upper-cased: "KM TO GO".
                 let label: String
                 let value: String
-                /// The status value ("racing") and Autosync "on" get the accent colour.
+                /// The status value ("racing") gets the accent colour.
                 var isHighlighted = false
             }
 
             struct Profile: Equatable {
                 let points: [DTO.LivePage.Profile.Point]
+                /// Share of the route done, 0...1.
                 let progress: Double
-                let elevationLabels: [String]
                 let keypoints: [DTO.LivePage.Profile.Keypoint]
+                /// Km axis labels; `x` is the position on the chart (0...1, the last may sit just past 1).
+                let kmLabels: [DTO.LivePage.Profile.KmLabel]
+                /// The route's length in km; nil when the page doesn't give it.
+                let routeKm: Double?
+                /// Km done by the front group (the KM DONE stat).
+                let frontKm: Double?
+                /// Estimated km done by the peloton, nil when unknown; see `ViewModel.estimatedPelotonKm`.
+                let pelotonKm: Double?
+                /// Elevation labels in metres, e.g. ["200", "400"].
+                let elevationLabels: [String]
             }
 
+            struct Rider: Identifiable, Equatable {
+                var id: String { "\(bib)-\(name)" }
+                /// The place in the group; empty when PCS shows none.
+                let position: String
+                let bib: String
+                let name: String
+                let countryCode: String
+            }
+
+            /// One group on the road, in PCS's order (the first is the head of the race).
             struct Group: Identifiable, Equatable {
                 var id: String { badge + name }
+                /// "1", "2"… or "P".
                 let badge: String
+                /// Upper-cased: "BREAK", "PELOTON".
                 let name: String
+                /// "+1:25"; empty for the first group.
                 let gap: String
-                let riders: [DTO.LivePage.Group.Rider]
-            }
-
-            struct Event: Identifiable, Equatable {
-                let id: String
-                let badge: String
-                let text: String
-                /// "4m", "1h" relative to the last update; empty when unknown.
-                let ago: String
-                let header: [String]
-                let rows: [[String]]
+                let isPeloton: Bool
+                let riders: [Rider]
             }
 
             struct Content: Equatable {
                 let stats: [Stat]
                 let profile: Profile?
                 let groups: [Group]
-                let events: [Event]
 
                 /// Stand-ins shaped like a real page, drawn redacted while it loads.
                 static let placeholders = Content(
@@ -155,31 +170,37 @@ extension HomeRaces {
                             value: "000.0"
                         )
                     },
-                    profile: nil,
+                    profile: Profile(
+                        points: (0..<8).map { index in
+                            DTO.LivePage.Profile.Point(
+                                x: Double(index) / 7,
+                                y: 0.3 + 0.4 * Double(index % 3) / 2
+                            )
+                        },
+                        progress: 0.3,
+                        keypoints: [],
+                        kmLabels: [],
+                        routeKm: nil,
+                        frontKm: nil,
+                        pelotonKm: nil,
+                        elevationLabels: ["200", "400"]
+                    ),
                     groups: [
                         Group(
                             badge: "P",
                             name: "PELOTON",
                             gap: "",
+                            isPeloton: true,
                             riders: [
-                                DTO.LivePage.Group.Rider(
+                                Rider(
+                                    position: "1",
                                     bib: "000",
                                     name: "Rider name placeholder",
                                     countryCode: ""
                                 )
                             ]
                         )
-                    ],
-                    events: (1...4).map {
-                        Event(
-                            id: "placeholder-\($0)",
-                            badge: "000",
-                            text: "Timeline event placeholder text that spans a line",
-                            ago: "0m",
-                            header: [],
-                            rows: []
-                        )
-                    }
+                    ]
                 )
             }
 

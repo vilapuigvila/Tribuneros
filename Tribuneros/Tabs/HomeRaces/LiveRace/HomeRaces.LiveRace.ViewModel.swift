@@ -32,8 +32,7 @@ extension HomeRaces.LiveRace {
             self.interactor = interactor
             stateView = Self.mapToViewState(
                 context: context,
-                domain: interactor.domain,
-                now: Date()
+                domain: interactor.domain
             )
             interactor
                 .publisher
@@ -41,8 +40,7 @@ extension HomeRaces.LiveRace {
                 .map { domain in
                     Self.mapToViewState(
                         context: context,
-                        domain: domain,
-                        now: Date()
+                        domain: domain
                     )
                 }
                 .assign(to: &$stateView)
@@ -76,17 +74,13 @@ extension HomeRaces.LiveRace {
 
         static func mapToViewState(
             context: Context,
-            domain: Domain,
-            now: Date
+            domain: Domain
         ) -> ViewState {
             ViewState(
                 title: context.name,
                 subtitle: context.subtitle,
                 flagCode: context.flagCode,
-                body: bodyState(
-                    domain,
-                    now: now
-                ),
+                body: bodyState(domain),
                 isPolling: domain.isPolling,
                 updatedText: updatedLine(domain.updatedAt),
                 showHint: domain.showHint,
@@ -94,114 +88,106 @@ extension HomeRaces.LiveRace {
             )
         }
 
-        private static func bodyState(
-            _ domain: Domain,
-            now: Date
-        ) -> ViewState.Body {
+        private static func bodyState(_ domain: Domain) -> ViewState.Body {
             switch domain.load {
             case .idle, .loading:
                 return .loading
             case .failed:
                 return .unavailable(message: "Couldn't load the live race. Pull down to try again.")
             case .loaded(let page):
-                return .loaded(
-                    content(
-                        page,
-                        updatedAt: domain.updatedAt ?? now
-                    )
-                )
+                return .loaded(content(page))
             }
         }
 
-        private static func content(
-            _ page: DTO.LivePage,
-            updatedAt: Date
-        ) -> ViewState.Content {
+        private static func content(_ page: DTO.LivePage) -> ViewState.Content {
             ViewState.Content(
-                stats: page.stats.map { viewStat($0) },
+                stats: statStrip(page.stats),
                 profile: viewProfile(page),
-                groups: page.groups.map { viewGroup($0) },
-                events: page.events.map {
-                    viewEvent(
-                        $0,
-                        updatedAt: updatedAt
+                groups: page.groups.enumerated().map { index, group in
+                    viewGroup(
+                        group,
+                        isFirst: index == 0
                     )
                 }
             )
         }
 
-        private static func viewStat(_ stat: DTO.LivePage.Stat) -> ViewState.Stat {
-            ViewState.Stat(
-                label: stat.label.uppercased(),
-                value: stat.value,
-                isHighlighted: isHighlighted(stat)
-            )
-        }
-
-        /// The race status and Autosync "on" get the accent colour.
-        private static func isHighlighted(_ stat: DTO.LivePage.Stat) -> Bool {
-            switch stat.key {
-            case "race_status":
-                return true
-            case "autosync":
-                return stat.value.lowercased() == "on"
-            default:
-                return false
+        /// The KPI strip in screen order; Autosync and #online are left out.
+        static func statStrip(_ stats: [DTO.LivePage.Stat]) -> [ViewState.Stat] {
+            let order = ["km to go", "km done", "racetime", "avg.", "elevation-", "start", "status"]
+            return order.compactMap { key -> ViewState.Stat? in
+                guard let stat = stats.first(where: { $0.label.lowercased() == key }) else {
+                    return nil
+                }
+                if key == "elevation-", stat.value == "-" || stat.value.isEmpty {
+                    return nil
+                }
+                return ViewState.Stat(
+                    label: stat.label.uppercased(),
+                    value: stat.value,
+                    isHighlighted: stat.key == "race_status"
+                )
             }
         }
 
-        /// No profile when PCS draws no points.
+        /// No profile without points; the peloton's km is estimated (`estimatedPelotonKm`).
         private static func viewProfile(_ page: DTO.LivePage) -> ViewState.Profile? {
             guard let profile = page.profile, !profile.points.isEmpty else { return nil }
+            let frontKm = numberStat(page.stats, label: "km done")
+            let averageKmh = numberStat(page.stats, label: "avg.")
+            let peloton = page.groups.first(where: { $0.isPeloton })
             return ViewState.Profile(
                 points: profile.points,
                 progress: profile.progress,
-                elevationLabels: profile.elevationLabels,
-                keypoints: profile.keypoints
+                keypoints: profile.keypoints,
+                kmLabels: profile.kmLabels,
+                routeKm: profile.routeKm,
+                frontKm: frontKm,
+                pelotonKm: estimatedPelotonKm(
+                    frontKm: frontKm,
+                    gapSeconds: peloton?.gapSeconds,
+                    averageKmh: averageKmh
+                ),
+                elevationLabels: profile.elevationLabels
             )
         }
 
-        private static func viewGroup(_ group: DTO.LivePage.Group) -> ViewState.Group {
+        private static func numberStat(
+            _ stats: [DTO.LivePage.Stat],
+            label: String
+        ) -> Double? {
+            stats.first(where: { $0.label.lowercased() == label }).flatMap { Double($0.value) }
+        }
+
+        /// The front's km done minus the gap at the front's average speed; nil when unknown.
+        static func estimatedPelotonKm(
+            frontKm: Double?,
+            gapSeconds: Int?,
+            averageKmh: Double?
+        ) -> Double? {
+            guard let frontKm, let gapSeconds, let averageKmh else { return nil }
+            return max(frontKm - Double(gapSeconds) * averageKmh / 3600, 0)
+        }
+
+        /// The first group is the head of the race, so it shows no gap; the others show PCS's gap.
+        private static func viewGroup(
+            _ group: DTO.LivePage.Group,
+            isFirst: Bool
+        ) -> ViewState.Group {
             ViewState.Group(
                 badge: group.badge,
-                name: group.name,
-                gap: group.gap,
-                riders: group.riders
+                name: group.name.uppercased(),
+                gap: isFirst ? "" : group.gap,
+                isPeloton: group.isPeloton,
+                riders: group.riders.map { rider in
+                    ViewState.Rider(
+                        position: rider.position.map { String($0) } ?? "",
+                        bib: rider.bib,
+                        name: rider.name,
+                        countryCode: rider.countryCode
+                    )
+                }
             )
-        }
-
-        private static func viewEvent(
-            _ event: DTO.LivePage.Event,
-            updatedAt: Date
-        ) -> ViewState.Event {
-            ViewState.Event(
-                id: event.id,
-                badge: event.badge,
-                text: event.text,
-                ago: ago(
-                    event.timestamp,
-                    since: updatedAt
-                ),
-                header: event.header,
-                rows: event.rows
-            )
-        }
-
-        /// "now" under a minute, then "4m", then "2h", measured from the last update; empty when
-        /// PCS gives no time for the event.
-        static func ago(
-            _ timestamp: Date?,
-            since reference: Date
-        ) -> String {
-            guard let timestamp else { return "" }
-            let minutes = Int(reference.timeIntervalSince(timestamp) / 60)
-            if minutes < 1 {
-                return "now"
-            }
-            if minutes < 60 {
-                return "\(minutes)m"
-            }
-            return "\(minutes / 60)h"
         }
 
         /// "Updated 12:04:31", empty before the first load.

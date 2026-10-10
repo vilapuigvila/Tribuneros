@@ -55,6 +55,12 @@ extension Color {
             Color(hex: 0xD3DCE8)
         case .vaporTextMuted:
             Color(hex: 0xB7C2CF)
+        case .vaporProfileFuture:
+            Color(hex: 0x9ACD32)
+        case .vaporProfileDone:
+            Color(hex: 0xE6F2D9)
+        case .vaporGroupBadge:
+            Color(hex: 0x2F6FDE)
         case .championBlue:
             Color(hex: 0x2563EB)
         case .championRed:
@@ -94,6 +100,12 @@ extension Color {
         case vaporTagNeutral
         case vaporTagNeutralText
         case vaporTextMuted
+        /// The profile's bright green: the part still to ride.
+        case vaporProfileFuture
+        /// The profile's pale yellow-green: the part already ridden.
+        case vaporProfileDone
+        /// The blue round badge of a group in the situation list.
+        case vaporGroupBadge
         /// The world champion jersey's bands, as drawn in the spoiler paintings.
         case championBlue
         case championRed

@@ -224,34 +224,52 @@ extension DTO {
                 let y: Double
             }
 
-            /// `.kp5_cont`: a climb (type "1"), sprint ("2") or other marker at `x` (0...1).
+            /// A named marker at `x` (0...1); `isClimb` is `.kp_bol.climb` or `data-type` "1".
             struct Keypoint: Equatable, Sendable {
                 let x: Double
                 let name: String
                 let type: String
+                let isClimb: Bool
+            }
+
+            /// A km axis label: `km` (0, 10, 20…) at `x` (0...1 of the chart width, `km / routeKm`).
+            struct KmLabel: Equatable, Sendable {
+                let km: Int
+                let x: Double
             }
 
             let points: [Point]
-            /// `.kmdone.profilePerc` width, 0...1: how much of the route is done.
+            /// `.profilePerc` width, 0...1: how much of the route is done.
             let progress: Double
-            /// The `.hoogteTitle` labels, e.g. ["0", "250"] (metres).
+            /// The `.hoogteTitle` (preview) or `.altLine` labels, e.g. ["0", "250"] (metres).
             let elevationLabels: [String]
             let keypoints: [Keypoint]
+            /// Km to go plus km done, the whole route; nil until the page gives both.
+            let routeKm: Double?
+            /// `ul.kmbar3.hideIfMobile`: the labels that fall on the route, the one that reaches its end included.
+            let kmLabels: [KmLabel]
         }
 
-        /// One group in `ul.situ5b`: "PELOTON", "BREAK"... with its gap and riders.
+        /// One group on the road (`ul.situ7 > li.group`, or `ul.situ5b` on the preview).
         struct Group: Equatable, Sendable {
             struct Rider: Equatable, Sendable {
+                /// The `span.nr` place in the group; nil when PCS shows none.
+                let position: Int?
                 let bib: String
                 let name: String
                 let countryCode: String
             }
 
+            /// PCS's group name as written: "break", "Peloton"; empty when PCS gives none.
             let name: String
-            /// "+1:24", empty for the head of the race or when PCS shows none.
+            /// "+1:25", empty for the head of the race or when PCS shows none.
             let gap: String
+            /// `.time[data-sec]`: the gap in seconds; nil when PCS gives none.
+            let gapSeconds: Int?
             /// "P", "1"... the round badge PCS draws next to the group.
             let badge: String
+            /// `li.group[data-peloton="1"]`: the main field.
+            let isPeloton: Bool
             let riders: [Rider]
         }
 

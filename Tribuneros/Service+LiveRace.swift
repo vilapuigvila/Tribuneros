@@ -12,6 +12,7 @@ import Alfy
 import SwiftSoup
 
 extension Service {
+    private static let kmAxisStep = 10.0
     private static let liveEventRowLimit = 5
     private static let liveEventColumnLimit = 4
 
@@ -40,23 +41,29 @@ extension Service {
         }
     }
 
-    /// Never throws: a page it can't read gives `nil`, a part it can't read is left empty.
-    /// `ul.situ5b` (the groups on the road) is empty before the start, and its markup while the
-    /// race runs is not verified against a real page, so `liveGroups` is best-effort.
+    /// Never throws: an unreadable page is `nil`, an unreadable part is left empty.
     static func parseLivePage(_ document: Document) -> DTO.LivePage? {
-        guard (try? document.select("ul.ls5b-kpi, ul.timeline3, ul.situ5b").first()) != nil else {
+        guard (try? document.select("ul.ls5b-kpi, ul.timeline3, ul.situ5b, ul.situ7, .ProfileV10").first()) != nil else {
             return nil
         }
-        let status = liveAttribute(try? document.select("ul.ls5b-kpi").first(), "data-status")
         return DTO.LivePage(
             stats: liveStats(document),
-            status: status.isEmpty
-                ? liveText(try? document.select(".race_status").first())
-                : status,
+            status: liveStatus(document),
             profile: liveProfile(document),
             groups: liveGroups(document),
             events: liveEvents(document)
         )
+    }
+
+    /// `ul.ls5b-kpi[data-status]` on the preview, `div.race_status` on the racing page.
+    private static func liveStatus(_ document: Document) -> String {
+        let status = liveAttribute(try? document.select("ul.ls5b-kpi").first(), "data-status")
+        guard status.isEmpty else {
+            return status
+        }
+        let kpi = try? document.select(".race_status").first()
+        let value = liveAttribute(kpi, "data-value")
+        return value.isEmpty ? liveText(kpi) : value
     }
 
     /// `ul.ls5b-kpi > li`: the label is the `span`, the value the `div` text (or its `data-value`),
@@ -88,30 +95,68 @@ extension Service {
         return stats
     }
 
-    /// The first `.bigProfile` only. Its `.xyProfile` is a clip-path polygon: `0 100%`, the profile
-    /// points (x and y in percent, y counted from the top), then the closing `100% 0, 0 0`.
-    /// Height is 1 - y, so a summit has the largest value.
+    /// The first `.ProfileV10` or `.bigProfile`; height is 1 - y, y counted from the top.
     private static func liveProfile(_ document: Document) -> DTO.LivePage.Profile? {
-        guard let profile = try? document.select(".bigProfile").first() else {
+        guard let profile = try? document.select(".ProfileV10, .bigProfile").first() else {
             return nil
         }
         let points = livePolygonPoints(
-            liveAttribute(try? profile.select(".xyProfile").first(), "style")
+            liveAttribute(try? profile.select(".xyProfile, div[style*=clip-path]").first(), "style")
         )
         guard !points.isEmpty else {
             return nil
         }
         let width = liveStyleNumber(
-            liveAttribute(try? profile.select(".kmdone.profilePerc").first(), "style"),
+            liveAttribute(try? profile.select(".kmdone.profilePerc, .profilePerc").first(), "style"),
             property: "width"
         ) ?? 0
+        let routeKm = liveRouteKm(document)
         return DTO.LivePage.Profile(
             points: points,
             progress: min(max(width, 0), 100) / 100,
-            elevationLabels: ((try? profile.select(".hoogteTitle span").array()) ?? [])
-                .map { liveText($0) },
-            keypoints: liveKeypoints(profile)
+            elevationLabels: liveElevationLabels(profile),
+            keypoints: liveKeypoints(profile, document),
+            routeKm: routeKm,
+            kmLabels: liveKmLabels(document, routeKm: routeKm)
         )
+    }
+
+    /// The preview's `.hoogteTitle` labels, else the racing page's `.altLine` labels.
+    private static func liveElevationLabels(_ profile: Element) -> [String] {
+        let preview = ((try? profile.select(".hoogteTitle span").array()) ?? []).map { liveText($0) }
+        if !preview.isEmpty {
+            return preview
+        }
+        return ((try? profile.select(".altLine .alt-text-left").array()) ?? []).map { liveText($0) }
+    }
+
+    /// Km to go plus km done from the KPI strip: the route's length, 239.4 km on the racing page.
+    private static func liveRouteKm(_ document: Document) -> Double? {
+        let toGo = Double(liveAttribute(try? document.select("ul.ls5b-kpi .kmtogo").first(), "data-value"))
+        let done = Double(liveAttribute(try? document.select("ul.ls5b-kpi .kmdone").first(), "data-value"))
+        guard let toGo, let done else {
+            return nil
+        }
+        return toGo + done
+    }
+
+    /// Keeps the labels on the route, plus the 10 km step that reaches its end (240 for 239.4 km).
+    private static func liveKmLabels(
+        _ document: Document,
+        routeKm: Double?
+    ) -> [DTO.LivePage.Profile.KmLabel] {
+        guard let routeKm, routeKm > 0,
+              let axis = try? document.select("ul.kmbar3.hideIfMobile").first()
+        else {
+            return []
+        }
+        let items = (try? axis.select("li").array()) ?? []
+        return items.compactMap { item -> DTO.LivePage.Profile.KmLabel? in
+            guard let km = Int(liveText(item)), Double(km) - kmAxisStep < routeKm else {
+                return nil
+            }
+            return DTO.LivePage.Profile.KmLabel(km: km, x: Double(km) / routeKm)
+        }
     }
 
     /// The `clip-path: polygon(...)` pairs without the first point and the two closing corners.
@@ -140,23 +185,48 @@ extension Service {
         }
     }
 
-    /// `.kp5_cont`: `left` is the x position in percent, `data-type` the kind ("1" climb, "2" sprint).
-    private static func liveKeypoints(_ profile: Element) -> [DTO.LivePage.Profile.Keypoint] {
-        let items = (try? profile.select(".kp5_cont").array()) ?? []
-        return items.compactMap { item -> DTO.LivePage.Profile.Keypoint? in
-            guard let left = liveStyleNumber(liveAttribute(item, "style"), property: "left") else {
+    /// Preview: `.kp5_cont`. Racing: the first `.keypointsCont`, one `div` per marker.
+    private static func liveKeypoints(
+        _ profile: Element,
+        _ document: Document
+    ) -> [DTO.LivePage.Profile.Keypoint] {
+        let preview = (try? profile.select(".kp5_cont").array()) ?? []
+        if !preview.isEmpty {
+            return preview.compactMap { item -> DTO.LivePage.Profile.Keypoint? in
+                let type = liveAttribute(item, "data-type")
+                let name = liveKeypointName(item)
+                guard let x = liveKeypointX(item), !name.isEmpty else {
+                    return nil
+                }
+                return DTO.LivePage.Profile.Keypoint(x: x, name: name, type: type, isClimb: type == "1")
+            }
+        }
+        let markers = (try? document.select(".keypointsCont").first()?.children().array()) ?? []
+        return markers.compactMap { marker -> DTO.LivePage.Profile.Keypoint? in
+            guard let x = liveKeypointX(marker) else {
                 return nil
             }
-            let name = liveKeypointName(item)
+            let name = liveMarkerName(marker)
             guard !name.isEmpty else {
                 return nil
             }
-            return DTO.LivePage.Profile.Keypoint(
-                x: min(max(left, 0), 100) / 100,
-                name: name,
-                type: liveAttribute(item, "data-type")
-            )
+            let climbs = (try? marker.select(".kp_bol.climb").array()) ?? []
+            return DTO.LivePage.Profile.Keypoint(x: x, name: name, type: "", isClimb: !climbs.isEmpty)
         }
+    }
+
+    private static func liveKeypointX(_ item: Element) -> Double? {
+        guard let left = liveStyleNumber(liveAttribute(item, "style"), property: "left") else {
+            return nil
+        }
+        return min(max(left, 0), 100) / 100
+    }
+
+    /// The first text the marker holds on its own: "Passo di Valcava" of "Passo di Valcava<br />…".
+    private static func liveMarkerName(_ marker: Element) -> String {
+        let elements = (try? marker.select("*").array()) ?? []
+        let names = elements.map { liveCollapsed((try? $0.ownText()) ?? "") }
+        return names.first(where: { !$0.isEmpty }) ?? ""
     }
 
     /// The title's text before its `<br />`: "Ampang" of "Ampang<br />3.4km à 4%".
@@ -170,11 +240,53 @@ extension Service {
         return liveCollapsed((try? SwiftSoup.parse(name).text()) ?? "")
     }
 
-    /// `ul.situ5b > li`, best-effort (not verified against a racing page). The round badge is the
-    /// first `.bol`; the name is the first heading-like element with text, else PELOTON for "P";
-    /// the gap is the first short element that starts with "+" or has a gap/time class; the riders
-    /// are the `a[href*=rider/]` links, each with the nearest flag and bib read just before it.
+    /// The racing page's `ul.situ7 > li.group`; the preview's `ul.situ5b > li` when there is none.
     private static func liveGroups(_ document: Document) -> [DTO.LivePage.Group] {
+        let racing = (try? document.select("ul.situ7 > li.group").array()) ?? []
+        if !racing.isEmpty {
+            return racing.compactMap { liveRacingGroup($0) }
+        }
+        return liveLegacyGroups(document)
+    }
+
+    /// `.time`'s own text is the gap, so the `??` font beside it is left out.
+    private static func liveRacingGroup(_ item: Element) -> DTO.LivePage.Group? {
+        let badge = liveText(try? item.select(".bol").first())
+        let name = liveText(try? item.select(".groupname").first())
+        let riders = liveRacingRiders(item)
+        guard !badge.isEmpty || !name.isEmpty || !riders.isEmpty else {
+            return nil
+        }
+        let time = try? item.select(".time").first()
+        return DTO.LivePage.Group(
+            name: name,
+            gap: liveCollapsed(time.flatMap { try? $0.ownText() } ?? ""),
+            gapSeconds: Int(liveAttribute(time, "data-sec")),
+            badge: badge,
+            isPeloton: liveAttribute(item, "data-peloton") == "1",
+            riders: riders
+        )
+    }
+
+    /// Each rider is a `li` under the group: place (`span.nr`), bib, the rider link and the flag.
+    private static func liveRacingRiders(_ item: Element) -> [DTO.LivePage.Group.Rider] {
+        let rows = (try? item.select("ul > li").array()) ?? []
+        return rows.compactMap { row -> DTO.LivePage.Group.Rider? in
+            let name = liveText(try? row.select("a[href*=rider/]").first())
+            guard !name.isEmpty else {
+                return nil
+            }
+            return DTO.LivePage.Group.Rider(
+                position: Int(liveText(try? row.select("span.nr").first())),
+                bib: liveText(try? row.select(".bib").first()),
+                name: name,
+                countryCode: liveCountryCode(try? row.select("span.flag").first())
+            )
+        }
+    }
+
+    /// `ul.situ5b > li` on the preview layout; only synthetic HTML covers it (no groups before the start).
+    private static func liveLegacyGroups(_ document: Document) -> [DTO.LivePage.Group] {
         let items = (try? document.select("ul.situ5b > li").array()) ?? []
         return items.compactMap { item -> DTO.LivePage.Group? in
             let badge = liveText(try? item.select(".bol").first())
@@ -189,7 +301,9 @@ extension Service {
             return DTO.LivePage.Group(
                 name: heading ?? fallback,
                 gap: liveGap(item),
+                gapSeconds: nil,
                 badge: badge,
+                isPeloton: badge == "P",
                 riders: riders
             )
         }
@@ -207,8 +321,7 @@ extension Service {
         return ""
     }
 
-    /// Scans the group's flags, rider links and bibs in document order: a bib (`.bib` or a cell
-    /// that is only digits) and a flag count for the next rider link, then reset.
+    /// Preview rows: a bib and flag before each rider link, read in document order.
     private static func liveRiders(_ item: Element) -> [DTO.LivePage.Group.Rider] {
         let elements = (try? item.select("span.flag, a[href*=rider/], td, .bib").array()) ?? []
         var riders: [DTO.LivePage.Group.Rider] = []
@@ -220,6 +333,7 @@ extension Service {
                 if !name.isEmpty {
                     riders.append(
                         DTO.LivePage.Group.Rider(
+                            position: nil,
                             bib: bib,
                             name: name,
                             countryCode: countryCode
@@ -240,12 +354,16 @@ extension Service {
         return riders
     }
 
-    /// The flag's second class ("flag it" gives "it"), as `parseRaceResultRows` reads it.
-    private static func liveCountryCode(_ flag: Element) -> String {
-        let classes = ((try? flag.className()) ?? "")
-            .split(whereSeparator: \.isWhitespace)
-            .map(String.init)
-        return classes.first(where: { $0.lowercased() != "flag" }) ?? ""
+    /// The flag's two-letter class: "flag it" and "flag c16 it" both give "it".
+    private static func liveCountryCode(_ flag: Element?) -> String {
+        liveClasses(flag).first(where: { $0.count == 2 }) ?? ""
+    }
+
+    private static func liveClasses(_ element: Element?) -> [String] {
+        guard let element, let names = try? element.className() else {
+            return []
+        }
+        return names.split(whereSeparator: \.isWhitespace).map(String.init)
     }
 
     /// `ul.timeline3 > li.event`, newest first as PCS lists them. Events without text are skipped.

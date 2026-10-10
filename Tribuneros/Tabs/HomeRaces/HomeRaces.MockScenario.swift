@@ -294,17 +294,15 @@ extension HomeRaces {
             )
         }
 
-        /// A running race's live page for any URL whose path ends in "/live"; `nil` otherwise. The
-        /// numbers move every 5 s (`tick`), so each poll visibly changes the screen, and the newest
-        /// event's text carries the tick.
+        /// A racing live page for any "/live" URL; km done and racetime move every 5 s (`tick`).
         static func livePage(for url: URL) -> DTO.LivePage? {
             guard url.path.hasSuffix("/live") else {
                 return nil
             }
             let tick = Int(Date().timeIntervalSince1970 / 5)
-            let total = 154.5
-            let done = 42.0 + Double(tick % 40) * 0.4
-            let seconds = 2 * 3600 + 14 * 60 + (tick % 720) * 5
+            let route = 239.4
+            let done = 60.4 + Double(tick % 40) * 0.4
+            let seconds = 1 * 3600 + 25 * 60 + (tick % 720) * 5
             let clock = String(
                 format: "%d:%02d:%02d",
                 seconds / 3600,
@@ -315,11 +313,11 @@ extension HomeRaces {
                 DTO.LivePage.Stat(
                     key: "kmtogo",
                     label: "KM to go",
-                    value: String(format: "%.1f", total - done)
+                    value: String(format: "%.1f", route - done)
                 ),
                 DTO.LivePage.Stat(
                     key: "kmdone",
-                    label: "km done",
+                    label: "KM done",
                     value: String(format: "%.1f", done)
                 ),
                 DTO.LivePage.Stat(
@@ -328,9 +326,19 @@ extension HomeRaces {
                     value: clock
                 ),
                 DTO.LivePage.Stat(
-                    key: "avg_speed",
+                    key: "avg",
                     label: "Avg.",
-                    value: "41.8"
+                    value: "42.6"
+                ),
+                DTO.LivePage.Stat(
+                    key: "elevation_remaining",
+                    label: "Elevation-",
+                    value: "1840"
+                ),
+                DTO.LivePage.Stat(
+                    key: "",
+                    label: "Start",
+                    value: "11:00"
                 ),
                 DTO.LivePage.Stat(
                     key: "race_status",
@@ -341,10 +349,15 @@ extension HomeRaces {
                     key: "autosync",
                     label: "Autosync",
                     value: "on"
+                ),
+                DTO.LivePage.Stat(
+                    key: "nr_online",
+                    label: "#online",
+                    value: "9153"
                 )
             ]
-            let points = (0..<40).map { index -> DTO.LivePage.Profile.Point in
-                let x = Double(index) / 39
+            let points = (0..<60).map { index -> DTO.LivePage.Profile.Point in
+                let x = Double(index) / 59
                 let y = 0.45 + 0.25 * sin(x * 7) * (1 - x) + 0.15 * x
                 return DTO.LivePage.Profile.Point(
                     x: x,
@@ -353,90 +366,50 @@ extension HomeRaces {
             }
             let profile = DTO.LivePage.Profile(
                 points: points,
-                progress: 0.3,
-                elevationLabels: ["0", "250"],
+                progress: done / route,
+                elevationLabels: ["200", "400", "600", "800", "1000"],
                 keypoints: [
-                    DTO.LivePage.Profile.Keypoint(x: 0.12, name: "MOCK Cote de Ampang", type: "1"),
-                    DTO.LivePage.Profile.Keypoint(x: 0.38, name: "MOCK Sprint Pekan", type: "2"),
-                    DTO.LivePage.Profile.Keypoint(x: 0.61, name: "MOCK Bukit Mendum", type: "1"),
-                    DTO.LivePage.Profile.Keypoint(x: 0.85, name: "MOCK Rahang", type: "2")
-                ]
+                    DTO.LivePage.Profile.Keypoint(x: 0.06, name: "MOCK Bocche", type: "", isClimb: true),
+                    DTO.LivePage.Profile.Keypoint(x: 0.13, name: "MOCK Selvino", type: "", isClimb: true),
+                    DTO.LivePage.Profile.Keypoint(x: 0.22, name: "MOCK Zogno", type: "", isClimb: false),
+                    DTO.LivePage.Profile.Keypoint(x: 0.36, name: "MOCK Valcava", type: "", isClimb: true),
+                    DTO.LivePage.Profile.Keypoint(x: 0.57, name: "MOCK Giovenzana", type: "", isClimb: true),
+                    DTO.LivePage.Profile.Keypoint(x: 0.88, name: "MOCK Civiglio", type: "", isClimb: true)
+                ],
+                routeKm: route,
+                kmLabels: (0...24).map { index in
+                    DTO.LivePage.Profile.KmLabel(
+                        km: index * 10,
+                        x: Double(index * 10) / route
+                    )
+                }
             )
             let groups = [
                 DTO.LivePage.Group(
-                    name: "BREAK",
-                    gap: "+1:45",
+                    name: "break",
+                    gap: "+0:00",
+                    gapSeconds: 0,
                     badge: "1",
+                    isPeloton: false,
                     riders: [
-                        DTO.LivePage.Group.Rider(bib: "101", name: "MOCK Breakaway One", countryCode: "it"),
-                        DTO.LivePage.Group.Rider(bib: "117", name: "MOCK Breakaway Two", countryCode: "nl"),
-                        DTO.LivePage.Group.Rider(bib: "123", name: "MOCK Breakaway Three", countryCode: "be")
+                        DTO.LivePage.Group.Rider(position: 1, bib: "26", name: "MOCK Breakaway One", countryCode: "it"),
+                        DTO.LivePage.Group.Rider(position: 2, bib: "43", name: "MOCK Breakaway Two", countryCode: "be"),
+                        DTO.LivePage.Group.Rider(position: 3, bib: "63", name: "MOCK Breakaway Three", countryCode: "ca"),
+                        DTO.LivePage.Group.Rider(position: 4, bib: "73", name: "MOCK Breakaway Four", countryCode: "fr"),
+                        DTO.LivePage.Group.Rider(position: 5, bib: "131", name: "MOCK Breakaway Five", countryCode: "nz")
                     ]
                 ),
                 DTO.LivePage.Group(
-                    name: "PELOTON",
-                    gap: "",
+                    name: "Peloton",
+                    gap: "+1:25",
+                    gapSeconds: 85,
                     badge: "P",
+                    isPeloton: true,
                     riders: [
-                        DTO.LivePage.Group.Rider(bib: "7", name: "MOCK Peloton One", countryCode: "fr"),
-                        DTO.LivePage.Group.Rider(bib: "21", name: "MOCK Peloton Two", countryCode: "es"),
-                        DTO.LivePage.Group.Rider(bib: "45", name: "MOCK Peloton Three", countryCode: "gb")
+                        DTO.LivePage.Group.Rider(position: 6, bib: "7", name: "MOCK Peloton One", countryCode: "fr"),
+                        DTO.LivePage.Group.Rider(position: 7, bib: "21", name: "MOCK Peloton Two", countryCode: "es"),
+                        DTO.LivePage.Group.Rider(position: 8, bib: "45", name: "MOCK Peloton Three", countryCode: "gb")
                     ]
-                )
-            ]
-            let now = Date()
-            let events = [
-                DTO.LivePage.Event(
-                    id: "mock-live-update",
-                    badge: "\(Int(total - done))",
-                    text: "MOCK update \(tick): the break holds +1:45 on the peloton.",
-                    timestamp: now,
-                    header: [],
-                    rows: []
-                ),
-                DTO.LivePage.Event(
-                    id: "mock-attack",
-                    badge: "118",
-                    text: "MOCK attack from the bunch on the Cote de Ampang.",
-                    timestamp: now.addingTimeInterval(-300),
-                    header: [],
-                    rows: []
-                ),
-                DTO.LivePage.Event(
-                    id: "mock-points",
-                    badge: "96",
-                    text: "MOCK sprint points at Ulu Beranang, first three.",
-                    timestamp: now.addingTimeInterval(-900),
-                    header: ["#", "Rider", "Pts"],
-                    rows: [
-                        ["1", "MOCK Rider One", "3"],
-                        ["2", "MOCK Rider Two", "2"],
-                        ["3", "MOCK Rider Three", "1"]
-                    ]
-                ),
-                DTO.LivePage.Event(
-                    id: "mock-km-100",
-                    badge: "100",
-                    text: "MOCK the race passes the 100 km mark.",
-                    timestamp: now.addingTimeInterval(-1500),
-                    header: [],
-                    rows: []
-                ),
-                DTO.LivePage.Event(
-                    id: "mock-start",
-                    badge: "P",
-                    text: "MOCK The race is on: the flag dropped at 09:12.",
-                    timestamp: now.addingTimeInterval(-1800),
-                    header: [],
-                    rows: []
-                ),
-                DTO.LivePage.Event(
-                    id: "mock-neutral",
-                    badge: "P",
-                    text: "MOCK The neutralized start left the town at 09:00.",
-                    timestamp: now.addingTimeInterval(-2400),
-                    header: [],
-                    rows: []
                 )
             ]
             return DTO.LivePage(
@@ -444,7 +417,7 @@ extension HomeRaces {
                 status: "racing",
                 profile: profile,
                 groups: groups,
-                events: events
+                events: []
             )
         }
 
