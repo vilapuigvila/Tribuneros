@@ -1,11 +1,13 @@
 ## Text in SwiftUI
 - **Do not use** `Text("...")` (or `Text(verbatim:)`) in Tribuneros UI.
 - **Always use** `TribuneruText` for any on-screen text.
+- **Always localize** fixed text with `L10n.tr("English key")` and add its Catalan value to a
+  `scripts/l10n/fragments/*.json` file (see CLAUDE.md, "Localization"). Scraped data stays verbatim.
 
 Example:
 ```swift
 TribuneruText(
-    content: "Team",
+    content: L10n.tr("Team"),
     style: .size12WeightRegular,
     color: .tribuneru(.somecase),
     lineLimit: 1

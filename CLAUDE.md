@@ -260,6 +260,7 @@ Alfy's `Requester` notes:
 
 ### Styling conventions (enforced, see `agent-doc/ux_style.md`)
 
+- Display text is localized: `L10n.tr("English key")` (see "Localization"), never a bare literal.
 - Never use `Text(...)`/`Text(verbatim:)` in views — always `TribuneruText(content:style:color:lineLimit:)`
   (`Styling/TribuneruText.swift`). Adding a new text style means adding a case to
   `TribuneruText.Style` (and its `size`/`weight`/`fontName` switch arms), not inlining a font call.
@@ -283,9 +284,37 @@ A fourth tab (`Tabs/Settings/`, `Tab.settings`, last in `CustomTabBar`, own `Rou
 "Show onboarding again" calls the `replayOnboarding` environment closure that `OnboardingHost` sets
 (`Presenter.replay()`): it bypasses `isEnabled` (so mocked launches show it), never saves, leaves the
 two-showing schedule alone and opens on the "Welcome back" page. "Language" pushes
-`Router.Destination.settingsLanguage`, a list of `Settings.Domain.supportedLanguages` (one entry,
-English; adding a language is one entry) stored in `UserSettings.appLanguage` (default `en`). It is a
-stored preference only: the app has no localization yet.
+`Router.Destination.settingsLanguage`, a list of `Settings.Domain.supportedLanguages` ("System
+default", then English and Català, each named in itself) stored in `UserSettings.appLanguage`
+(default `system`). Picking one applies it at once (see "Localization" below).
+
+### Localization (English + Catalan)
+
+- One String Catalog, `Tribuneros/Localizable.xcstrings`, generated from
+  `scripts/l10n/fragments/*.json` by `python3 scripts/l10n/build_catalog.py`. **Never edit the
+  catalog by hand** (its entries are `extractionState: manual`): add the key to a fragment and rebuild.
+  Keys are the English text; plurals use catalog plural variations (`%lld` with an `Int`).
+- Every display string goes through `L10n.tr("English key", args…)` (`Localization/L10n.swift`) with a
+  literal key; `TribuneruText.content` stays verbatim, so scraped names are never looked up. View
+  models and enums build strings with `L10n.tr` too. Display dates use `L10n.dateFormatter(template:)` /
+  `L10n.relativeFormatter()` / `L10n.locale` (also for `uppercased(with:)`); parsers stay on `en_US_POSIX`.
+  English literals that match scraped text or serve as ids stay English, with a separate display value.
+- The language is the app's own choice, not the device's: `AppLanguage.resolve` maps `system` to the
+  device's preferred languages (falling back to English). `AppLocalization.applyAtLaunch()` runs right
+  after `PreferencesReset` in `TribunerosApp.init()`; a change in Settings calls
+  `AppLocalization.shared.apply`, and `LocalizedRoot` rebuilds `TabBarView` (`.id` on the language) so
+  every view model re-maps its strings. The selected tab survives; navigation stacks return to root and
+  in-memory spoiler reveals reset. System UI (search "Cancel", share sheets, Safari) follows the device.
+- Check: `python3 scripts/l10n/check_localization.py` (also a CI job) fails on a key used in Swift but
+  missing from the fragments, a missing or untranslated Catalan value, mismatched format specifiers, a
+  straight apostrophe in Catalan (use ’), the catalog being out of date, `ca` missing from
+  `knownRegions`/`CFBundleLocalizations`, and hardcoded English in display positions (mark a deliberate
+  one with `// l10n:ignore`; brand words go in `scripts/l10n/allowlist.json`). XCTests:
+  `LocalizationTests.swift` (+ per-tab `Localization*Tests`). Tests that switch to Catalan set it back
+  to English in `tearDown`. Maestro: `.maestro/settings-language.yaml`.
+- Adding a language: a code in `AppLanguage.localizations` + `endonym`, `knownRegions` in the pbxproj,
+  `CFBundleLocalizations` in `Info.plist`, `TARGET_LANGUAGES` in `scripts/l10n/common.py`, and a value
+  for every fragment entry.
 
 ### "Vapor" design system
 

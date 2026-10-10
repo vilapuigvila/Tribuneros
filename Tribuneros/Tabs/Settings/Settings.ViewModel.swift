@@ -48,7 +48,7 @@ extension Settings {
                 )
             }
             return Settings.ViewState(
-                languageTitle: languages.first { $0.isSelected }?.title ?? "English",
+                languageTitle: languages.first { $0.isSelected }?.title ?? Settings.Domain.title(for: Settings.Domain.defaultLanguage),
                 languages: languages
             )
         }

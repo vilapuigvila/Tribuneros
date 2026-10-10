@@ -19,17 +19,40 @@ final class SettingsTests: XCTestCase {
         )
     }
 
-    func testDefaultLanguageIsEnglish() {
-        let interactor = makeInteractor()
-        XCTAssertEqual(interactor.domain.language, "en")
-        let state = Settings.ViewModel<Settings.InteractorImpl>.mapToViewState(from: interactor.domain)
-        XCTAssertEqual(state.languageTitle, "English")
-        XCTAssertEqual(state.languages.map(\.id), ["en"])
-        XCTAssertEqual(state.languages.first?.isSelected, true)
+    override func setUp() {
+        super.setUp()
+        L10n.setLanguage("en")
     }
 
-    func testUnknownStoredLanguageFallsBackToEnglish() {
-        XCTAssertEqual(makeInteractor(stored: "xx").domain.language, "en")
+    func testDefaultLanguageFollowsTheSystem() {
+        let interactor = makeInteractor()
+        XCTAssertEqual(interactor.domain.language, "system")
+        let state = Settings.ViewModel<Settings.InteractorImpl>.mapToViewState(from: interactor.domain)
+        XCTAssertEqual(state.languageTitle, "System default")
+        XCTAssertEqual(state.languages.map(\.id), ["system", "en", "ca"])
+        XCTAssertEqual(state.languages.map(\.isSelected), [true, false, false])
+    }
+
+    func testLanguagesAreNamedInThemselves() {
+        L10n.setLanguage("ca")
+        defer { L10n.setLanguage("en") }
+        let state = Settings.ViewModel<Settings.InteractorImpl>.mapToViewState(
+            from: Settings.Domain(language: "ca")
+        )
+        XCTAssertEqual(state.languages.map(\.title), ["Predeterminat del sistema", "English", "Català"])
+        XCTAssertEqual(state.languageTitle, "Català")
+    }
+
+    func testUnknownStoredLanguageFallsBackToSystem() {
+        XCTAssertEqual(makeInteractor(stored: "xx").domain.language, "system")
+    }
+
+    func testSelectingCatalanSaves() {
+        var saved: [String] = []
+        let interactor = makeInteractor { saved.append($0) }
+        interactor.useCase(.selectLanguage("ca"))
+        XCTAssertEqual(interactor.domain.language, "ca")
+        XCTAssertEqual(saved, ["ca"])
     }
 
     func testSelectingEnglishKeepsItAndSaves() {
@@ -44,7 +67,7 @@ final class SettingsTests: XCTestCase {
         var saved: [String] = []
         let interactor = makeInteractor { saved.append($0) }
         interactor.useCase(.selectLanguage("fr"))
-        XCTAssertEqual(interactor.domain.language, "en")
+        XCTAssertEqual(interactor.domain.language, "system")
         XCTAssertTrue(saved.isEmpty)
     }
 
@@ -57,7 +80,7 @@ final class SettingsTests: XCTestCase {
             )
         }
         UserDefaults.standard.removeObject(forKey: UserPreferencesKey.appLanguage.rawValue)
-        XCTAssertEqual(UserSettings.appLanguage, "en")
+        XCTAssertEqual(UserSettings.appLanguage, "system")
         makeStoreInteractor().useCase(.selectLanguage("en"))
         XCTAssertNotNil(UserDefaults.standard.data(forKey: UserPreferencesKey.appLanguage.rawValue))
         XCTAssertEqual(makeStoreInteractor().domain.language, "en")

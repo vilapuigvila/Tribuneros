@@ -14,7 +14,8 @@ enum Tab {
 
 struct TabBarView: View {
 
-    @State private var selectedTab: Tab = .home
+    /// Owned by `LocalizedRoot`, so it survives a language change.
+    @Binding var selectedTab: Tab
     /// The bar hides while typing; as a bottom inset it would otherwise ride up on the keyboard.
     @State private var isKeyboardVisible = false
     @StateObject private var homeRouter: Router
@@ -27,7 +28,8 @@ struct TabBarView: View {
     let paddockViewModel: Paddock.ViewModel<Paddock.InteractorImpl>
     let settingsViewModel: Settings.ViewModel<Settings.InteractorImpl>
 
-    init() {
+    init(selectedTab: Binding<Tab>) {
+        _selectedTab = selectedTab
         let homeRouter = Router()
         let cxRouter = Router()
         let paddockRouter = Router()
@@ -152,7 +154,7 @@ private struct CustomTabBar: View {
 
             HStack {
                 TabBarButton(
-                    title: "Today Races",
+                    title: L10n.tr("Today Races"),
                     systemImage: "figure.indoor.cycle",
                     isSelected: selectedTab == .home
                 ) {
@@ -162,7 +164,7 @@ private struct CustomTabBar: View {
                 Spacer(minLength: 0)
                 
                 TabBarButton(
-                    title: "CX Zone",
+                    title: L10n.tr("CX Zone"),
                     systemImage: cxZoneSymbolName,
                     isSelected: selectedTab == .cxZone,
                     animateWhenSelected: true
@@ -173,7 +175,7 @@ private struct CustomTabBar: View {
                 Spacer(minLength: 0)
                 
                 TabBarButton(
-                    title: "Paddock",
+                    title: L10n.tr("Paddock"),
                     systemImage: "megaphone.fill",
                     isSelected: selectedTab == .paddock
                 ) {
@@ -183,7 +185,7 @@ private struct CustomTabBar: View {
                 Spacer(minLength: 0)
 
                 TabBarButton(
-                    title: "Settings",
+                    title: L10n.tr("Settings"),
                     systemImage: "gearshape",
                     isSelected: selectedTab == .settings
                 ) {
@@ -255,5 +257,5 @@ private struct TabBarButton: View {
 }
 
 #Preview("Tab bar view") {
-    TabBarView()
+    TabBarView(selectedTab: .constant(.home))
 }

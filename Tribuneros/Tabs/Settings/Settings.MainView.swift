@@ -27,7 +27,7 @@ struct SettingsView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("SETTINGS")
+        .navigationTitle(L10n.tr("SETTINGS"))
     }
 }
 
@@ -44,7 +44,7 @@ extension Settings {
                 VStack(spacing: 20) {
                     SettingsPanel {
                         SettingsRow(
-                            title: "Show onboarding again",
+                            title: L10n.tr("Show onboarding again"),
                             detail: nil,
                             systemImage: "play.circle",
                             identifier: "settings.onboarding"
@@ -52,7 +52,7 @@ extension Settings {
                             action(.didTapShowOnboarding)
                         }
                         SettingsRow(
-                            title: "Language",
+                            title: L10n.tr("Language"),
                             detail: state.languageTitle,
                             systemImage: "globe",
                             identifier: "settings.language"
@@ -85,7 +85,7 @@ extension Settings {
                         }
                     }
                     TribuneruText(
-                        content: "More languages are coming.",
+                        content: L10n.tr("More languages are coming."),
                         style: .vaporRowMeta,
                         color: .tribuneru(.vaporTextSecondary)
                     )
@@ -101,7 +101,7 @@ extension Settings {
             .background(Color.tribuneru(.vaporPageBackground))
             .preferredColorScheme(.dark)
             .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle("LANGUAGE")
+            .navigationTitle(L10n.tr("LANGUAGE"))
         }
     }
 }
@@ -210,6 +210,6 @@ private struct LanguageRow: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(language.title)
         .accessibilityAddTraits(language.isSelected ? [.isButton, .isSelected] : .isButton)
-        .accessibilityIdentifier("settings.language.\(language.title.lowercased())")
+        .accessibilityIdentifier("settings.language.\(language.id)")
     }
 }

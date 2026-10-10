@@ -26,6 +26,7 @@ struct TribunerosApp: App {
     
     init() {
         PreferencesReset.runAtLaunch()
+        AppLocalization.applyAtLaunch()
         CrashlyticsManager.shared.configure()
         Service.useFirebaseEmulatorIfEnabled()
         Service.refreshRemoteConfig()
@@ -37,7 +38,7 @@ struct TribunerosApp: App {
             LaunchSplashHost {
                 OnboardingHost {
                     MaintenanceHost {
-                        TabBarView()
+                        LocalizedRoot()
                     }
                 }
             }

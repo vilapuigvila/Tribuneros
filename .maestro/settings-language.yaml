@@ -1,0 +1,47 @@
+# Language switch (Debug build, mocked launch, English simulator): picking Català rebuilds the
+# tabs in Catalan without a restart (back on the Settings root), and English switches back.
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+  - settings
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- extendedWaitUntil:
+    visible:
+      id: "home.results.card.0"
+    timeout: 20000
+- tapOn:
+    id: "tab.settings"
+- tapOn:
+    id: "settings.language"
+- tapOn:
+    id: "settings.language.ca"
+- extendedWaitUntil:
+    visible: "Configuració"
+    timeout: 5000
+- assertVisible: "Curses d’avui"
+- assertVisible: "Zona CX"
+- assertVisible: "Torna a veure la presentació"
+- tapOn:
+    id: "settings.language"
+- assertVisible: "Aviat hi haurà més idiomes."
+- assertVisible:
+    id: "settings.language.ca"
+    selected: true
+- tapOn:
+    id: "settings.language.en"
+- extendedWaitUntil:
+    visible: "Today Races"
+    timeout: 5000
+- assertVisible: "Show onboarding again"
+# The choice survives a relaunch.
+- launchApp:
+    stopApp: true
+    arguments:
+      mockScenario: live
+- extendedWaitUntil:
+    visible: "Today Races"
+    timeout: 20000
