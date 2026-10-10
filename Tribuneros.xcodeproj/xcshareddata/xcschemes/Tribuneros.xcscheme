@@ -98,12 +98,12 @@
          <EnvironmentVariable
             key = "CT_COURSEDUJOUR_NATIVE"
             value = "YES"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "MOCK_SCENARIO"
             value = ""
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "CT_MAINTENANCE"

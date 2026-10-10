@@ -1,0 +1,66 @@
+# The live race screen (mock scenario "live", Debug build only): opened from the LIVE hero on Today,
+# shows the profile, the race data and the situation, and the polling dot stops after the 60 s window.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- extendedWaitUntil:
+    visible:
+      id: "home.today.hero"
+    timeout: 20000
+- tapOn:
+    id: "home.today.hero"
+- extendedWaitUntil:
+    visible:
+      id: "liveRace.title"
+      text: "CRO Race.*"
+    timeout: 10000
+
+# The one-time hint on a fresh install: dismiss it
+- runFlow:
+    when:
+      visible:
+        id: "liveRace.hint"
+    commands:
+      - tapOn:
+          id: "liveRace.hint"
+      - assertNotVisible:
+          id: "liveRace.hint"
+
+# Polling is on right after opening (the dot sits at the top, above the sections)
+- assertVisible:
+    id: "liveRace.pollingDot"
+    text: "Live updates on"
+
+# The three sections, in order
+- assertVisible:
+    id: "liveRace.profile"
+- assertVisible: "KM TO GO.*"
+- assertVisible:
+    id: "liveRace.situation"
+- assertVisible:
+    id: "liveRace.rider"
+- scrollUntilVisible:
+    element: "PELOTON"
+    direction: DOWN
+    timeout: 10000
+- assertVisible: "PELOTON"
+- assertNotVisible:
+    id: "liveRace.timeline"
+
+# Back to the top, where the dot is; it turns to paused once the 60 s window ends
+- scrollUntilVisible:
+    element:
+      id: "liveRace.title"
+    direction: UP
+    timeout: 10000
+- extendedWaitUntil:
+    visible:
+      id: "liveRace.pollingDot"
+      text: "Live updates paused"
+    timeout: 75000
