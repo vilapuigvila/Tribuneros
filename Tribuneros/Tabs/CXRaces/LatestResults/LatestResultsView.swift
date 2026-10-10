@@ -80,7 +80,7 @@ struct LatestResultsView: View {
             }
         } else {
             TribuneruText(
-                content: "No results found.",
+                content: L10n.tr("No results found."),
                 style: .vaporMeta,
                 color: .tribuneru(.vaporTextSecondary),
                 lineLimit: 2
@@ -126,7 +126,7 @@ struct LatestResultsView: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 8) {
                     TribuneruText(
-                        content: category.title.uppercased(),
+                        content: category.title.uppercased(with: L10n.locale),
                         style: .vaporMeta,
                         color: .tribuneru(.vaporTextSecondary)
                     )

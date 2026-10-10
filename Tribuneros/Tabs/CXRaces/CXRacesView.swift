@@ -26,7 +26,7 @@ struct CXRacesRacesView: View {
                 CXAllRacesView(events: viewModel.stateView.result.calendarEvents) { event in
                     viewModel.action(.didTapOnCalendarEvent(event))
                 }
-                .navigationTitle("All races")
+                .navigationTitle(L10n.tr("All races"))
             case .cxZone(.eventDetail(let event)):
                 CXEventDetailView(
                     event: event,
@@ -63,7 +63,7 @@ struct CXRacesRacesView: View {
                 ) { race in
                     viewModel.action(.didTapOnRaceDetail(race))
                 }
-                .navigationTitle("Latest results")
+                .navigationTitle(L10n.tr("Latest results"))
             case .cxZone(.raceDetail(let race)):
                 RaceDetailView(race: race) { result in
                     viewModel.action(.didTapOnResultRider(result))
@@ -73,7 +73,7 @@ struct CXRacesRacesView: View {
                 CXStandingsListView(standings: viewModel.stateView.result.standings) { standing in
                     viewModel.action(.didTapOnStandingRider(standing))
                 }
-                .navigationTitle("Standings")
+                .navigationTitle(L10n.tr("Standings"))
             case .cxZone(.riderDetail(let context)):
                 CXRiderDetailView(
                     context: context,
@@ -96,6 +96,6 @@ struct CXRacesRacesView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("CX ZONE")
+        .navigationTitle(L10n.tr("CX ZONE"))
     }
 }

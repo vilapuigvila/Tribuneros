@@ -22,7 +22,7 @@ struct CyclocrossStandingsSectionView: View {
             )
         } else {
             TribuneruText(
-                content: "No standings found.",
+                content: L10n.tr("No standings found."),
                 style: .vaporMeta,
                 color: .tribuneru(.vaporTextSecondary),
                 lineLimit: 2

@@ -56,7 +56,7 @@ struct CXStatTile: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             TribuneruText(
-                content: label.uppercased(),
+                content: label.uppercased(with: L10n.locale),
                 style: .vaporGroupLabel,
                 color: .tribuneru(.vaporTextSecondary),
                 lineLimit: 1
@@ -81,7 +81,7 @@ struct CXRiderFactsPanel: View {
 
     var body: some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelYesterday)) {
-            VaporSectionHeader(title: "Profile")
+            VaporSectionHeader(title: L10n.tr("Profile"))
         } content: {
             VaporCard(spacing: 0) {
                 ForEach(facts.indices, id: \.self) { index in
@@ -120,7 +120,7 @@ struct CXRiderRecentResultsPanel: View {
 
     var body: some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelTomorrow)) {
-            VaporSectionHeader(title: "Recent results")
+            VaporSectionHeader(title: L10n.tr("Recent results"))
         } content: {
             VaporCard(spacing: 0) {
                 ForEach(results.indices, id: \.self) { index in

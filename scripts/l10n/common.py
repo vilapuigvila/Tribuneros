@@ -22,7 +22,7 @@ def load_fragments():
             errors.append(f"{path.name}: invalid JSON: {error}")
             continue
         for key, entry in data.items():
-            if key in entries and entries[key] != entry:
+            if key in entries and _translation(entries[key]) != _translation(entry):
                 errors.append(
                     f"{path.name}: key {key!r} also in {origins[key]} with a different entry"
                 )
@@ -30,6 +30,11 @@ def load_fragments():
             entries[key] = entry
             origins[key] = path.name
     return entries, errors
+
+
+def _translation(entry):
+    """An entry without its comment: chunks may describe a shared key differently."""
+    return {k: v for k, v in entry.items() if k != "comment"}
 
 
 def to_catalog(entries):

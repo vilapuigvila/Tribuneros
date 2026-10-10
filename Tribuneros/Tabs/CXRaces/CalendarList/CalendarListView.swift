@@ -55,7 +55,7 @@ struct CXAllRacesView: View {
                                         )
                                         if event.isCancelled {
                                             TribuneruText(
-                                                content: "Cancelled",
+                                                content: L10n.tr("Cancelled"),
                                                 style: .vaporMeta,
                                                 color: .tribuneru(.vaporNegative)
                                             )
@@ -98,8 +98,8 @@ struct CXAllRacesView: View {
                         if filteredEvents.isEmpty && !events.isEmpty {
                             TribuneruText(
                                 content: searchText.isEmpty
-                                    ? "No races in this series."
-                                    : "No races match \u{201C}\(searchText)\u{201D}.",
+                                    ? L10n.tr("No races in this series.")
+                                    : L10n.tr("No races match “%@”.", searchText),
                                 style: .vaporMeta,
                                 color: .tribuneru(.vaporTextSecondary),
                                 lineLimit: 2
@@ -132,7 +132,7 @@ struct CXAllRacesView: View {
                             Image(systemName: "calendar.circle.fill")
                                 .foregroundStyle(Color.tribuneru(.vaporPageBackground))
                             TribuneruText(
-                                content: "Today Races",
+                                content: L10n.tr("Today Races"),
                                 style: .vaporRaceNameNext,
                                 color: .tribuneru(.vaporPageBackground)
                             )
@@ -152,7 +152,7 @@ struct CXAllRacesView: View {
         .searchable(
             text: $searchText,
             placement: .navigationBarDrawer(displayMode: .always),
-            prompt: "Race, country, winner..."
+            prompt: L10n.tr("Race, country, winner...")
         )
     }
     
@@ -181,7 +181,7 @@ struct CXAllRacesView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 6) {
                 CXSeriesFilterChip(
-                    title: "All",
+                    title: L10n.tr("All"),
                     count: searchedEvents.count,
                     isSelected: selectedSeries == nil
                 ) {
@@ -255,7 +255,7 @@ private struct CXSeriesFilterChip: View {
         Button(action: action) {
             HStack(spacing: 6) {
                 TribuneruText(
-                    content: title.uppercased(),
+                    content: title.uppercased(with: L10n.locale),
                     style: .vaporSpoilerChip,
                     color: isSelected ? .tribuneru(.vaporPageBackground) : .tribuneru(.vaporTextPrimary),
                     lineLimit: 1

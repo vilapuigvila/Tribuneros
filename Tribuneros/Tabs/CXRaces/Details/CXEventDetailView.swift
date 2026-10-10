@@ -76,7 +76,7 @@ struct CXEventDetailView: View {
                     .redacted(reason: .placeholder)
                     .disabled(true)
                     .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("Loading the race")
+                    .accessibilityLabel(L10n.tr("Loading the race"))
                 } else {
                     if !detail.results.isEmpty {
                         resultsPanel(detail.results)
@@ -131,13 +131,13 @@ struct CXEventDetailView: View {
                 VaporCard(spacing: 0) {
                     InfoRow(
                         systemImage: "calendar",
-                        title: "Date",
+                        title: L10n.tr("Date"),
                         value: formattedDate
                     )
                     divider
                     InfoRow(
                         systemImage: "mappin.and.ellipse",
-                        title: "Country",
+                        title: L10n.tr("Country"),
                         value: event.raceCountry ?? "-",
                         flagURL: event.flagURL
                     )
@@ -145,7 +145,7 @@ struct CXEventDetailView: View {
                         divider
                         InfoRow(
                             systemImage: "flag.checkered",
-                            title: "Class",
+                            title: L10n.tr("Class"),
                             value: "\(event.raceClass) · \(classDescription)"
                         )
                     }
@@ -153,7 +153,7 @@ struct CXEventDetailView: View {
                         divider
                         InfoRow(
                             systemImage: "timer",
-                            title: "Starts",
+                            title: L10n.tr("Starts"),
                             value: countdown
                         )
                     }
@@ -166,7 +166,7 @@ struct CXEventDetailView: View {
 
     private var winnerPanel: some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-            VaporSectionHeader(title: "Winner")
+            VaporSectionHeader(title: L10n.tr("Winner"))
         } content: {
             Button {
                 openWinner(
@@ -190,7 +190,7 @@ struct CXEventDetailView: View {
                                 lineLimit: 1
                             )
                             TribuneruText(
-                                content: ["Men Elite", event.winnerCountry, winningResult?.time]
+                                content: [L10n.tr("Men Elite"), event.winnerCountry, winningResult?.time]
                                     .compactMap { $0 }
                                     .filter { !$0.isEmpty }
                                     .joined(separator: " · "),
@@ -223,11 +223,11 @@ struct CXEventDetailView: View {
 
     private func resultsPanel(_ allResults: [DTO.CX24Homepage.CategoryResult]) -> some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelYesterday)) {
-            VaporSectionHeader(title: "Results")
+            VaporSectionHeader(title: L10n.tr("Results"))
         } content: {
             VaporCard(spacing: 0) {
                 TribuneruText(
-                    content: "MEN ELITE · TOP \(min(UI.resultsLimit, allResults.count))",
+                    content: L10n.tr("MEN ELITE · TOP %lld", min(UI.resultsLimit, allResults.count)),
                     style: .vaporGroupLabel,
                     color: .tribuneru(.vaporTextSecondary)
                 )
@@ -256,7 +256,7 @@ struct CXEventDetailView: View {
                     Button {
                         openURL(resultsURL)
                     } label: {
-                        VaporMoreInfoLink(title: "full results")
+                        VaporMoreInfoLink(title: L10n.tr("full results"))
                             .padding(.top, 10)
                     }
                     .buttonStyle(.plain)
@@ -270,7 +270,7 @@ struct CXEventDetailView: View {
     private func pastWinnersPanel(_ winners: [DTO.CXRacePage.PastWinner]) -> some View {
         let winners = Array(winners.prefix(UI.pastWinnersLimit))
         return VaporPanel(panelColor: .tribuneru(.vaporPanelTomorrow)) {
-            VaporSectionHeader(title: "Past winners")
+            VaporSectionHeader(title: L10n.tr("Past winners"))
         } content: {
             VaporCard(spacing: 0) {
                 ForEach(winners.indices, id: \.self) { index in
@@ -318,7 +318,7 @@ struct CXEventDetailView: View {
 
     private func aboutPanel(_ summary: String) -> some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: "About")
+            VaporSectionHeader(title: L10n.tr("About"))
         } content: {
             VaporCard {
                 TribuneruText(
@@ -335,7 +335,7 @@ struct CXEventDetailView: View {
 
     private var linksPanel: some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-            VaporSectionHeader(title: "Links")
+            VaporSectionHeader(title: L10n.tr("Links"))
         } content: {
             VaporCard(spacing: 0) {
                 let items = links
@@ -376,7 +376,7 @@ struct CXEventDetailView: View {
         if let videoURL = detail.videoURL {
             links.append(
                 .init(
-                    title: "Race video",
+                    title: L10n.tr("Race video"),
                     systemImage: "play.rectangle.fill"
                 ) {
                     videoSheet = VideoSheet(url: videoURL)
@@ -386,7 +386,7 @@ struct CXEventDetailView: View {
         if let websiteURL = event.websiteURL {
             links.append(
                 .init(
-                    title: "Official website",
+                    title: L10n.tr("Official website"),
                     systemImage: "globe"
                 ) {
                     openURL(websiteURL)
@@ -396,7 +396,7 @@ struct CXEventDetailView: View {
         if let raceURL = event.raceURL {
             links.append(
                 .init(
-                    title: "Race page on cyclocross24",
+                    title: L10n.tr("Race page on cyclocross24"),
                     systemImage: "safari"
                 ) {
                     openURL(raceURL)
@@ -423,7 +423,7 @@ struct CXEventDetailView: View {
 
     private var formattedDate: String {
         guard let date = event.eventDate else { return event.date }
-        return CXEventDetailDate.formatter.string(from: date)
+        return CXRaces.displayDate(date, pattern: "EEEE d MMMM yyyy")
     }
 
     private var daysUntilStart: Int? {
@@ -439,9 +439,9 @@ struct CXEventDetailView: View {
     private var countdown: String? {
         guard !event.isCancelled, let days = daysUntilStart, days >= 0 else { return nil }
         switch days {
-        case 0: return "Today"
-        case 1: return "Tomorrow"
-        default: return "In \(days) days"
+        case 0: return L10n.tr("Today")
+        case 1: return L10n.tr("Tomorrow")
+        default: return L10n.tr("In %lld days", days)
         }
     }
 
@@ -465,7 +465,7 @@ struct CXDetailTag: View {
 
     var body: some View {
         TribuneruText(
-            content: title.uppercased(),
+            content: title.uppercased(with: L10n.locale),
             style: .vaporFeedTag,
             color: color,
             lineLimit: 1
@@ -481,15 +481,6 @@ struct CXDetailTag: View {
 
 // MARK: - Private types -
 
-private enum CXEventDetailDate {
-    static let formatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE d MMMM yyyy"
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        return formatter
-    }()
-}
-
 private extension CXEventDetailView {
     enum Status {
         case upcoming
@@ -502,10 +493,10 @@ private extension CXEventDetailView {
 
         var title: String {
             switch self {
-            case .upcoming: "Upcoming"
-            case .today: "Today"
-            case .finished: "Finished"
-            case .cancelled: "Cancelled"
+            case .upcoming: L10n.tr("Upcoming")
+            case .today: L10n.tr("Today")
+            case .finished: L10n.tr("Finished")
+            case .cancelled: L10n.tr("Cancelled")
             }
         }
 
@@ -647,7 +638,7 @@ private extension DTO.CXCalendarEvent {
 private extension DTO.CXRacePage {
     static var mockMiddelkerke: Self {
         .init(
-            title: "Middelkerke",
+            title: "Middelkerke", // l10n:ignore
             summary: "Cyclocross race on the beach and dunes of Middelkerke, Belgium.",
             pastWinners: [
                 .init(

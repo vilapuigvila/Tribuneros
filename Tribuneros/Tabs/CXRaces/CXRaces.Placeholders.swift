@@ -37,10 +37,10 @@ extension CXRaces.Representable {
         races: .init(
             sections: [
                 .init(
-                    title: "Latest results",
+                    title: "Latest results", // l10n:ignore
                     races: [
                         .init(
-                            title: "Race name placeholder",
+                            title: "Race name placeholder", // l10n:ignore
                             country: "Country",
                             countryFlagURL: nil,
                             date: "0 Month 0000",
@@ -71,12 +71,12 @@ extension CXRaces.Representable {
         standings: .init(
             items: [
                 .init(
-                    title: "Ranking title placeholder",
+                    title: "Ranking title placeholder", // l10n:ignore
                     url: nil,
                     logoURL: nil,
                     categories: [
                         .init(
-                            title: "Men Elite",
+                            title: "Men Elite", // l10n:ignore
                             url: nil,
                             leaders: (1...5).map { position in
                                 .init(
@@ -129,23 +129,23 @@ extension DTO.CXRiderPage.Fact {
 
     static let placeholders: [DTO.CXRiderPage.Fact] = [
         .init(
-            label: "Date of birth",
+            label: "Date of birth", // l10n:ignore
             value: "00 Month 0000"
         ),
         .init(
-            label: "Nationality",
+            label: "Nationality", // l10n:ignore
             value: "Country"
         ),
         .init(
-            label: "Team",
+            label: "Team", // l10n:ignore
             value: "Team name placeholder"
         ),
         .init(
-            label: "Height",
+            label: "Height", // l10n:ignore
             value: "0.00 m"
         ),
         .init(
-            label: "Weight",
+            label: "Weight", // l10n:ignore
             value: "00 kg"
         )
     ]
