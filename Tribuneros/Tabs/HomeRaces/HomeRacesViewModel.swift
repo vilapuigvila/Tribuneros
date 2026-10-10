@@ -55,6 +55,8 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
             switch destiantion {
             case .nextToFinishRace(let index):
                 router.routeTo(.nextToFinishRace(index: index))
+            case .liveRace(let index):
+                routeToLiveRace(index: index)
             case .todayRaces:
                 router.routeTo(.todayRaces)
             case .yesterdayResults:
@@ -78,6 +80,25 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
         }
     }
     
+    /// `stateView.result` is empty until the page loads, so an index past the end falls back to the race detail route.
+    private func routeToLiveRace(index: Int) {
+        let races = stateView.result.sections.nextToFinish
+        guard races.indices.contains(index) else {
+            router.routeTo(.nextToFinishRace(index: index))
+            return
+        }
+        let race = races[index]
+        let context = HomeRaces.LiveRace.Context(
+            name: race.title,
+            subtitle: [race.subtitle, race.raceType]
+                .filter { !$0.isEmpty }
+                .joined(separator: " · "),
+            flagCode: race.flagCode,
+            url: HomeRaces.LiveRace.Context.liveURL(urlPath: race.urlPath)
+        )
+        router.routeTo(.liveRace(context))
+    }
+
     private func mapToHomeRacesState(_ domain: HomeRacesDomain) -> HomeRaces.ViewState {
         if domain.loading {
             return .loading

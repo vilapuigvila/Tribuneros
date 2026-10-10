@@ -221,6 +221,8 @@ enum HomeRaces {
             case race(name: String?)
         }
         case nextToFinishRace(index: Int)
+        /// A LIVE Today race: opens its live page (`LiveRaceDetailView`) instead of the race detail.
+        case liveRace(index: Int)
         case todayRaces
         case todayResults
         case yesterdayResults

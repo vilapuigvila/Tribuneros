@@ -21,7 +21,11 @@ struct TodayRacesListView: View {
                     ForEach(Array(races.enumerated()), id: \.element.id) { index, race in
                         Button {
                             UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                            action(.navigate(.nextToFinishRace(index: index)))
+                            if race.isLive {
+                                action(.navigate(.liveRace(index: index)))
+                            } else {
+                                action(.navigate(.nextToFinishRace(index: index)))
+                            }
                         } label: {
                             TodayRaceRow(race: race)
                         }

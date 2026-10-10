@@ -24,7 +24,11 @@ struct TodaySection: View {
             if let race = races.first {
                 TodayHeroCard(race: race) {
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                    action(.navigate(.nextToFinishRace(index: 0)))
+                    if race.isLive {
+                        action(.navigate(.liveRace(index: 0)))
+                    } else {
+                        action(.navigate(.nextToFinishRace(index: 0)))
+                    }
                 }
             } else {
                 TodayEmptyCard(isCompact: isCompact)

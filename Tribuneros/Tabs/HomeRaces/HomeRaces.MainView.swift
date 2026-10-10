@@ -48,6 +48,11 @@ struct HomeRacesView: View {
                     preview: preview,
                     router: viewModel.router
                 )
+            case .liveRace(let context):
+                LiveRaceDetailView(
+                    context: context,
+                    router: viewModel.router
+                )
             case .whereToWatch(let raceKey):
                 WhereToWatchView(
                     raceKey: raceKey,

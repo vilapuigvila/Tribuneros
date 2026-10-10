@@ -143,6 +143,15 @@ bar), then four sections:
   fixture's list is), so TODAY is the common tag; the old LiveStats cards are gone. A " - S2"
   suffix on the name is the stage (`title` / `stageLabel`); without one it reads "One-day race". The
   "in 2h 14m" text is computed from the ETA and refreshed by `TimelineView(.everyMinute)`.
+  Tapping a LIVE race (the hero or a "See all" row) opens `LiveRaceDetailView` (route
+  `liveRace(HomeRaces.LiveRace.Context)`, from `Navigate.liveRace(index:)`) instead of the race
+  detail. It reads the race's PCS `<race path>/live` page through `Service.parseLivePage`
+  (`Service+LiveRace.swift`; `pcs_preview.html` is the pre-race state, the Situation markup while
+  racing is unverified) in three sections: Race (KPI grid and the profile), Situation (groups on the
+  road), then Timeline. The page is polled every 5 s for 60 s, then polling stops; pull to refresh
+  restarts it. Requester TTL is 4 s. `LiveRace.Hint` shows on a fresh install and once more at least
+  48 h later (`UserSettings.liveHintFirstShown` / `liveHintShownCount`). The `MOCK_SCENARIO` mock
+  (`MockScenario.livePage(for:)`) ticks every 5 s.
 - **Results today** and **Yesterday**: the title, then highlight cards / one card of rows.
   Results start hidden: each card or row shows the `SpoilerArt` painting over redacted stand-in
   data (no real names or images reach the view), and a long press (1.5 s to reveal, 0.8 s to hide; `SpoilerHold`) reveals or hides that one race: nothing animates while the finger is down; on completion (success haptic on reveal, soft impact on hide) a reveal fades the painting from opacity 1 to 0 over 1.5 s (`SpoilerHold.revealDuration`) while the winner photo fades in, and hiding is instant, with no animation (`SpoilerCrossfade.animation(for:)` animates only when the new state is shown, Reduce Motion included)
