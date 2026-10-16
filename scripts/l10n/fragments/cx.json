@@ -247,6 +247,10 @@
     "ca": "Comença",
     "comment": "Race detail info row label for the countdown"
   },
+  "TV Info & Livestream": {
+    "ca": "Televisió i directe",
+    "comment": "Race detail panel header listing the broadcasters"
+  },
   "Team": {
     "ca": "Equip",
     "comment": "Results column header"

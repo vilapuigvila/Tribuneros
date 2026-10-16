@@ -22,6 +22,8 @@ struct SettingsView: View {
                 Settings.LanguageView(state: viewModel.stateView) {
                     viewModel.action($0)
                 }
+            case .settingsAcknowledgements:
+                Settings.AcknowledgementsView()
             default:
                 EmptyView()
             }
@@ -58,6 +60,14 @@ extension Settings {
                             identifier: "settings.language"
                         ) {
                             action(.didTapLanguage)
+                        }
+                        SettingsRow(
+                            title: L10n.tr("Acknowledgements"),
+                            detail: nil,
+                            systemImage: "heart",
+                            identifier: "settings.acknowledgements"
+                        ) {
+                            action(.didTapAcknowledgements)
                         }
                     }
                     Color.clear
@@ -102,6 +112,72 @@ extension Settings {
             .preferredColorScheme(.dark)
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle(L10n.tr("LANGUAGE"))
+        }
+    }
+}
+
+extension Settings {
+
+    struct AcknowledgementsView: View {
+        var body: some View {
+            ScrollView {
+                SettingsPanel {
+                    HStack(spacing: 12) {
+                        Image(systemName: "music.note")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(.tribuneru(.vaporAccent))
+                            .frame(width: 24)
+                            .accessibilityHidden(true)
+                        VStack(
+                            alignment: .leading,
+                            spacing: 2
+                        ) {
+                            HStack(spacing: 12) {
+                                TribuneruText(
+                                    content: L10n.tr("Music provided by Ciscu Bates"),
+                                    style: .vaporRowTitle,
+                                    color: .tribuneru(.vaporTextPrimary),
+                                    lineLimit: 2
+                                )
+                                Image("FaceIcon")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .padding(2)
+                                    .frame(
+                                        width: 24,
+                                        height: 24
+                                    )
+                                    .background(
+                                        Color.tribuneru(.white(level: 1)),
+                                        in: Circle()
+                                    )
+                                    .accessibilityHidden(true)
+                            }
+                            TribuneruText(
+                                content: L10n.tr("© 2026 Ciscu Bates. All rights reserved."),
+                                style: .vaporRowMeta,
+                                color: .tribuneru(.vaporTextSecondary),
+                                lineLimit: 2
+                            )
+                        }
+                        Spacer(minLength: 0)
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .frame(minHeight: 52)
+                    .background(
+                        Color.tribuneru(.vaporCardSurface),
+                        in: RoundedRectangle(cornerRadius: 12)
+                    )
+                    .accessibilityElement(children: .combine)
+                    .accessibilityIdentifier("settings.acknowledgements.music")
+                }
+                .padding(16)
+            }
+            .background(Color.tribuneru(.vaporPageBackground))
+            .preferredColorScheme(.dark)
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(L10n.tr("ACKNOWLEDGEMENTS"))
         }
     }
 }

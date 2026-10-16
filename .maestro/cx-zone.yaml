@@ -13,7 +13,9 @@ tags:
 - extendedWaitUntil:
     visible: "Latest results"
     timeout: 45000
-- assertVisible: "Next races"
+- assertVisible:
+    text: "Next races"
+    below: "Latest results"
 
 # Latest results -> full list -> race results (category tabs + results rows)
 - tapOn:
@@ -47,7 +49,11 @@ tags:
 
 # Next races -> All races -> calendar race with a finished result, then a race with a history
 # (both are in the mock calendar).
-- tapOn: "more info"
+- scrollUntilVisible:
+    element: "more info"
+- tapOn:
+    text: "more info"
+    below: "Next races"
 - assertVisible: "All races"
 - tapOn: "Race, country, winner..."
 - inputText: "Kleeberg"

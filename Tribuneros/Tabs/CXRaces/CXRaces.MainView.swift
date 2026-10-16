@@ -61,15 +61,6 @@ extension CXRaces {
         ) -> some View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 20) {
-                    /// calendar
-                    VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-                        VaporSectionHeader(title: L10n.tr("Next races"))
-                    } content: {
-                        CalendarView(representable: representable) {
-                            action(.didTapOnNextRaces)
-                        }
-                    }
-
                     /// latests results
                     VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
                         VaporSectionHeader(title: L10n.tr("Latest results"))
@@ -81,6 +72,15 @@ extension CXRaces {
                             }
                         ) {
                             action(.didTapOnLatestResults)
+                        }
+                    }
+
+                    /// calendar
+                    VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
+                        VaporSectionHeader(title: L10n.tr("Next races"))
+                    } content: {
+                        CalendarView(representable: representable) {
+                            action(.didTapOnNextRaces)
                         }
                     }
 

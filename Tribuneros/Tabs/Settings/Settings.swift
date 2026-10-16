@@ -12,6 +12,7 @@ extension Settings {
     enum Action {
         case didTapShowOnboarding
         case didTapLanguage
+        case didTapAcknowledgements
         case didSelectLanguage(String)
     }
 }

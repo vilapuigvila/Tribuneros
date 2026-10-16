@@ -34,6 +34,8 @@ extension Settings {
                 break
             case .didTapLanguage:
                 router.routeTo(.settingsLanguage)
+            case .didTapAcknowledgements:
+                router.routeTo(.settingsAcknowledgements)
             case .didSelectLanguage(let code):
                 interactor.useCase(.selectLanguage(code))
             }

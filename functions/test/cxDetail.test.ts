@@ -42,6 +42,24 @@ test("race page: other categories' winners are left out", () => {
   assert.ok(!riders.includes("REVOL Lise"));
 });
 
+test("race page: TV channels with names, sites and absolute logos", () => {
+  const channels = parseRacePage(fixture("race-dendermonde.html")).tvChannels;
+
+  assert.equal(channels.length, 4);
+  assert.deepEqual(channels[0], {
+    name: "Sporza",
+    logoURL: "https://cyclocross24.com/files/tv/1.png",
+    url: "https://www.sporza.be/",
+  });
+  assert.equal(channels[1].name, "Eurosport*");
+  assert.equal(channels[2].url, "https://www.hbomax.com/sports");
+  assert.equal(channels[3].url, "https://www.tntsports.co.uk/");
+});
+
+test("race page: no TV info gives an empty list", () => {
+  assert.deepEqual(parseRacePage(fixture("race-koksijde.html")).tvChannels, []);
+});
+
 test("rider page: name, avatar, first 8 facts and 10 most recent results", () => {
   const page = parseRiderPage(fixture("rider-wout-van-aert.html"));
 

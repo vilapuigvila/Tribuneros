@@ -127,13 +127,6 @@ enum Onboarding {
     static let seedsSecondShowing = false
     static let resetsAtLaunch = false
     #endif
-
-    /// The launch splash covers the app for this long, so the onboarding waits for it to fade.
-    static var splashDelay: Duration {
-        LaunchSplash.isEnabledAtLaunch
-            ? LaunchSplash.minimumDuration + .seconds(LaunchSplash.fadeDuration)
-            : .zero
-    }
 }
 
 extension Onboarding {
@@ -195,6 +188,8 @@ extension Onboarding {
     struct Page: Identifiable, Equatable {
         let id: Int
         let animation: String
+        /// A bundled `.m4a` (from `Music/`) looped while the page is on screen.
+        let music: String
         /// The frame shown instead of the loop with Reduce Motion.
         let stillProgress: Double
         let title: String
@@ -210,6 +205,7 @@ extension Onboarding {
             Page(
                 id: 0,
                 animation: "onboarding_welcome",
+                music: "1",
                 stillProgress: 0.3,
                 title: showing > 1
                     ? L10n.tr("Welcome back to Cycling Tribune")
@@ -219,6 +215,7 @@ extension Onboarding {
             Page(
                 id: 1,
                 animation: "onboarding_spoilers",
+                music: "2",
                 stillProgress: 0.6,
                 title: L10n.tr("Results without spoilers"),
                 body: L10n.tr("Results start hidden behind a painting. Press and hold one to reveal or hide it, then tap to open it.")
@@ -226,6 +223,7 @@ extension Onboarding {
             Page(
                 id: 2,
                 animation: "onboarding_cx",
+                music: "3",
                 stillProgress: 0.5,
                 title: L10n.tr("CX Zone"),
                 body: L10n.tr("Cyclocross races, results, standings and the whole season calendar.")
@@ -233,6 +231,7 @@ extension Onboarding {
             Page(
                 id: 3,
                 animation: "onboarding_paddock",
+                music: "4",
                 stillProgress: 0.5,
                 title: L10n.tr("The Paddock"),
                 body: L10n.tr("Transfers, race program changes, birthdays and the best cycling press.")

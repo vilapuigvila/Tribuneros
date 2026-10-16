@@ -1,5 +1,5 @@
 # Launch splash (Debug build): mocked launches skip it, so launchSplash turns it on.
-# It stays at least 5 s, then fades to the Today Races tab.
+# It stays at least 3 s, then (the mocked request is already done) fades to the Today Races tab, or to the onboarding when that is on.
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -14,15 +14,37 @@ tags:
 - evalScript: ${output.launchedAt = Date.now()}
 - assertVisible:
     id: "launch.splash"
-# No plain sleep in Maestro: busy-wait until 4 s after launch (the first assert alone takes ~2 s).
-- evalScript: ${while (Date.now() < output.launchedAt + 4000) {}}
+# No plain sleep in Maestro: busy-wait until 1 s after launch (an assert then takes ~1-2 s, still before the 3 s minimum).
+- evalScript: ${while (Date.now() < output.launchedAt + 1000) {}}
 - assertVisible:
     id: "launch.splash"
 - extendedWaitUntil:
     notVisible:
       id: "launch.splash"
     timeout: 10000
+- evalScript: ${output.closedAfter = Date.now() - output.launchedAt}
+- assertTrue: ${output.closedAfter >= 2500 && output.closedAfter < 6000}
 - extendedWaitUntil:
     visible:
       id: "home.results.card.0"
     timeout: 10000
+
+# With the onboarding on too, it starts only once the splash has gone.
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+      launchSplash: "on"
+      onboarding: "on"
+- assertVisible:
+    id: "launch.splash"
+- assertNotVisible:
+    id: "onboarding"
+- extendedWaitUntil:
+    notVisible:
+      id: "launch.splash"
+    timeout: 10000
+- extendedWaitUntil:
+    visible:
+      id: "onboarding"
+    timeout: 5000

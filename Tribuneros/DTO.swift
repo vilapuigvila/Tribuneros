@@ -458,9 +458,40 @@ extension DTO {
             let resultsURL: URL?
         }
 
+        struct TVChannel: Equatable, Sendable, Hashable, Decodable {
+            let name: String
+            let logoURL: URL?
+            let url: URL?
+        }
+
         let title: String
         let summary: String
         let pastWinners: [PastWinner]
+        let tvChannels: [TVChannel]
+
+        init(
+            title: String,
+            summary: String,
+            pastWinners: [PastWinner],
+            tvChannels: [TVChannel] = []
+        ) {
+            self.title = title
+            self.summary = summary
+            self.pastWinners = pastWinners
+            self.tvChannels = tvChannels
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case title, summary, pastWinners, tvChannels
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            title = try container.decode(String.self, forKey: .title)
+            summary = try container.decode(String.self, forKey: .summary)
+            pastWinners = try container.decode([PastWinner].self, forKey: .pastWinners)
+            tvChannels = try container.decodeIfPresent([TVChannel].self, forKey: .tvChannels) ?? []
+        }
     }
 
     /// Everything the CX calendar-event detail screen loads on demand, on top of the

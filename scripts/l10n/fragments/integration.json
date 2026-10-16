@@ -8,5 +8,9 @@
   "Language": {"ca": "Idioma", "comment": "Settings row"},
   "LANGUAGE": {"ca": "IDIOMA", "comment": "Language screen navigation title"},
   "System default": {"ca": "Predeterminat del sistema", "comment": "Language option: follow the device languages"},
-  "More languages are coming.": {"ca": "Aviat hi haurà més idiomes.", "comment": "Footer under the language list"}
+  "More languages are coming.": {"ca": "Aviat hi haurà més idiomes.", "comment": "Footer under the language list"},
+  "Acknowledgements": {"ca": "Agraïments", "comment": "Settings row"},
+  "ACKNOWLEDGEMENTS": {"ca": "AGRAÏMENTS", "comment": "Acknowledgements screen navigation title"},
+  "Music provided by Ciscu Bates": {"ca": "Música de Ciscu Bates", "comment": "Acknowledgements: credit for the onboarding music"},
+  "© 2026 Ciscu Bates. All rights reserved.": {"ca": "© 2026 Ciscu Bates. Tots els drets reservats.", "comment": "Acknowledgements: copyright notice for the onboarding music"}
 }

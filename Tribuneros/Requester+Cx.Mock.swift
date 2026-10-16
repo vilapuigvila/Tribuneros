@@ -232,7 +232,12 @@ enum CxMock {
                     countryFlagURL: nil,
                     resultsURL: url("race/\(17_100 + offset)/")
                 )
-            }
+            },
+            tvChannels: id == "no-tv" ? [] : [
+                .init(name: "Sporza", logoURL: nil, url: url("tv/sporza")), // l10n:ignore
+                .init(name: "Eurosport*", logoURL: nil, url: url("tv/eurosport")), // l10n:ignore
+                .init(name: "HBO Max", logoURL: nil, url: url("tv/hbomax")) // l10n:ignore
+            ]
         )
     }
 

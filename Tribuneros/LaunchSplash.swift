@@ -8,7 +8,8 @@ import Lottie
 import SwiftUI
 
 enum LaunchSplash {
-    static let minimumDuration: Duration = .seconds(5)
+    static let minimumDuration: Duration = .seconds(3)
+    static let maximumDuration: Duration = .seconds(8)
     static let fadeDuration: TimeInterval = 0.4
     static let title = "Cycling Tribune"
 
@@ -19,7 +20,42 @@ enum LaunchSplash {
         override ?? !hasMockScenario
     }
 
+    /// Mocked launches never reach the network, so for them the request counts as already finished.
+    static func warmHomepage(
+        hasMockScenario: Bool = hasMockScenarioAtLaunch,
+        fetch: @Sendable () async throws -> Void = { _ = try await Service.getHomepageDocument() }
+    ) async throws {
+        guard !hasMockScenario else { return }
+        try await fetch()
+    }
+
+    /// Closes after at least `minimum`, then as soon as `request` ends (a throw counts as ended), and never after `maximum`; a request still running at the cap keeps going and fills the cache.
+    static func waitToClose(
+        minimum: Duration = minimumDuration,
+        maximum: Duration = maximumDuration,
+        request: @escaping @Sendable () async throws -> Void
+    ) async {
+        let clock = ContinuousClock()
+        let start = clock.now
+        let (ended, signal) = AsyncStream<Void>.makeStream()
+        Task.detached(priority: .userInitiated) {
+            try? await request()
+            signal.yield()
+        }
+        let cap = Task {
+            try? await clock.sleep(until: start.advanced(by: maximum))
+            signal.yield()
+        }
+        defer { cap.cancel() }
+        try? await clock.sleep(until: start.advanced(by: minimum))
+        for await _ in ended { break }
+    }
+
     #if DEBUG
+    static var hasMockScenarioAtLaunch: Bool {
+        HomeRaces.MockScenario.current != nil
+    }
+
     /// Mocked launches (Maestro) skip the splash unless `LAUNCH_SPLASH` or the `launchSplash` launch argument turns it on.
     static var isEnabledAtLaunch: Bool {
         isEnabled(
@@ -39,8 +75,21 @@ enum LaunchSplash {
             .map { ["1", "on", "true", "yes"].contains($0.lowercased()) }
     }
     #else
+    static let hasMockScenarioAtLaunch = false
     static let isEnabledAtLaunch = true
     #endif
+}
+
+private struct LaunchSplashFinishedKey: EnvironmentKey {
+    static let defaultValue = true
+}
+
+extension EnvironmentValues {
+    /// False while the launch splash is on screen or fading out, true once it is gone (or when there is none); set by `LaunchSplashHost`.
+    var isLaunchSplashFinished: Bool {
+        get { self[LaunchSplashFinishedKey.self] }
+        set { self[LaunchSplashFinishedKey.self] = newValue }
+    }
 }
 
 @MainActor
@@ -87,6 +136,7 @@ final class LaunchJingle: ObservableObject {
 /// Owns the splash state so hiding it re-renders only this view; `content` is built once, like `MaintenanceHost`.
 struct LaunchSplashHost<Content: View>: View {
     @State private var isShowingSplash = LaunchSplash.isEnabledAtLaunch
+    @State private var isFinished = !LaunchSplash.isEnabledAtLaunch
     @StateObject private var jingle = LaunchJingle()
     private let content: Content
 
@@ -97,24 +147,32 @@ struct LaunchSplashHost<Content: View>: View {
     var body: some View {
         ZStack {
             content
+                .environment(
+                    \.isLaunchSplashFinished,
+                    isFinished
+                )
                 .accessibilityHidden(isShowingSplash)
             if isShowingSplash {
                 LaunchSplashView()
                     .transition(.opacity)
                     .zIndex(1)
                     .onAppear { jingle.play() }
-                    .task { await finish() }
             }
         }
+        .task { await finish() }
     }
 
     private func finish() async {
-        try? await Task.sleep(for: LaunchSplash.minimumDuration)
+        guard isShowingSplash else { return }
+        await LaunchSplash.waitToClose { try await LaunchSplash.warmHomepage() }
         guard !Task.isCancelled else { return }
         withAnimation(.easeOut(duration: LaunchSplash.fadeDuration)) {
             isShowingSplash = false
         }
-        await jingle.fadeOut(duration: LaunchSplash.fadeDuration)
+        async let jingleFaded: Void = jingle.fadeOut(duration: LaunchSplash.fadeDuration)
+        try? await Task.sleep(for: .seconds(LaunchSplash.fadeDuration))
+        isFinished = true
+        await jingleFaded
     }
 }
 

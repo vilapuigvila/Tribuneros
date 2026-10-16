@@ -17,6 +17,7 @@ enum UserPreferencesKey: String, CaseIterable {
     case liveHintShownCount
     case onboardingFirstShown
     case onboardingShownCount
+    case onboardingMusicMuted
     case appLanguage
     case preferencesResetVersion
 }
@@ -154,6 +155,9 @@ struct UserSettings {
 
     @UserDefault(UserPreferencesKey.onboardingShownCount.rawValue, defaultValue: 0)
     static var onboardingShownCount: Int?
+
+    @UserDefault(UserPreferencesKey.onboardingMusicMuted.rawValue, defaultValue: false)
+    static var onboardingMusicMuted: Bool?
 
     @UserDefault(UserPreferencesKey.appLanguage.rawValue, defaultValue: AppLanguage.system)
     static var appLanguage: String?

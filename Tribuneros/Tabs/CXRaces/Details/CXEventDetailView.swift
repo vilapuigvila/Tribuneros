@@ -14,6 +14,9 @@ struct CXEventDetailView: View {
     private enum UI {
         static let resultsLimit = 10
         static let pastWinnersLimit = 12
+        static let tvPlaceholders: [DTO.CXRacePage.TVChannel] = (0..<3).map { _ in
+            .init(name: "Channel", logoURL: nil, url: nil) // l10n:ignore
+        }
     }
 
     let event: DTO.CXCalendarEvent
@@ -70,6 +73,7 @@ struct CXEventDetailView: View {
                         if status.hasStarted {
                             resultsPanel(DTO.CX24Homepage.CategoryResult.placeholders)
                         }
+                        tvPanel(UI.tvPlaceholders)
                         pastWinnersPanel(DTO.CXRacePage.PastWinner.placeholders)
                         aboutPanel("About the race placeholder. A couple of lines of text stand in for the summary of the race until it loads.")
                     }
@@ -80,6 +84,9 @@ struct CXEventDetailView: View {
                 } else {
                     if !detail.results.isEmpty {
                         resultsPanel(detail.results)
+                    }
+                    if let channels = detail.page?.tvChannels, !channels.isEmpty {
+                        tvPanel(channels)
                     }
                     if let page = detail.page, !page.pastWinners.isEmpty {
                         pastWinnersPanel(page.pastWinners)
@@ -260,6 +267,53 @@ struct CXEventDetailView: View {
                             .padding(.top, 10)
                     }
                     .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    // MARK: - TV info -
+
+    private func tvPanel(_ channels: [DTO.CXRacePage.TVChannel]) -> some View {
+        VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
+            VaporSectionHeader(title: L10n.tr("TV Info & Livestream"))
+        } content: {
+            LazyVGrid(
+                columns: [GridItem(.adaptive(minimum: 88), spacing: 10, alignment: .top)],
+                alignment: .leading,
+                spacing: 10
+            ) {
+                ForEach(channels.indices, id: \.self) { index in
+                    let channel = channels[index]
+                    Button {
+                        if let url = channel.url {
+                            openURL(url)
+                        }
+                    } label: {
+                        VStack(spacing: 8) {
+                            CachedImageView(
+                                imageUrl: channel.logoURL,
+                                cornerRadius: 8
+                            )
+                            .frame(height: 40)
+                            TribuneruText(
+                                content: channel.name,
+                                style: .vaporMeta,
+                                color: .tribuneru(.vaporTextPrimary),
+                                lineLimit: 2
+                            )
+                            .multilineTextAlignment(.center)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.tribuneru(.vaporCardSurface))
+                        )
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("tv-channel-\(channel.name)")
                 }
             }
         }

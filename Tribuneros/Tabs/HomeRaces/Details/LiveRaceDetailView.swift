@@ -43,7 +43,7 @@ struct LiveRaceDetailView: View {
                         viewModel.action(.openOnPCS)
                     } label: {
                         VaporCard {
-                            VaporMoreInfoLink(title: "Open on ProCyclingStats")
+                            VaporMoreInfoLink(title: L10n.tr("Open on ProCyclingStats"))
                         }
                     }
                     .buttonStyle(.plain)
@@ -57,7 +57,7 @@ struct LiveRaceDetailView: View {
         }
         .background(Color.tribuneru(.vaporPageBackground))
         .preferredColorScheme(.dark)
-        .navigationTitle("Live")
+        .navigationTitle(L10n.tr("Live"))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             viewModel.action(.onAppear)
@@ -143,7 +143,7 @@ struct LiveRaceDetailView: View {
                 .redacted(reason: .placeholder)
                 .disabled(true)
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel("Loading the live race")
+                .accessibilityLabel(L10n.tr("Loading the live race"))
         case .loaded(let loaded):
             LiveRaceSections(content: loaded)
         case .unavailable(let message):
@@ -172,7 +172,7 @@ private struct LiveRaceSections: View {
 
     private var profileSection: some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: "Profile")
+            VaporSectionHeader(title: L10n.tr("Profile"))
         } content: {
             if let profile = content.profile {
                 LiveRaceProfileChart(profile: profile)
@@ -186,7 +186,7 @@ private struct LiveRaceSections: View {
 
     private var raceDataSection: some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-            VaporSectionHeader(title: "Race data")
+            VaporSectionHeader(title: L10n.tr("Race data"))
         } content: {
             if content.stats.isEmpty {
                 emptyText("No race data on the page yet.")
@@ -212,7 +212,7 @@ private struct LiveRaceSections: View {
 
     private var situationSection: some View {
         VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: "Situation")
+            VaporSectionHeader(title: L10n.tr("Situation"))
         } content: {
             if content.groups.isEmpty {
                 emptyText("Nothing on the road yet.")
@@ -300,7 +300,12 @@ private struct LiveRaceProfileChart: View {
             }
             .frame(height: Self.chartHeight)
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel("Elevation profile, \(percentDone) percent ridden")
+            .accessibilityLabel(
+                L10n.tr(
+                    "Elevation profile, %lld percent ridden",
+                    percentDone
+                )
+            )
         }
     }
 
@@ -681,7 +686,10 @@ private struct LiveRaceGroupRow: View {
                 }
                 if group.riders.count > Self.visibleRiderCount {
                     TribuneruText(
-                        content: "+\(group.riders.count - Self.visibleRiderCount) more",
+                        content: L10n.tr(
+                            "+%lld more",
+                            group.riders.count - Self.visibleRiderCount
+                        ),
                         style: .vaporRowMeta,
                         color: .tribuneru(.vaporTextSecondary),
                         lineLimit: 1

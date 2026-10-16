@@ -21,6 +21,7 @@ extension EnvironmentValues {
 /// Owns the onboarding state so showing it re-renders only this view; `content` is built once, like `MaintenanceHost`.
 struct OnboardingHost<Content: View>: View {
     @StateObject private var presenter = Onboarding.Presenter()
+    @Environment(\.isLaunchSplashFinished) private var isLaunchSplashFinished
     private let content: Content
 
     init(@ViewBuilder content: () -> Content) {
@@ -44,9 +45,8 @@ struct OnboardingHost<Content: View>: View {
                 .zIndex(1)
             }
         }
-        .task {
-            try? await Task.sleep(for: Onboarding.splashDelay)
-            guard !Task.isCancelled else { return }
+        .task(id: isLaunchSplashFinished) {
+            guard isLaunchSplashFinished else { return }
             withAnimation(.easeOut(duration: 0.35)) {
                 presenter.start(
                     isEnabled: Onboarding.isEnabledAtLaunch,
@@ -75,6 +75,7 @@ struct OnboardingView: View {
     let dismiss: (Onboarding.Dismissal) -> Void
 
     @State private var selection = 0
+    @StateObject private var music = OnboardingMusic()
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var pages: [Onboarding.Page] {
@@ -114,10 +115,18 @@ struct OnboardingView: View {
         }
         .onChange(of: selection) {
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            playMusic()
         }
+        .onAppear(perform: playMusic)
+        .onDisappear(perform: music.stop)
         .accessibilityElement(children: .contain)
         .accessibilityAddTraits(.isModal)
         .accessibilityIdentifier("onboarding")
+    }
+
+    private func playMusic() {
+        guard let page = pages.first(where: { $0.id == selection }) else { return }
+        music.play(page.music)
     }
 
     private var background: some View {
@@ -149,6 +158,21 @@ struct OnboardingView: View {
             )
             .accessibilityHidden(true)
             Spacer()
+            Button {
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                music.toggleMute()
+            } label: {
+                Image(systemName: music.isMuted ? "speaker.slash.fill" : "speaker.wave.2.fill")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.tribuneru(.vaporTextSecondary))
+                    .frame(
+                        width: 44,
+                        height: 44
+                    )
+                    .contentShape(Rectangle())
+            }
+            .accessibilityLabel(music.isMuted ? L10n.tr("Turn music on") : L10n.tr("Turn music off"))
+            .accessibilityIdentifier("onboarding.music")
             if !isLastPage {
                 Button {
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()

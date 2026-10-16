@@ -1,0 +1,32 @@
+# CX calendar race detail: the "TV Info & Livestream" panel and a broadcaster tap, on Debug mock
+# data (mock scenario live): no network.
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- tapOn: "CX Zone"
+- extendedWaitUntil:
+    visible: "Latest results"
+    timeout: 45000
+- scrollUntilVisible:
+    element: "more info"
+- tapOn:
+    text: "more info"
+    below: "Next races"
+- assertVisible: "All races"
+- tapOn: "Race, country, winner..."
+- inputText: "koksijde"
+- tapOn: "\\d\\d-\\d\\d-\\d{4}, .*Koksijde"
+- extendedWaitUntil:
+    visible: "TV Info & Livestream"
+    timeout: 45000
+- assertVisible: "Sporza"
+- assertVisible: "Eurosport\\*"
+- tapOn: "Sporza"
+- extendedWaitUntil:
+    visible: ".*cyclocross24.*"
+    timeout: 20000

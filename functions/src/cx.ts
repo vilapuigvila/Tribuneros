@@ -473,10 +473,17 @@ export interface RacePastWinner {
   resultsURL: string | null;
 }
 
+export interface TVChannel {
+  name: string;
+  logoURL: string | null;
+  url: string | null;
+}
+
 export interface RacePage {
   title: string;
   summary: string;
   pastWinners: RacePastWinner[];
+  tvChannels: TVChannel[];
 }
 
 export interface RiderFact {
@@ -522,6 +529,21 @@ function isResultsPath(href: string): boolean {
   return code !== null && strictInt(code) !== null;
 }
 
+function parseTVChannels($: CheerioAPI): TVChannel[] {
+  return $("div.tv-info-block li.tv-info")
+    .map((_, item): TVChannel | null => {
+      const $item = $(item);
+      const name = clean($item.find("div.lt_text").first().text());
+      if (!name) return null;
+      return {
+        name,
+        logoURL: absoluteURL($item.find("img[src]").first().attr("src")),
+        url: absoluteURL($item.find("a[href]").first().attr("href")),
+      };
+    })
+    .get();
+}
+
 // The History block lists every category's winners as sibling rows under a header per category.
 export function parseRacePage($: CheerioAPI): RacePage {
   const header = $("div.ri_history_category")
@@ -558,6 +580,7 @@ export function parseRacePage($: CheerioAPI): RacePage {
     title: mainTitle($),
     summary: clean($("meta[name=description]").first().attr("content")),
     pastWinners: pastWinners.sort((lhs, rhs) => Number(rhs.year) - Number(lhs.year)),
+    tvChannels: parseTVChannels($),
   };
 }
 

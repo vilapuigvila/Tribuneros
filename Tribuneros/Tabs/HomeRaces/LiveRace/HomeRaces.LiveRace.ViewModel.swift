@@ -93,7 +93,7 @@ extension HomeRaces.LiveRace {
             case .idle, .loading:
                 return .loading
             case .failed:
-                return .unavailable(message: "Couldn't load the live race. Pull down to try again.")
+                return .unavailable(message: L10n.tr("Couldn't load the live race. Pull down to try again."))
             case .loaded(let page):
                 return .loaded(content(page))
             }
@@ -133,8 +133,8 @@ extension HomeRaces.LiveRace {
         /// No profile without points; the peloton's km is estimated (`estimatedPelotonKm`).
         private static func viewProfile(_ page: DTO.LivePage) -> ViewState.Profile? {
             guard let profile = page.profile, !profile.points.isEmpty else { return nil }
-            let frontKm = numberStat(page.stats, label: "km done")
-            let averageKmh = numberStat(page.stats, label: "avg.")
+            let frontKm = numberStat(page.stats, label: "km done") // l10n:ignore
+            let averageKmh = numberStat(page.stats, label: "avg.") // l10n:ignore
             let peloton = page.groups.first(where: { $0.isPeloton })
             return ViewState.Profile(
                 points: profile.points,

@@ -47,6 +47,9 @@
   "%lldm": {
     "ca": "%lld min"
   },
+  "+%lld more": {
+    "ca": "+%lld més"
+  },
   "Arrival": {
     "ca": "Arribada"
   },
@@ -64,6 +67,9 @@
   },
   "Couldn't load the general classification.": {
     "ca": "No s’ha pogut carregar la classificació general."
+  },
+  "Couldn't load the live race. Pull down to try again.": {
+    "ca": "No s’ha pogut carregar la cursa en directe. Estira cap avall per tornar-ho a provar."
   },
   "Couldn't load the race preview.": {
     "ca": "No s’ha pogut carregar la prèvia de la cursa."
@@ -105,6 +111,9 @@
   "ETA - %@": {
     "ca": "ARRIBADA - %@"
   },
+  "Elevation profile, %lld percent ridden": {
+    "ca": "Perfil d’altimetria, %lld per cent recorregut"
+  },
   "FINISHED": {
     "ca": "ACABADA"
   },
@@ -138,11 +147,17 @@
   "Listed, no broadcast yet": {
     "ca": "Llistada, sense retransmissió encara"
   },
+  "Live": {
+    "ca": "En directe"
+  },
   "Loading": {
     "ca": "S’està carregant"
   },
   "Loading results": {
     "ca": "S’estan carregant els resultats"
+  },
+  "Loading the live race": {
+    "ca": "Carregant la cursa en directe"
   },
   "Loading the race": {
     "ca": "S’està carregant la cursa",
@@ -240,6 +255,9 @@
   "Race Result": {
     "ca": "Resultat de la cursa"
   },
+  "Race data": {
+    "ca": "Dades de la cursa"
+  },
   "Race info": {
     "ca": "Informació de la cursa"
   },
@@ -278,6 +296,9 @@
   },
   "Show results": {
     "ca": "Mostra els resultats"
+  },
+  "Situation": {
+    "ca": "Situació"
   },
   "Something went wrong": {
     "ca": "Alguna cosa ha fallat"
@@ -321,6 +342,12 @@
   },
   "Try again": {
     "ca": "Torna-ho a provar"
+  },
+  "Turn music off": {
+    "ca": "Desactiva la música"
+  },
+  "Turn music on": {
+    "ca": "Activa la música"
   },
   "Vertical": {
     "ca": "Desnivell"
