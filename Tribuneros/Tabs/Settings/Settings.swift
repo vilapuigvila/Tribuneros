@@ -14,6 +14,7 @@ extension Settings {
         case didTapLanguage
         case didTapAcknowledgements
         case didSelectLanguage(String)
+        case didToggleHidesResults(Bool)
     }
 }
 
@@ -22,6 +23,7 @@ extension Settings {
     struct ViewState: Equatable {
         let languageTitle: String
         let languages: [Representable.Language]
+        let hidesResults: Bool
 
         static var idle: ViewState {
             ViewModel<InteractorImpl>.mapToViewState(

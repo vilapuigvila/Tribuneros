@@ -19,6 +19,7 @@ enum UserPreferencesKey: String, CaseIterable {
     case onboardingShownCount
     case onboardingMusicMuted
     case appLanguage
+    case hidesResults
     case preferencesResetVersion
 }
 
@@ -161,6 +162,10 @@ struct UserSettings {
 
     @UserDefault(UserPreferencesKey.appLanguage.rawValue, defaultValue: AppLanguage.system)
     static var appLanguage: String?
+
+    /// Results start hidden behind the spoiler painting; off shows them as soon as they load.
+    @UserDefault(UserPreferencesKey.hidesResults.rawValue, defaultValue: true)
+    static var hidesResults: Bool?
 }
 
 

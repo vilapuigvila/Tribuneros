@@ -86,6 +86,42 @@ final class SettingsTests: XCTestCase {
         XCTAssertEqual(makeStoreInteractor().domain.language, "en")
     }
 
+    func testResultsAreHiddenByDefault() {
+        let interactor = makeInteractor()
+        XCTAssertTrue(interactor.domain.hidesResults)
+        XCTAssertTrue(
+            Settings.ViewModel<Settings.InteractorImpl>.mapToViewState(from: interactor.domain).hidesResults
+        )
+    }
+
+    func testTurningHideResultsOffSavesItAndKeepsTheLanguage() {
+        var saved: [Bool] = []
+        let interactor = Settings.InteractorImpl(
+            store: Settings.Store(
+                loadLanguage: { "ca" },
+                saveLanguage: { _ in },
+                loadHidesResults: { true },
+                saveHidesResults: { saved.append($0) }
+            )
+        )
+        interactor.useCase(.setHidesResults(false))
+        interactor.useCase(.setHidesResults(false))
+        XCTAssertFalse(interactor.domain.hidesResults)
+        XCTAssertEqual(interactor.domain.language, "ca")
+        XCTAssertEqual(saved, [false])
+    }
+
+    func testHideResultsPersistsThroughUserSettingsKey() {
+        let key = UserPreferencesKey.hidesResults.rawValue
+        let previous = UserDefaults.standard.data(forKey: key)
+        defer { UserDefaults.standard.set(previous, forKey: key) }
+        UserDefaults.standard.removeObject(forKey: key)
+        XCTAssertEqual(UserSettings.hidesResults, true)
+        makeStoreInteractor().useCase(.setHidesResults(false))
+        XCTAssertEqual(UserSettings.hidesResults, false)
+        XCTAssertFalse(makeStoreInteractor().domain.hidesResults)
+    }
+
     private func makeStoreInteractor() -> Settings.InteractorImpl {
         Settings.InteractorImpl(store: .userSettings)
     }

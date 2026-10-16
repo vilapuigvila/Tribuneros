@@ -166,6 +166,42 @@ final class PerRaceSpoilerTests: XCTestCase {
         XCTAssertEqual(try visibilities(domain(revealed: []), in: \.racesFinished), [.hidden, .hidden])
     }
 
+    func testWithResultsShownEveryRaceStartsShown() throws {
+        var shown = domain(revealed: [])
+        shown.hidesResults = false
+
+        XCTAssertEqual(try visibilities(shown, in: \.racesFinished), [.shown, .shown])
+        XCTAssertEqual(try visibilities(shown, in: \.yesterdayResults), [.shown, .shown])
+    }
+
+    func testWithResultsShownAToggledRaceIsHidden() throws {
+        var shown = domain(revealed: [finished("A", url: raceA).revealKey])
+        shown.hidesResults = false
+
+        XCTAssertEqual(try visibilities(shown, in: \.racesFinished), [.hidden, .shown])
+    }
+
+    func testTurningResultsOnOrOffStartsTogglesOverAndHidesTheHint() {
+        let changes = PassthroughSubject<Bool, Never>()
+        let interactor = HomeRacesInteractorImpl(
+            hidesResults: true,
+            hidesResultsChanges: changes.eraseToAnyPublisher()
+        )
+        XCTAssertTrue(interactor.domain.hidesResults)
+        interactor.useCase(.toggleReveal(key: finished("A", url: raceA).revealKey))
+
+        let updated = expectation(description: "setting applied")
+        let cancellable = interactor.publisher
+            .first { !$0.hidesResults }
+            .sink { _ in updated.fulfill() }
+        changes.send(false)
+        wait(for: [updated], timeout: 2)
+        cancellable.cancel()
+
+        XCTAssertTrue(interactor.domain.revealedRaces.isEmpty)
+        XCTAssertFalse(interactor.domain.showSpoilerHint)
+    }
+
     func testARaceWithoutAURLIsKeyedByItsName() {
         XCTAssertEqual(finished("Tour de Nowhere", url: nil).revealKey, "Tour de Nowhere")
         XCTAssertEqual(finished("A", url: raceA).revealKey, raceA.absoluteString)

@@ -1992,6 +1992,18 @@
         }
       }
     },
+    "Results stay hidden until you press and hold them. Turn it off to see them as soon as you open the app." : {
+      "comment" : "Footer under the Hide results switch in Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Els resultats queden amagats fins que els mantens premuts. Desactiva-ho per veure’ls tan bon punt obris l’app."
+          }
+        }
+      }
+    },
     "Results today" : {
       "extractionState" : "manual",
       "localizations" : {

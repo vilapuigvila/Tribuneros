@@ -70,6 +70,30 @@ extension Settings {
                             action(.didTapAcknowledgements)
                         }
                     }
+                    VStack(spacing: 8) {
+                        SettingsPanel {
+                            SettingsToggleRow(
+                                title: L10n.tr("Hide results"),
+                                systemImage: "eye.slash",
+                                identifier: "settings.hideResults",
+                                isOn: Binding(
+                                    get: { state.hidesResults },
+                                    set: { action(.didToggleHidesResults($0)) }
+                                )
+                            )
+                        }
+                        TribuneruText(
+                            content: L10n.tr("Results stay hidden until you press and hold them. Turn it off to see them as soon as you open the app."),
+                            style: .vaporRowMeta,
+                            color: .tribuneru(.vaporTextSecondary)
+                        )
+                        .frame(
+                            maxWidth: .infinity,
+                            alignment: .leading
+                        )
+                        .padding(.horizontal, 4)
+                        .accessibilityIdentifier("settings.hideResults.footer")
+                    }
                     Color.clear
                         .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
                 }
@@ -249,6 +273,40 @@ private struct SettingsRow: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(detail.map { "\(title), \($0)" } ?? title)
         .accessibilityAddTraits(.isButton)
+        .accessibilityIdentifier(identifier)
+    }
+}
+
+private struct SettingsToggleRow: View {
+    let title: String
+    let systemImage: String
+    let identifier: String
+    @Binding var isOn: Bool
+
+    var body: some View {
+        Toggle(isOn: $isOn) {
+            HStack(spacing: 12) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(.tribuneru(.vaporAccent))
+                    .frame(width: 24)
+                    .accessibilityHidden(true)
+                TribuneruText(
+                    content: title,
+                    style: .vaporRowTitle,
+                    color: .tribuneru(.vaporTextPrimary),
+                    lineLimit: 1
+                )
+            }
+        }
+        .tint(.tribuneru(.vaporAccent))
+        .padding(.horizontal, 14)
+        .frame(minHeight: 52)
+        .background(
+            Color.tribuneru(.vaporCardSurface),
+            in: RoundedRectangle(cornerRadius: 12)
+        )
+        .accessibilityLabel(title)
         .accessibilityIdentifier(identifier)
     }
 }
