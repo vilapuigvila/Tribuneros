@@ -8,5 +8,6 @@
   "Language": {"ca": "Idioma", "comment": "Settings row"},
   "LANGUAGE": {"ca": "IDIOMA", "comment": "Language screen navigation title"},
   "System default": {"ca": "Predeterminat del sistema", "comment": "Language option: follow the device languages"},
-  "More languages are coming.": {"ca": "Aviat hi haurà més idiomes.", "comment": "Footer under the language list"}
+  "More languages are coming.": {"ca": "Aviat hi haurà més idiomes.", "comment": "Footer under the language list"},
+  "Results stay hidden until you press and hold them. Turn it off to see them as soon as you open the app.": {"ca": "Els resultats queden amagats fins que els mantens premuts. Desactiva-ho per veure’ls tan bon punt obris l’app.", "comment": "Footer under the Hide results switch in Settings"}
 }

@@ -36,6 +36,8 @@ extension Settings {
                 router.routeTo(.settingsLanguage)
             case .didSelectLanguage(let code):
                 interactor.useCase(.selectLanguage(code))
+            case .didToggleHidesResults(let value):
+                interactor.useCase(.setHidesResults(value))
             }
         }
 
@@ -49,7 +51,8 @@ extension Settings {
             }
             return Settings.ViewState(
                 languageTitle: languages.first { $0.isSelected }?.title ?? Settings.Domain.title(for: Settings.Domain.defaultLanguage),
-                languages: languages
+                languages: languages,
+                hidesResults: domain.hidesResults
             )
         }
     }

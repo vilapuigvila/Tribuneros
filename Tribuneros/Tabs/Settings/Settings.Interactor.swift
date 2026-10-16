@@ -9,6 +9,8 @@ import Combine
 extension Settings {
     struct Domain: Equatable {
         var language: String
+        /// Today Races results start hidden behind the spoiler painting.
+        var hidesResults = true
 
         /// Follow the device's languages until the user picks one.
         static let defaultLanguage = AppLanguage.system
@@ -28,11 +30,14 @@ extension Settings {
 
     enum UseCase: Sendable {
         case selectLanguage(String)
+        case setHidesResults(Bool)
     }
 
     struct Store {
         var loadLanguage: () -> String?
         var saveLanguage: (String) -> Void
+        var loadHidesResults: () -> Bool? = { true }
+        var saveHidesResults: (Bool) -> Void = { _ in }
 
         static let userSettings = Store(
             loadLanguage: { UserSettings.appLanguage },
@@ -41,7 +46,10 @@ extension Settings {
                 Task { @MainActor in
                     AppLocalization.shared.apply(stored: code)
                 }
-            }
+            },
+            // Today Races listens to the key, so the change applies without a restart.
+            loadHidesResults: { UserSettings.hidesResults },
+            saveHidesResults: { UserSettings.hidesResults = $0 }
         )
     }
 
@@ -63,7 +71,12 @@ extension Settings {
             let language = Domain.supportedLanguages.contains { $0.code == stored }
                 ? stored ?? Domain.defaultLanguage
                 : Domain.defaultLanguage
-            subject = CurrentValueSubject(Domain(language: language))
+            subject = CurrentValueSubject(
+                Domain(
+                    language: language,
+                    hidesResults: store.loadHidesResults() ?? true
+                )
+            )
         }
 
         func useCase(_ useCase: UseCase) {
@@ -71,7 +84,15 @@ extension Settings {
             case .selectLanguage(let code):
                 guard Domain.supportedLanguages.contains(where: { $0.code == code }) else { return }
                 store.saveLanguage(code)
-                subject.send(Domain(language: code))
+                var updated = subject.value
+                updated.language = code
+                subject.send(updated)
+            case .setHidesResults(let value):
+                guard value != subject.value.hidesResults else { return }
+                store.saveHidesResults(value)
+                var updated = subject.value
+                updated.hidesResults = value
+                subject.send(updated)
             }
         }
     }

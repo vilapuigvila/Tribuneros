@@ -114,9 +114,9 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
                         sections: .init(
                             title: "",
                             nextToFinish: nextToFinish(domain),
-                            racesFinished: finishedRaces(domain.todayRaces, revealed: domain.revealedRaces),
-                            yesterdayResults: finishedRaces(domain.yesterdayResults, revealed: domain.revealedRaces),
-                            historyResults: finishedRaces(domain.historyResults, revealed: domain.revealedRaces),
+                            racesFinished: finishedRaces(domain.todayRaces, toggled: domain.revealedRaces, hidesResults: domain.hidesResults),
+                            yesterdayResults: finishedRaces(domain.yesterdayResults, toggled: domain.revealedRaces, hidesResults: domain.hidesResults),
+                            historyResults: finishedRaces(domain.historyResults, toggled: domain.revealedRaces, hidesResults: domain.hidesResults),
                             previews: previews(domain),
                             firstFinishExpected: HomeRaces.TodayRaces.firstFinishTime(nextToFinish(domain))
                         ),
@@ -154,7 +154,8 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
 
     private func finishedRaces(
         _ results: [DTO.TodayResult],
-        revealed: Set<String>
+        toggled: Set<String>,
+        hidesResults: Bool
     ) -> [HomeRaces.Representable.RaceFinished] {
         results.map { race in
             var finished = HomeRaces.Representable.RaceFinished(
@@ -166,7 +167,9 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
                 raceURL: race.raceURL,
                 raceCountryCode: race.raceCountryCode ?? ""
             )
-            finished.visibility = revealed.contains(finished.revealKey) ? .shown : .hidden
+            // A toggled race flips the Settings default: revealed when results hide, hidden when they show.
+            let hidden = hidesResults != toggled.contains(finished.revealKey)
+            finished.visibility = hidden ? .hidden : .shown
             return finished
         }
     }

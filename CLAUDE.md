@@ -289,13 +289,19 @@ Alfy's `Requester` notes:
 
 ### Settings tab
 
-A fourth tab (`Tabs/Settings/`, `Tab.settings`, last in `CustomTabBar`, own `Router`) with two rows.
+A fourth tab (`Tabs/Settings/`, `Tab.settings`, last in `CustomTabBar`, own `Router`) with two rows
+and a "Hide results" switch.
 "Show onboarding again" calls the `replayOnboarding` environment closure that `OnboardingHost` sets
 (`Presenter.replay()`): it bypasses `isEnabled` (so mocked launches show it), never saves, leaves the
 two-showing schedule alone and opens on the "Welcome back" page. "Language" pushes
 `Router.Destination.settingsLanguage`, a list of `Settings.Domain.supportedLanguages` ("System
 default", then English and Català, each named in itself) stored in `UserSettings.appLanguage`
 (default `system`). Picking one applies it at once (see "Localization" below).
+"Hide results" (`UserSettings.hidesResults`, default on) is the spoiler mode for Today Races: off,
+every result starts shown, a long press hides that one race, and the `SpoilerHint` never shows.
+`HomeRacesInteractorImpl` listens to the key (`UserDefaults.publisher(for:defaultValue:)`), so the
+switch applies at once and clears the session's per-race toggles (`Domain.revealedRaces` holds the
+races flipped from the default, revealed or hidden).
 
 ### Localization (English + Catalan)
 

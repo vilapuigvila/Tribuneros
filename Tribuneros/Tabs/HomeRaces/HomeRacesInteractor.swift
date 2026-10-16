@@ -24,8 +24,11 @@ struct HomeRacesDomain: Equatable {
     /// Start times by race URL; the homepage has none, so they come from each race's page.
     var startTimes: [String: String] = [:]
     var showSpoilerHint = false
-    /// Race keys revealed this session; never persisted, so every launch starts spoiler-safe.
+    /// Race keys toggled this session (revealed while `hidesResults`, hidden otherwise);
+    /// never persisted, so every launch starts from the Settings choice.
     private(set) var revealedRaces: Set<String> = []
+    /// `UserSettings.hidesResults`: results start hidden behind the spoiler painting.
+    var hidesResults = true
 
     static let empty: HomeRacesDomain = .init(
         nextToFinishRaces: [],
@@ -53,6 +56,12 @@ struct HomeRacesDomain: Equatable {
         }
         return copy
     }
+
+    func clearingReveals() -> Self {
+        var copy = self
+        copy.revealedRaces = []
+        return copy
+    }
 }
 
 protocol InteractorProtocol {
@@ -77,30 +86,54 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
     private var task: Task<Void, Never>?
     private var hintEvaluated = false
     private var hintVisible = false
-    
-    init() {
-        
+    private var hidesResults: Bool
+    private var cancellables = Set<AnyCancellable>()
+
+    init(
+        hidesResults: Bool = UserSettings.hidesResults ?? true,
+        hidesResultsChanges: AnyPublisher<Bool, Never> = UserDefaults.standard.publisher(
+            for: UserPreferencesKey.hidesResults.rawValue,
+            defaultValue: true
+        )
+    ) {
+        self.hidesResults = hidesResults
+        subject.send(applyingSession(subject.value))
+        hidesResultsChanges
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in self?.setHidesResults($0) }
+            .store(in: &cancellables)
+    }
+
+    /// The Settings switch: toggled races start over, and the hint only explains hidden results.
+    private func setHidesResults(_ value: Bool) {
+        guard value != hidesResults else { return }
+        hidesResults = value
+        hintVisible = false
+        subject.send(applyingSession(domain.clearingReveals()))
+        if value {
+            evaluateSpoilerHint()
+        }
     }
     
     func useCase(_ useCase: UseCase) {
         switch useCase {
         case .toggleReveal(let key):
             hintVisible = false
-            subject.send(applyingHint(domain.togglingReveal(key)))
+            subject.send(applyingSession(domain.togglingReveal(key)))
         case .dismissSpoilerHint:
             hintVisible = false
-            subject.send(applyingHint(domain))
+            subject.send(applyingSession(domain))
         case .requestDayRaces(_):
             guard task == nil else { return }
             #if DEBUG
             if let scenario = HomeRaces.MockScenario.current {
-                subject.send(scenario.domain(revealedRaces: domain.revealedRaces))
+                subject.send(applyingSession(scenario.domain(revealedRaces: domain.revealedRaces)))
                 evaluateSpoilerHint()
                 loadHeroStartTime()
                 return
             }
             #endif
-            subject.send(domain.copy(loading: true))
+            subject.send(applyingSession(domain.copy(loading: true)))
             
             task = Task { [weak self] in
                 defer { self?.task = nil }
@@ -117,8 +150,9 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                     
                     let historyResults = await history
 
-                    self?.subject.send(
-                        Domain(
+                    guard let self else { return }
+                    self.subject.send(
+                        self.applyingSession(Domain(
                             nextToFinishRaces: result.nextToFinish,
                             todayRaces: result.today,
                             yesterdayResults: result.yesterdayResults,
@@ -130,14 +164,15 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                             loading: false,
                             staleCopy: staleCopy,
                             previews: result.previews,
-                            revealedRaces: self?.domain.revealedRaces ?? []
-                        )
+                            revealedRaces: self.domain.revealedRaces
+                        ))
                     )
-                    self?.evaluateSpoilerHint()
-                    self?.loadHeroStartTime()
+                    self.evaluateSpoilerHint()
+                    self.loadHeroStartTime()
                 } catch {
-                    self?.subject.send(
-                        Domain(
+                    guard let self else { return }
+                    self.subject.send(
+                        self.applyingSession(Domain(
                             nextToFinishRaces: [],
                             todayRaces: [],
                             yesterdayResults: [],
@@ -146,8 +181,8 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                             liveStatsRaces: [],
                             error: error.toEquatableError(),
                             loading: false,
-                            revealedRaces: self?.domain.revealedRaces ?? []
-                        )
+                            revealedRaces: self.domain.revealedRaces
+                        ))
                     )
                 }
             }
@@ -157,15 +192,17 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
         }
     }
 
-    private func applyingHint(_ domain: Domain) -> Domain {
+    private func applyingSession(_ domain: Domain) -> Domain {
         var updated = domain
         updated.showSpoilerHint = hintVisible
+        updated.hidesResults = hidesResults
         return updated
     }
 
     private func evaluateSpoilerHint() {
         let current = subject.value
         if !hintEvaluated,
+           hidesResults,
            current.error == nil,
            !current.todayRaces.isEmpty || !current.yesterdayResults.isEmpty {
             hintEvaluated = true
@@ -182,7 +219,7 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
             }
         }
         if current.showSpoilerHint != hintVisible {
-            subject.send(applyingHint(current))
+            subject.send(applyingSession(current))
         }
     }
 
