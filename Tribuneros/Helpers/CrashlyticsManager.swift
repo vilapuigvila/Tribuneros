@@ -244,7 +244,7 @@ private struct NoopCrashlyticsBackend: CrashlyticsBackend {
 
 #if canImport(FirebaseCrashlytics)
 private struct FirebaseCrashlyticsBackend: CrashlyticsBackend {
-    private let crashlytics = Crashlytics.crashlytics()
+    private var crashlytics: Crashlytics { Crashlytics.crashlytics() }
 
     func log(_ message: String) {
         crashlytics.log(message)

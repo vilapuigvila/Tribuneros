@@ -15,9 +15,15 @@ enum LaunchSplash {
 
     static func isEnabled(
         override: Bool?,
-        hasMockScenario: Bool
+        hasMockScenario: Bool,
+        isFreshInstall: Bool = false
     ) -> Bool {
-        override ?? !hasMockScenario
+        override ?? (!hasMockScenario && !isFreshInstall)
+    }
+
+    /// Nothing recorded about the onboarding yet (or a debug reset asked for): the onboarding is the only thing shown.
+    static var isFreshInstall: Bool {
+        UserSettings.onboardingFirstShown == nil || Onboarding.resetsAtLaunch
     }
 
     /// Mocked launches never reach the network, so for them the request counts as already finished.
@@ -63,7 +69,8 @@ enum LaunchSplash {
                 environment: ProcessInfo.processInfo.environment,
                 launchValue: UserDefaults.standard.string(forKey: "launchSplash")
             ),
-            hasMockScenario: HomeRaces.MockScenario.current != nil
+            hasMockScenario: HomeRaces.MockScenario.current != nil,
+            isFreshInstall: isFreshInstall
         )
     }
 
@@ -76,7 +83,7 @@ enum LaunchSplash {
     }
     #else
     static let hasMockScenarioAtLaunch = false
-    static let isEnabledAtLaunch = true
+    static var isEnabledAtLaunch: Bool { !isFreshInstall }
     #endif
 }
 

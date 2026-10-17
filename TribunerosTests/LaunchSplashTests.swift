@@ -11,6 +11,7 @@ final class LaunchSplashTests: XCTestCase {
     func testShownWithoutMocksAndSkippedWithMocks() {
         XCTAssertTrue(LaunchSplash.isEnabled(override: nil, hasMockScenario: false))
         XCTAssertFalse(LaunchSplash.isEnabled(override: nil, hasMockScenario: true))
+        XCTAssertFalse(LaunchSplash.isEnabled(override: nil, hasMockScenario: false, isFreshInstall: true))
     }
 
     func testOverrideWinsOverMockScenario() {

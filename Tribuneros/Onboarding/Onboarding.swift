@@ -205,7 +205,7 @@ extension Onboarding {
             Page(
                 id: 0,
                 animation: "onboarding_welcome",
-                music: "1",
+                music: "onboarding_1",
                 stillProgress: 0.3,
                 title: showing > 1
                     ? L10n.tr("Welcome back to Cycling Tribune")
@@ -215,7 +215,7 @@ extension Onboarding {
             Page(
                 id: 1,
                 animation: "onboarding_spoilers",
-                music: "2",
+                music: "onboarding_2",
                 stillProgress: 0.6,
                 title: L10n.tr("Results without spoilers"),
                 body: L10n.tr("Results start hidden behind a painting. Press and hold one to reveal or hide it, then tap to open it.")
@@ -223,7 +223,7 @@ extension Onboarding {
             Page(
                 id: 2,
                 animation: "onboarding_cx",
-                music: "3",
+                music: "onboarding_3",
                 stillProgress: 0.5,
                 title: L10n.tr("CX Zone"),
                 body: L10n.tr("Cyclocross races, results, standings and the whole season calendar.")
@@ -231,7 +231,7 @@ extension Onboarding {
             Page(
                 id: 3,
                 animation: "onboarding_paddock",
-                music: "4",
+                music: "onboarding_4",
                 stillProgress: 0.5,
                 title: L10n.tr("The Paddock"),
                 body: L10n.tr("Transfers, race program changes, birthdays and the best cycling press.")

@@ -13,6 +13,22 @@ import `SwiftSoup` // Add SwiftSoup for HTML parsing
 import FirebaseFirestore
 
 private let cacheTimeinterval = 24 * 60 * 60
+private let cxRunGrace: TimeInterval = 5 * 60
+private let cxRecheckInterval: TimeInterval = 15 * 60
+
+private actor CxServerChecks {
+    static let shared = CxServerChecks()
+    private var lastCheck: [String: Date] = [:]
+
+    func isRecent(_ name: String) -> Bool {
+        guard let date = lastCheck[name] else { return false }
+        return Date().timeIntervalSince(date) < cxRecheckInterval
+    }
+
+    func mark(_ name: String) {
+        lastCheck[name] = Date()
+    }
+}
 
 extension Service {
     private static let cx24BaseURL = URL(string: "https://cyclocross24.com")!
@@ -56,16 +72,56 @@ extension Service {
             .data(as: type)
     }*/
     
+    /// Local (hour, minute) of the `scrapeCx` runs in Europe/Madrid; change together with `functions/src/index.ts`.
+    private static let cxRunTimes = [(16, 30), (22, 30)]
+
+    static let cxCalendar: Calendar = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Europe/Madrid") ?? .current
+        return calendar
+    }()
+
+    /// The newest scheduled scrape that finished (run time plus grace) by `now`.
+    static func lastCxRun(
+        before now: Date,
+        runTimes: [(Int, Int)] = cxRunTimes,
+        calendar: Calendar = cxCalendar
+    ) -> Date? {
+        let cutoff = now.addingTimeInterval(-cxRunGrace)
+        let runs = (0...1).flatMap { daysBack -> [Date] in
+            guard let day = calendar.date(
+                byAdding: .day,
+                value: -daysBack,
+                to: now
+            ) else { return [] }
+            return runTimes.compactMap { hour, minute in
+                calendar.date(
+                    bySettingHour: hour,
+                    minute: minute,
+                    second: 0,
+                    of: day
+                )
+            }
+        }
+        return runs.filter { $0 <= cutoff }.max()
+    }
+
     private static func readCxDocument<D: Decodable>(_ name: String, as type: D.Type) async throws -> D {
         let ref = Firestore.firestore().collection("cx").document(name)
         if let cached = try? await ref.getDocument(source: .cache),
-           let updatedAt = cached.get("updatedAt") as? Timestamp,
-           Date().timeIntervalSince(updatedAt.dateValue()) < Double(cacheTimeinterval) {
-            return try cached.data(as: type)
+           cached.exists,
+           let updatedAt = (cached.get("updatedAt") as? Timestamp)?.dateValue(),
+           let lastRun = lastCxRun(before: Date()) {
+            let isUpToDate = updatedAt >= lastRun
+            let wasCheckedRecently = await CxServerChecks.shared.isRecent(name)
+            if isUpToDate || wasCheckedRecently {
+                return try cached.data(as: type)
+            }
         }
+        await CxServerChecks.shared.mark(name)
         return try await ref.getDocument().data(as: type)
     }
-    
+
     private static func extractFirstYouTubeVideoID(from html: String) -> String? {
         let patterns = [
             "\"videoId\":\"([a-zA-Z0-9_-]{11})\"",

@@ -46,7 +46,7 @@ export async function runCxScrape(db: Firestore): Promise<void> {
 
 export const scrapeCx = onSchedule(
   {
-    schedule: "every day 23:00",
+    schedule: "30 16,22 * * *",
     timeZone: "Europe/Madrid",
     timeoutSeconds: 120,
     memory: "256MiB",
