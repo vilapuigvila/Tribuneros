@@ -61,6 +61,48 @@ extension Color {
             Color(hex: 0xE6F2D9)
         case .vaporGroupBadge:
             Color(hex: 0x2F6FDE)
+        case .mudPageBackground:
+            Color(hex: 0x0E0B08)
+        case .mudCardSurface:
+            Color(hex: 0x1C1612)
+        case .mudRaised:
+            Color(hex: 0x261E18)
+        case .mudTrack:
+            Color(hex: 0x3A2E24)
+        case .mudTextPrimary:
+            Color(hex: 0xF3ECE4)
+        case .mudTextSecondary:
+            Color(hex: 0xA8998A)
+        case .mudTextMuted:
+            Color(hex: 0xC9BBAB)
+        case .mudAccent:
+            Color(hex: 0xE0A458)
+        case .mudTagNeutral:
+            Color(hex: 0x3A2E24)
+        case .mudTagNeutralText:
+            Color(hex: 0xE8DCCD)
+        case .mudSkyTop:
+            Color(hex: 0x3A2A20)
+        case .mudSkyBottom:
+            Color(hex: 0x8A5A38)
+        case .mudSun:
+            Color(hex: 0xF2C48A)
+        case .mudHillFar:
+            Color(hex: 0x4A3424)
+        case .mudHillNear:
+            Color(hex: 0x6B4A30)
+        case .mudTree:
+            Color(hex: 0x2A1E15)
+        case .mudTape:
+            Color(hex: 0xF3ECE4)
+        case .mudPuddle:
+            Color(hex: 0x1C140D)
+        case .mudGround:
+            Color(hex: 0x4A3220)
+        case .mudNegative:
+            Color(hex: 0xE5766B)
+        case .mudLive:
+            Color(hex: 0x9CC27A)
         case .championBlue:
             Color(hex: 0x2563EB)
         case .championRed:
@@ -106,6 +148,28 @@ extension Color {
         case vaporProfileDone
         /// The blue round badge of a group in the situation list.
         case vaporGroupBadge
+        // MARK: - Mud (CX Zone Series lens) -
+        case mudPageBackground
+        case mudCardSurface
+        case mudRaised
+        case mudTrack
+        case mudTextPrimary
+        case mudTextSecondary
+        case mudTextMuted
+        case mudAccent
+        case mudTagNeutral
+        case mudTagNeutralText
+        case mudSkyTop
+        case mudSkyBottom
+        case mudSun
+        case mudHillFar
+        case mudHillNear
+        case mudTree
+        case mudTape
+        case mudPuddle
+        case mudGround
+        case mudNegative
+        case mudLive
         /// The world champion jersey's bands, as drawn in the spoiler paintings.
         case championBlue
         case championRed

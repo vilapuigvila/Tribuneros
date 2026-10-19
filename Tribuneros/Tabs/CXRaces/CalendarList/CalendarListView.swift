@@ -40,7 +40,7 @@ struct CXAllRacesView: View {
                                     TribuneruText(
                                         content: event.date,
                                         style: .vaporMeta,
-                                        color: .tribuneru(.vaporTextSecondary)
+                                        color: .tribuneru(.mudTextSecondary)
                                     )
                                     .frame(width: 84, alignment: .leading)
 
@@ -50,20 +50,20 @@ struct CXAllRacesView: View {
                                         TribuneruText(
                                             content: event.race,
                                             style: .vaporRaceNameNext,
-                                            color: .tribuneru(.vaporTextPrimary),
+                                            color: .tribuneru(.mudTextPrimary),
                                             lineLimit: 2
                                         )
                                         if event.isCancelled {
                                             TribuneruText(
                                                 content: L10n.tr("Cancelled"),
                                                 style: .vaporMeta,
-                                                color: .tribuneru(.vaporNegative)
+                                                color: .tribuneru(.mudNegative)
                                             )
                                         } else if !event.winnerName.isEmpty {
                                             TribuneruText(
                                                 content: event.winnerName,
                                                 style: .vaporMeta,
-                                                color: .tribuneru(.vaporTextSecondary)
+                                                color: .tribuneru(.mudTextSecondary)
                                             )
                                         }
                                     }
@@ -72,7 +72,7 @@ struct CXAllRacesView: View {
 
                                     Image(systemName: "chevron.right")
                                         .font(.system(size: 11, weight: .semibold))
-                                        .foregroundColor(.tribuneru(.vaporTextSecondary))
+                                        .foregroundColor(.tribuneru(.mudTextSecondary))
                                 }
                                 .frame(height: UI.rowHeight)
                                 .contentShape(Rectangle())
@@ -80,7 +80,8 @@ struct CXAllRacesView: View {
                             .buttonStyle(.plain)
                             .id(idx)
                             .listRowInsets(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
-                            .listRowBackground(Color.tribuneru(.vaporCardSurface))
+                            .listRowBackground(Color.tribuneru(.mudCardSurface))
+                            .listRowSeparatorTint(Color.tribuneru(.mudTextPrimary).opacity(0.08))
                         }
                     }
                     .onAppear {
@@ -101,7 +102,7 @@ struct CXAllRacesView: View {
                                     ? L10n.tr("No races in this series.")
                                     : L10n.tr("No races match “%@”.", searchText),
                                 style: .vaporMeta,
-                                color: .tribuneru(.vaporTextSecondary),
+                                color: .tribuneru(.mudTextSecondary),
                                 lineLimit: 2
                             )
                             .padding(24)
@@ -109,7 +110,7 @@ struct CXAllRacesView: View {
                     }
                     .listStyle(.plain)
                     .scrollContentBackground(.hidden)
-                    .background(Color.tribuneru(.vaporPageBackground))
+                    .background(Color.tribuneru(.mudPageBackground))
                     .environment(\.defaultMinListRowHeight, UI.rowHeight)
                     .preferredColorScheme(.dark)
                     .simultaneousGesture(
@@ -124,22 +125,22 @@ struct CXAllRacesView: View {
                             }
                     )
                 }
-                .background(Color.tribuneru(.vaporPageBackground))
+                .background(Color.tribuneru(.mudPageBackground))
                 
                 if showTodayButton {
                     Button(action: { scrollToToday(proxy) }) {
                         HStack(spacing: 8) {
                             Image(systemName: "calendar.circle.fill")
-                                .foregroundStyle(Color.tribuneru(.vaporPageBackground))
+                                .foregroundStyle(Color.tribuneru(.mudPageBackground))
                             TribuneruText(
                                 content: L10n.tr("Today Races"),
                                 style: .vaporRaceNameNext,
-                                color: .tribuneru(.vaporPageBackground)
+                                color: .tribuneru(.mudPageBackground)
                             )
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 12)
-                        .background(Color.tribuneru(.vaporAccent))
+                        .background(Color.tribuneru(.mudAccent))
                         .cornerRadius(8)
                     }
                     .clipShape(Capsule())
@@ -257,24 +258,33 @@ private struct CXSeriesFilterChip: View {
                 TribuneruText(
                     content: title.uppercased(with: L10n.locale),
                     style: .vaporSpoilerChip,
-                    color: isSelected ? .tribuneru(.vaporPageBackground) : .tribuneru(.vaporTextPrimary),
+                    color: isSelected ? .tribuneru(.mudAccent) : .tribuneru(.mudTextPrimary),
                     lineLimit: 1
                 )
                 TribuneruText(
                     content: "\(count)",
                     style: .vaporMonoMeta,
-                    color: isSelected ? .tribuneru(.vaporPageBackground) : .tribuneru(.vaporTextSecondary),
+                    color: isSelected ? .tribuneru(.mudAccent) : .tribuneru(.mudTextSecondary),
                     lineLimit: 1
                 )
             }
-            .padding(.horizontal, 12)
+            .padding(.horizontal, 14)
             .padding(.vertical, 8)
             .background(
-                isSelected
-                ? Color.tribuneru(.vaporAccent)
-                : Color.tribuneru(.vaporCardSurface)
+                Capsule().fill(
+                    isSelected
+                        ? Color.tribuneru(.mudAccent).opacity(0.14)
+                        : Color.tribuneru(.mudCardSurface)
+                )
             )
-            .clipShape(Capsule())
+            .overlay(
+                Capsule().strokeBorder(
+                    isSelected
+                        ? Color.tribuneru(.mudAccent).opacity(0.4)
+                        : Color.tribuneru(.mudTextPrimary).opacity(0.08),
+                    lineWidth: 1
+                )
+            )
         }
         .buttonStyle(.plain)
     }

@@ -11,10 +11,6 @@ extension CXRaces {
     
     struct MainView: View {
         @Environment(\.safeAreaInsets) private var safeAreaInsets
-        private let columns = [
-            GridItem(.flexible(), spacing: 0)
-        ]
-        
         let state: CXRaces.ViewState
         let action: (CXRaces.Action) -> Void
 
@@ -43,7 +39,7 @@ extension CXRaces {
                     }
                     .padding(.horizontal)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.tribuneru(.vaporPageBackground))
+                    .background(Color.tribuneru(.mudPageBackground))
                 case .loaded(let representable):
                     content(representable)
                 }
@@ -59,52 +55,14 @@ extension CXRaces {
             _ representable: CXRaces.Representable,
             isPlaceholder: Bool = false
         ) -> some View {
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 20) {
-                    /// latests results
-                    VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-                        VaporSectionHeader(title: L10n.tr("Latest results"))
-                    } content: {
-                        LatestResultsView(
-                            races: representable.races,
-                            openRider: { podium in
-                                action(.didTapOnPodiumRider(podium))
-                            }
-                        ) {
-                            action(.didTapOnLatestResults)
-                        }
-                    }
-
-                    /// calendar
-                    VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-                        VaporSectionHeader(title: L10n.tr("Next races"))
-                    } content: {
-                        CalendarView(representable: representable) {
-                            action(.didTapOnNextRaces)
-                        }
-                    }
-
-                    /// standings
-                    VaporPanel(panelColor: .tribuneru(.vaporPanelYesterday)) {
-                        VaporSectionHeader(title: L10n.tr("Standings"))
-                    } content: {
-                        CyclocrossStandingsSectionView(
-                            standings: representable.standings,
-                            openRider: { standing in
-                                action(.didTapOnStandingRider(standing))
-                            }
-                        ) {
-                            action(.didTapOnStandings)
-                        }
-                    }
-
-                    Color.clear
-                        .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
-                }
-                .padding()
-                .disabled(isPlaceholder)
+            SeriesLensView(
+                representable: representable,
+                action: action
+            )
+            .disabled(isPlaceholder)
+            .overlay(alignment: .top) {
+                StatusBarScrim(tint: .tribuneru(.mudPageBackground))
             }
-            .background(Color.tribuneru(.vaporPageBackground))
         }
     }
 }

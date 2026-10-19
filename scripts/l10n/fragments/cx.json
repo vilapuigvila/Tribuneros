@@ -1,4 +1,9 @@
 {
+  "%1$lld of %2$lld raced": {
+    "ca": "%1$lld de %2$lld disputades",
+    "eu": "%2$lld probatatik %1$lld jokatuta",
+    "comment": "Rounds raced of the series total"
+  },
   "%lld categories": {
     "plural": {
       "ca": {
@@ -39,6 +44,11 @@
     "ca": "ZONA CX",
     "eu": "CX GUNEA",
     "comment": "CX Zone screen title (all caps)"
+  },
+  "Calendar": {
+    "ca": "Calendari",
+    "eu": "Egutegia",
+    "comment": "Pill that opens the full calendar"
   },
   "Calendar is empty.": {
     "ca": "El calendari està buit.",
@@ -106,10 +116,20 @@
       }
     }
   },
+  "Last round": {
+    "ca": "Última cursa",
+    "eu": "Azken proba",
+    "comment": "Section title"
+  },
   "Latest results": {
     "ca": "Últims resultats",
     "eu": "Azken emaitzak",
     "comment": "CX Zone latest results header and screen title"
+  },
+  "Leaders": {
+    "ca": "Líders",
+    "eu": "Liderrak",
+    "comment": "Section title: series standings leaders"
   },
   "Links": {
     "ca": "Enllaços",
@@ -146,15 +166,15 @@
     "eu": "Elite gizonak",
     "comment": "Men's elite category label (hardcoded in CX detail screens)"
   },
+  "NEXT ROUND": {
+    "ca": "PROPERA CURSA",
+    "eu": "HURRENGO PROBA",
+    "comment": "Hero tag of the series' next race"
+  },
   "National Championships": {
     "ca": "Campionats nacionals",
     "eu": "Txapelketa nazionalak",
     "comment": "UCI class description CN"
-  },
-  "Next races": {
-    "ca": "Properes curses",
-    "eu": "Hurrengo lasterketak",
-    "comment": "CX Zone calendar section header"
   },
   "No categories": {
     "ca": "Sense categories",
@@ -170,6 +190,11 @@
     "ca": "No s’han trobat categories.",
     "eu": "Ez da kategoriarik aurkitu.",
     "comment": "Standings card without categories"
+  },
+  "No more rounds in this series this season.": {
+    "ca": "No queden més curses d’aquesta sèrie aquesta temporada.",
+    "eu": "Denboraldi honetan ez da proba gehiagorik geratzen serie honetan.",
+    "comment": "Hero subtitle when the series has no rounds left"
   },
   "No race videos available": {
     "ca": "Sense vídeos de la cursa",
@@ -291,6 +316,26 @@
     "eu": "Txirrindularia, rankinga, kategoria...",
     "comment": "Standings search prompt"
   },
+  "Rounds left": {
+    "ca": "Curses pendents",
+    "eu": "Geratzen diren probak",
+    "comment": "Section title"
+  },
+  "SEASON PROGRESS": {
+    "ca": "PROGRÉS DE LA TEMPORADA",
+    "eu": "DENBORALDIAREN AURRERAPENA",
+    "comment": "Label over the rounds bar"
+  },
+  "Season %@": {
+    "ca": "Temporada %@",
+    "eu": "%@ denboraldia",
+    "comment": "Header: the season, e.g. 2026–27"
+  },
+  "Season finished": {
+    "ca": "Temporada acabada",
+    "eu": "Denboraldia amaituta",
+    "comment": "Hero title when the series has no rounds left"
+  },
   "Series": {
     "ca": "Sèrie",
     "eu": "Seriea",
@@ -305,11 +350,6 @@
     "ca": "Classificacions",
     "eu": "Sailkapenak",
     "comment": "CX Zone standings header and screen title"
-  },
-  "Starts": {
-    "ca": "Comença",
-    "eu": "Hasiera",
-    "comment": "Race detail info row label for the countdown"
   },
   "TV Info & Livestream": {
     "ca": "Televisió i directe",

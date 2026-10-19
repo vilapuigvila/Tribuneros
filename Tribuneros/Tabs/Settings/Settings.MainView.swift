@@ -18,10 +18,6 @@ struct SettingsView: View {
         }
         .navigationDestination(for: Router.Destination.self) { destination in
             switch destination {
-            case .settingsLanguage:
-                Settings.LanguageView(state: viewModel.stateView) {
-                    viewModel.action($0)
-                }
             case .settingsAcknowledgements:
                 Settings.AcknowledgementsView()
             default:
@@ -30,6 +26,7 @@ struct SettingsView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle(L10n.tr("SETTINGS"))
+        .toolbar(.hidden, for: .navigationBar)
     }
 }
 
@@ -37,105 +34,85 @@ extension Settings {
 
     struct MainView: View {
         @Environment(\.safeAreaInsets) private var safeAreaInsets
+        @State private var showsLanguages = false
 
         let state: Settings.ViewState
         let action: (Settings.Action) -> Void
 
+        private var version: String {
+            let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+            return version.isEmpty ? "" : "v\(version)"
+        }
+
         var body: some View {
             ScrollView {
-                VStack(spacing: 20) {
-                    SettingsPanel {
-                        SettingsRow(
-                            title: L10n.tr("Show onboarding again"),
-                            detail: nil,
+                VStack(alignment: .leading, spacing: 22) {
+                    header
+                    HideResultsTile(
+                        isOn: state.hidesResults,
+                        toggle: { action(.didToggleHidesResults(!state.hidesResults)) }
+                    )
+                    HStack(spacing: 12) {
+                        SettingsTile(
+                            title: L10n.tr("Language"),
+                            subtitle: state.languageTitle,
+                            systemImage: "globe",
+                            identifier: "settings.language"
+                        ) {
+                            showsLanguages = true
+                        }
+                        SettingsTile(
+                            title: L10n.tr("Onboarding"),
+                            subtitle: L10n.tr("Watch it again"),
                             systemImage: "play.circle",
                             identifier: "settings.onboarding"
                         ) {
                             action(.didTapShowOnboarding)
                         }
-                        SettingsRow(
-                            title: L10n.tr("Language"),
-                            detail: state.languageTitle,
-                            systemImage: "globe",
-                            identifier: "settings.language"
-                        ) {
-                            action(.didTapLanguage)
-                        }
-                        SettingsRow(
-                            title: L10n.tr("Acknowledgements"),
-                            detail: nil,
-                            systemImage: "heart",
-                            identifier: "settings.acknowledgements"
-                        ) {
-                            action(.didTapAcknowledgements)
-                        }
                     }
-                    VStack(spacing: 8) {
-                        SettingsPanel {
-                            SettingsToggleRow(
-                                title: L10n.tr("Hide results"),
-                                systemImage: "eye.slash",
-                                identifier: "settings.hideResults",
-                                isOn: Binding(
-                                    get: { state.hidesResults },
-                                    set: { action(.didToggleHidesResults($0)) }
-                                )
-                            )
-                        }
-                        TribuneruText(
-                            content: L10n.tr("Results stay hidden until you press and hold them. Turn it off to see them as soon as you open the app."),
-                            style: .vaporRowMeta,
-                            color: .tribuneru(.vaporTextSecondary)
-                        )
-                        .frame(
-                            maxWidth: .infinity,
-                            alignment: .leading
-                        )
-                        .padding(.horizontal, 4)
-                        .accessibilityIdentifier("settings.hideResults.footer")
+                    AcknowledgementsRow {
+                        action(.didTapAcknowledgements)
                     }
                     Color.clear
                         .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
                 }
-                .padding(16)
+                .padding(.horizontal, 16)
+                .padding(.top, 24)
             }
             .background(Color.tribuneru(.vaporPageBackground))
             .preferredColorScheme(.dark)
-        }
-    }
-
-    struct LanguageView: View {
-        let state: Settings.ViewState
-        let action: (Settings.Action) -> Void
-
-        var body: some View {
-            ScrollView {
-                VStack(spacing: 12) {
-                    SettingsPanel {
-                        ForEach(state.languages) { language in
-                            LanguageRow(language: language) {
-                                action(.didSelectLanguage(language.id))
-                            }
-                        }
-                    }
-                    TribuneruText(
-                        content: L10n.tr("More languages are coming."),
-                        style: .vaporRowMeta,
-                        color: .tribuneru(.vaporTextSecondary)
-                    )
-                    .frame(
-                        maxWidth: .infinity,
-                        alignment: .leading
-                    )
-                    .padding(.horizontal, 4)
-                    .accessibilityIdentifier("settings.language.footer")
+            .sheet(isPresented: $showsLanguages) {
+                LanguageSheet(languages: state.languages) { code in
+                    showsLanguages = false
+                    action(.didSelectLanguage(code))
                 }
-                .padding(16)
+                .presentationDetents([.height(400)])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(24)
+                .presentationBackground(Color.tribuneru(.vaporCardSurface))
+                .preferredColorScheme(.dark)
             }
-            .background(Color.tribuneru(.vaporPageBackground))
-            .preferredColorScheme(.dark)
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle(L10n.tr("LANGUAGE"))
+        }
+
+        private var header: some View {
+            HStack(spacing: 12) {
+                TribuneruText(
+                    content: L10n.tr("Settings"),
+                    style: .vaporSectionTitle,
+                    color: .tribuneru(.vaporTextPrimary),
+                    lineLimit: 1
+                )
+                Spacer(minLength: 0)
+                TribuneruText(
+                    content: version,
+                    style: .vaporMonoMeta,
+                    color: .tribuneru(.vaporTextSecondary),
+                    lineLimit: 1
+                )
+            }
+            .padding(.top, 16)
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("settings.header")
         }
     }
 }
@@ -226,88 +203,191 @@ private struct SettingsPanel<Content: View>: View {
     }
 }
 
-private struct SettingsRow: View {
+private extension View {
+    func settingsCard(
+        fill: Color = .tribuneru(.vaporCardSurface),
+        border: Color = Color.tribuneru(.vaporTextPrimary).opacity(0.08)
+    ) -> some View {
+        background(fill, in: RoundedRectangle(cornerRadius: 20))
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .strokeBorder(border, lineWidth: 1)
+            )
+    }
+}
+
+/// The wide tile that flips the spoiler mode in place.
+private struct HideResultsTile: View {
+    let isOn: Bool
+    let toggle: () -> Void
+
+    var body: some View {
+        Button {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            toggle()
+        } label: {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack {
+                    Image(systemName: "eye.slash")
+                        .font(.system(size: 22, weight: .regular))
+                        .foregroundColor(isOn ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary))
+                    Spacer(minLength: 8)
+                    TribuneruText(
+                        content: isOn ? L10n.tr("ON") : L10n.tr("OFF"),
+                        style: .vaporSpoilerChip,
+                        color: isOn ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary),
+                        lineLimit: 1
+                    )
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    TribuneruText(
+                        content: L10n.tr("Hide results"),
+                        style: .vaporBannerTitle,
+                        color: .tribuneru(.vaporTextPrimary),
+                        lineLimit: 1
+                    )
+                    TribuneruText(
+                        content: isOn
+                            ? L10n.tr("Results stay hidden until you press and hold them.")
+                            : L10n.tr("Results are shown as soon as you open the app."),
+                        style: .vaporRowMeta,
+                        color: .tribuneru(.vaporTextMuted),
+                        lineLimit: 3
+                    )
+                    .multilineTextAlignment(.leading)
+                }
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .settingsCard(
+                fill: isOn
+                    ? Color.tribuneru(.vaporAccent).opacity(0.12)
+                    : .tribuneru(.vaporCardSurface),
+                border: isOn
+                    ? Color.tribuneru(.vaporAccent).opacity(0.4)
+                    : Color.tribuneru(.vaporTextPrimary).opacity(0.08)
+            )
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(L10n.tr("Hide results"))
+        .accessibilityValue(isOn ? L10n.tr("ON") : L10n.tr("OFF"))
+        .accessibilityAddTraits([.isButton, .isToggle])
+        .accessibilityIdentifier("settings.hideResults")
+    }
+}
+
+private struct SettingsTile: View {
     let title: String
-    let detail: String?
+    let subtitle: String
     let systemImage: String
     let identifier: String
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 22) {
                 Image(systemName: systemImage)
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(.system(size: 22, weight: .regular))
                     .foregroundColor(.tribuneru(.vaporAccent))
-                    .frame(width: 24)
                     .accessibilityHidden(true)
-                TribuneruText(
-                    content: title,
-                    style: .vaporRowTitle,
-                    color: .tribuneru(.vaporTextPrimary),
-                    lineLimit: 1
-                )
-                Spacer(minLength: 8)
-                if let detail {
+                Spacer(minLength: 0)
+                VStack(alignment: .leading, spacing: 2) {
                     TribuneruText(
-                        content: detail,
+                        content: title,
+                        style: .vaporRowTitle,
+                        color: .tribuneru(.vaporTextPrimary),
+                        lineLimit: 1
+                    )
+                    TribuneruText(
+                        content: subtitle,
                         style: .vaporRowMeta,
                         color: .tribuneru(.vaporTextSecondary),
                         lineLimit: 1
                     )
                 }
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.tribuneru(.vaporTextSecondary))
-                    .accessibilityHidden(true)
             }
-            .padding(.horizontal, 14)
-            .frame(minHeight: 52)
-            .background(
-                Color.tribuneru(.vaporCardSurface),
-                in: RoundedRectangle(cornerRadius: 12)
-            )
+            .padding(16)
+            .frame(maxWidth: .infinity, minHeight: 132, alignment: .leading)
+            .settingsCard()
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(detail.map { "\(title), \($0)" } ?? title)
+        .accessibilityLabel("\(title), \(subtitle)")
         .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier(identifier)
     }
 }
 
-private struct SettingsToggleRow: View {
-    let title: String
-    let systemImage: String
-    let identifier: String
-    @Binding var isOn: Bool
+private struct AcknowledgementsRow: View {
+    let action: () -> Void
 
     var body: some View {
-        Toggle(isOn: $isOn) {
-            HStack(spacing: 12) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.tribuneru(.vaporAccent))
-                    .frame(width: 24)
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Image(systemName: "heart")
+                    .font(.system(size: 20, weight: .regular))
+                    .foregroundColor(.tribuneru(.vaporTextMuted))
                     .accessibilityHidden(true)
                 TribuneruText(
-                    content: title,
+                    content: L10n.tr("Acknowledgements"),
                     style: .vaporRowTitle,
                     color: .tribuneru(.vaporTextPrimary),
                     lineLimit: 1
                 )
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.tribuneru(.vaporTextSecondary))
+                    .accessibilityHidden(true)
             }
+            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity, minHeight: 64, alignment: .leading)
+            .settingsCard()
+            .contentShape(Rectangle())
         }
-        .tint(.tribuneru(.vaporAccent))
-        .padding(.horizontal, 14)
-        .frame(minHeight: 52)
-        .background(
-            Color.tribuneru(.vaporCardSurface),
-            in: RoundedRectangle(cornerRadius: 12)
-        )
-        .accessibilityLabel(title)
-        .accessibilityIdentifier(identifier)
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(L10n.tr("Acknowledgements"))
+        .accessibilityAddTraits(.isButton)
+        .accessibilityIdentifier("settings.acknowledgements")
+    }
+}
+
+/// The language picker: choosing one applies it at once and closes the sheet.
+private struct LanguageSheet: View {
+    let languages: [Settings.Representable.Language]
+    let select: (String) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            TribuneruText(
+                content: L10n.tr("Language"),
+                style: .vaporHeading,
+                color: .tribuneru(.vaporTextPrimary),
+                lineLimit: 1
+            )
+            .padding(.top, 20)
+            .padding(.bottom, 6)
+            ForEach(languages) { language in
+                LanguageRow(language: language) {
+                    select(language.id)
+                }
+            }
+            TribuneruText(
+                content: L10n.tr("More languages are coming."),
+                style: .vaporRowMeta,
+                color: .tribuneru(.vaporTextSecondary)
+            )
+            .padding(.horizontal, 4)
+            .padding(.top, 6)
+            .accessibilityIdentifier("settings.language.footer")
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 16)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -321,7 +401,7 @@ private struct LanguageRow: View {
                 TribuneruText(
                     content: language.title,
                     style: .vaporRowTitle,
-                    color: .tribuneru(.vaporTextPrimary),
+                    color: .tribuneru(language.isSelected ? .vaporAccent : .vaporTextPrimary),
                     lineLimit: 1
                 )
                 Spacer(minLength: 8)
@@ -335,8 +415,10 @@ private struct LanguageRow: View {
             .padding(.horizontal, 14)
             .frame(minHeight: 52)
             .background(
-                Color.tribuneru(.vaporCardSurface),
-                in: RoundedRectangle(cornerRadius: 12)
+                language.isSelected
+                    ? Color.tribuneru(.vaporAccent).opacity(0.12)
+                    : .clear,
+                in: RoundedRectangle(cornerRadius: 14)
             )
             .contentShape(Rectangle())
         }

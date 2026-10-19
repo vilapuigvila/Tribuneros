@@ -4,14 +4,17 @@
   "Paddock": {"ca": "Paddock", "eu": "Paddock", "comment": "Tab bar label; name of the news tab, kept as is"},
   "Settings": {"ca": "Configuració", "eu": "Ezarpenak", "comment": "Tab bar label"},
   "SETTINGS": {"ca": "CONFIGURACIÓ", "eu": "EZARPENAK", "comment": "Settings navigation title"},
-  "Show onboarding again": {"ca": "Torna a veure la presentació", "eu": "Erakutsi aurkezpena berriro", "comment": "Settings row"},
   "Language": {"ca": "Idioma", "eu": "Hizkuntza", "comment": "Settings row"},
-  "LANGUAGE": {"ca": "IDIOMA", "eu": "HIZKUNTZA", "comment": "Language screen navigation title"},
   "System default": {"ca": "Predeterminat del sistema", "eu": "Sistemaren lehenetsia", "comment": "Language option: follow the device languages"},
   "More languages are coming.": {"ca": "Aviat hi haurà més idiomes.", "eu": "Hizkuntza gehiago laster.", "comment": "Footer under the language list"},
   "Acknowledgements": {"ca": "Agraïments", "eu": "Aitorpenak", "comment": "Settings row"},
   "ACKNOWLEDGEMENTS": {"ca": "AGRAÏMENTS", "eu": "AITORPENAK", "comment": "Acknowledgements screen navigation title"},
   "Music provided by Ciscu Bates": {"ca": "Música de Ciscu Bates", "eu": "Musika: Ciscu Bates", "comment": "Acknowledgements: credit for the onboarding music"},
   "© 2026 Ciscu Bates. All rights reserved.": {"ca": "© 2026 Ciscu Bates. Tots els drets reservats.", "eu": "© 2026 Ciscu Bates. Eskubide guztiak erreserbatuta.", "comment": "Acknowledgements: copyright notice for the onboarding music"},
-  "Results stay hidden until you press and hold them. Turn it off to see them as soon as you open the app.": {"ca": "Els resultats queden amagats fins que els mantens premuts. Desactiva-ho per veure’ls tan bon punt obris l’app.", "eu": "Emaitzak ezkutuan geratzen dira sakatuta eduki arte. Desaktibatu aplikazioa ireki bezain laster ikusteko.", "comment": "Footer under the Hide results switch in Settings"}
+  "Onboarding": {"ca": "Presentació", "eu": "Aurkezpena", "comment": "Settings tile title: replay the onboarding"},
+  "Watch it again": {"ca": "Torna-la a veure", "eu": "Ikusi berriro", "comment": "Settings tile subtitle under Onboarding"},
+  "ON": {"ca": "SÍ", "eu": "AKTIBO", "comment": "Settings switch state tag"},
+  "OFF": {"ca": "NO", "eu": "EZ", "comment": "Settings switch state tag"},
+  "Results stay hidden until you press and hold them.": {"ca": "Els resultats queden amagats fins que els mantens premuts.", "eu": "Emaitzak ezkutuan geratzen dira luze sakatzen dituzun arte.", "comment": "Hide results tile, switch on"},
+  "Results are shown as soon as you open the app.": {"ca": "Els resultats es mostren tan bon punt obres l’app.", "eu": "Emaitzak aplikazioa irekitzen duzun une berean erakusten dira.", "comment": "Hide results tile, switch off"}
 }

@@ -11,7 +11,6 @@ enum Settings { }
 extension Settings {
     enum Action {
         case didTapShowOnboarding
-        case didTapLanguage
         case didTapAcknowledgements
         case didSelectLanguage(String)
         case didToggleHidesResults(Bool)

@@ -1,4 +1,4 @@
-# CX Zone tab and every screen behind it: race results, calendar race, winner and rider, on Debug
+# CX Zone tab (Series lens) and every screen behind it: race results, calendar race, winner and rider, on Debug
 # mock data (mock scenario live): no network. Sections and titles are drawn redacted while
 # loading, so they only match once the data is in.
 appId: com.pskmoons.Tribuneros
@@ -11,16 +11,19 @@ tags:
       mockScenario: live
 - tapOn: "CX Zone"
 - extendedWaitUntil:
-    visible: "Latest results"
+    visible: "NEXT ROUND"
     timeout: 45000
-- assertVisible:
-    text: "Next races"
-    below: "Latest results"
+- assertVisible: "Leaders"
+- assertVisible: "SEASON PROGRESS"
 
-# Latest results -> full list -> race results (category tabs + results rows)
-- tapOn:
-    text: ".*\\(C.*\\).*"
-    below: "Latest results"
+# Series chips switch the whole page (Superprestige has a podium on its last round)
+- tapOn: "Superprestige"
+- assertVisible: "Last round"
+
+# Last round -> Results -> full list -> race results (category tabs + results rows)
+- scrollUntilVisible:
+    element: "Results"
+- tapOn: "Results"
 - assertVisible: "Latest Cyclocross Results"
 - tapOn:
     text: ".*\\(C.*\\).*"
@@ -50,10 +53,8 @@ tags:
 # Next races -> All races -> calendar race with a finished result, then a race with a history
 # (both are in the mock calendar).
 - scrollUntilVisible:
-    element: "more info"
-- tapOn:
-    text: "more info"
-    below: "Next races"
+    element: "Calendar"
+- tapOn: "Calendar"
 - assertVisible: "All races"
 - tapOn: "Race, country, winner..."
 - inputText: "Kleeberg"

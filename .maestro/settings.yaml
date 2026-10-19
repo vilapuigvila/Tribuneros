@@ -1,5 +1,5 @@
-# Settings tab (Debug build, mocked launch): both rows, the on-demand onboarding replay (shows even
-# though mocked launches skip it) and the Language screen with "System default" selected.
+# Settings tab (Debug build, mocked launch): the tiles, the on-demand onboarding replay (shows even
+# though mocked launches skip it), the Hide results tile and the Language sheet with "System default" selected.
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -69,7 +69,15 @@ tags:
     id: "settings.language.en"
 - assertVisible:
     id: "settings.language.ca"
+# Picking a language closes the sheet.
 - tapOn:
-    text: "SETTINGS"
+    id: "settings.language.system"
 - assertVisible:
     id: "settings.onboarding"
+# The Hide results tile flips in place.
+- assertVisible:
+    id: "settings.hideResults"
+- assertVisible: "Results stay hidden until you press and hold them."
+- tapOn:
+    id: "settings.hideResults"
+- assertVisible: "Results are shown as soon as you open the app."

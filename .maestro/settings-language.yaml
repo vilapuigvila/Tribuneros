@@ -1,4 +1,4 @@
-# Language switch (Debug build, mocked launch, English simulator): picking Català rebuilds the
+# Language switch from the Language sheet (Debug build, mocked launch, English simulator): picking Català rebuilds the
 # tabs in Catalan without a restart (back on the Settings root), Euskara does the same in Basque,
 # and English switches back.
 appId: com.pskmoons.Tribuneros
@@ -25,7 +25,7 @@ tags:
     timeout: 5000
 - assertVisible: "Curses d’avui"
 - assertVisible: "Zona CX"
-- assertVisible: "Torna a veure la presentació"
+- assertVisible: "Presentació"
 - tapOn:
     id: "settings.language"
 - assertVisible: "Aviat hi haurà més idiomes."
@@ -39,7 +39,7 @@ tags:
     timeout: 5000
 - assertVisible: "Gaurko lasterketak"
 - assertVisible: "CX gunea"
-- assertVisible: "Erakutsi aurkezpena berriro"
+- assertVisible: "Aurkezpena"
 - tapOn:
     id: "settings.language"
 - assertVisible:
@@ -50,7 +50,7 @@ tags:
 - extendedWaitUntil:
     visible: "Today Races"
     timeout: 5000
-- assertVisible: "Show onboarding again"
+- assertVisible: "Onboarding"
 # The choice survives a relaunch.
 - launchApp:
     stopApp: true

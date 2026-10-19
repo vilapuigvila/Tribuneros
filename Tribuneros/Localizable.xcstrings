@@ -35,6 +35,24 @@
         }
       }
     },
+    "%1$lld of %2$lld raced" : {
+      "comment" : "Rounds raced of the series total",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld de %2$lld disputades"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%2$lld probatatik %1$lld jokatuta"
+          }
+        }
+      }
+    },
     "%@ - Kms" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -680,6 +698,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "CX gunea"
+          }
+        }
+      }
+    },
+    "Calendar" : {
+      "comment" : "Pill that opens the full calendar",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calendari"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Egutegia"
           }
         }
       }
@@ -1473,24 +1509,6 @@
         }
       }
     },
-    "LANGUAGE" : {
-      "comment" : "Language screen navigation title",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "IDIOMA"
-          }
-        },
-        "eu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "HIZKUNTZA"
-          }
-        }
-      }
-    },
     "LIVE" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1526,6 +1544,24 @@
         }
       }
     },
+    "Last round" : {
+      "comment" : "Section title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Última cursa"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Azken proba"
+          }
+        }
+      }
+    },
     "Latest results" : {
       "comment" : "CX Zone latest results header and screen title",
       "extractionState" : "manual",
@@ -1540,6 +1576,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Azken emaitzak"
+          }
+        }
+      }
+    },
+    "Leaders" : {
+      "comment" : "Section title: series standings leaders",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Líders"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liderrak"
           }
         }
       }
@@ -1963,6 +2017,24 @@
         }
       }
     },
+    "NEXT ROUND" : {
+      "comment" : "Hero tag of the series' next race",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PROPERA CURSA"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HURRENGO PROBA"
+          }
+        }
+      }
+    },
     "NO RACES" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2012,24 +2084,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hurrengoa"
-          }
-        }
-      }
-    },
-    "Next races" : {
-      "comment" : "CX Zone calendar section header",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Properes curses"
-          }
-        },
-        "eu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hurrengo lasterketak"
           }
         }
       }
@@ -2135,6 +2189,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Oraindik ez dago lasterketa honi buruzko informaziorik."
+          }
+        }
+      }
+    },
+    "No more rounds in this series this season." : {
+      "comment" : "Hero subtitle when the series has no rounds left",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No queden més curses d’aquesta sèrie aquesta temporada."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denboraldi honetan ez da proba gehiagorik geratzen serie honetan."
           }
         }
       }
@@ -2386,6 +2458,42 @@
         }
       }
     },
+    "OFF" : {
+      "comment" : "Settings switch state tag",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NO"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EZ"
+          }
+        }
+      }
+    },
+    "ON" : {
+      "comment" : "Settings switch state tag",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SÍ"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AKTIBO"
+          }
+        }
+      }
+    },
     "Official website" : {
       "comment" : "Race detail link",
       "extractionState" : "manual",
@@ -2417,6 +2525,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Konexiorik gabe"
+          }
+        }
+      }
+    },
+    "Onboarding" : {
+      "comment" : "Settings tile title: replay the onboarding",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Presentació"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aurkezpena"
           }
         }
       }
@@ -3000,6 +3126,24 @@
         }
       }
     },
+    "Results are shown as soon as you open the app." : {
+      "comment" : "Hide results tile, switch off",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Els resultats es mostren tan bon punt obres l’app."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emaitzak aplikazioa irekitzen duzun une berean erakusten dira."
+          }
+        }
+      }
+    },
     "Results start hidden behind a painting. Press and hold one to reveal or hide it, then tap to open it." : {
       "comment" : "Onboarding page 2 body",
       "extractionState" : "manual",
@@ -3018,20 +3162,20 @@
         }
       }
     },
-    "Results stay hidden until you press and hold them. Turn it off to see them as soon as you open the app." : {
-      "comment" : "Footer under the Hide results switch in Settings",
+    "Results stay hidden until you press and hold them." : {
+      "comment" : "Hide results tile, switch on",
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Els resultats queden amagats fins que els mantens premuts. Desactiva-ho per veure’ls tan bon punt obris l’app."
+            "value" : "Els resultats queden amagats fins que els mantens premuts."
           }
         },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Emaitzak ezkutuan geratzen dira sakatuta eduki arte. Desaktibatu aplikazioa ireki bezain laster ikusteko."
+            "value" : "Emaitzak ezkutuan geratzen dira luze sakatzen dituzun arte."
           }
         }
       }
@@ -3159,6 +3303,42 @@
         }
       }
     },
+    "Rounds left" : {
+      "comment" : "Section title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Curses pendents"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geratzen diren probak"
+          }
+        }
+      }
+    },
+    "SEASON PROGRESS" : {
+      "comment" : "Label over the rounds bar",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PROGRÉS DE LA TEMPORADA"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DENBORALDIAREN AURRERAPENA"
+          }
+        }
+      }
+    },
     "SETTINGS" : {
       "comment" : "Settings navigation title",
       "extractionState" : "manual",
@@ -3207,6 +3387,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "HASITA"
+          }
+        }
+      }
+    },
+    "Season %@" : {
+      "comment" : "Header: the season, e.g. 2026–27",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Temporada %@"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ denboraldia"
+          }
+        }
+      }
+    },
+    "Season finished" : {
+      "comment" : "Hero title when the series has no rounds left",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Temporada acabada"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denboraldia amaituta"
           }
         }
       }
@@ -3294,24 +3510,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Erakutsi gutxiago"
-          }
-        }
-      }
-    },
-    "Show onboarding again" : {
-      "comment" : "Settings row",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Torna a veure la presentació"
-          }
-        },
-        "eu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erakutsi aurkezpena berriro"
           }
         }
       }
@@ -3554,24 +3752,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Irteera-ordua"
-          }
-        }
-      }
-    },
-    "Starts" : {
-      "comment" : "Race detail info row label for the countdown",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Comença"
-          }
-        },
-        "eu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hasiera"
           }
         }
       }
@@ -4138,6 +4318,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "EMAKUMEAK"
+          }
+        }
+      }
+    },
+    "Watch it again" : {
+      "comment" : "Settings tile subtitle under Onboarding",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Torna-la a veure"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ikusi berriro"
           }
         }
       }
