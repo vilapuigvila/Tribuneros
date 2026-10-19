@@ -97,5 +97,6 @@ struct CXRacesRacesView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle(L10n.tr("CX ZONE"))
+        .toolbar(.hidden, for: .navigationBar)
     }
 }

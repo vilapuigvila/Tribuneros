@@ -60,7 +60,7 @@ struct CXEventDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 26) {
                 summaryPanel
 
                 if !winnerName.isEmpty {
@@ -101,7 +101,7 @@ struct CXEventDetailView: View {
             .padding()
             .padding(.bottom, 40)
         }
-        .background(Color.tribuneru(.vaporPageBackground))
+        .background(Color.tribuneru(.mudPageBackground))
         .preferredColorScheme(.dark)
         .navigationTitle(event.series.title)
         .fullScreenCover(item: $videoSheet) { sheet in
@@ -120,61 +120,95 @@ struct CXEventDetailView: View {
     // MARK: - Summary -
 
     private var summaryPanel: some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: event.race)
-        } content: {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(spacing: 6) {
-                    CXDetailTag(title: event.series.title)
-                    if !event.raceClass.isEmpty {
-                        CXDetailTag(title: event.raceClass)
+        VStack(spacing: 0) {
+            ZStack {
+                CXMudArt()
+                ImageScrim(
+                    top: 0.5,
+                    topEnd: 0.34,
+                    bottom: 0.8,
+                    bottomEnd: 0.46,
+                    tint: .tribuneru(.mudPageBackground)
+                )
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack(spacing: 8) {
+                        MudTag(
+                            title: status.title.uppercased(with: L10n.locale),
+                            color: status.color
+                        )
+                        Spacer(minLength: 0)
+                        if let countdown {
+                            TribuneruText(
+                                content: countdown,
+                                style: .vaporPill,
+                                color: .tribuneru(.mudTextPrimary),
+                                lineLimit: 1
+                            )
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(
+                                Capsule().fill(Color.tribuneru(.mudPageBackground).opacity(0.62))
+                            )
+                        }
                     }
-                    CXDetailTag(
-                        title: status.title,
-                        color: status.color
-                    )
+                    Spacer(minLength: 0)
+                    VStack(alignment: .leading, spacing: 4) {
+                        TribuneruText(
+                            content: event.race,
+                            style: .vaporHeroTitle,
+                            color: .tribuneru(.white(level: 1)),
+                            lineLimit: 2
+                        )
+                        .artTitleShadow()
+                        TribuneruText(
+                            content: [event.series.title, event.raceClass]
+                                .filter { !$0.isEmpty }
+                                .joined(separator: " · "),
+                            style: .vaporHeroSubtitle,
+                            color: Color.tribuneru(.mudTextPrimary).opacity(0.88),
+                            lineLimit: 1
+                        )
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 2)
                 }
+                .padding(14)
+            }
+            .frame(height: 196)
+            .clipped()
 
-                VaporCard(spacing: 0) {
-                    InfoRow(
-                        systemImage: "calendar",
-                        title: L10n.tr("Date"),
-                        value: formattedDate
-                    )
+            VStack(spacing: 0) {
+                InfoRow(
+                    systemImage: "calendar",
+                    title: L10n.tr("Date"),
+                    value: formattedDate
+                )
+                divider
+                InfoRow(
+                    systemImage: "mappin.and.ellipse",
+                    title: L10n.tr("Country"),
+                    value: event.raceCountry ?? "-",
+                    flagURL: event.flagURL
+                )
+                if let classDescription = CXRaces.raceClassDescription(event.raceClass) {
                     divider
                     InfoRow(
-                        systemImage: "mappin.and.ellipse",
-                        title: L10n.tr("Country"),
-                        value: event.raceCountry ?? "-",
-                        flagURL: event.flagURL
+                        systemImage: "flag.checkered",
+                        title: L10n.tr("Class"),
+                        value: "\(event.raceClass) · \(classDescription)"
                     )
-                    if let classDescription = CXRaces.raceClassDescription(event.raceClass) {
-                        divider
-                        InfoRow(
-                            systemImage: "flag.checkered",
-                            title: L10n.tr("Class"),
-                            value: "\(event.raceClass) · \(classDescription)"
-                        )
-                    }
-                    if let countdown {
-                        divider
-                        InfoRow(
-                            systemImage: "timer",
-                            title: L10n.tr("Starts"),
-                            value: countdown
-                        )
-                    }
                 }
             }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 6)
         }
+        .mudCard()
     }
 
     // MARK: - Winner -
 
     private var winnerPanel: some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-            VaporSectionHeader(title: L10n.tr("Winner"))
-        } content: {
+        MudPanel(title: L10n.tr("Winner")) {
             Button {
                 openWinner(
                     CXRaces.Winner(
@@ -183,17 +217,17 @@ struct CXEventDetailView: View {
                     )
                 )
             } label: {
-                VaporCard {
+                MudCardBox {
                     HStack(spacing: 10) {
                         Image(systemName: "trophy.fill")
                             .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.tribuneru(.vaporAccent))
+                            .foregroundColor(.tribuneru(.mudAccent))
                         VaporFlagView(url: event.winnerFlagURL ?? winningResult?.countryFlagURL)
                         VStack(alignment: .leading, spacing: 2) {
                             TribuneruText(
                                 content: winnerName,
                                 style: .vaporWinnerName,
-                                color: .tribuneru(.vaporTextPrimary),
+                                color: .tribuneru(.mudTextPrimary),
                                 lineLimit: 1
                             )
                             TribuneruText(
@@ -202,7 +236,7 @@ struct CXEventDetailView: View {
                                     .filter { !$0.isEmpty }
                                     .joined(separator: " · "),
                                 style: .vaporMeta,
-                                color: .tribuneru(.vaporTextSecondary),
+                                color: .tribuneru(.mudTextSecondary),
                                 lineLimit: 1
                             )
                         }
@@ -229,14 +263,12 @@ struct CXEventDetailView: View {
     // MARK: - Results -
 
     private func resultsPanel(_ allResults: [DTO.CX24Homepage.CategoryResult]) -> some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelYesterday)) {
-            VaporSectionHeader(title: L10n.tr("Results"))
-        } content: {
-            VaporCard(spacing: 0) {
+        MudPanel(title: L10n.tr("Results")) {
+            MudCardBox {
                 TribuneruText(
                     content: L10n.tr("MEN ELITE · TOP %lld", min(UI.resultsLimit, allResults.count)),
                     style: .vaporGroupLabel,
-                    color: .tribuneru(.vaporTextSecondary)
+                    color: .tribuneru(.mudTextSecondary)
                 )
                 .padding(.bottom, 8)
 
@@ -263,8 +295,7 @@ struct CXEventDetailView: View {
                     Button {
                         openURL(resultsURL)
                     } label: {
-                        VaporMoreInfoLink(title: L10n.tr("full results"))
-                            .padding(.top, 10)
+                        MudMoreLink(title: L10n.tr("full results"))
                     }
                     .buttonStyle(.plain)
                 }
@@ -275,9 +306,7 @@ struct CXEventDetailView: View {
     // MARK: - TV info -
 
     private func tvPanel(_ channels: [DTO.CXRacePage.TVChannel]) -> some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: L10n.tr("TV Info & Livestream"))
-        } content: {
+        MudPanel(title: L10n.tr("TV Info & Livestream")) {
             LazyVGrid(
                 columns: [GridItem(.adaptive(minimum: 88), spacing: 10, alignment: .top)],
                 alignment: .leading,
@@ -299,16 +328,21 @@ struct CXEventDetailView: View {
                             TribuneruText(
                                 content: channel.name,
                                 style: .vaporMeta,
-                                color: .tribuneru(.vaporTextPrimary),
+                                color: .tribuneru(.mudTextPrimary),
                                 lineLimit: 2
                             )
                             .multilineTextAlignment(.center)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(10)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.tribuneru(.vaporCardSurface))
+                        .background(Color.tribuneru(.mudCardSurface))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .strokeBorder(
+                                    Color.tribuneru(.mudTextPrimary).opacity(0.08),
+                                    lineWidth: 1
+                                )
                         )
                         .contentShape(Rectangle())
                     }
@@ -323,10 +357,8 @@ struct CXEventDetailView: View {
 
     private func pastWinnersPanel(_ winners: [DTO.CXRacePage.PastWinner]) -> some View {
         let winners = Array(winners.prefix(UI.pastWinnersLimit))
-        return VaporPanel(panelColor: .tribuneru(.vaporPanelTomorrow)) {
-            VaporSectionHeader(title: L10n.tr("Past winners"))
-        } content: {
-            VaporCard(spacing: 0) {
+        return MudPanel(title: L10n.tr("Past winners")) {
+            MudCardBox {
                 ForEach(winners.indices, id: \.self) { index in
                     let winner = winners[index]
                     Button {
@@ -341,7 +373,7 @@ struct CXEventDetailView: View {
                             TribuneruText(
                                 content: winner.year,
                                 style: .vaporETALine,
-                                color: .tribuneru(.vaporTextSecondary),
+                                color: .tribuneru(.mudTextSecondary),
                                 lineLimit: 1
                             )
                             .frame(width: 44, alignment: .leading)
@@ -349,7 +381,7 @@ struct CXEventDetailView: View {
                             TribuneruText(
                                 content: winner.rider,
                                 style: .vaporRaceNameResult,
-                                color: .tribuneru(.vaporTextPrimary),
+                                color: .tribuneru(.mudTextPrimary),
                                 lineLimit: 1
                             )
                             Spacer(minLength: 0)
@@ -371,14 +403,12 @@ struct CXEventDetailView: View {
     // MARK: - About -
 
     private func aboutPanel(_ summary: String) -> some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: L10n.tr("About"))
-        } content: {
-            VaporCard {
+        MudPanel(title: L10n.tr("About")) {
+            MudCardBox {
                 TribuneruText(
                     content: summary,
                     style: .vaporFeedDetail,
-                    color: .tribuneru(.vaporTextSecondary),
+                    color: .tribuneru(.mudTextSecondary),
                     lineLimit: 8
                 )
             }
@@ -388,10 +418,8 @@ struct CXEventDetailView: View {
     // MARK: - Links -
 
     private var linksPanel: some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-            VaporSectionHeader(title: L10n.tr("Links"))
-        } content: {
-            VaporCard(spacing: 0) {
+        MudPanel(title: L10n.tr("Links")) {
+            MudCardBox {
                 let items = links
                 ForEach(items.indices, id: \.self) { index in
                     let link = items[index]
@@ -401,12 +429,12 @@ struct CXEventDetailView: View {
                         HStack(spacing: 10) {
                             Image(systemName: link.systemImage)
                                 .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.tribuneru(.vaporAccent))
+                                .foregroundColor(.tribuneru(.mudAccent))
                                 .frame(width: 20)
                             TribuneruText(
                                 content: link.title,
                                 style: .vaporRaceNameNext,
-                                color: .tribuneru(.vaporTextPrimary),
+                                color: .tribuneru(.mudTextPrimary),
                                 lineLimit: 1
                             )
                             Spacer(minLength: 0)
@@ -465,14 +493,14 @@ struct CXEventDetailView: View {
     private var divider: some View {
         TribunerosDivider(
             height: 0.5,
-            color: .tribuneru(.vaporTextSecondary).opacity(0.2)
+            color: Color.tribuneru(.mudTextPrimary).opacity(0.08)
         )
     }
 
     private var chevron: some View {
         Image(systemName: "chevron.right")
             .font(.system(size: 11, weight: .semibold))
-            .foregroundColor(.tribuneru(.vaporTextSecondary))
+            .foregroundColor(.tribuneru(.mudTextSecondary))
     }
 
     private var formattedDate: String {
@@ -556,10 +584,10 @@ private extension CXEventDetailView {
 
         var color: Color {
             switch self {
-            case .upcoming: .tribuneru(.vaporTextSecondary)
-            case .today: .tribuneru(.vaporLive)
-            case .finished: .tribuneru(.vaporAccent)
-            case .cancelled: .tribuneru(.vaporNegative)
+            case .upcoming: .tribuneru(.mudTextSecondary)
+            case .today: .tribuneru(.mudLive)
+            case .finished: .tribuneru(.mudAccent)
+            case .cancelled: .tribuneru(.mudNegative)
             }
         }
     }
@@ -585,12 +613,12 @@ private extension CXEventDetailView {
             HStack(spacing: 10) {
                 Image(systemName: systemImage)
                     .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(.tribuneru(.vaporTextSecondary))
+                    .foregroundColor(.tribuneru(.mudTextSecondary))
                     .frame(width: 18)
                 TribuneruText(
                     content: title,
                     style: .vaporMeta,
-                    color: .tribuneru(.vaporTextSecondary),
+                    color: .tribuneru(.mudTextSecondary),
                     lineLimit: 1
                 )
                 .frame(width: 64, alignment: .leading)
@@ -600,7 +628,7 @@ private extension CXEventDetailView {
                 TribuneruText(
                     content: value,
                     style: .vaporRaceNameResult,
-                    color: .tribuneru(.vaporTextPrimary),
+                    color: .tribuneru(.mudTextPrimary),
                     lineLimit: 2
                 )
                 Spacer(minLength: 0)
@@ -617,7 +645,7 @@ private extension CXEventDetailView {
                 TribuneruText(
                     content: result.position,
                     style: .vaporFinishTime,
-                    color: .tribuneru(.vaporTextPrimary),
+                    color: .tribuneru(.mudTextPrimary),
                     lineLimit: 1
                 )
                 .frame(width: 22, alignment: .leading)
@@ -626,14 +654,14 @@ private extension CXEventDetailView {
                     TribuneruText(
                         content: result.rider,
                         style: .vaporRaceNameResult,
-                        color: .tribuneru(.vaporTextPrimary),
+                        color: .tribuneru(.mudTextPrimary),
                         lineLimit: 1
                     )
                     if !result.team.isEmpty {
                         TribuneruText(
                             content: result.team,
                             style: .vaporMeta,
-                            color: .tribuneru(.vaporTextSecondary),
+                            color: .tribuneru(.mudTextSecondary),
                             lineLimit: 1
                         )
                     }
@@ -642,7 +670,7 @@ private extension CXEventDetailView {
                 TribuneruText(
                     content: result.time,
                     style: .vaporFinishTime,
-                    color: .tribuneru(.vaporTextSecondary),
+                    color: .tribuneru(.mudTextSecondary),
                     lineLimit: 1
                 )
             }

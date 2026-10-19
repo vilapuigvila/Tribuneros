@@ -172,6 +172,14 @@ image: a winner photo that is missing or fails to load falls back to the day pai
 (`WinnerPhoto`, i.e. `CachedImageView(presentation: .racePhoto)`). PCS answers 403 to image requests without a Referer and a
 browser User-Agent, so `CachedImageView` adds both for PCS URLs (`Service.addPCSImageHeaders`).
 
+**The Paddock screen** (`Paddock.MainView`, `Paddock.Subviews.swift`) is the "Kit" look (`kit*` tokens in
+`Color.Palette`; Vapor type styles), navigation bar hidden like Today Races: a header (megaphone, "Paddock", the date),
+the press sites as 92pt circles (`PressStrip`, monogram from `PressItem.monogram`; three in view and the edge of a
+fourth), a "Birthdays today" card over `PaddockBirthdayArt` (`ViewState.birthdays`, every birthday event; hidden
+when none), then **Moves**: a Transfers | Programs segmented control (`Paddock.Segment`, stored as `Domain.filter`,
+default `.transfers`; `.all` / `.birthdays` still exist for the feed mapping and fall back to Transfers) with counts
+(`ViewState.transferCount` / `programCount`) over a timeline of that kind's cards, grouped by day on a time rail.
+
 **The Paddock press list comes from Firebase Remote Config**, key `press_urls`: a JSON array whose
 entries are either a URL string or a `{"Name": "url"}` object (the console currently uses the
 object form). Non-http(s) entries are dropped. The in-app default (the six original sites) covers
@@ -237,7 +245,19 @@ ranking title, category title or rider name; a matching ranking/category keeps a
 otherwise only matching riders stay and emptied categories/rankings are dropped). It only searches
 what the standings document holds: the top five of each category.
 
-Standings list rows, and the leader rows on the CX Zone standings summary card (the rest of that
+**The CX Zone screen** (`CXRaces.SeriesLensView`, `Tabs/CXRaces/SeriesLens/`) is the "Mud" look (`mud*` tokens in
+`Color.Palette`; Vapor type styles): a header with the season ("2026–27", from July), series chips
+(`CXRaces.RaceSeries` with at least one non-cancelled round this season; the first is selected), then for the selected
+series, all from `CXRaces.SeriesLens`: the next round as a hero over `CXMudArt` plus a rounds-raced bar; **Leaders**
+(first two categories of the standings item whose title names the series, with the points gap to second when both are
+plain numbers; no item, no section); **Last round** (the latest past round, with the Men Elite top 3 when the homepage
+"Latest results" has a race of the same name, else just the calendar winner); **Rounds left** (the 3 rounds after the
+next). Leader cards open `CXRiderDetailView` (`.standing`), podium rows `.podium`, a round the event detail, the pills
+the standings list / latest results / all races. `CXEventDetailView` (the hero over `CXMudArt`, info rows, `MudPanel` / `MudCardBox` sections from `CXMudComponents.swift`) and
+`CXAllRacesView` (chips, rows) are Mud too; the winner, rider, latest-results and standings screens are still Vapor. `CalendarView`,
+`CyclocrossStandingsSectionView` and `LatestResultsView` (the old panel cards) are no longer used.
+
+Standings list rows, and the leader rows on the old CX Zone standings summary card (the rest of that
 card still opens the list), open `CXRiderDetailView` with `CXRaces.RiderContext.standing`
 (`RiderStanding`: ranking, category, position, points). Latest-results podium rows (home card and
 full list; the rest of each card still opens the list / the race) open it with `.podium`
@@ -291,14 +311,15 @@ Alfy's `Requester` notes:
 
 ### Settings tab
 
-A fourth tab (`Tabs/Settings/`, `Tab.settings`, last in `CustomTabBar`, own `Router`) with three rows
-and a "Hide results" switch.
-"Show onboarding again" calls the `replayOnboarding` environment closure that `OnboardingHost` sets
+A fourth tab (`Tabs/Settings/`, `Tab.settings`, last in `CustomTabBar`, own `Router`), drawn as quick tiles (the
+navigation bar is hidden on the root; header "Settings" and the app version): a wide "Hide results" tile that flips
+the spoiler mode in place, then "Language" and "Onboarding" tiles, then an "Acknowledgements" row.
+"Onboarding" calls the `replayOnboarding` environment closure that `OnboardingHost` sets
 (`Presenter.replay()`): it bypasses `isEnabled` (so mocked launches show it), never saves, leaves the
-two-showing schedule alone and opens on the "Welcome back" page. "Language" pushes
-`Router.Destination.settingsLanguage`, a list of `Settings.Domain.supportedLanguages` ("System
-default", then English, Català and Euskara, each named in itself) stored in `UserSettings.appLanguage`
-(default `system`). Picking one applies it at once (see "Localization" below). "Acknowledgements" pushes `Router.Destination.settingsAcknowledgements`, a static credits screen (`Settings.AcknowledgementsView`; for now the onboarding music credit).
+two-showing schedule alone and opens on the "Welcome back" page. "Language" opens a bottom sheet (view-local state, no
+route) listing `Settings.Domain.supportedLanguages` ("System default", then English, Català and Euskara, each named in
+itself) stored in `UserSettings.appLanguage` (default `system`). Picking one closes the sheet and applies at once (see
+"Localization" below). "Acknowledgements" pushes `Router.Destination.settingsAcknowledgements`, a static credits screen (`Settings.AcknowledgementsView`; for now the onboarding music credit).
 "Hide results" (`UserSettings.hidesResults`, default on) is the spoiler mode for Today Races: off,
 every result starts shown, a long press hides that one race, and the `SpoilerHint` never shows.
 `HomeRacesInteractorImpl` listens to the key (`UserDefaults.publisher(for:defaultValue:)`), so the

@@ -46,6 +46,7 @@ final class LocalizationPaddockTests: XCTestCase {
     func testFeedGroupsStillUseEnglishKeys() {
         let now = Date(timeIntervalSince1970: 1_800_000_000)
         var domain = Paddock.Domain.empty
+        domain.filter = .all
         domain.events = [
             .init(date: now, kind: .birthdays([]))
         ]

@@ -26,6 +26,7 @@ struct PaddockView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("PADDOCK") // l10n:ignore: the section's brand name, like Cycling Tribune
+        .toolbar(.hidden, for: .navigationBar)
     }
 }
 
@@ -39,32 +40,46 @@ extension Paddock {
 
         var body: some View {
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(alignment: .leading, spacing: 28) {
+                    Header(date: Date())
+                        .padding(.top, 16)
+
                     switch state.press {
                     case .loading:
-                        PressPanel(items: PressItem.placeholders) { _ in }
+                        PressStrip(items: PressItem.placeholders) { _ in }
                             .redacted(reason: .placeholder)
                             .disabled(true)
+                            .padding(.top, 14)
                     case .loaded(let items) where !items.isEmpty:
-                        PressPanel(items: items) { url in
+                        PressStrip(items: items) { url in
                             action(.didTapOnPressLink(url))
                         }
+                        .padding(.top, 14)
                     case .loaded:
                         EmptyView()
                     }
 
-                    FeedPanel(
-                        filter: state.filter,
-                        feed: state.feed,
+                    if !state.birthdays.isEmpty {
+                        BirthdaysSection(entries: state.birthdays) { url in
+                            action(.didTapOnLink(url))
+                        }
+                    }
+
+                    MovesSection(
+                        state: state,
                         action: action
                     )
 
                     Color.clear
                         .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
                 }
-                .padding(16)
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
             }
-            .background(Color.tribuneru(.vaporPageBackground))
+            .background(Color.tribuneru(.kitPageBackground))
+            .overlay(alignment: .top) {
+                StatusBarScrim(tint: .tribuneru(.kitPageBackground))
+            }
             .preferredColorScheme(.dark)
             .onAppear {
                 action(.didAppear)
@@ -93,7 +108,7 @@ extension Paddock {
                 domain: nil
             )
         ]),
-        filter: .all,
+        filter: .transfers,
         feed: .loaded([
             .init(
                 title: "Today",

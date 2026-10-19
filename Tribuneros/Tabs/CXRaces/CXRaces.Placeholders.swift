@@ -11,16 +11,16 @@ import Foundation
 
 extension CXRaces.Representable {
 
-    /// A calendar of three upcoming races, one latest race with two podium categories and one
-    /// standings ranking: what the CX Zone tab shows once loaded.
+    /// A World Cup with one finished and four upcoming rounds, one latest race with two podium
+    /// categories and the World Cup standings: what the CX Zone tab shows once loaded.
     static let placeholders = CXRaces.Representable(
-        calendarEvents: (1...3).map { index in
+        calendarEvents: ["01-01-2000", "01-01-2099", "02-01-2099", "03-01-2099", "04-01-2099"].map { date in
             .init(
-                date: "0\(index)-01-2099",
+                date: date,
                 race: "Race name placeholder",
-                raceClass: "C1",
+                raceClass: "CDM",
                 flagURL: nil,
-                winnerName: "",
+                winnerName: "RIDER Name",
                 isCancelled: false,
                 raceID: nil,
                 raceSlug: nil,
@@ -28,7 +28,7 @@ extension CXRaces.Representable {
                 resultsURL: nil,
                 videoURL: nil,
                 websiteURL: nil,
-                raceCountry: nil,
+                raceCountry: "Country",
                 winnerURL: nil,
                 winnerCountry: nil,
                 winnerFlagURL: nil
@@ -71,12 +71,12 @@ extension CXRaces.Representable {
         standings: .init(
             items: [
                 .init(
-                    title: "Ranking title placeholder", // l10n:ignore
+                    title: "UCI World Cup", // l10n:ignore
                     url: nil,
                     logoURL: nil,
-                    categories: [
+                    categories: ["Men Elite", "Women Elite"].map { title in
                         .init(
-                            title: "Men Elite", // l10n:ignore
+                            title: title,
                             url: nil,
                             leaders: (1...5).map { position in
                                 .init(
@@ -89,7 +89,7 @@ extension CXRaces.Representable {
                             },
                             leaderImageURL: nil
                         )
-                    ]
+                    }
                 )
             ]
         )

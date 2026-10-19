@@ -44,9 +44,10 @@ struct ImageScrim: View {
     var topEnd: Double = 0.3
     var bottom: Double = 0.78
     var bottomEnd: Double = 0.54
+    var tint: Color = .tribuneru(.vaporPageBackground)
 
     var body: some View {
-        let page = Color.tribuneru(.vaporPageBackground)
+        let page = tint
         ZStack {
             LinearGradient(
                 colors: [page.opacity(top), .clear],

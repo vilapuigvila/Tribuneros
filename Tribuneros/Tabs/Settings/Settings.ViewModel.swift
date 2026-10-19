@@ -32,8 +32,6 @@ extension Settings {
             switch action {
             case .didTapShowOnboarding:
                 break
-            case .didTapLanguage:
-                router.routeTo(.settingsLanguage)
             case .didTapAcknowledgements:
                 router.routeTo(.settingsAcknowledgements)
             case .didSelectLanguage(let code):

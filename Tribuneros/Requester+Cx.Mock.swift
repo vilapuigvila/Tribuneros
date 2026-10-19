@@ -131,6 +131,34 @@ enum CxMock {
         )
     }
 
+    private static func leaders(_ points: [Int]) -> [DTO.CXStandings.Leader] {
+        points.enumerated().map { index, points in
+            .init(
+                position: index + 1,
+                rider: riders[index].name,
+                riderURL: riderURL(index),
+                countryFlagURL: nil,
+                points: "\(points)"
+            )
+        }
+    }
+
+    private static func standing(
+        _ title: String,
+        men: [Int],
+        women: [Int]
+    ) -> DTO.CXStandings.Item {
+        .init(
+            title: title,
+            url: nil,
+            logoURL: nil,
+            categories: [
+                .init(title: "Men Elite", url: nil, leaders: leaders(men), leaderImageURL: nil),
+                .init(title: "Women Elite", url: nil, leaders: leaders(women), leaderImageURL: nil)
+            ]
+        )
+    }
+
     static let standings = DTO.CXStandings(
         items: [
             .init(
@@ -153,7 +181,9 @@ enum CxMock {
                         leaderImageURL: nil
                     )
                 ]
-            )
+            ),
+            standing("UCI World Cup", men: [240, 198, 176], women: [215, 197, 150]),
+            standing("Superprestige", men: [58, 55, 49], women: [56, 54, 40])
         ]
     )
 
@@ -193,7 +223,12 @@ enum CxMock {
             event("Exact Cross Mol", raceClass: "C2", path: molPath, id: 17002, daysFromNow: -1, winner: 1),
             event("Exact Cross Essen", raceClass: "C2", path: "race/exact-cross-essen/", id: 18002, daysFromNow: 14),
             event("X2O Badkamers Trofee Baal", raceClass: "C2", path: "race/x2o-trofee-baal/", id: 18003, daysFromNow: 21),
-            event("World Cup Koksijde", raceClass: "CDM", path: koksijdePath, id: 18004, daysFromNow: 30)
+            event("World Cup Koksijde", raceClass: "CDM", path: koksijdePath, id: 18004, daysFromNow: 30),
+            event("World Cup Zonhoven", raceClass: "CDM", path: "race/world-cup-zonhoven/", id: 18005, daysFromNow: -20, winner: 2),
+            event("World Cup Namur", raceClass: "CDM", path: "race/world-cup-namur/", id: 18006, daysFromNow: 45),
+            event("World Cup Hoogerheide", raceClass: "CDM", path: "race/world-cup-hoogerheide/", id: 18007, daysFromNow: 60),
+            event("Superprestige Niel", raceClass: "C1", path: "race/superprestige-niel/", id: 18008, daysFromNow: 7),
+            event("Superprestige Merksplas", raceClass: "C1", path: "race/superprestige-merksplas/", id: 18009, daysFromNow: 28)
         ]
     }
 

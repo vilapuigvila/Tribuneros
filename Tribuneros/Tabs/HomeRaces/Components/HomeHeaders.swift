@@ -69,9 +69,10 @@ struct StaleCopyNotice: View {
 /// With the navigation bar hidden, scrolled content would run under the status bar; this fades it out.
 struct StatusBarScrim: View {
     @Environment(\.safeAreaInsets) private var safeAreaInsets
+    var tint: Color = .tribuneru(.vaporPageBackground)
 
     var body: some View {
-        let page = Color.tribuneru(.vaporPageBackground)
+        let page = tint
         LinearGradient(
             stops: [
                 .init(color: page, location: 0),
