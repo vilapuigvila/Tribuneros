@@ -1,0 +1,29 @@
+# Launch tab: inside 19 Oct - 31 Jan a cold launch lands on CX Zone, outside it on Today Races.
+# `launchDate` is the Debug date override; the mock scenario keeps the network out.
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+      launchDate: "2026-11-15"
+- extendedWaitUntil:
+    visible: "Latest results"
+    timeout: 45000
+- assertVisible:
+    text: "Next races"
+    below: "Latest results"
+- assertNotVisible: "Results today"
+
+- launchApp:
+    clearState: true
+    stopApp: true
+    arguments:
+      mockScenario: live
+      launchDate: "2026-07-15"
+- extendedWaitUntil:
+    visible: "Results today"
+    timeout: 45000
+- assertNotVisible: "Next races"

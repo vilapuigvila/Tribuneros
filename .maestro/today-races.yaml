@@ -1,5 +1,5 @@
 # Today Races tab on Debug mock data (mock scenario live): the header, every section and the hero
-# race's detail. Titles are drawn redacted while the page loads, so they only match once the data
+# race's live screen. Titles are drawn redacted while the page loads, so they only match once the data
 # is in. The other states are fixed by today-races-later, -one, -empty and -results.
 appId: com.pskmoons.Tribuneros
 tags:
@@ -24,7 +24,7 @@ tags:
     element: "History"
     timeout: 20000
 - assertVisible: "History"
-# The hero card opens the first race's detail.
+# The mock's hero race is LIVE, so the hero card opens the live race screen.
 - scrollUntilVisible:
     element:
       id: "home.header"
@@ -33,6 +33,7 @@ tags:
 - tapOn:
     id: "home.today.hero"
 - extendedWaitUntil:
-    visible: "Race info"
+    visible:
+      id: "liveRace.title"
+      text: "CRO Race.*"
     timeout: 45000
-- assertVisible: ".*134 km.*"

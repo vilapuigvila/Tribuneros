@@ -38,7 +38,7 @@ final class AppLocalization: ObservableObject {
 /// the rebuild; each tab's navigation stack goes back to its root.
 struct LocalizedRoot: View {
     @ObservedObject private var localization = AppLocalization.shared
-    @State private var selectedTab: Tab = .home
+    @State private var selectedTab: Tab = Tab.launchTabAtLaunch
 
     var body: some View {
         TabBarView(selectedTab: $selectedTab)

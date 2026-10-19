@@ -10,6 +10,45 @@ import UIKit
 
 enum Tab {
     case home, paddock, cxZone, settings
+
+    /// CX Zone from 19 October through 31 January (inclusive), Today Races otherwise.
+    static func launchTab(
+        on date: Date,
+        calendar: Calendar = .current
+    ) -> Tab {
+        let parts = calendar.dateComponents([.month, .day], from: date)
+        guard let month = parts.month, let day = parts.day else { return .home }
+        let isCxSeason = month == 11 || month == 12 || month == 1 || (month == 10 && day >= 19)
+        return isCxSeason ? .cxZone : .home
+    }
+
+    static var launchTabAtLaunch: Tab {
+        #if DEBUG
+        let override = launchDateOverride(
+            environment: ProcessInfo.processInfo.environment,
+            launchValue: UserDefaults.standard.string(forKey: "launchDate")
+        )
+        if let override { return launchTab(on: override) }
+        if HomeRaces.MockScenario.current != nil { return .home }
+        #endif
+        return launchTab(on: Date())
+    }
+
+    #if DEBUG
+    static func launchDateOverride(
+        environment: [String: String],
+        launchValue: String?,
+        calendar: Calendar = .current
+    ) -> Date? {
+        guard let value = environment["LAUNCH_DATE"] ?? launchValue else { return nil }
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.timeZone = calendar.timeZone
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.date(from: value)
+    }
+    #endif
 }
 
 struct TabBarView: View {
