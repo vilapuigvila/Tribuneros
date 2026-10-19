@@ -306,4 +306,62 @@ final class PaddockTests: XCTestCase {
 
         XCTAssertEqual(router.navPath.count, 1)
     }
+
+    // MARK: - Timeline layout
+
+    func testSegmentFollowsTheFilterAndCountsEachKind() {
+        let events = Paddock.InteractorImpl.events(
+            from: paddock,
+            fetchedAt: fetchedAt,
+            calendar: calendar
+        )
+        let transfers = viewState(events: events, filter: .transfers, lastUpdated: fetchedAt)
+        XCTAssertEqual(transfers.segment, .transfers)
+        XCTAssertEqual(transfers.transferCount, 2)
+        XCTAssertEqual(transfers.programCount, 3)
+        XCTAssertEqual(transfers.count(of: .programs), 3)
+        XCTAssertEqual(
+            sectionCardIDs(transfers),
+            ["Yesterday": ["transfer-4"], "Earlier": ["transfer-5"]]
+        )
+
+        let programs = viewState(events: events, filter: .programs, lastUpdated: fetchedAt)
+        XCTAssertEqual(programs.segment, .programs)
+        XCTAssertEqual(Paddock.Segment(filter: .all), .transfers, "The old filters fall back to Transfers")
+        XCTAssertEqual(Paddock.Domain.empty.filter, .transfers)
+    }
+
+    func testBirthdaysAreCollectedForTheirOwnCard() {
+        let events = Paddock.InteractorImpl.events(
+            from: paddock,
+            fetchedAt: fetchedAt,
+            calendar: calendar
+        )
+        let state = viewState(events: events, filter: .programs, lastUpdated: fetchedAt)
+        XCTAssertEqual(state.birthdays.map(\.age), ["28"])
+        XCTAssertEqual(state.birthdays.first?.rider.name, "Rider")
+    }
+
+    func testPressMonogram() {
+        func monogram(_ name: String) -> String {
+            Paddock.PressItem(
+                url: URL(string: "https://example.com")!,
+                name: name,
+                domain: nil
+            ).monogram
+        }
+        XCTAssertEqual(monogram("Escape Collective"), "EC")
+        XCTAssertEqual(monogram("cyclingnews.com"), "CY")
+        XCTAssertEqual(monogram("Sporza"), "SP")
+        XCTAssertEqual(monogram(""), "")
+    }
+
+    func testLoadingPlaceholdersKeepOnlyTheSegmentCards() {
+        let transfers = Paddock.Section.placeholders(for: .transfers).flatMap(\.cards)
+        let programs = Paddock.Section.placeholders(for: .programs).flatMap(\.cards)
+        XCTAssertFalse(transfers.isEmpty)
+        XCTAssertFalse(programs.isEmpty)
+        XCTAssertTrue(transfers.allSatisfy { if case .transfer = $0 { true } else { false } })
+        XCTAssertTrue(programs.allSatisfy { if case .program = $0 { true } else { false } })
+    }
 }

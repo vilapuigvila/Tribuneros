@@ -61,6 +61,42 @@ extension Color {
             Color(hex: 0xE6F2D9)
         case .vaporGroupBadge:
             Color(hex: 0x2F6FDE)
+        case .kitPageBackground:
+            Color(hex: 0x0D0B14)
+        case .kitCardSurface:
+            Color(hex: 0x19152A)
+        case .kitSegmentTrack:
+            Color(hex: 0x161226)
+        case .kitSegmentSelected:
+            Color(hex: 0x2E2650)
+        case .kitAvatar:
+            Color(hex: 0x241E3A)
+        case .kitRail:
+            Color(hex: 0x2A2440)
+        case .kitTextPrimary:
+            Color(hex: 0xF0EDF8)
+        case .kitTextSecondary:
+            Color(hex: 0xA29BB8)
+        case .kitTextMuted:
+            Color(hex: 0xC8C1DB)
+        case .kitAvatarText:
+            Color(hex: 0xE3DCFA)
+        case .kitAccent:
+            Color(hex: 0xBBA9FF)
+        case .kitProgram:
+            Color(hex: 0x7DD3FC)
+        case .kitAdded:
+            Color(hex: 0x86EFAC)
+        case .kitDropped:
+            Color(hex: 0xFDA4AF)
+        case .kitSkyTop:
+            Color(hex: 0x2A2150)
+        case .kitSkyBottom:
+            Color(hex: 0x4B3A7A)
+        case .kitConfettiYellow:
+            Color(hex: 0xF2D04B)
+        case .kitConfettiPink:
+            Color(hex: 0xF9A8D4)
         case .championBlue:
             Color(hex: 0x2563EB)
         case .championRed:
@@ -106,6 +142,25 @@ extension Color {
         case vaporProfileDone
         /// The blue round badge of a group in the situation list.
         case vaporGroupBadge
+        // MARK: - Kit (Paddock timeline) -
+        case kitPageBackground
+        case kitCardSurface
+        case kitSegmentTrack
+        case kitSegmentSelected
+        case kitAvatar
+        case kitRail
+        case kitTextPrimary
+        case kitTextSecondary
+        case kitTextMuted
+        case kitAvatarText
+        case kitAccent
+        case kitProgram
+        case kitAdded
+        case kitDropped
+        case kitSkyTop
+        case kitSkyBottom
+        case kitConfettiYellow
+        case kitConfettiPink
         /// The world champion jersey's bands, as drawn in the spoiler paintings.
         case championBlue
         case championRed

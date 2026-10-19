@@ -1,5 +1,5 @@
 {
-  "Today Races": {"ca": "Curses d’avui", "eu": "Gaurko lasterketak", "comment": "Tab bar label"},
+  "Road": {"ca": "Carretera", "eu": "Errepidea", "comment": "Tab bar label of the road racing tab"},
   "CX Zone": {"ca": "Zona CX", "eu": "CX gunea", "comment": "Tab bar label and CX Zone title"},
   "Paddock": {"ca": "Paddock", "eu": "Paddock", "comment": "Tab bar label; name of the news tab, kept as is"},
   "Settings": {"ca": "Configuració", "eu": "Ezarpenak", "comment": "Tab bar label"},

@@ -163,7 +163,7 @@ private struct CustomTabBar: View {
 
             HStack {
                 TabBarButton(
-                    title: L10n.tr("Today Races"),
+                    title: L10n.tr("Road"),
                     systemImage: "figure.indoor.cycle",
                     isSelected: selectedTab == .home
                 ) {

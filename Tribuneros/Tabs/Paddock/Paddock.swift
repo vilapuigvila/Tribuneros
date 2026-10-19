@@ -37,6 +37,25 @@ extension Paddock {
             }
         }
     }
+
+    /// The Moves section's segmented control; each side shows one kind of feed card.
+    enum Segment: CaseIterable, Sendable {
+        case transfers
+        case programs
+
+        var filter: Filter {
+            switch self {
+            case .transfers: .transfers
+            case .programs: .programs
+            }
+        }
+
+        var title: String { filter.title }
+
+        init(filter: Filter) {
+            self = filter == .programs ? .programs : .transfers
+        }
+    }
 }
 
 // MARK: - View State -
@@ -45,10 +64,23 @@ extension Paddock {
         let press: Press
         let filter: Filter
         let feed: Feed
+        /// Every birthday in the feed, shown on their own card above Moves.
+        var birthdays: [BirthdaysCard.Entry] = []
+        var transferCount = 0
+        var programCount = 0
+
+        var segment: Segment { Segment(filter: filter) }
+
+        func count(of segment: Segment) -> Int {
+            switch segment {
+            case .transfers: transferCount
+            case .programs: programCount
+            }
+        }
 
         static let idle = ViewState(
             press: .loading,
-            filter: .all,
+            filter: .transfers,
             feed: .loading
         )
     }
@@ -72,6 +104,21 @@ extension Paddock {
         let url: URL
         let name: String
         let domain: String?
+
+        /// "Escape Collective" → "EC", "cyclingnews.com" → "CY": the press circle's stand-in logo.
+        var monogram: String {
+            // A bare domain ("cyclingnews.com") is one word: its site name, without the TLD.
+            let base = !name.contains(" ") && name.contains(".")
+                ? String(name.split(separator: ".").dropLast().joined(separator: "."))
+                : name
+            let words = base
+                .split { !$0.isLetter && !$0.isNumber }
+                .filter { !$0.isEmpty }
+            let letters = words.count > 1
+                ? words.prefix(2).compactMap(\.first).map(String.init).joined()
+                : String(words.first?.prefix(2) ?? "")
+            return letters.uppercased()
+        }
 
         /// Stand-ins shaped like real cards, drawn redacted while the list loads.
         static let placeholders: [PressItem] = (1...4).map { index in

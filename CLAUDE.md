@@ -171,6 +171,14 @@ image: a winner photo that is missing or fails to load falls back to the day pai
 (`WinnerPhoto`, i.e. `CachedImageView(presentation: .racePhoto)`). PCS answers 403 to image requests without a Referer and a
 browser User-Agent, so `CachedImageView` adds both for PCS URLs (`Service.addPCSImageHeaders`).
 
+**The Paddock screen** (`Paddock.MainView`, `Paddock.Subviews.swift`) is the "Kit" look (`kit*` tokens in
+`Color.Palette`; Vapor type styles), navigation bar hidden like Today Races: a header (megaphone, "Paddock", the date),
+the press sites as 92pt circles (`PressStrip`, monogram from `PressItem.monogram`; three in view and the edge of a
+fourth), a "Birthdays today" card over `PaddockBirthdayArt` (`ViewState.birthdays`, every birthday event; hidden
+when none), then **Moves**: a Transfers | Programs segmented control (`Paddock.Segment`, stored as `Domain.filter`,
+default `.transfers`; `.all` / `.birthdays` still exist for the feed mapping and fall back to Transfers) with counts
+(`ViewState.transferCount` / `programCount`) over a timeline of that kind's cards, grouped by day on a time rail.
+
 **The Paddock press list comes from Firebase Remote Config**, key `press_urls`: a JSON array whose
 entries are either a URL string or a `{"Name": "url"}` object (the console currently uses the
 object form). Non-http(s) entries are dropped. The in-app default (the six original sites) covers
