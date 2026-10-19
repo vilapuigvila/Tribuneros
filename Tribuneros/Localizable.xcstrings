@@ -308,7 +308,8 @@
         }
       }
     },
-    "%lld sites" : {
+    "%lld riders" : {
+      "comment" : "Count of birthdays today",
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
@@ -317,13 +318,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld web"
+                  "value" : "%lld ciclista"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld webs"
+                  "value" : "%lld ciclistes"
                 }
               }
             }
@@ -335,13 +336,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld site"
+                  "value" : "%lld rider"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld sites"
+                  "value" : "%lld riders"
                 }
               }
             }
@@ -353,13 +354,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Webgune %lld"
+                  "value" : "Txirrindulari %lld"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld webgune"
+                  "value" : "%lld txirrindulari"
                 }
               }
             }
@@ -596,24 +597,6 @@
         }
       }
     },
-    "BIRTHDAYS" : {
-      "comment" : "Paddock feed card tag",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ANIVERSARIS"
-          }
-        },
-        "eu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URTEBETETZEAK"
-          }
-        }
-      }
-    },
     "Birthdays" : {
       "comment" : "Paddock filter chip",
       "extractionState" : "manual",
@@ -628,6 +611,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Urtebetetzeak"
+          }
+        }
+      }
+    },
+    "Birthdays today" : {
+      "comment" : "Paddock section title over today's birthdays",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aniversaris d’avui"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gaurko urtebetetzeak"
           }
         }
       }
@@ -1999,6 +2000,24 @@
         }
       }
     },
+    "Moves" : {
+      "comment" : "Paddock section title: transfers and race-program changes",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moviments"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mugimenduak"
+          }
+        }
+      }
+    },
     "Music provided by Ciscu Bates" : {
       "comment" : "Acknowledgements: credit for the onboarding music",
       "extractionState" : "manual",
@@ -2211,6 +2230,24 @@
         }
       }
     },
+    "No program changes right now." : {
+      "comment" : "Paddock Moves, Programs side, empty",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ara mateix no hi ha canvis de programa."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oraingoz ez dago egitarau aldaketarik."
+          }
+        }
+      }
+    },
     "No race videos available" : {
       "comment" : "Floating button when the race has no video",
       "extractionState" : "manual",
@@ -2388,6 +2425,24 @@
         }
       }
     },
+    "No transfers right now." : {
+      "comment" : "Paddock Moves, Transfers side, empty",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ara mateix no hi ha fitxatges."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oraingoz ez dago fitxaketarik."
+          }
+        }
+      }
+    },
     "Not in the TV listings" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2401,24 +2456,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ez dago telebista-programazioan"
-          }
-        }
-      }
-    },
-    "Nothing here for this filter." : {
-      "comment" : "Paddock feed empty filter",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No hi ha res amb aquest filtre."
-          }
-        },
-        "eu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ez dago ezer iragazki honekin."
           }
         }
       }
@@ -3281,6 +3318,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Txirrindularia, rankinga, kategoria..."
+          }
+        }
+      }
+    },
+    "Road" : {
+      "comment" : "Tab bar label of the road racing tab",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carretera"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Errepidea"
           }
         }
       }
@@ -4735,24 +4790,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "hasiera: %@"
-          }
-        }
-      }
-    },
-    "today" : {
-      "comment" : "Paddock birthdays card time",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "avui"
-          }
-        },
-        "eu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "gaur"
           }
         }
       }

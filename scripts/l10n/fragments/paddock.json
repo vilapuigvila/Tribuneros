@@ -39,22 +39,6 @@
     "eu": "Prentsa",
     "comment": "Paddock press panel title"
   },
-  "%lld sites": {
-    "plural": {
-      "en": {
-        "one": "%lld site",
-        "other": "%lld sites"
-      },
-      "ca": {
-        "one": "%lld web",
-        "other": "%lld webs"
-      },
-      "eu": {
-        "one": "Webgune %lld",
-        "other": "%lld webgune"
-      }
-    }
-  },
   "Loading the paddock": {
     "ca": "S’està carregant el paddock",
     "eu": "Paddock-a kargatzen",
@@ -74,11 +58,6 @@
     "ca": "Torna-ho a provar",
     "eu": "Saiatu berriro"
   },
-  "Nothing here for this filter.": {
-    "ca": "No hi ha res amb aquest filtre.",
-    "eu": "Ez dago ezer iragazki honekin.",
-    "comment": "Paddock feed empty filter"
-  },
   "TRANSFER": {
     "ca": "FITXATGE",
     "eu": "FITXAKETA",
@@ -87,11 +66,6 @@
   "PROGRAM": {
     "ca": "PROGRAMA",
     "eu": "EGITARAUA",
-    "comment": "Paddock feed card tag"
-  },
-  "BIRTHDAYS": {
-    "ca": "ANIVERSARIS",
-    "eu": "URTEBETETZEAK",
     "comment": "Paddock feed card tag"
   },
   "Added": {
@@ -103,11 +77,6 @@
     "ca": "Descartada",
     "eu": "Kenduta",
     "comment": "Paddock program change: race dropped"
-  },
-  "today": {
-    "ca": "avui",
-    "eu": "gaur",
-    "comment": "Paddock birthdays card time"
   },
   "Loading the rider": {
     "ca": "S’està carregant el ciclista",
@@ -228,5 +197,42 @@
     "ca": "compleix",
     "eu": "urteak",
     "comment": "Birthday row, before the age in large type: “turns 28”"
+  },
+  "Birthdays today": {
+    "ca": "Aniversaris d’avui",
+    "eu": "Gaurko urtebetetzeak",
+    "comment": "Paddock section title over today's birthdays"
+  },
+  "Moves": {
+    "ca": "Moviments",
+    "eu": "Mugimenduak",
+    "comment": "Paddock section title: transfers and race-program changes"
+  },
+  "No transfers right now.": {
+    "ca": "Ara mateix no hi ha fitxatges.",
+    "eu": "Oraingoz ez dago fitxaketarik.",
+    "comment": "Paddock Moves, Transfers side, empty"
+  },
+  "No program changes right now.": {
+    "ca": "Ara mateix no hi ha canvis de programa.",
+    "eu": "Oraingoz ez dago egitarau aldaketarik.",
+    "comment": "Paddock Moves, Programs side, empty"
+  },
+  "%lld riders": {
+    "plural": {
+      "en": {
+        "one": "%lld rider",
+        "other": "%lld riders"
+      },
+      "ca": {
+        "one": "%lld ciclista",
+        "other": "%lld ciclistes"
+      },
+      "eu": {
+        "one": "Txirrindulari %lld",
+        "other": "%lld txirrindulari"
+      }
+    },
+    "comment": "Count of birthdays today"
   }
 }

@@ -7,101 +7,239 @@
 
 import SwiftUI
 
-// MARK: - Press -
+extension View {
+    func kitCard(cornerRadius: CGFloat = 20) -> some View {
+        background(Color.tribuneru(.kitCardSurface))
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .strokeBorder(
+                        Color.tribuneru(.kitTextPrimary).opacity(0.08),
+                        lineWidth: 1
+                    )
+            )
+    }
+}
+
+// MARK: - Header -
 
 extension Paddock {
 
-    struct PressPanel: View {
-        let items: [PressItem]
-        let onTap: (URL) -> Void
+    struct Header: View {
+        let date: Date
 
         var body: some View {
-            VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-                VaporSectionHeader(title: L10n.tr("The press")) {
+            HStack(spacing: 12) {
+                HStack(spacing: 10) {
+                    Image(systemName: "megaphone")
+                        .font(.system(size: 24, weight: .regular))
+                        .foregroundColor(.tribuneru(.kitTextPrimary))
                     TribuneruText(
-                        content: L10n.tr("%lld sites", items.count),
-                        style: .vaporScreenDate,
-                        color: .tribuneru(.vaporTextSecondary)
+                        content: L10n.tr("Paddock"),
+                        style: .vaporSectionTitle,
+                        color: .tribuneru(.kitTextPrimary),
+                        lineLimit: 1
                     )
-                    .padding(.top, 12)
                 }
-            } content: {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(alignment: .top, spacing: 10) {
-                        ForEach(items) { item in
-                            Button {
-                                onTap(item.url)
-                            } label: {
-                                PressCard(item: item)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                }
-                .padding(.horizontal, -20)
+                Spacer(minLength: 0)
+                TribuneruText(
+                    content: L10n.dateFormatter(template: "EEEddMMM").string(from: date),
+                    style: .vaporScreenDate,
+                    color: .tribuneru(.kitTextSecondary),
+                    lineLimit: 1
+                )
             }
-        }
-    }
-
-    private struct PressCard: View {
-        let item: PressItem
-
-        var body: some View {
-            VaporCard(spacing: 12) {
-                HStack {
-                    Image(systemName: "newspaper.fill")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(.tribuneru(.vaporAccent))
-                        .frame(width: 30, height: 30)
-                        .background(Color.tribuneru(.vaporAccent).opacity(0.12))
-                        .cornerRadius(6)
-                    Spacer(minLength: 0)
-                    Image(systemName: "arrow.up.right")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor(.tribuneru(.vaporTextSecondary))
-                }
-                VStack(alignment: .leading, spacing: 4) {
-                    TribuneruText(
-                        content: item.name,
-                        style: .vaporPressName,
-                        color: .tribuneru(.vaporTextPrimary),
-                        lineLimit: 2
-                    )
-                    if let domain = item.domain {
-                        TribuneruText(
-                            content: domain,
-                            style: .vaporMonoMeta,
-                            color: .tribuneru(.vaporTextSecondary)
-                        )
-                    }
-                }
-                .frame(minHeight: 50, alignment: .topLeading)
-            }
-            .frame(width: 140)
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("paddock.header")
         }
     }
 }
 
-// MARK: - Feed -
+// MARK: - Press -
 
 extension Paddock {
 
-    struct FeedPanel: View {
-        let filter: Filter
-        let feed: Feed
+    /// The press sites as big circles: three in view and the edge of a fourth, so the row reads as scrollable.
+    struct PressStrip: View {
+        private enum Sizes {
+            static let circle: CGFloat = 92
+            static let width: CGFloat = 98
+        }
+
+        let items: [PressItem]
+        let onTap: (URL) -> Void
+
+        var body: some View {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(alignment: .top, spacing: 14) {
+                    ForEach(items) { item in
+                        Button {
+                            onTap(item.url)
+                        } label: {
+                            bubble(item)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(item.name)
+                        .accessibilityAddTraits(.isLink)
+                        .accessibilityIdentifier("paddock.press.\(item.url.host ?? item.name)")
+                    }
+                }
+                .padding(.horizontal, 16)
+            }
+            .padding(.horizontal, -16)
+            .accessibilityLabel(L10n.tr("The press"))
+        }
+
+        private func bubble(_ item: PressItem) -> some View {
+            VStack(spacing: 8) {
+                Circle()
+                    .fill(Color.tribuneru(.kitAvatar))
+                    .overlay(
+                        TribuneruText(
+                            content: item.monogram,
+                            style: .vaporHeading,
+                            color: .tribuneru(.kitAvatarText),
+                            lineLimit: 1
+                        )
+                    )
+                    .padding(4)
+                    .overlay(
+                        Circle()
+                            .strokeBorder(Color.tribuneru(.kitAccent), lineWidth: 2.5)
+                    )
+                    .frame(width: Sizes.circle, height: Sizes.circle)
+                TribuneruText(
+                    content: item.name,
+                    style: .vaporPressName,
+                    color: .tribuneru(.kitAvatarText),
+                    lineLimit: 1
+                )
+                if let domain = item.domain {
+                    TribuneruText(
+                        content: domain,
+                        style: .vaporMonoMeta,
+                        color: .tribuneru(.kitTextSecondary),
+                        lineLimit: 1
+                    )
+                }
+            }
+            .frame(width: Sizes.width)
+            .contentShape(Rectangle())
+        }
+    }
+}
+
+// MARK: - Section scaffolding -
+
+extension Paddock {
+
+    struct KitSection<Trailing: View, Content: View>: View {
+        let title: String
+        @ViewBuilder let trailing: () -> Trailing
+        @ViewBuilder let content: () -> Content
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(spacing: 12) {
+                    TribuneruText(
+                        content: title,
+                        style: .vaporHeading,
+                        color: .tribuneru(.kitTextPrimary),
+                        lineLimit: 1
+                    )
+                    Spacer(minLength: 0)
+                    trailing()
+                }
+                .frame(minHeight: 44)
+                content()
+            }
+        }
+    }
+}
+
+// MARK: - Birthdays -
+
+extension Paddock {
+
+    struct BirthdaysSection: View {
+        let entries: [BirthdaysCard.Entry]
+        let onTap: (URL?) -> Void
+
+        var body: some View {
+            KitSection(title: L10n.tr("Birthdays today")) {
+                TribuneruText(
+                    content: L10n.tr("%lld riders", entries.count),
+                    style: .vaporMonoMeta,
+                    color: .tribuneru(.kitTextSecondary),
+                    lineLimit: 1
+                )
+            } content: {
+                VStack(spacing: 0) {
+                    PaddockBirthdayArt()
+                        .frame(height: 120)
+                        .clipped()
+                    VStack(spacing: 0) {
+                        ForEach(Array(entries.enumerated()), id: \.offset) { index, entry in
+                            if index > 0 {
+                                TribunerosDivider(
+                                    height: 0.5,
+                                    color: Color.tribuneru(.kitTextPrimary).opacity(0.08)
+                                )
+                            }
+                            Button {
+                                onTap(entry.rider.url)
+                            } label: {
+                                row(entry)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityIdentifier("paddock.birthday.\(index)")
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 4)
+                }
+                .kitCard()
+            }
+        }
+
+        private func row(_ entry: BirthdaysCard.Entry) -> some View {
+            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                RiderLine(rider: entry.rider)
+                Spacer(minLength: 8)
+                TribuneruText(
+                    content: L10n.tr("turns"),
+                    style: .vaporRowMeta,
+                    color: .tribuneru(.kitTextSecondary)
+                )
+                TribuneruText(
+                    content: entry.age,
+                    style: .vaporRowTime,
+                    color: .tribuneru(.kitAccent)
+                )
+            }
+            .frame(minHeight: 56)
+            .contentShape(Rectangle())
+            .accessibilityElement(children: .combine)
+        }
+    }
+}
+
+// MARK: - Moves -
+
+extension Paddock {
+
+    struct MovesSection: View {
+        let state: ViewState
         let action: (Action) -> Void
 
         var body: some View {
-            VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-                VaporSectionHeader(
-                    title: "Paddock",
-                    showsLiveDot: true
-                )
+            KitSection(title: L10n.tr("Moves")) {
+                EmptyView()
             } content: {
-                VStack(alignment: .leading, spacing: 16) {
-                    FilterChips(selected: filter) {
-                        action(.didSelectFilter($0))
+                VStack(alignment: .leading, spacing: 14) {
+                    SegmentedControl(state: state) {
+                        action(.didSelectFilter($0.filter))
                     }
                     content
                 }
@@ -110,13 +248,15 @@ extension Paddock {
 
         @ViewBuilder
         private var content: some View {
-            switch feed {
+            switch state.feed {
             case .loading:
-                ForEach(Section.placeholders) { section in
-                    FeedSectionView(section: section) { _ in }
-                }
+                Timeline(
+                    sections: Section.placeholders(for: state.segment),
+                    action: { _ in }
+                )
                 .redacted(reason: .placeholder)
                 .disabled(true)
+                .accessibilityElement(children: .ignore)
                 .accessibilityLabel(L10n.tr("Loading the paddock"))
             case .empty:
                 message(L10n.tr("Nothing new in the paddock."))
@@ -126,23 +266,31 @@ extension Paddock {
                     Button {
                         action(.didRequestRefresh)
                     } label: {
-                        ChipLabel(
-                            title: L10n.tr("Try again"),
-                            isSelected: true
+                        TribuneruText(
+                            content: L10n.tr("Try again"),
+                            style: .vaporSeeAll,
+                            color: .tribuneru(.kitAccent)
+                        )
+                        .padding(.horizontal, 14)
+                        .frame(minHeight: 44)
+                        .background(
+                            Capsule().fill(Color.tribuneru(.kitAccent).opacity(0.14))
                         )
                     }
                     .buttonStyle(.plain)
                 }
             case .loaded(let sections):
                 if sections.isEmpty {
-                    message(L10n.tr("Nothing here for this filter."))
+                    message(
+                        state.segment == .transfers
+                            ? L10n.tr("No transfers right now.")
+                            : L10n.tr("No program changes right now.")
+                    )
                 } else {
-                    ForEach(sections) { section in
-                        FeedSectionView(
-                            section: section,
-                            action: action
-                        )
-                    }
+                    Timeline(
+                        sections: sections,
+                        action: action
+                    )
                 }
             }
         }
@@ -151,84 +299,136 @@ extension Paddock {
             TribuneruText(
                 content: text,
                 style: .vaporMeta,
-                color: .tribuneru(.vaporTextSecondary),
+                color: .tribuneru(.kitTextSecondary),
                 lineLimit: 2
             )
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .kitCard()
         }
     }
 
-    private struct FilterChips: View {
-        let selected: Filter
-        let onSelect: (Filter) -> Void
+    private struct SegmentedControl: View {
+        let state: ViewState
+        let onSelect: (Segment) -> Void
 
         var body: some View {
-            HStack(spacing: 6) {
-                ForEach(Filter.allCases, id: \.self) { filter in
+            HStack(spacing: 4) {
+                ForEach(Segment.allCases, id: \.self) { segment in
+                    let isSelected = segment == state.segment
                     Button {
-                        onSelect(filter)
+                        UISelectionFeedbackGenerator().selectionChanged()
+                        onSelect(segment)
                     } label: {
-                        ChipLabel(
-                            title: filter.title,
-                            isSelected: filter == selected
+                        HStack(spacing: 8) {
+                            TribuneruText(
+                                content: segment.title,
+                                style: .vaporLink,
+                                color: .tribuneru(isSelected ? .kitTextPrimary : .kitTextSecondary),
+                                lineLimit: 1
+                            )
+                            TribuneruText(
+                                content: "\(state.count(of: segment))",
+                                style: .vaporResultTime,
+                                color: Color.tribuneru(isSelected ? .kitTextPrimary : .kitTextSecondary).opacity(0.75),
+                                lineLimit: 1
+                            )
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 40)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(isSelected ? Color.tribuneru(.kitSegmentSelected) : .clear)
                         )
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
+                    .accessibilityAddTraits(isSelected ? .isSelected : [])
+                    .accessibilityIdentifier("paddock.segment.\(segment == .transfers ? "transfers" : "programs")")
                 }
             }
-        }
-    }
-
-    private struct ChipLabel: View {
-        let title: String
-        let isSelected: Bool
-
-        var body: some View {
-            let color: Color = isSelected ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary)
-            TribuneruText(
-                content: title,
-                style: .vaporSpoilerChip,
-                color: color
+            .padding(4)
+            .background(
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(Color.tribuneru(.kitSegmentTrack))
             )
-            .padding(.horizontal, 8)
-            .padding(.vertical, 7)
-            .background(Color.tribuneru(.vaporAccent).opacity(isSelected ? 0.08 : 0))
             .overlay(
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(color, lineWidth: 0.5)
+                RoundedRectangle(cornerRadius: 14)
+                    .strokeBorder(Color.tribuneru(.kitTextPrimary).opacity(0.08), lineWidth: 1)
             )
-            .frame(minHeight: 44)
-            .contentShape(Rectangle())
+            .animation(.easeOut(duration: 0.2), value: state.segment)
         }
     }
 
-    private struct FeedSectionView: View {
-        let section: Section
+    /// Day labels and cards hung on a time rail: the time on the left, a dot, then the card.
+    private struct Timeline: View {
+        let sections: [Section]
         let action: (Action) -> Void
 
         var body: some View {
-            VStack(alignment: .leading, spacing: 10) {
-                TribuneruText(
-                    content: section.displayTitle.uppercased(with: L10n.locale),
-                    style: .vaporGroupLabel,
-                    color: .tribuneru(.vaporTextSecondary)
-                )
-                ForEach(section.cards) { card in
-                    switch card {
-                    case .transfer(let transfer):
-                        TransferCardView(card: transfer) {
-                            action(.didTapOnRider(.transfer(transfer)))
-                        }
-                    case .program(let program):
-                        ProgramCardView(card: program) {
-                            action(.didTapOnRider(.program(program)))
-                        }
-                    case .birthdays(let birthdays):
-                        BirthdaysCardView(card: birthdays) {
-                            action(.didTapOnLink($0))
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(sections) { section in
+                    rail(time: nil, dot: nil) {
+                        TribuneruText(
+                            content: section.displayTitle.uppercased(with: L10n.locale),
+                            style: .vaporTagSmall,
+                            color: .tribuneru(.kitTextSecondary)
+                        )
+                        .padding(.top, 18)
+                        .padding(.bottom, 4)
+                    }
+                    ForEach(section.cards) { card in
+                        switch card {
+                        case .transfer(let transfer):
+                            rail(time: transfer.date, dot: .tribuneru(.kitAccent)) {
+                                TransferCardView(card: transfer) {
+                                    action(.didTapOnRider(.transfer(transfer)))
+                                }
+                            }
+                        case .program(let program):
+                            rail(time: program.timeAgo, dot: .tribuneru(.kitProgram)) {
+                                ProgramCardView(card: program) {
+                                    action(.didTapOnRider(.program(program)))
+                                }
+                            }
+                        case .birthdays:
+                            EmptyView()
                         }
                     }
                 }
             }
+        }
+
+        private func rail<Content: View>(
+            time: String?,
+            dot: Color?,
+            @ViewBuilder content: () -> Content
+        ) -> some View {
+            HStack(alignment: .top, spacing: 12) {
+                VStack(spacing: 6) {
+                    if let dot {
+                        TribuneruText(
+                            content: time ?? "",
+                            style: .vaporMonoMeta,
+                            color: .tribuneru(.kitTextSecondary),
+                            lineLimit: 1
+                        )
+                        .padding(.top, 14)
+                        Circle()
+                            .fill(dot)
+                            .frame(width: 10, height: 10)
+                        Rectangle()
+                            .fill(Color.tribuneru(.kitRail))
+                            .frame(width: 2)
+                            .frame(maxHeight: .infinity)
+                    }
+                }
+                .frame(width: 44)
+                .accessibilityHidden(true)
+                content()
+                    .padding(.bottom, 12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .fixedSize(horizontal: false, vertical: true)
         }
     }
 }
@@ -245,26 +445,20 @@ extension Paddock {
             Button {
                 onTap()
             } label: {
-                VaporCard(spacing: 8) {
-                    Kicker(
-                        tag: L10n.tr("TRANSFER"),
-                        tagColor: .tribuneru(.vaporTextSecondary),
-                        time: card.date
+                CardBody(
+                    tag: L10n.tr("TRANSFER"),
+                    tagColor: .tribuneru(.kitAccent),
+                    rider: card.rider
+                ) {
+                    ChangeLine(
+                        sign: "→",
+                        signColor: .tribuneru(.kitAccent),
+                        text: card.teamName
                     )
-                    RiderLine(rider: card.rider)
-                    HStack(spacing: 6) {
-                        Image(systemName: "arrow.right")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundColor(.tribuneru(.vaporAccent))
-                        TribuneruText(
-                            content: card.teamName,
-                            style: .vaporFeedDetail,
-                            color: .tribuneru(.vaporTextPrimary).opacity(0.72)
-                        )
-                    }
                 }
             }
             .buttonStyle(.plain)
+            .accessibilityElement(children: .combine)
         }
     }
 
@@ -276,92 +470,73 @@ extension Paddock {
             Button {
                 onTap()
             } label: {
-                VaporCard(spacing: 8) {
-                    Kicker(
-                        tag: L10n.tr("PROGRAM"),
-                        tagColor: .tribuneru(.vaporAccent),
-                        time: card.timeAgo
-                    )
-                    RiderLine(rider: card.rider)
-                    VStack(alignment: .leading, spacing: 4) {
-                        ForEach(Array(card.changes.enumerated()), id: \.offset) { _, change in
-                            HStack(alignment: .firstTextBaseline, spacing: 6) {
-                                TribuneruText(
-                                    content: change.isAdded ? "+" : "−",
-                                    style: .vaporChangeSign,
-                                    color: change.isAdded ? .tribuneru(.vaporLive) : .tribuneru(.vaporNegative)
-                                )
-                                .frame(width: 10, alignment: .leading)
-                                .accessibilityLabel(change.isAdded ? L10n.tr("Added") : L10n.tr("Dropped"))
-                                TribuneruText(
-                                    content: change.raceName,
-                                    style: .vaporFeedDetail,
-                                    color: .tribuneru(.vaporTextPrimary).opacity(0.72),
-                                    lineLimit: 2
-                                )
-                            }
-                        }
+                CardBody(
+                    tag: L10n.tr("PROGRAM"),
+                    tagColor: .tribuneru(.kitProgram),
+                    rider: card.rider
+                ) {
+                    ForEach(Array(card.changes.enumerated()), id: \.offset) { _, change in
+                        ChangeLine(
+                            sign: change.isAdded ? "+" : "−",
+                            signColor: .tribuneru(change.isAdded ? .kitAdded : .kitDropped),
+                            text: change.raceName,
+                            signLabel: change.isAdded ? L10n.tr("Added") : L10n.tr("Dropped")
+                        )
                     }
                 }
             }
             .buttonStyle(.plain)
+            .accessibilityElement(children: .combine)
         }
     }
 
-    private struct BirthdaysCardView: View {
-        let card: BirthdaysCard
-        let onTap: (URL?) -> Void
-
-        var body: some View {
-            VaporCard(spacing: 10) {
-                Kicker(
-                    tag: L10n.tr("BIRTHDAYS"),
-                    tagColor: .tribuneru(.vaporTextSecondary),
-                    time: L10n.tr("today")
-                )
-                ForEach(Array(card.entries.enumerated()), id: \.offset) { _, entry in
-                    Button {
-                        onTap(entry.rider.url)
-                    } label: {
-                        HStack(alignment: .firstTextBaseline, spacing: 7) {
-                            RiderLine(rider: entry.rider)
-                            Spacer(minLength: 8)
-                            TribuneruText(
-                                content: L10n.tr("turns"),
-                                style: .vaporMeta,
-                                color: .tribuneru(.vaporTextSecondary)
-                            )
-                            TribuneruText(
-                                content: entry.age,
-                                style: .vaporAge,
-                                color: .tribuneru(.vaporTextPrimary)
-                            )
-                        }
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-        }
-    }
-
-    private struct Kicker: View {
+    private struct CardBody<Lines: View>: View {
         let tag: String
         let tagColor: Color
-        let time: String
+        let rider: Rider
+        @ViewBuilder let lines: () -> Lines
 
         var body: some View {
-            HStack(alignment: .firstTextBaseline) {
+            VStack(alignment: .leading, spacing: 8) {
                 TribuneruText(
                     content: tag,
-                    style: .vaporFeedTag,
+                    style: .vaporTagSmall,
                     color: tagColor
                 )
-                Spacer(minLength: 8)
+                RiderLine(rider: rider)
+                VStack(alignment: .leading, spacing: 4) {
+                    lines()
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .kitCard(cornerRadius: 18)
+            .contentShape(Rectangle())
+        }
+    }
+
+    private struct ChangeLine: View {
+        let sign: String
+        let signColor: Color
+        let text: String
+        var signLabel: String?
+
+        var body: some View {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
                 TribuneruText(
-                    content: time,
-                    style: .vaporMonoMeta,
-                    color: .tribuneru(.vaporTextSecondary)
+                    content: sign,
+                    style: .vaporChangeSign,
+                    color: signColor
+                )
+                .frame(width: 12, alignment: .leading)
+                .accessibilityLabel(signLabel ?? "")
+                .accessibilityHidden(signLabel == nil)
+                TribuneruText(
+                    content: text,
+                    style: .vaporBannerSubtitle,
+                    color: .tribuneru(.kitTextMuted),
+                    lineLimit: 2
                 )
             }
         }
@@ -377,10 +552,31 @@ extension Paddock {
                 }
                 TribuneruText(
                     content: rider.name,
-                    style: .vaporWinnerName,
-                    color: .tribuneru(.vaporTextPrimary)
+                    style: .vaporResultTitle,
+                    color: .tribuneru(.kitTextPrimary),
+                    lineLimit: 1
                 )
             }
+        }
+    }
+}
+
+// MARK: - Placeholders -
+
+extension Paddock.Section {
+
+    /// The loading timeline for one segment: the feed placeholders with only that segment's cards.
+    static func placeholders(for segment: Paddock.Segment) -> [Paddock.Section] {
+        placeholders.map { section in
+            .init(
+                title: section.title,
+                cards: section.cards.filter { card in
+                    switch (segment, card) {
+                    case (.transfers, .transfer), (.programs, .program): true
+                    default: false
+                    }
+                }
+            )
         }
     }
 }

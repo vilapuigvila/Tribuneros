@@ -23,7 +23,7 @@ tags:
 - extendedWaitUntil:
     visible: "Configuració"
     timeout: 5000
-- assertVisible: "Curses d’avui"
+- assertVisible: "Carretera"
 - assertVisible: "Zona CX"
 - assertVisible: "Presentació"
 - tapOn:
@@ -37,7 +37,7 @@ tags:
 - extendedWaitUntil:
     visible: "Ezarpenak"
     timeout: 5000
-- assertVisible: "Gaurko lasterketak"
+- assertVisible: "Errepidea"
 - assertVisible: "CX gunea"
 - assertVisible: "Aurkezpena"
 - tapOn:
@@ -48,7 +48,7 @@ tags:
 - tapOn:
     id: "settings.language.en"
 - extendedWaitUntil:
-    visible: "Today Races"
+    visible: "Road"
     timeout: 5000
 - assertVisible: "Onboarding"
 # The choice survives a relaunch.
@@ -57,5 +57,5 @@ tags:
     arguments:
       mockScenario: live
 - extendedWaitUntil:
-    visible: "Today Races"
+    visible: "Road"
     timeout: 20000

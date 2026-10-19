@@ -58,14 +58,14 @@ final class L10nTests: XCTestCase {
         L10n.setLanguage("ca")
         XCTAssertEqual(L10n.languageCode, "ca")
         XCTAssertEqual(L10n.tr("Settings"), "Configuració")
-        XCTAssertEqual(L10n.tr("Today Races"), "Curses d’avui")
+        XCTAssertEqual(L10n.tr("Road"), "Carretera")
     }
 
     func testBasqueTranslates() {
         L10n.setLanguage("eu")
         XCTAssertEqual(L10n.languageCode, "eu")
         XCTAssertEqual(L10n.tr("Settings"), "Ezarpenak")
-        XCTAssertEqual(L10n.tr("Today Races"), "Gaurko lasterketak")
+        XCTAssertEqual(L10n.tr("Road"), "Errepidea")
         XCTAssertEqual(L10n.tr("%lld races", 3), "3 lasterketa")
     }
 

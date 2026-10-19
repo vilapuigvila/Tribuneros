@@ -61,7 +61,8 @@ extension Paddock {
             now: Date,
             calendar: Calendar = .current
         ) -> Paddock.ViewState {
-            Paddock.ViewState(
+            let kinds = domain.events.map(\.kind)
+            return Paddock.ViewState(
                 press: domain.press.map { links in
                     Paddock.Press.loaded(links.map(Paddock.PressItem.init(link:)))
                 } ?? .loading,
@@ -70,7 +71,18 @@ extension Paddock {
                     from: domain,
                     now: now,
                     calendar: calendar
-                )
+                ),
+                birthdays: kinds.flatMap { kind -> [Paddock.BirthdaysCard.Entry] in
+                    guard case .birthdays(let birthdays) = kind else { return [] }
+                    return birthdays.map {
+                        .init(
+                            rider: .init($0.rider),
+                            age: $0.age
+                        )
+                    }
+                },
+                transferCount: kinds.filter { Paddock.Filter.transfers.includes($0) }.count,
+                programCount: kinds.filter { Paddock.Filter.programs.includes($0) }.count
             )
         }
 

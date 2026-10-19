@@ -1,4 +1,4 @@
-# Paddock tab (feed + press strip) and a rider screen opened from a feed card, on Debug mock data
+# Paddock tab (press circles, birthdays, Moves timeline) and a rider screen opened from a Moves card, on Debug mock data
 # (mock scenario live): no network.
 appId: com.pskmoons.Tribuneros
 tags:
@@ -10,16 +10,17 @@ tags:
       mockScenario: live
 - tapOn: "Paddock"
 - extendedWaitUntil:
-    visible: "The press"
+    visible: "Birthdays today"
     timeout: 45000
-- assertVisible: "Transfers"
-- assertVisible: "Birthdays"
 - extendedWaitUntil:
     notVisible: "Loading the paddock"
     timeout: 45000
 # Transfer and program cards open the rider screen (birthdays open the web page); the mock feed
-# has both. The chip brings the card to the top, clear of the tab bar.
-- tapOn: "Transfers"
+# has both, one per side of the Moves segmented control.
+- scrollUntilVisible:
+    element: "Moves"
+- scrollUntilVisible:
+    element: "TRANSFER,.*"
 - tapOn: "TRANSFER,.*"
 - assertVisible: "Transfer"
 - extendedWaitUntil:
@@ -28,7 +29,9 @@ tags:
 - swipe:
     start: 1%, 50%
     end: 70%, 50%
-- tapOn: "Programs"
+- tapOn: "Programs.*"
+- scrollUntilVisible:
+    element: "PROGRAM,.*"
 - tapOn: "PROGRAM,.*"
 - assertVisible: "Program update"
 - extendedWaitUntil:

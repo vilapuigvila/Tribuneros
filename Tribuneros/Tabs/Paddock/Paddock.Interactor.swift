@@ -34,7 +34,7 @@ extension Paddock {
         static let empty = Domain(
             press: nil,
             events: [],
-            filter: .all,
+            filter: .transfers,
             lastUpdated: nil,
             loading: false,
             error: nil
