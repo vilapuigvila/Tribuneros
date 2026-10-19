@@ -296,7 +296,7 @@ and a "Hide results" switch.
 (`Presenter.replay()`): it bypasses `isEnabled` (so mocked launches show it), never saves, leaves the
 two-showing schedule alone and opens on the "Welcome back" page. "Language" pushes
 `Router.Destination.settingsLanguage`, a list of `Settings.Domain.supportedLanguages` ("System
-default", then English and Català, each named in itself) stored in `UserSettings.appLanguage`
+default", then English, Català and Euskara, each named in itself) stored in `UserSettings.appLanguage`
 (default `system`). Picking one applies it at once (see "Localization" below). "Acknowledgements" pushes `Router.Destination.settingsAcknowledgements`, a static credits screen (`Settings.AcknowledgementsView`; for now the onboarding music credit).
 "Hide results" (`UserSettings.hidesResults`, default on) is the spoiler mode for Today Races: off,
 every result starts shown, a long press hides that one race, and the `SpoilerHint` never shows.
@@ -304,7 +304,7 @@ every result starts shown, a long press hides that one race, and the `SpoilerHin
 switch applies at once and clears the session's per-race toggles (`Domain.revealedRaces` holds the
 races flipped from the default, revealed or hidden).
 
-### Localization (English + Catalan)
+### Localization (English + Catalan + Basque)
 
 - One String Catalog, `Tribuneros/Localizable.xcstrings`, generated from
   `scripts/l10n/fragments/*.json` by `python3 scripts/l10n/build_catalog.py`. **Never edit the
@@ -322,11 +322,11 @@ races flipped from the default, revealed or hidden).
   every view model re-maps its strings. The selected tab survives; navigation stacks return to root and
   in-memory spoiler reveals reset. System UI (search "Cancel", share sheets, Safari) follows the device.
 - Check: `python3 scripts/l10n/check_localization.py` (also a CI job) fails on a key used in Swift but
-  missing from the fragments, a missing or untranslated Catalan value, mismatched format specifiers, a
-  straight apostrophe in Catalan (use ’), the catalog being out of date, `ca` missing from
+  missing from the fragments, a missing or untranslated Catalan or Basque value, mismatched format specifiers, a
+  straight apostrophe in a translation (use ’), the catalog being out of date, a target language missing from
   `knownRegions`/`CFBundleLocalizations`, and hardcoded English in display positions (mark a deliberate
   one with `// l10n:ignore`; brand words go in `scripts/l10n/allowlist.json`). XCTests:
-  `LocalizationTests.swift` (+ per-tab `Localization*Tests`). Tests that switch to Catalan set it back
+  `LocalizationTests.swift` (+ per-tab `Localization*Tests`). Tests that switch to Catalan or Basque set it back
   to English in `tearDown`. Maestro: `.maestro/settings-language.yaml`.
 - Adding a language: a code in `AppLanguage.localizations` + `endonym`, `knownRegions` in the pbxproj,
   `CFBundleLocalizations` in `Info.plist`, `TARGET_LANGUAGES` in `scripts/l10n/common.py`, and a value

@@ -11,7 +11,7 @@ import SwiftUI
 final class AppLocalization: ObservableObject {
     static let shared = AppLocalization()
 
-    /// The active bundled localization (`en`, `ca`).
+    /// The active bundled localization (`en`, `ca`, `eu`).
     @Published private(set) var languageCode: String
 
     private init() {

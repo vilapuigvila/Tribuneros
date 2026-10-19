@@ -1,30 +1,39 @@
 {
   "%1$@ %2$@, %3$@": {
-    "ca": "%1$@ %2$@, %3$@"
+    "ca": "%1$@ %2$@, %3$@",
+    "eu": "%1$@ %2$@, %3$@"
   },
   "%1$@ · updated %2$@": {
-    "ca": "%1$@ · actualitzat %2$@"
+    "ca": "%1$@ · actualitzat %2$@",
+    "eu": "%1$@ · eguneratua: %2$@"
   },
   "%@ - Kms": {
-    "ca": "%@ - km"
+    "ca": "%@ - km",
+    "eu": "%@ - km"
   },
   "%@ isn't in this day's TV listings.": {
-    "ca": "%@ no és a la graella de TV d’aquest dia."
+    "ca": "%@ no és a la graella de TV d’aquest dia.",
+    "eu": "%@ ez dago egun honetako telebista-programazioan."
   },
   "%@ left": {
-    "ca": "%@ restants"
+    "ca": "%@ restants",
+    "eu": "%@ falta"
   },
   "%@ m": {
-    "ca": "%@ m"
+    "ca": "%@ m",
+    "eu": "%@ m"
   },
   "%@, finished": {
-    "ca": "%@, acabada"
+    "ca": "%@, acabada",
+    "eu": "%@, amaituta"
   },
   "%lld later today · by finish time": {
-    "ca": "%lld més tard avui · per hora d’arribada"
+    "ca": "%lld més tard avui · per hora d’arribada",
+    "eu": "%lld gaur geroago · helmugako orduaren arabera"
   },
   "%lld live": {
-    "ca": "%lld en directe"
+    "ca": "%lld en directe",
+    "eu": "%lld zuzenean"
   },
   "%lld races": {
     "plural": {
@@ -35,372 +44,496 @@
       "ca": {
         "one": "%lld cursa",
         "other": "%lld curses"
+      },
+      "eu": {
+        "one": "Lasterketa %lld",
+        "other": "%lld lasterketa"
       }
     }
   },
   "%lldh": {
-    "ca": "%lld h"
+    "ca": "%lld h",
+    "eu": "%lld h"
   },
   "%lldh %lldm": {
-    "ca": "%lld h %lld min"
+    "ca": "%lld h %lld min",
+    "eu": "%lld h %lld min"
   },
   "%lldm": {
-    "ca": "%lld min"
+    "ca": "%lld min",
+    "eu": "%lld min"
   },
   "+%lld more": {
-    "ca": "+%lld més"
+    "ca": "+%lld més",
+    "eu": "+%lld gehiago"
   },
   "Arrival": {
-    "ca": "Arribada"
+    "ca": "Arribada",
+    "eu": "Helmuga"
   },
   "Browse past seasons": {
-    "ca": "Explora les temporades anteriors"
+    "ca": "Explora les temporades anteriors",
+    "eu": "Arakatu aurreko denboraldiak"
   },
   "CAT.": {
-    "ca": "CAT."
+    "ca": "CAT.",
+    "eu": "KAT."
   },
   "Climb": {
-    "ca": "Port"
+    "ca": "Port",
+    "eu": "Mendatea"
   },
   "Couldn't load the full results. Showing the podium.": {
-    "ca": "No s’han pogut carregar els resultats complets. Es mostra el podi."
+    "ca": "No s’han pogut carregar els resultats complets. Es mostra el podi.",
+    "eu": "Ezin izan dira emaitza guztiak kargatu. Podiuma erakusten da."
   },
   "Couldn't load the general classification.": {
-    "ca": "No s’ha pogut carregar la classificació general."
+    "ca": "No s’ha pogut carregar la classificació general.",
+    "eu": "Ezin izan da sailkapen nagusia kargatu."
   },
   "Couldn't load the live race. Pull down to try again.": {
-    "ca": "No s’ha pogut carregar la cursa en directe. Estira cap avall per tornar-ho a provar."
+    "ca": "No s’ha pogut carregar la cursa en directe. Estira cap avall per tornar-ho a provar.",
+    "eu": "Ezin izan da zuzeneko lasterketa kargatu. Mugitu behera berriro saiatzeko."
   },
   "Couldn't load the race preview.": {
-    "ca": "No s’ha pogut carregar la prèvia de la cursa."
+    "ca": "No s’ha pogut carregar la prèvia de la cursa.",
+    "eu": "Ezin izan da lasterketaren aurrebista kargatu."
   },
   "Couldn't load the schedule.": {
-    "ca": "No s’ha pogut carregar el calendari."
+    "ca": "No s’ha pogut carregar el calendari.",
+    "eu": "Ezin izan da egitaraua kargatu."
   },
   "Couldn't refresh": {
-    "ca": "No s’ha pogut actualitzar"
+    "ca": "No s’ha pogut actualitzar",
+    "eu": "Ezin izan da eguneratu"
   },
   "Couldn’t load the race info. Check your connection and try again.": {
-    "ca": "No s’ha pogut carregar la informació de la cursa. Comprova la connexió i torna-ho a provar."
+    "ca": "No s’ha pogut carregar la informació de la cursa. Comprova la connexió i torna-ho a provar.",
+    "eu": "Ezin izan da lasterketaren informazioa kargatu. Egiaztatu konexioa eta saiatu berriro."
   },
   "Couldn’t load the races. Check your connection and try again.": {
-    "ca": "No s’han pogut carregar les curses. Comprova la connexió i torna-ho a provar."
+    "ca": "No s’han pogut carregar les curses. Comprova la connexió i torna-ho a provar.",
+    "eu": "Ezin izan dira lasterketak kargatu. Egiaztatu konexioa eta saiatu berriro."
   },
   "Coverage updated %@": {
-    "ca": "Cobertura actualitzada %@"
+    "ca": "Cobertura actualitzada %@",
+    "eu": "Estaldura eguneratua: %@"
   },
   "Date": {
     "ca": "Data",
+    "eu": "Data",
     "comment": "Race detail info row label"
   },
   "Departure": {
-    "ca": "Sortida"
+    "ca": "Sortida",
+    "eu": "Irteera"
   },
   "Distance": {
-    "ca": "Distància"
+    "ca": "Distància",
+    "eu": "Distantzia"
   },
   "Done": {
-    "ca": "Fet"
+    "ca": "Fet",
+    "eu": "Eginda"
   },
   "Duration - %@": {
-    "ca": "Durada - %@"
+    "ca": "Durada - %@",
+    "eu": "Iraupena - %@"
   },
   "ETA": {
-    "ca": "ARRIBADA"
+    "ca": "ARRIBADA",
+    "eu": "HELMUGA"
   },
   "ETA - %@": {
-    "ca": "ARRIBADA - %@"
+    "ca": "ARRIBADA - %@",
+    "eu": "HELMUGA - %@"
   },
   "Elevation profile, %lld percent ridden": {
-    "ca": "Perfil d’altimetria, %lld per cent recorregut"
+    "ca": "Perfil d’altimetria, %lld per cent recorregut",
+    "eu": "Altimetria-profila, ehuneko %lld eginda"
   },
   "FINISHED": {
-    "ca": "ACABADA"
+    "ca": "ACABADA",
+    "eu": "AMAITUTA"
   },
   "Finish profile": {
-    "ca": "Perfil de l’arribada"
+    "ca": "Perfil de l’arribada",
+    "eu": "Helmugako profila"
   },
   "First finish expected %@": {
-    "ca": "Primera arribada prevista a les %@"
+    "ca": "Primera arribada prevista a les %@",
+    "eu": "Lehen helmuga aurreikusia: %@"
   },
   "GC": {
-    "ca": "GC"
+    "ca": "GC",
+    "eu": "SN"
   },
   "General classification": {
-    "ca": "Classificació general"
+    "ca": "Classificació general",
+    "eu": "Sailkapen nagusia"
   },
   "Hide results": {
-    "ca": "Amaga els resultats"
+    "ca": "Amaga els resultats",
+    "eu": "Ezkutatu emaitzak"
   },
   "History": {
-    "ca": "Historial"
+    "ca": "Historial",
+    "eu": "Historia"
   },
   "KM": {
-    "ca": "KM"
+    "ca": "KM",
+    "eu": "KM"
   },
   "Key points": {
-    "ca": "Punts clau"
+    "ca": "Punts clau",
+    "eu": "Gune nagusiak"
   },
   "LIVE": {
-    "ca": "EN DIRECTE"
+    "ca": "EN DIRECTE",
+    "eu": "ZUZENEAN"
   },
   "Listed, no broadcast yet": {
-    "ca": "Llistada, sense retransmissió encara"
+    "ca": "Llistada, sense retransmissió encara",
+    "eu": "Zerrendan, oraindik emisiorik gabe"
   },
   "Live": {
-    "ca": "En directe"
+    "ca": "En directe",
+    "eu": "Zuzenean"
   },
   "Loading": {
-    "ca": "S’està carregant"
+    "ca": "S’està carregant",
+    "eu": "Kargatzen"
   },
   "Loading results": {
-    "ca": "S’estan carregant els resultats"
+    "ca": "S’estan carregant els resultats",
+    "eu": "Emaitzak kargatzen"
   },
   "Loading the live race": {
-    "ca": "Carregant la cursa en directe"
+    "ca": "Carregant la cursa en directe",
+    "eu": "Zuzeneko lasterketa kargatzen"
   },
   "Loading the race": {
     "ca": "S’està carregant la cursa",
+    "eu": "Lasterketa kargatzen",
     "comment": "Race detail placeholder accessibility label"
   },
   "Loading the race preview": {
-    "ca": "S’està carregant la prèvia de la cursa"
+    "ca": "S’està carregant la prèvia de la cursa",
+    "eu": "Lasterketaren aurrebista kargatzen"
   },
   "Loading the race profile": {
-    "ca": "S’està carregant el perfil de la cursa"
+    "ca": "S’està carregant el perfil de la cursa",
+    "eu": "Lasterketaren profila kargatzen"
   },
   "Loading the races": {
-    "ca": "S’estan carregant les curses"
+    "ca": "S’estan carregant les curses",
+    "eu": "Lasterketak kargatzen"
   },
   "Loading the results": {
     "ca": "S’estan carregant els resultats",
+    "eu": "Emaitzak kargatzen",
     "comment": "Race results placeholder accessibility label"
   },
   "Loading the schedule": {
-    "ca": "S’està carregant el calendari"
+    "ca": "S’està carregant el calendari",
+    "eu": "Egitaraua kargatzen"
   },
   "Local circuit": {
-    "ca": "Circuit local"
+    "ca": "Circuit local",
+    "eu": "Tokiko zirkuitua"
   },
   "MEN": {
-    "ca": "HOMES"
+    "ca": "HOMES",
+    "eu": "GIZONAK"
   },
   "Map": {
-    "ca": "Mapa"
+    "ca": "Mapa",
+    "eu": "Mapa"
   },
   "More info": {
-    "ca": "Més informació"
+    "ca": "Més informació",
+    "eu": "Informazio gehiago"
   },
   "NO RACES": {
-    "ca": "CAP CURSA"
+    "ca": "CAP CURSA",
+    "eu": "EZ DAGO LASTERKETARIK"
   },
   "No broadcast listed yet": {
-    "ca": "Encara no hi ha cap retransmissió"
+    "ca": "Encara no hi ha cap retransmissió",
+    "eu": "Oraindik ez dago emisiorik zerrendan"
   },
   "No info available": {
-    "ca": "Sense informació"
+    "ca": "Sense informació",
+    "eu": "Ez dago informaziorik"
   },
   "No info available for this race yet.": {
-    "ca": "Encara no hi ha informació d’aquesta cursa."
+    "ca": "Encara no hi ha informació d’aquesta cursa.",
+    "eu": "Oraindik ez dago lasterketa honi buruzko informaziorik."
   },
   "No results yesterday": {
-    "ca": "Ahir no hi va haver resultats"
+    "ca": "Ahir no hi va haver resultats",
+    "eu": "Atzo ez zen emaitzarik izan"
   },
   "No results yet": {
-    "ca": "Encara no hi ha resultats"
+    "ca": "Encara no hi ha resultats",
+    "eu": "Oraindik ez dago emaitzarik"
   },
   "No results yet, first finish expected %@": {
-    "ca": "Encara no hi ha resultats; la primera arribada és prevista a les %@"
+    "ca": "Encara no hi ha resultats; la primera arribada és prevista a les %@",
+    "eu": "Oraindik ez dago emaitzarik; lehen helmuga aurreikusia: %@"
   },
   "Not in the TV listings": {
-    "ca": "No és a la graella de TV"
+    "ca": "No és a la graella de TV",
+    "eu": "Ez dago telebista-programazioan"
   },
   "Nothing on today's list yet. New races show up here as soon as they're listed.": {
-    "ca": "Encara no hi ha res a la llista d’avui. Les noves curses apareixeran aquí tan bon punt es publiquin."
+    "ca": "Encara no hi ha res a la llista d’avui. Les noves curses apareixeran aquí tan bon punt es publiquin.",
+    "eu": "Oraindik ez dago ezer gaurko zerrendan. Lasterketa berriak hemen agertuko dira argitaratu bezain laster."
   },
   "Offline": {
-    "ca": "Sense connexió"
+    "ca": "Sense connexió",
+    "eu": "Konexiorik gabe"
   },
   "One-day race": {
-    "ca": "Cursa d’un dia"
+    "ca": "Cursa d’un dia",
+    "eu": "Egun bateko lasterketa"
   },
   "Open on ProCyclingStats": {
-    "ca": "Obre-ho a ProCyclingStats"
+    "ca": "Obre-ho a ProCyclingStats",
+    "eu": "Ireki ProCyclingStats-en"
   },
   "PROFILE": {
-    "ca": "PERFIL"
+    "ca": "PERFIL",
+    "eu": "PROFILA"
   },
   "Press and hold a result to show or hide spoilers": {
-    "ca": "Mantén premut un resultat per mostrar o amagar els espòilers"
+    "ca": "Mantén premut un resultat per mostrar o amagar els espòilers",
+    "eu": "Eduki sakatuta emaitza bat spoilerrak erakusteko edo ezkutatzeko"
   },
   "Previews": {
-    "ca": "Prèvies"
+    "ca": "Prèvies",
+    "eu": "Aurrebistak"
   },
   "Profile": {
     "ca": "Perfil",
+    "eu": "Profila",
     "comment": "Rider profile panel header"
   },
   "Prologue": {
-    "ca": "Pròleg"
+    "ca": "Pròleg",
+    "eu": "Prologoa"
   },
   "Prologue %@": {
-    "ca": "Pròleg %@"
+    "ca": "Pròleg %@",
+    "eu": "Prologoa %@"
   },
   "Race": {
-    "ca": "Cursa"
+    "ca": "Cursa",
+    "eu": "Lasterketa"
   },
   "Race Preview": {
-    "ca": "Prèvia de la cursa"
+    "ca": "Prèvia de la cursa",
+    "eu": "Lasterketaren aurrebista"
   },
   "Race Result": {
-    "ca": "Resultat de la cursa"
+    "ca": "Resultat de la cursa",
+    "eu": "Lasterketaren emaitza"
   },
   "Race data": {
-    "ca": "Dades de la cursa"
+    "ca": "Dades de la cursa",
+    "eu": "Lasterketaren datuak"
   },
   "Race info": {
-    "ca": "Informació de la cursa"
+    "ca": "Informació de la cursa",
+    "eu": "Lasterketaren informazioa"
   },
   "Race profile": {
-    "ca": "Perfil de la cursa"
+    "ca": "Perfil de la cursa",
+    "eu": "Lasterketaren profila"
   },
   "Races": {
-    "ca": "Curses"
+    "ca": "Curses",
+    "eu": "Lasterketak"
   },
   "Result hidden": {
-    "ca": "Resultat ocult"
+    "ca": "Resultat ocult",
+    "eu": "Emaitza ezkutatuta"
   },
   "Results today": {
-    "ca": "Resultats d’avui"
+    "ca": "Resultats d’avui",
+    "eu": "Gaurko emaitzak"
   },
   "Results yesterday": {
-    "ca": "Resultats d’ahir"
+    "ca": "Resultats d’ahir",
+    "eu": "Atzoko emaitzak"
   },
   "Results, standings and more": {
-    "ca": "Resultats, classificacions i més"
+    "ca": "Resultats, classificacions i més",
+    "eu": "Emaitzak, sailkapenak eta gehiago"
   },
   "START": {
-    "ca": "SORTIDA"
+    "ca": "SORTIDA",
+    "eu": "IRTEERA"
   },
   "STARTED": {
-    "ca": "COMENÇADA"
+    "ca": "COMENÇADA",
+    "eu": "HASITA"
   },
   "See all": {
-    "ca": "Mostra-ho tot"
+    "ca": "Mostra-ho tot",
+    "eu": "Ikusi guztiak"
   },
   "See all %@": {
-    "ca": "Mostra-ho tot: %@"
+    "ca": "Mostra-ho tot: %@",
+    "eu": "Ikusi guztiak: %@"
   },
   "Show less": {
-    "ca": "Mostra’n menys"
+    "ca": "Mostra’n menys",
+    "eu": "Erakutsi gutxiago"
   },
   "Show results": {
-    "ca": "Mostra els resultats"
+    "ca": "Mostra els resultats",
+    "eu": "Erakutsi emaitzak"
   },
   "Situation": {
-    "ca": "Situació"
+    "ca": "Situació",
+    "eu": "Egoera"
   },
   "Something went wrong": {
-    "ca": "Alguna cosa ha fallat"
+    "ca": "Alguna cosa ha fallat",
+    "eu": "Zerbait gaizki joan da"
   },
   "Spoiler is off": {
-    "ca": "Espòiler desactivat"
+    "ca": "Espòiler desactivat",
+    "eu": "Spoilerra desaktibatuta"
   },
   "Spoiler is on": {
-    "ca": "Espòiler activat"
+    "ca": "Espòiler activat",
+    "eu": "Spoilerra aktibatuta"
   },
   "Stage": {
-    "ca": "Etapa"
+    "ca": "Etapa",
+    "eu": "Etapa"
   },
   "Stage %@": {
-    "ca": "Etapa %@"
+    "ca": "Etapa %@",
+    "eu": "%@. etapa"
   },
   "Stage result": {
-    "ca": "Resultat de l’etapa"
+    "ca": "Resultat de l’etapa",
+    "eu": "Etaparen emaitza"
   },
   "Start": {
-    "ca": "Sortida"
+    "ca": "Sortida",
+    "eu": "Irteera"
   },
   "Start time": {
-    "ca": "Hora de sortida"
+    "ca": "Hora de sortida",
+    "eu": "Irteera-ordua"
   },
   "TODAY": {
-    "ca": "AVUI"
+    "ca": "AVUI",
+    "eu": "GAUR"
   },
   "The peloton is resting": {
-    "ca": "El pelotó descansa"
+    "ca": "El pelotó descansa",
+    "eu": "Tropela atseden hartzen ari da"
   },
   "Today": {
     "ca": "Avui",
+    "eu": "Gaur",
     "comment": "Paddock day group"
   },
   "Today - Next to finish": {
-    "ca": "Avui - Pròxima a arribar"
+    "ca": "Avui - Pròxima a arribar",
+    "eu": "Gaur - Helmugara hurrengoa"
   },
   "Today's races": {
-    "ca": "Curses d’avui"
+    "ca": "Curses d’avui",
+    "eu": "Gaurko lasterketak"
   },
   "Try again": {
-    "ca": "Torna-ho a provar"
+    "ca": "Torna-ho a provar",
+    "eu": "Saiatu berriro"
   },
   "Turn music off": {
-    "ca": "Desactiva la música"
+    "ca": "Desactiva la música",
+    "eu": "Desaktibatu musika"
   },
   "Turn music on": {
-    "ca": "Activa la música"
+    "ca": "Activa la música",
+    "eu": "Aktibatu musika"
   },
   "Vertical": {
-    "ca": "Desnivell"
+    "ca": "Desnivell",
+    "eu": "Desnibela"
   },
   "View full results": {
-    "ca": "Mostra els resultats complets"
+    "ca": "Mostra els resultats complets",
+    "eu": "Ikusi emaitza guztiak"
   },
   "WOMEN": {
-    "ca": "DONES"
+    "ca": "DONES",
+    "eu": "EMAKUMEAK"
   },
   "We couldn’t find any race data right now. Try again in a moment.": {
-    "ca": "No hem trobat dades de cap cursa ara mateix. Torna-ho a provar en un moment."
+    "ca": "No hem trobat dades de cap cursa ara mateix. Torna-ho a provar en un moment.",
+    "eu": "Une honetan ez dugu lasterketa-daturik aurkitu. Saiatu berriro geroxeago."
   },
   "Where to watch": {
-    "ca": "On veure-ho"
+    "ca": "On veure-ho",
+    "eu": "Non ikusi"
   },
   "YOUR RACE": {
-    "ca": "LA TEVA CURSA"
+    "ca": "LA TEVA CURSA",
+    "eu": "ZURE LASTERKETA"
   },
   "by finish time": {
-    "ca": "per hora d’arribada"
+    "ca": "per hora d’arribada",
+    "eu": "helmugako orduaren arabera"
   },
   "climb": {
-    "ca": "port"
+    "ca": "port",
+    "eu": "mendatea"
   },
   "expected finish %@": {
-    "ca": "arribada prevista a les %@"
+    "ca": "arribada prevista a les %@",
+    "eu": "helmuga aurreikusia: %@"
   },
   "finished": {
-    "ca": "acabada"
+    "ca": "acabada",
+    "eu": "amaituta"
   },
   "in %@": {
-    "ca": "d’aquí a %@"
+    "ca": "d’aquí a %@",
+    "eu": "%@ barru"
   },
   "later today": {
-    "ca": "més tard avui"
+    "ca": "més tard avui",
+    "eu": "gaur geroago"
   },
   "live now": {
-    "ca": "en directe ara"
+    "ca": "en directe ara",
+    "eu": "zuzenean orain"
   },
   "more info": {
-    "ca": "més informació"
+    "ca": "més informació",
+    "eu": "informazio gehiago"
   },
   "none": {
-    "ca": "cap"
+    "ca": "cap",
+    "eu": "bat ere ez"
   },
   "s.t.": {
-    "ca": "m.t."
+    "ca": "m.t.",
+    "eu": "d.b."
   },
   "sprint": {
-    "ca": "esprint"
+    "ca": "esprint",
+    "eu": "esprinta"
   },
   "started at %@": {
-    "ca": "ha començat a les %@"
+    "ca": "ha començat a les %@",
+    "eu": "hasiera: %@"
   }
 }

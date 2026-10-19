@@ -11,7 +11,7 @@ enum AppLanguage {
     static let system = "system"
     static let fallback = "en"
     /// Bundled localizations, in the order the Language screen lists them.
-    static let localizations = ["en", "ca"]
+    static let localizations = ["en", "ca", "eu"]
     /// Every value `UserSettings.appLanguage` may hold.
     static let supported = [system] + localizations
 
@@ -20,6 +20,7 @@ enum AppLanguage {
         switch code {
         case "en": "English"
         case "ca": "Català"
+        case "eu": "Euskara"
         default: nil
         }
     }

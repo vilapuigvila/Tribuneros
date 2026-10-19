@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""Checks the Catalan localization. Exits 1 on any error.
+"""Checks the Catalan and Basque localizations. Exits 1 on any error.
 
     python3 scripts/l10n/check_localization.py                 # full check (CI)
     python3 scripts/l10n/check_localization.py --paths Tribuneros/Tabs/CXRaces --no-catalog
 
 Checks:
- 1. every fragment entry has a non-empty Catalan value (plurals: en and ca, with `other`);
- 2. format specifiers match between the English key/forms and the Catalan values;
- 3. Catalan values that equal the English one are listed in allowlist.json (`same`);
- 4. Catalan uses the typographic apostrophe (’) and keeps ALL-CAPS keys in caps;
+ 1. every fragment entry has a non-empty value per target language (plurals: en, ca and eu, with `other`);
+ 2. format specifiers match between the English key/forms and the translated values;
+ 3. translated values that equal the English one are listed in allowlist.json (`same`);
+ 4. translations use the typographic apostrophe (’) and keeps ALL-CAPS keys in caps;
  5. every `L10n.tr("…")` key used in Swift exists in the fragments (unused keys warn);
  6. no hardcoded English literal in a display position (`TribuneruText(content: "…")`,
     `.navigationTitle("…")`, `.accessibilityLabel("…")`, `title: "…"`, …) — mark a deliberate
     one with `// l10n:ignore` on its line, or list the literal in allowlist.json (`literals`);
- 7. the catalog is up to date with the fragments, `ca` is in `knownRegions` and in
+ 7. the catalog is up to date with the fragments, each target language is in `knownRegions` and in
     `CFBundleLocalizations` (skipped with --no-catalog or --paths).
 """
 import argparse

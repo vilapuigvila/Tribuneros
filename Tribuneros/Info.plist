@@ -6,6 +6,7 @@
 	<array>
 		<string>en</string>
 		<string>ca</string>
+		<string>eu</string>
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>

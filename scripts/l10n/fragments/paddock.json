@@ -1,34 +1,42 @@
 {
   "All": {
     "ca": "Tot",
+    "eu": "Guztiak",
     "comment": "Paddock filter chip"
   },
   "Transfers": {
     "ca": "Fitxatges",
+    "eu": "Fitxaketak",
     "comment": "Paddock filter chip"
   },
   "Programs": {
     "ca": "Programes",
+    "eu": "Egitarauak",
     "comment": "Paddock filter chip"
   },
   "Birthdays": {
     "ca": "Aniversaris",
+    "eu": "Urtebetetzeak",
     "comment": "Paddock filter chip"
   },
   "Today": {
     "ca": "Avui",
+    "eu": "Gaur",
     "comment": "Paddock day group"
   },
   "Yesterday": {
     "ca": "Ahir",
+    "eu": "Atzo",
     "comment": "Paddock day group"
   },
   "Earlier": {
     "ca": "Abans",
+    "eu": "Lehenago",
     "comment": "Paddock day group"
   },
   "The press": {
     "ca": "La premsa",
+    "eu": "Prentsa",
     "comment": "Paddock press panel title"
   },
   "%lld sites": {
@@ -40,146 +48,185 @@
       "ca": {
         "one": "%lld web",
         "other": "%lld webs"
+      },
+      "eu": {
+        "one": "Webgune %lld",
+        "other": "%lld webgune"
       }
     }
   },
   "Loading the paddock": {
     "ca": "S’està carregant el paddock",
+    "eu": "Paddock-a kargatzen",
     "comment": "Paddock feed accessibility label"
   },
   "Nothing new in the paddock.": {
     "ca": "Res de nou al paddock.",
+    "eu": "Ez dago ezer berririk paddock-ean.",
     "comment": "Paddock feed empty state"
   },
   "Couldn't load the paddock from ProCyclingStats.": {
     "ca": "No s’ha pogut carregar el paddock de ProCyclingStats.",
+    "eu": "Ezin izan da paddock-a kargatu ProCyclingStats-etik.",
     "comment": "Paddock feed error state"
   },
   "Try again": {
-    "ca": "Torna-ho a provar"
+    "ca": "Torna-ho a provar",
+    "eu": "Saiatu berriro"
   },
   "Nothing here for this filter.": {
     "ca": "No hi ha res amb aquest filtre.",
+    "eu": "Ez dago ezer iragazki honekin.",
     "comment": "Paddock feed empty filter"
   },
   "TRANSFER": {
     "ca": "FITXATGE",
+    "eu": "FITXAKETA",
     "comment": "Paddock feed card tag"
   },
   "PROGRAM": {
     "ca": "PROGRAMA",
+    "eu": "EGITARAUA",
     "comment": "Paddock feed card tag"
   },
   "BIRTHDAYS": {
     "ca": "ANIVERSARIS",
+    "eu": "URTEBETETZEAK",
     "comment": "Paddock feed card tag"
   },
   "Added": {
     "ca": "Afegida",
+    "eu": "Gehituta",
     "comment": "Paddock program change: race added"
   },
   "Dropped": {
     "ca": "Descartada",
+    "eu": "Kenduta",
     "comment": "Paddock program change: race dropped"
   },
   "today": {
     "ca": "avui",
+    "eu": "gaur",
     "comment": "Paddock birthdays card time"
   },
   "Loading the rider": {
     "ca": "S’està carregant el ciclista",
+    "eu": "Txirrindularia kargatzen",
     "comment": "Rider screen accessibility label"
   },
   "rider page on ProCyclingStats": {
     "ca": "pàgina del ciclista a ProCyclingStats",
+    "eu": "txirrindulariaren orria ProCyclingStats-en",
     "comment": "Rider screen link"
   },
   "Rider": {
     "ca": "Ciclista",
+    "eu": "Txirrindularia",
     "comment": "Rider screen title"
   },
   "Transfer": {
     "ca": "Fitxatge",
+    "eu": "Fitxaketa",
     "comment": "Rider screen header"
   },
   "Program update": {
     "ca": "Canvi de programa",
+    "eu": "Egitarau-aldaketa",
     "comment": "Rider screen header"
   },
   "JOINS": {
     "ca": "S’UNEIX",
+    "eu": "TALDE BERRIA",
     "comment": "Rider screen transfer label"
   },
   "Announced": {
     "ca": "Anunciat",
+    "eu": "Iragarrita",
     "comment": "Rider screen transfer date tile"
   },
   "%@ ago": {
     "ca": "fa %@",
+    "eu": "duela %@",
     "comment": "Relative time, e.g. fa 16h"
   },
   "Welcome to Cycling Tribune": {
     "ca": "Et donem la benvinguda a Cycling Tribune",
+    "eu": "Ongi etorri Cycling Tribune-ra",
     "comment": "Onboarding first page"
   },
   "Welcome back to Cycling Tribune": {
     "ca": "Et tornem a donar la benvinguda a Cycling Tribune",
+    "eu": "Ongi etorri berriro Cycling Tribune-ra",
     "comment": "Onboarding second showing"
   },
   "Road and cyclocross results, calendars and cycling news, all in one place.": {
     "ca": "Resultats de carretera i de ciclocròs, calendaris i notícies del ciclisme, tot en un sol lloc.",
+    "eu": "Errepideko eta ziklo-kroseko emaitzak, egutegiak eta txirrindularitzako albisteak, dena leku bakarrean.",
     "comment": "Onboarding page 1 body"
   },
   "Results without spoilers": {
     "ca": "Resultats sense espòilers",
+    "eu": "Emaitzak spoilerrik gabe",
     "comment": "Onboarding page 2 title"
   },
   "Results start hidden behind a painting. Press and hold one to reveal or hide it, then tap to open it.": {
     "ca": "Els resultats apareixen amagats darrere d’una pintura. Mantén premut un per mostrar-lo o amagar-lo i, després, toca’l per obrir-lo.",
+    "eu": "Emaitzak margolan baten atzean ezkutatuta agertzen dira. Eduki sakatuta bat erakusteko edo ezkutatzeko, eta gero ukitu irekitzeko.",
     "comment": "Onboarding page 2 body"
   },
   "Cyclocross races, results, standings and the whole season calendar.": {
     "ca": "Curses de ciclocròs, resultats, classificacions i el calendari de tota la temporada.",
+    "eu": "Ziklo-kros lasterketak, emaitzak, sailkapenak eta denboraldi osoko egutegia.",
     "comment": "Onboarding page 3 body"
   },
   "The Paddock": {
     "ca": "El Paddock",
+    "eu": "Paddock-a",
     "comment": "Onboarding page 4 title"
   },
   "Transfers, race program changes, birthdays and the best cycling press.": {
     "ca": "Fitxatges, canvis de programa de les curses, aniversaris i la millor premsa del ciclisme.",
+    "eu": "Fitxaketak, lasterketa-egitarauen aldaketak, urtebetetzeak eta txirrindularitzako prentsarik onena.",
     "comment": "Onboarding page 4 body"
   },
   "Skip": {
     "ca": "Omet",
+    "eu": "Saltatu",
     "comment": "Onboarding button"
   },
   "Skip the introduction": {
     "ca": "Omet la introducció",
+    "eu": "Saltatu sarrera",
     "comment": "Onboarding skip accessibility label"
   },
   "Let's ride": {
     "ca": "Som-hi!",
+    "eu": "Goazen!",
     "comment": "Onboarding last page button"
   },
   "Next": {
     "ca": "Següent",
+    "eu": "Hurrengoa",
     "comment": "Onboarding button"
   },
   "Under maintenance": {
     "ca": "En manteniment",
+    "eu": "Mantentze-lanetan",
     "comment": "Maintenance alert title"
   },
   "Cycling Tribune is being updated. Please try again in a few minutes.": {
     "ca": "Cycling Tribune s’està actualitzant. Torna-ho a provar d’aquí a uns minuts.",
+    "eu": "Cycling Tribune eguneratzen ari da. Saiatu berriro minutu batzuk barru.",
     "comment": "Maintenance alert body"
   },
   "Under maintenance. Cycling Tribune is being updated. Please try again in a few minutes.": {
     "ca": "En manteniment. Cycling Tribune s’està actualitzant. Torna-ho a provar d’aquí a uns minuts.",
+    "eu": "Mantentze-lanetan. Cycling Tribune eguneratzen ari da. Saiatu berriro minutu batzuk barru.",
     "comment": "Maintenance VoiceOver announcement"
   },
   "turns": {
     "ca": "compleix",
+    "eu": "urteak",
     "comment": "Birthday row, before the age in large type: “turns 28”"
   }
 }

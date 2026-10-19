@@ -9,6 +9,12 @@
             "state" : "translated",
             "value" : "%1$@ %2$@, %3$@"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@, %3$@"
+          }
         }
       }
     },
@@ -20,6 +26,12 @@
             "state" : "translated",
             "value" : "%1$@ · actualitzat %2$@"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · eguneratua: %2$@"
+          }
         }
       }
     },
@@ -27,6 +39,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ - km"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ - km"
@@ -43,6 +61,12 @@
             "state" : "translated",
             "value" : "fa %@"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "duela %@"
+          }
         }
       }
     },
@@ -53,6 +77,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ no és a la graella de TV d’aquest dia."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ez dago egun honetako telebista-programazioan."
           }
         }
       }
@@ -65,6 +95,12 @@
             "state" : "translated",
             "value" : "%@ restants"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ falta"
+          }
         }
       }
     },
@@ -72,6 +108,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ m"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ m"
@@ -86,6 +128,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, acabada"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, amaituta"
           }
         }
       }
@@ -128,6 +176,24 @@
               }
             }
           }
+        },
+        "eu" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Kategoria %lld"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld kategoria"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -139,6 +205,12 @@
             "state" : "translated",
             "value" : "%lld més tard avui · per hora d’arribada"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld gaur geroago · helmugako orduaren arabera"
+          }
         }
       }
     },
@@ -149,6 +221,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld en directe"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld zuzenean"
           }
         }
       }
@@ -187,6 +265,24 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld races"
+                }
+              }
+            }
+          }
+        },
+        "eu" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Lasterketa %lld"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld lasterketa"
                 }
               }
             }
@@ -232,6 +328,24 @@
               }
             }
           }
+        },
+        "eu" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Webgune %lld"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld webgune"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -239,6 +353,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld h"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld h"
@@ -254,6 +374,12 @@
             "state" : "translated",
             "value" : "%lld h %lld min"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld h %lld min"
+          }
         }
       }
     },
@@ -261,6 +387,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld min"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld min"
@@ -276,6 +408,12 @@
             "state" : "translated",
             "value" : "+%lld més"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%lld gehiago"
+          }
         }
       }
     },
@@ -287,6 +425,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "AGRAÏMENTS"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AITORPENAK"
           }
         }
       }
@@ -300,6 +444,12 @@
             "state" : "translated",
             "value" : "Sobre la cursa"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketari buruz"
+          }
         }
       }
     },
@@ -311,6 +461,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Agraïments"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aitorpenak"
           }
         }
       }
@@ -324,6 +480,12 @@
             "state" : "translated",
             "value" : "Afegida"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gehituta"
+          }
         }
       }
     },
@@ -335,6 +497,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Edat"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adina"
           }
         }
       }
@@ -348,6 +516,12 @@
             "state" : "translated",
             "value" : "Tot"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guztiak"
+          }
         }
       }
     },
@@ -359,6 +533,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Totes les curses"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketa guztiak"
           }
         }
       }
@@ -372,6 +552,12 @@
             "state" : "translated",
             "value" : "Anunciat"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iragarrita"
+          }
         }
       }
     },
@@ -382,6 +568,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Arribada"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Helmuga"
           }
         }
       }
@@ -395,6 +587,12 @@
             "state" : "translated",
             "value" : "ANIVERSARIS"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URTEBETETZEAK"
+          }
         }
       }
     },
@@ -407,6 +605,12 @@
             "state" : "translated",
             "value" : "Aniversaris"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Urtebetetzeak"
+          }
         }
       }
     },
@@ -418,6 +622,12 @@
             "state" : "translated",
             "value" : "Explora les temporades anteriors"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arakatu aurreko denboraldiak"
+          }
         }
       }
     },
@@ -428,6 +638,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "CAT."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "KAT."
           }
         }
       }
@@ -441,6 +657,12 @@
             "state" : "translated",
             "value" : "ZONA CX"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CX GUNEA"
+          }
         }
       }
     },
@@ -452,6 +674,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zona CX"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CX gunea"
           }
         }
       }
@@ -465,6 +693,12 @@
             "state" : "translated",
             "value" : "El calendari està buit."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Egutegia hutsik dago."
+          }
         }
       }
     },
@@ -476,6 +710,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancel·lada"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bertan behera"
           }
         }
       }
@@ -489,6 +729,12 @@
             "state" : "translated",
             "value" : "Campionats"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Txapelketak"
+          }
         }
       }
     },
@@ -501,6 +747,12 @@
             "state" : "translated",
             "value" : "Classe"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klasea"
+          }
         }
       }
     },
@@ -511,6 +763,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Port"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mendatea"
           }
         }
       }
@@ -524,6 +782,12 @@
             "state" : "translated",
             "value" : "Campionats continentals"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kontinenteko txapelketak"
+          }
         }
       }
     },
@@ -534,6 +798,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No s’han pogut carregar els resultats complets. Es mostra el podi."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezin izan dira emaitza guztiak kargatu. Podiuma erakusten da."
           }
         }
       }
@@ -546,6 +816,12 @@
             "state" : "translated",
             "value" : "No s’ha pogut carregar la classificació general."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezin izan da sailkapen nagusia kargatu."
+          }
         }
       }
     },
@@ -556,6 +832,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No s’ha pogut carregar la cursa en directe. Estira cap avall per tornar-ho a provar."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezin izan da zuzeneko lasterketa kargatu. Mugitu behera berriro saiatzeko."
           }
         }
       }
@@ -569,6 +851,12 @@
             "state" : "translated",
             "value" : "No s’ha pogut carregar el paddock de ProCyclingStats."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezin izan da paddock-a kargatu ProCyclingStats-etik."
+          }
         }
       }
     },
@@ -579,6 +867,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No s’ha pogut carregar la prèvia de la cursa."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezin izan da lasterketaren aurrebista kargatu."
           }
         }
       }
@@ -591,6 +885,12 @@
             "state" : "translated",
             "value" : "No s’ha pogut carregar el calendari."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezin izan da egitaraua kargatu."
+          }
         }
       }
     },
@@ -601,6 +901,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No s’ha pogut actualitzar"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezin izan da eguneratu"
           }
         }
       }
@@ -614,6 +920,12 @@
             "state" : "translated",
             "value" : "No s’han pogut carregar les curses de ciclocròs. Comprova la connexió i torna-ho a provar."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezin izan dira ziklo-kros lasterketak kargatu. Egiaztatu konexioa eta saiatu berriro."
+          }
         }
       }
     },
@@ -625,6 +937,12 @@
             "state" : "translated",
             "value" : "No s’ha pogut carregar la informació de la cursa. Comprova la connexió i torna-ho a provar."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezin izan da lasterketaren informazioa kargatu. Egiaztatu konexioa eta saiatu berriro."
+          }
         }
       }
     },
@@ -635,6 +953,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No s’han pogut carregar les curses. Comprova la connexió i torna-ho a provar."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezin izan dira lasterketak kargatu. Egiaztatu konexioa eta saiatu berriro."
           }
         }
       }
@@ -648,6 +972,12 @@
             "state" : "translated",
             "value" : "No s’han pogut carregar els resultats. Comprova la connexió i torna-ho a provar."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezin izan dira emaitzak kargatu. Egiaztatu konexioa eta saiatu berriro."
+          }
         }
       }
     },
@@ -660,6 +990,12 @@
             "state" : "translated",
             "value" : "País"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herrialdea"
+          }
         }
       }
     },
@@ -670,6 +1006,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cobertura actualitzada %@"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estaldura eguneratua: %@"
           }
         }
       }
@@ -683,6 +1025,12 @@
             "state" : "translated",
             "value" : "Cycling Tribune s’està actualitzant. Torna-ho a provar d’aquí a uns minuts."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cycling Tribune eguneratzen ari da. Saiatu berriro minutu batzuk barru."
+          }
         }
       }
     },
@@ -695,6 +1043,12 @@
             "state" : "translated",
             "value" : "Curses de ciclocròs, resultats, classificacions i el calendari de tota la temporada."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ziklo-kros lasterketak, emaitzak, sailkapenak eta denboraldi osoko egutegia."
+          }
         }
       }
     },
@@ -703,6 +1057,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Data"
@@ -718,6 +1078,12 @@
             "state" : "translated",
             "value" : "Sortida"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Irteera"
+          }
         }
       }
     },
@@ -729,6 +1095,12 @@
             "state" : "translated",
             "value" : "Distància"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Distantzia"
+          }
         }
       }
     },
@@ -739,6 +1111,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fet"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eginda"
           }
         }
       }
@@ -752,6 +1130,12 @@
             "state" : "translated",
             "value" : "Descartada"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kenduta"
+          }
         }
       }
     },
@@ -762,6 +1146,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Durada - %@"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iraupena - %@"
           }
         }
       }
@@ -774,6 +1164,12 @@
             "state" : "translated",
             "value" : "ARRIBADA"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HELMUGA"
+          }
         }
       }
     },
@@ -784,6 +1180,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ARRIBADA - %@"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HELMUGA - %@"
           }
         }
       }
@@ -797,6 +1199,12 @@
             "state" : "translated",
             "value" : "Abans"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lehenago"
+          }
         }
       }
     },
@@ -807,6 +1215,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Perfil d’altimetria, %lld per cent recorregut"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altimetria-profila, ehuneko %lld eginda"
           }
         }
       }
@@ -819,6 +1233,12 @@
             "state" : "translated",
             "value" : "ACABADA"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AMAITUTA"
+          }
         }
       }
     },
@@ -829,6 +1249,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Perfil de l’arribada"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Helmugako profila"
           }
         }
       }
@@ -842,6 +1268,12 @@
             "state" : "translated",
             "value" : "Acabada"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Amaituta"
+          }
         }
       }
     },
@@ -852,6 +1284,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Primera arribada prevista a les %@"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lehen helmuga aurreikusia: %@"
           }
         }
       }
@@ -864,6 +1302,12 @@
             "state" : "translated",
             "value" : "GC"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SN"
+          }
         }
       }
     },
@@ -874,6 +1318,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Classificació general"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sailkapen nagusia"
           }
         }
       }
@@ -886,6 +1336,12 @@
             "state" : "translated",
             "value" : "Amaga els resultats"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezkutatu emaitzak"
+          }
         }
       }
     },
@@ -896,6 +1352,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Historial"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historia"
           }
         }
       }
@@ -938,6 +1400,24 @@
               }
             }
           }
+        },
+        "eu" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Egun %lld barru"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld egun barru"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -950,6 +1430,12 @@
             "state" : "translated",
             "value" : "S’UNEIX"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TALDE BERRIA"
+          }
         }
       }
     },
@@ -957,6 +1443,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "KM"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "KM"
@@ -972,6 +1464,12 @@
             "state" : "translated",
             "value" : "Punts clau"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gune nagusiak"
+          }
         }
       }
     },
@@ -984,6 +1482,12 @@
             "state" : "translated",
             "value" : "IDIOMA"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HIZKUNTZA"
+          }
         }
       }
     },
@@ -994,6 +1498,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "EN DIRECTE"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ZUZENEAN"
           }
         }
       }
@@ -1007,6 +1517,12 @@
             "state" : "translated",
             "value" : "Idioma"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hizkuntza"
+          }
         }
       }
     },
@@ -1018,6 +1534,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Últims resultats"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Azken emaitzak"
           }
         }
       }
@@ -1031,6 +1553,12 @@
             "state" : "translated",
             "value" : "Som-hi!"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Goazen!"
+          }
         }
       }
     },
@@ -1043,6 +1571,12 @@
             "state" : "translated",
             "value" : "Enllaços"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estekak"
+          }
         }
       }
     },
@@ -1053,6 +1587,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Llistada, sense retransmissió encara"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zerrendan, oraindik emisiorik gabe"
           }
         }
       }
@@ -1065,6 +1605,12 @@
             "state" : "translated",
             "value" : "En directe"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zuzenean"
+          }
         }
       }
     },
@@ -1075,6 +1621,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "S’està carregant"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kargatzen"
           }
         }
       }
@@ -1088,6 +1640,12 @@
             "state" : "translated",
             "value" : "S’està carregant el ciclocròs"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ziklo-krosa kargatzen"
+          }
         }
       }
     },
@@ -1099,6 +1657,12 @@
             "state" : "translated",
             "value" : "S’estan carregant els resultats"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emaitzak kargatzen"
+          }
         }
       }
     },
@@ -1109,6 +1673,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Carregant la cursa en directe"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zuzeneko lasterketa kargatzen"
           }
         }
       }
@@ -1122,6 +1692,12 @@
             "state" : "translated",
             "value" : "S’està carregant el paddock"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paddock-a kargatzen"
+          }
         }
       }
     },
@@ -1134,6 +1710,12 @@
             "state" : "translated",
             "value" : "S’està carregant la cursa"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketa kargatzen"
+          }
         }
       }
     },
@@ -1144,6 +1726,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "S’està carregant la prèvia de la cursa"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketaren aurrebista kargatzen"
           }
         }
       }
@@ -1156,6 +1744,12 @@
             "state" : "translated",
             "value" : "S’està carregant el perfil de la cursa"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketaren profila kargatzen"
+          }
         }
       }
     },
@@ -1166,6 +1760,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "S’estan carregant les curses"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketak kargatzen"
           }
         }
       }
@@ -1179,6 +1779,12 @@
             "state" : "translated",
             "value" : "S’estan carregant els resultats"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emaitzak kargatzen"
+          }
         }
       }
     },
@@ -1191,6 +1797,12 @@
             "state" : "translated",
             "value" : "S’està carregant el ciclista"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Txirrindularia kargatzen"
+          }
         }
       }
     },
@@ -1201,6 +1813,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "S’està carregant el calendari"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Egitaraua kargatzen"
           }
         }
       }
@@ -1213,6 +1831,12 @@
             "state" : "translated",
             "value" : "Circuit local"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tokiko zirkuitua"
+          }
         }
       }
     },
@@ -1223,6 +1847,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "HOMES"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GIZONAK"
           }
         }
       }
@@ -1236,6 +1866,12 @@
             "state" : "translated",
             "value" : "ELIT MASCULINA · TOP %lld"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ELITE GIZONAK · TOP %lld"
+          }
         }
       }
     },
@@ -1243,6 +1879,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mapa"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mapa"
@@ -1259,6 +1901,12 @@
             "state" : "translated",
             "value" : "Elit masculina"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elite gizonak"
+          }
         }
       }
     },
@@ -1269,6 +1917,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Més informació"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informazio gehiago"
           }
         }
       }
@@ -1282,6 +1936,12 @@
             "state" : "translated",
             "value" : "Aviat hi haurà més idiomes."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hizkuntza gehiago laster."
+          }
         }
       }
     },
@@ -1294,6 +1954,12 @@
             "state" : "translated",
             "value" : "Música de Ciscu Bates"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Musika: Ciscu Bates"
+          }
         }
       }
     },
@@ -1304,6 +1970,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "CAP CURSA"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EZ DAGO LASTERKETARIK"
           }
         }
       }
@@ -1317,6 +1989,12 @@
             "state" : "translated",
             "value" : "Campionats nacionals"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Txapelketa nazionalak"
+          }
         }
       }
     },
@@ -1328,6 +2006,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Següent"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hurrengoa"
           }
         }
       }
@@ -1341,6 +2025,12 @@
             "state" : "translated",
             "value" : "Properes curses"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hurrengo lasterketak"
+          }
         }
       }
     },
@@ -1351,6 +2041,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Encara no hi ha cap retransmissió"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oraindik ez dago emisiorik zerrendan"
           }
         }
       }
@@ -1364,6 +2060,12 @@
             "state" : "translated",
             "value" : "Sense categories"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kategoriarik ez"
+          }
         }
       }
     },
@@ -1375,6 +2077,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No s’han trobat categories per a aquesta classificació."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez da kategoriarik aurkitu sailkapen honetarako."
           }
         }
       }
@@ -1388,6 +2096,12 @@
             "state" : "translated",
             "value" : "No s’han trobat categories."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez da kategoriarik aurkitu."
+          }
         }
       }
     },
@@ -1399,6 +2113,12 @@
             "state" : "translated",
             "value" : "Sense informació"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez dago informaziorik"
+          }
         }
       }
     },
@@ -1409,6 +2129,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Encara no hi ha informació d’aquesta cursa."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oraindik ez dago lasterketa honi buruzko informaziorik."
           }
         }
       }
@@ -1422,6 +2148,12 @@
             "state" : "translated",
             "value" : "Sense vídeos de la cursa"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez dago lasterketaren bideorik"
+          }
         }
       }
     },
@@ -1433,6 +2165,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No hi ha curses en aquesta sèrie."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez dago lasterketarik serie honetan."
           }
         }
       }
@@ -1446,6 +2184,12 @@
             "state" : "translated",
             "value" : "No hi ha curses que coincideixin amb “%@”."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez dago “%@” bilaketarekin bat datorren lasterketarik."
+          }
         }
       }
     },
@@ -1457,6 +2201,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Encara no hi ha resultats"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oraindik ez dago emaitzarik"
           }
         }
       }
@@ -1470,6 +2220,12 @@
             "state" : "translated",
             "value" : "No s’han trobat resultats."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez da emaitzarik aurkitu."
+          }
         }
       }
     },
@@ -1480,6 +2236,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ahir no hi va haver resultats"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atzo ez zen emaitzarik izan"
           }
         }
       }
@@ -1492,6 +2254,12 @@
             "state" : "translated",
             "value" : "Encara no hi ha resultats"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oraindik ez dago emaitzarik"
+          }
         }
       }
     },
@@ -1502,6 +2270,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Encara no hi ha resultats; la primera arribada és prevista a les %@"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oraindik ez dago emaitzarik; lehen helmuga aurreikusia: %@"
           }
         }
       }
@@ -1515,6 +2289,12 @@
             "state" : "translated",
             "value" : "Cap ciclista ni classificació coincideix amb “%@”."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez dago “%@” bilaketarekin bat datorren txirrindulari edo sailkapenik."
+          }
         }
       }
     },
@@ -1527,6 +2307,12 @@
             "state" : "translated",
             "value" : "No s’han trobat classificacions."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez da sailkapenik aurkitu."
+          }
         }
       }
     },
@@ -1537,6 +2323,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No és a la graella de TV"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez dago telebista-programazioan"
           }
         }
       }
@@ -1550,6 +2342,12 @@
             "state" : "translated",
             "value" : "No hi ha res amb aquest filtre."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez dago ezer iragazki honekin."
+          }
         }
       }
     },
@@ -1562,6 +2360,12 @@
             "state" : "translated",
             "value" : "Res de nou al paddock."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez dago ezer berririk paddock-ean."
+          }
         }
       }
     },
@@ -1572,6 +2376,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Encara no hi ha res a la llista d’avui. Les noves curses apareixeran aquí tan bon punt es publiquin."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oraindik ez dago ezer gaurko zerrendan. Lasterketa berriak hemen agertuko dira argitaratu bezain laster."
           }
         }
       }
@@ -1585,6 +2395,12 @@
             "state" : "translated",
             "value" : "Web oficial"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Webgune ofiziala"
+          }
         }
       }
     },
@@ -1595,6 +2411,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sense connexió"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konexiorik gabe"
           }
         }
       }
@@ -1607,6 +2429,12 @@
             "state" : "translated",
             "value" : "Cursa d’un dia"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Egun bateko lasterketa"
+          }
         }
       }
     },
@@ -1617,6 +2445,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Obre-ho a ProCyclingStats"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ireki ProCyclingStats-en"
           }
         }
       }
@@ -1630,6 +2464,12 @@
             "state" : "translated",
             "value" : "Altres belgues"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beste belgikarrak"
+          }
         }
       }
     },
@@ -1642,6 +2482,12 @@
             "state" : "translated",
             "value" : "Altres"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Besteak"
+          }
         }
       }
     },
@@ -1652,6 +2498,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "PERFIL"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PROFILA"
           }
         }
       }
@@ -1665,6 +2517,12 @@
             "state" : "translated",
             "value" : "PROGRAMA"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EGITARAUA"
+          }
         }
       }
     },
@@ -1673,6 +2531,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paddock"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Paddock"
@@ -1689,6 +2553,12 @@
             "state" : "translated",
             "value" : "Guanyadors anteriors"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aurreko irabazleak"
+          }
         }
       }
     },
@@ -1700,6 +2570,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Punts"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puntuak"
           }
         }
       }
@@ -1713,6 +2589,12 @@
             "state" : "translated",
             "value" : "Posició"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Postua"
+          }
         }
       }
     },
@@ -1724,6 +2606,12 @@
             "state" : "translated",
             "value" : "Mantén premut un resultat per mostrar o amagar els espòilers"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eduki sakatuta emaitza bat spoilerrak erakusteko edo ezkutatzeko"
+          }
         }
       }
     },
@@ -1734,6 +2622,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Prèvies"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aurrebistak"
           }
         }
       }
@@ -1747,6 +2641,12 @@
             "state" : "translated",
             "value" : "Perfil"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profila"
+          }
         }
       }
     },
@@ -1758,6 +2658,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Canvi de programa"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Egitarau-aldaketa"
           }
         }
       }
@@ -1771,6 +2677,12 @@
             "state" : "translated",
             "value" : "Programes"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Egitarauak"
+          }
         }
       }
     },
@@ -1781,6 +2693,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pròleg"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prologoa"
           }
         }
       }
@@ -1793,6 +2711,12 @@
             "state" : "translated",
             "value" : "Pròleg %@"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prologoa %@"
+          }
         }
       }
     },
@@ -1803,6 +2727,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cursa"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketa"
           }
         }
       }
@@ -1815,6 +2745,12 @@
             "state" : "translated",
             "value" : "Prèvia de la cursa"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketaren aurrebista"
+          }
         }
       }
     },
@@ -1825,6 +2761,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resultat de la cursa"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketaren emaitza"
           }
         }
       }
@@ -1837,6 +2779,12 @@
             "state" : "translated",
             "value" : "Dades de la cursa"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketaren datuak"
+          }
         }
       }
     },
@@ -1847,6 +2795,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Informació de la cursa"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketaren informazioa"
           }
         }
       }
@@ -1860,6 +2814,12 @@
             "state" : "translated",
             "value" : "Pàgina de la cursa a cyclocross24"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketaren orria cyclocross24-n"
+          }
         }
       }
     },
@@ -1870,6 +2830,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Perfil de la cursa"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketaren profila"
           }
         }
       }
@@ -1883,6 +2849,12 @@
             "state" : "translated",
             "value" : "Vídeo de la cursa"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketaren bideoa"
+          }
         }
       }
     },
@@ -1894,6 +2866,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vídeos de la cursa"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketaren bideoak"
           }
         }
       }
@@ -1907,6 +2885,12 @@
             "state" : "translated",
             "value" : "Vídeos no disponibles"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bideoak ez daude erabilgarri"
+          }
         }
       }
     },
@@ -1919,6 +2903,12 @@
             "state" : "translated",
             "value" : "Cursa, país, guanyador..."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketa, herrialdea, irabazlea..."
+          }
         }
       }
     },
@@ -1929,6 +2919,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Curses"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketak"
           }
         }
       }
@@ -1942,6 +2938,12 @@
             "state" : "translated",
             "value" : "Resultats recents"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Azken emaitzak"
+          }
         }
       }
     },
@@ -1954,6 +2956,12 @@
             "state" : "translated",
             "value" : "Resultat"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emaitza"
+          }
         }
       }
     },
@@ -1964,6 +2972,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resultat ocult"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emaitza ezkutatuta"
           }
         }
       }
@@ -1977,6 +2991,12 @@
             "state" : "translated",
             "value" : "Resultats"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emaitzak"
+          }
         }
       }
     },
@@ -1988,6 +3008,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Els resultats apareixen amagats darrere d’una pintura. Mantén premut un per mostrar-lo o amagar-lo i, després, toca’l per obrir-lo."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emaitzak margolan baten atzean ezkutatuta agertzen dira. Eduki sakatuta bat erakusteko edo ezkutatzeko, eta gero ukitu irekitzeko."
           }
         }
       }
@@ -2001,6 +3027,12 @@
             "state" : "translated",
             "value" : "Els resultats queden amagats fins que els mantens premuts. Desactiva-ho per veure’ls tan bon punt obris l’app."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emaitzak ezkutuan geratzen dira sakatuta eduki arte. Desaktibatu aplikazioa ireki bezain laster ikusteko."
+          }
         }
       }
     },
@@ -2011,6 +3043,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resultats d’avui"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gaurko emaitzak"
           }
         }
       }
@@ -2024,6 +3062,12 @@
             "state" : "translated",
             "value" : "Resultats sense espòilers"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emaitzak spoilerrik gabe"
+          }
         }
       }
     },
@@ -2035,6 +3079,12 @@
             "state" : "translated",
             "value" : "Resultats d’ahir"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atzoko emaitzak"
+          }
         }
       }
     },
@@ -2045,6 +3095,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resultats, classificacions i més"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emaitzak, sailkapenak eta gehiago"
           }
         }
       }
@@ -2058,6 +3114,12 @@
             "state" : "translated",
             "value" : "Ciclista"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Txirrindularia"
+          }
         }
       }
     },
@@ -2069,6 +3131,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ciclista, rànquing, categoria..."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Txirrindularia, rankinga, kategoria..."
           }
         }
       }
@@ -2082,6 +3150,12 @@
             "state" : "translated",
             "value" : "Resultats de carretera i de ciclocròs, calendaris i notícies del ciclisme, tot en un sol lloc."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Errepideko eta ziklo-kroseko emaitzak, egutegiak eta txirrindularitzako albisteak, dena leku bakarrean."
+          }
         }
       }
     },
@@ -2094,6 +3168,12 @@
             "state" : "translated",
             "value" : "CONFIGURACIÓ"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EZARPENAK"
+          }
         }
       }
     },
@@ -2104,6 +3184,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SORTIDA"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IRTEERA"
           }
         }
       }
@@ -2116,6 +3202,12 @@
             "state" : "translated",
             "value" : "COMENÇADA"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HASITA"
+          }
         }
       }
     },
@@ -2127,6 +3219,12 @@
             "state" : "translated",
             "value" : "Mostra-ho tot"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ikusi guztiak"
+          }
         }
       }
     },
@@ -2137,6 +3235,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mostra-ho tot: %@"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ikusi guztiak: %@"
           }
         }
       }
@@ -2150,6 +3254,12 @@
             "state" : "translated",
             "value" : "Sèrie"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seriea"
+          }
         }
       }
     },
@@ -2162,6 +3272,12 @@
             "state" : "translated",
             "value" : "Configuració"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezarpenak"
+          }
         }
       }
     },
@@ -2172,6 +3288,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mostra’n menys"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erakutsi gutxiago"
           }
         }
       }
@@ -2185,6 +3307,12 @@
             "state" : "translated",
             "value" : "Torna a veure la presentació"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erakutsi aurkezpena berriro"
+          }
         }
       }
     },
@@ -2196,6 +3324,12 @@
             "state" : "translated",
             "value" : "Mostra els resultats"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erakutsi emaitzak"
+          }
         }
       }
     },
@@ -2206,6 +3340,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Situació"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Egoera"
           }
         }
       }
@@ -2219,6 +3359,12 @@
             "state" : "translated",
             "value" : "Omet"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saltatu"
+          }
         }
       }
     },
@@ -2231,6 +3377,12 @@
             "state" : "translated",
             "value" : "Omet la introducció"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saltatu sarrera"
+          }
         }
       }
     },
@@ -2241,6 +3393,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Alguna cosa ha fallat"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zerbait gaizki joan da"
           }
         }
       }
@@ -2253,6 +3411,12 @@
             "state" : "translated",
             "value" : "Espòiler desactivat"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spoilerra desaktibatuta"
+          }
         }
       }
     },
@@ -2264,6 +3428,12 @@
             "state" : "translated",
             "value" : "Espòiler activat"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spoilerra aktibatuta"
+          }
         }
       }
     },
@@ -2271,6 +3441,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etapa"
+          }
+        },
+        "eu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Etapa"
@@ -2286,6 +3462,12 @@
             "state" : "translated",
             "value" : "Etapa %@"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@. etapa"
+          }
         }
       }
     },
@@ -2296,6 +3478,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resultat de l’etapa"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etaparen emaitza"
           }
         }
       }
@@ -2309,6 +3497,12 @@
             "state" : "translated",
             "value" : "Classificació"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sailkapena"
+          }
         }
       }
     },
@@ -2321,6 +3515,12 @@
             "state" : "translated",
             "value" : "Classificacions"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sailkapenak"
+          }
         }
       }
     },
@@ -2332,6 +3532,12 @@
             "state" : "translated",
             "value" : "Sortida"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Irteera"
+          }
         }
       }
     },
@@ -2342,6 +3548,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hora de sortida"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Irteera-ordua"
           }
         }
       }
@@ -2355,6 +3567,12 @@
             "state" : "translated",
             "value" : "Comença"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hasiera"
+          }
         }
       }
     },
@@ -2367,6 +3585,12 @@
             "state" : "translated",
             "value" : "Predeterminat del sistema"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sistemaren lehenetsia"
+          }
         }
       }
     },
@@ -2377,6 +3601,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "AVUI"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GAUR"
           }
         }
       }
@@ -2390,6 +3620,12 @@
             "state" : "translated",
             "value" : "FITXATGE"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FITXAKETA"
+          }
         }
       }
     },
@@ -2401,6 +3637,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Televisió i directe"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Telebista eta zuzenekoa"
           }
         }
       }
@@ -2414,6 +3656,12 @@
             "state" : "translated",
             "value" : "Equip"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taldea"
+          }
         }
       }
     },
@@ -2426,6 +3674,12 @@
             "state" : "translated",
             "value" : "El Paddock"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paddock-a"
+          }
         }
       }
     },
@@ -2436,6 +3690,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "El pelotó descansa"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tropela atseden hartzen ari da"
           }
         }
       }
@@ -2449,6 +3709,12 @@
             "state" : "translated",
             "value" : "La premsa"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prentsa"
+          }
         }
       }
     },
@@ -2460,6 +3726,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Temps"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denbora"
           }
         }
       }
@@ -2473,6 +3745,12 @@
             "state" : "translated",
             "value" : "Avui"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gaur"
+          }
         }
       }
     },
@@ -2483,6 +3761,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Avui - Pròxima a arribar"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gaur - Helmugara hurrengoa"
           }
         }
       }
@@ -2496,6 +3780,12 @@
             "state" : "translated",
             "value" : "Curses d’avui"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gaurko lasterketak"
+          }
         }
       }
     },
@@ -2506,6 +3796,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Curses d’avui"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gaurko lasterketak"
           }
         }
       }
@@ -2519,6 +3815,12 @@
             "state" : "translated",
             "value" : "Demà"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bihar"
+          }
         }
       }
     },
@@ -2530,6 +3832,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fitxatge"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fitxaketa"
           }
         }
       }
@@ -2543,6 +3851,12 @@
             "state" : "translated",
             "value" : "Fitxatges"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fitxaketak"
+          }
         }
       }
     },
@@ -2555,6 +3869,12 @@
             "state" : "translated",
             "value" : "Fitxatges, canvis de programa de les curses, aniversaris i la millor premsa del ciclisme."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fitxaketak, lasterketa-egitarauen aldaketak, urtebetetzeak eta txirrindularitzako prentsarik onena."
+          }
         }
       }
     },
@@ -2565,6 +3885,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Torna-ho a provar"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saiatu berriro"
           }
         }
       }
@@ -2577,6 +3903,12 @@
             "state" : "translated",
             "value" : "Desactiva la música"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desaktibatu musika"
+          }
         }
       }
     },
@@ -2587,6 +3919,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Activa la música"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktibatu musika"
           }
         }
       }
@@ -2600,6 +3938,12 @@
             "state" : "translated",
             "value" : "Classe 1 de l’UCI"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "UCIren 1. klasea"
+          }
         }
       }
     },
@@ -2611,6 +3955,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Classe 2 de l’UCI"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "UCIren 2. klasea"
           }
         }
       }
@@ -2624,6 +3974,12 @@
             "state" : "translated",
             "value" : "Classe 3 de l’UCI"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "UCIren 3. klasea"
+          }
         }
       }
     },
@@ -2635,6 +3991,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Campionats del món UCI"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "UCIren Munduko Txapelketak"
           }
         }
       }
@@ -2648,6 +4010,12 @@
             "state" : "translated",
             "value" : "Copa del Món UCI"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "UCIren Munduko Kopa"
+          }
         }
       }
     },
@@ -2659,6 +4027,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "En manteniment"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantentze-lanetan"
           }
         }
       }
@@ -2672,6 +4046,12 @@
             "state" : "translated",
             "value" : "En manteniment. Cycling Tribune s’està actualitzant. Torna-ho a provar d’aquí a uns minuts."
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantentze-lanetan. Cycling Tribune eguneratzen ari da. Saiatu berriro minutu batzuk barru."
+          }
         }
       }
     },
@@ -2684,6 +4064,12 @@
             "state" : "translated",
             "value" : "Pròximament"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laster"
+          }
         }
       }
     },
@@ -2694,6 +4080,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Desnivell"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desnibela"
           }
         }
       }
@@ -2707,6 +4099,12 @@
             "state" : "translated",
             "value" : "Victòria"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Garaipena"
+          }
         }
       }
     },
@@ -2717,6 +4115,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mostra els resultats complets"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ikusi emaitza guztiak"
           }
         }
       }
@@ -2729,6 +4133,12 @@
             "state" : "translated",
             "value" : "DONES"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EMAKUMEAK"
+          }
         }
       }
     },
@@ -2739,6 +4149,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No hem trobat dades de cap cursa ara mateix. Torna-ho a provar en un moment."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une honetan ez dugu lasterketa-daturik aurkitu. Saiatu berriro geroxeago."
           }
         }
       }
@@ -2752,6 +4168,12 @@
             "state" : "translated",
             "value" : "Et tornem a donar la benvinguda a Cycling Tribune"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ongi etorri berriro Cycling Tribune-ra"
+          }
         }
       }
     },
@@ -2764,6 +4186,12 @@
             "state" : "translated",
             "value" : "Et donem la benvinguda a Cycling Tribune"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ongi etorri Cycling Tribune-ra"
+          }
         }
       }
     },
@@ -2774,6 +4202,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "On veure-ho"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non ikusi"
           }
         }
       }
@@ -2787,6 +4221,12 @@
             "state" : "translated",
             "value" : "Guanyador"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Irabazlea"
+          }
         }
       }
     },
@@ -2799,6 +4239,12 @@
             "state" : "translated",
             "value" : "Copa del Món"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Munduko Kopa"
+          }
         }
       }
     },
@@ -2809,6 +4255,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "LA TEVA CURSA"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ZURE LASTERKETA"
           }
         }
       }
@@ -2822,6 +4274,12 @@
             "state" : "translated",
             "value" : "Ahir"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atzo"
+          }
         }
       }
     },
@@ -2832,6 +4290,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "per hora d’arribada"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "helmugako orduaren arabera"
           }
         }
       }
@@ -2844,6 +4308,12 @@
             "state" : "translated",
             "value" : "port"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mendatea"
+          }
         }
       }
     },
@@ -2855,6 +4325,12 @@
             "state" : "translated",
             "value" : "arribada prevista a les %@"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "helmuga aurreikusia: %@"
+          }
         }
       }
     },
@@ -2865,6 +4341,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "acabada"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "amaituta"
           }
         }
       }
@@ -2878,6 +4360,12 @@
             "state" : "translated",
             "value" : "resultats complets"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "emaitza guztiak"
+          }
         }
       }
     },
@@ -2888,6 +4376,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "d’aquí a %@"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ barru"
           }
         }
       }
@@ -2900,6 +4394,12 @@
             "state" : "translated",
             "value" : "més tard avui"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "gaur geroago"
+          }
         }
       }
     },
@@ -2910,6 +4410,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "en directe ara"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "zuzenean orain"
           }
         }
       }
@@ -2922,6 +4428,12 @@
             "state" : "translated",
             "value" : "més informació"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "informazio gehiago"
+          }
         }
       }
     },
@@ -2932,6 +4444,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "cap"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bat ere ez"
           }
         }
       }
@@ -2945,6 +4463,12 @@
             "state" : "translated",
             "value" : "pàgina del ciclista a ProCyclingStats"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "txirrindulariaren orria ProCyclingStats-en"
+          }
         }
       }
     },
@@ -2957,6 +4481,12 @@
             "state" : "translated",
             "value" : "pàgina del ciclista a cyclocross24"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "txirrindulariaren orria cyclocross24-n"
+          }
         }
       }
     },
@@ -2967,6 +4497,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "m.t."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "d.b."
           }
         }
       }
@@ -2979,6 +4515,12 @@
             "state" : "translated",
             "value" : "esprint"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "esprinta"
+          }
         }
       }
     },
@@ -2989,6 +4531,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ha començat a les %@"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "hasiera: %@"
           }
         }
       }
@@ -3002,6 +4550,12 @@
             "state" : "translated",
             "value" : "avui"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "gaur"
+          }
         }
       }
     },
@@ -3014,6 +4568,12 @@
             "state" : "translated",
             "value" : "compleix"
           }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "urteak"
+          }
         }
       }
     },
@@ -3025,6 +4585,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "© 2026 Ciscu Bates. Tots els drets reservats."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "© 2026 Ciscu Bates. Eskubide guztiak erreserbatuta."
           }
         }
       }

@@ -205,6 +205,7 @@
 			knownRegions = (
 				en,
 				ca,
+				eu,
 				Base,
 			);
 			mainGroup = 50B3656E2D6489EF000DA4AC;

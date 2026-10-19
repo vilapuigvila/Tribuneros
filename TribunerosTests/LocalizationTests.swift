@@ -10,6 +10,7 @@ final class AppLanguageTests: XCTestCase {
     func testSystemFollowsThePreferredLanguages() {
         XCTAssertEqual(AppLanguage.resolve(stored: "system", preferred: ["ca-ES", "en"]), "ca")
         XCTAssertEqual(AppLanguage.resolve(stored: "system", preferred: ["en-GB", "ca"]), "en")
+        XCTAssertEqual(AppLanguage.resolve(stored: "system", preferred: ["eu-ES", "es"]), "eu")
     }
 
     func testSystemFallsBackToEnglish() {
@@ -19,6 +20,7 @@ final class AppLanguageTests: XCTestCase {
     func testAnExplicitChoiceWins() {
         XCTAssertEqual(AppLanguage.resolve(stored: "en", preferred: ["ca-ES"]), "en")
         XCTAssertEqual(AppLanguage.resolve(stored: "ca", preferred: ["en-US"]), "ca")
+        XCTAssertEqual(AppLanguage.resolve(stored: "eu", preferred: ["ca-ES"]), "eu")
     }
 
     func testMissingOrUnknownStoredValueFollowsTheSystem() {
@@ -29,6 +31,7 @@ final class AppLanguageTests: XCTestCase {
     func testEndonyms() {
         XCTAssertEqual(AppLanguage.endonym("en"), "English")
         XCTAssertEqual(AppLanguage.endonym("ca"), "Català")
+        XCTAssertEqual(AppLanguage.endonym("eu"), "Euskara")
         XCTAssertNil(AppLanguage.endonym("system"))
     }
 }
@@ -39,9 +42,11 @@ final class L10nTests: XCTestCase {
         super.tearDown()
     }
 
-    func testTheAppBundlesCatalan() {
-        XCTAssertTrue(Bundle.main.localizations.contains("ca"))
-        XCTAssertNotNil(Bundle.main.path(forResource: "ca", ofType: "lproj"))
+    func testTheAppBundlesCatalanAndBasque() {
+        for code in ["ca", "eu"] {
+            XCTAssertTrue(Bundle.main.localizations.contains(code))
+            XCTAssertNotNil(Bundle.main.path(forResource: code, ofType: "lproj"))
+        }
     }
 
     func testEnglishReturnsTheKey() {
@@ -54,6 +59,14 @@ final class L10nTests: XCTestCase {
         XCTAssertEqual(L10n.languageCode, "ca")
         XCTAssertEqual(L10n.tr("Settings"), "Configuració")
         XCTAssertEqual(L10n.tr("Today Races"), "Curses d’avui")
+    }
+
+    func testBasqueTranslates() {
+        L10n.setLanguage("eu")
+        XCTAssertEqual(L10n.languageCode, "eu")
+        XCTAssertEqual(L10n.tr("Settings"), "Ezarpenak")
+        XCTAssertEqual(L10n.tr("Today Races"), "Gaurko lasterketak")
+        XCTAssertEqual(L10n.tr("%lld races", 3), "3 lasterketa")
     }
 
     func testAMissingKeyFallsBackToItself() {
@@ -95,10 +108,10 @@ final class L10nTests: XCTestCase {
     }
 }
 
-/// Re-checks the catalog from source, so a missing Catalan value fails on macOS too
+/// Re-checks the catalog from source, so a missing Catalan or Basque value fails on macOS too
 /// (the full check is `scripts/l10n/check_localization.py`).
 final class LocalizationCatalogTests: XCTestCase {
-    func testEveryKeyHasACatalanValue() throws {
+    func testEveryKeyHasCatalanAndBasqueValues() throws {
         let url = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()
             .deletingLastPathComponent()
@@ -113,6 +126,10 @@ final class LocalizationCatalogTests: XCTestCase {
             XCTAssertNotNil(
                 localizations?["ca"],
                 "No Catalan for \(key)"
+            )
+            XCTAssertNotNil(
+                localizations?["eu"],
+                "No Basque for \(key)"
             )
         }
     }

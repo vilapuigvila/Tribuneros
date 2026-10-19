@@ -25,7 +25,7 @@ enum L10n {
     nonisolated(unsafe) private static var state = makeState(code: AppLanguage.fallback)
     nonisolated(unsafe) private static var formatters: [String: DateFormatter] = [:]
 
-    /// The active localization code (`en`, `ca`).
+    /// The active localization code (`en`, `ca`, `eu`).
     static var languageCode: String { current.code }
     /// Use it for every display formatter, `uppercased(with:)` and `formatted(...)` call.
     static var locale: Locale { current.locale }
