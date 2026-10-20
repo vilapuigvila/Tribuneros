@@ -248,12 +248,12 @@ what the standings document holds: the top five of each category.
 **The CX Zone screen** (`CXRaces.SeriesLensView`, `Tabs/CXRaces/SeriesLens/`) is the "Mud" look (`mud*` tokens in
 `Color.Palette`; Vapor type styles): a header with the season ("2026–27", from July), series chips
 (`CXRaces.RaceSeries` with at least one non-cancelled round this season; the first is selected), then for the selected
-series, all from `CXRaces.SeriesLens`: the next round as a hero over the series' painting (`CXSeriesArt(series:)`, one `Canvas` per series in `SeriesLens/CX*Art.swift` with `cx*` colors; `.others` keeps `CXMudArt`) plus a rounds-raced bar; **Leaders**
+series, all from `CXRaces.SeriesLens`: the next round as a hero over the series' painting (`CXSeriesArt(series:)`, one `Canvas` per series in `SeriesLens/CX*Art.swift` with `cx*` colors; `.exactCross` keeps `CXMudArt`, `.others` gets the beer tent) plus a rounds-raced bar; **Leaders**
 (first two categories of the standings item whose title names the series, with the points gap to second when both are
 plain numbers; no item, no section); **Last round** (the latest past round, with the Men Elite top 3 when the homepage
 "Latest results" has a race of the same name, else just the calendar winner); **Rounds left** (the 3 rounds after the
 next). Leader cards open `CXRiderDetailView` (`.standing`), podium rows `.podium`, a round the event detail, the pills
-the standings list / latest results / all races. `CXEventDetailView` (the hero over `CXMudArt`, info rows, `MudPanel` / `MudCardBox` sections from `CXMudComponents.swift`) and
+the standings list / latest results / all races. `CXEventDetailView` (the hero over its series' painting, `CXSeriesArt(series: event.series)`, the same as the CX Zone hero, info rows, `MudPanel` / `MudCardBox` sections from `CXMudComponents.swift`) and
 `CXAllRacesView` (chips, rows) are Mud too; the winner, rider, latest-results and standings screens are still Vapor.
 
 Standings list rows, and the leader rows on the old CX Zone standings summary card (the rest of that

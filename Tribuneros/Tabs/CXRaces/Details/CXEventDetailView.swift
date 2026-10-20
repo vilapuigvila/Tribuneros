@@ -122,7 +122,7 @@ struct CXEventDetailView: View {
     private var summaryPanel: some View {
         VStack(spacing: 0) {
             ZStack {
-                CXMudArt()
+                CXSeriesArt(series: event.series)
                 ImageScrim(
                     top: 0.5,
                     topEnd: 0.34,

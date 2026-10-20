@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-/// The next-round hero painting of a series; Others keeps the generic mud course.
+/// The next-round hero painting of a series; Exact Cross keeps the generic mud course.
 struct CXSeriesArt: View {
     let series: CXRaces.RaceSeries
 
@@ -18,13 +18,13 @@ struct CXSeriesArt: View {
         case .x2oTrofee:
             CXColdCoastArt()
         case .exactCross:
-            CXBeerTentArt()
+            CXMudArt()
         case .championships:
             CXFloodlitSnowArt()
         case .otherBelgian:
             CXForestMudArt()
         case .others:
-            CXMudArt()
+            CXBeerTentArt()
         }
     }
 }
