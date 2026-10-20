@@ -81,6 +81,11 @@ extension DTO {
         let arrival: String
         let verticalMeters: String
         let profileURL: URL?
+
+        /// Nothing to show: no title and none of the info rows.
+        var isBlank: Bool {
+            title.isEmpty && [date, startTime, distance, verticalMeters, departure, arrival].allSatisfy(\.isEmpty)
+        }
     }
     
     struct StageProfile: Codable, Equatable, CustomStringConvertible {

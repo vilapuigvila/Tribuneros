@@ -808,9 +808,50 @@ struct Service {
             .map { String(value[$0]) } ?? value
     }
 
+    #if DEBUG
+    /// `MOCK_RACE_INFO` or the `mockRaceInfo` launch argument (`error` or `blank`), only under a mock scenario.
+    enum MockRaceInfo: String {
+        case error
+        case blank
+
+        static var current: MockRaceInfo? {
+            resolve(
+                environment: ProcessInfo.processInfo.environment,
+                launchValue: UserDefaults.standard.string(forKey: "mockRaceInfo")
+            )
+        }
+
+        static func resolve(
+            environment: [String: String],
+            launchValue: String?
+        ) -> MockRaceInfo? {
+            (environment["MOCK_RACE_INFO"] ?? launchValue).flatMap(MockRaceInfo.init(rawValue:))
+        }
+    }
+    #endif
+
     static func getNextToFinishRaceDetail(_ urlString: String) async throws -> DTO.RaceDetailInfo? {
         #if DEBUG
         if HomeRaces.MockScenario.current != nil {
+            switch MockRaceInfo.current {
+            case .error:
+                throw NSError(domain: "MockRaceInfo", code: 0, userInfo: nil)
+            case .blank:
+                return DTO.RaceDetailInfo(
+                    title: "",
+                    date: "",
+                    startTime: "",
+                    classification: "",
+                    category: "",
+                    distance: "",
+                    departure: "",
+                    arrival: "",
+                    verticalMeters: "",
+                    profileURL: nil
+                )
+            case nil:
+                break
+            }
             return DTO.RaceDetailInfo(
                 title: "CRO Race — Stage 1", // l10n:ignore: mock data
                 date: "01 October 2026",
