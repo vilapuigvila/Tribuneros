@@ -216,11 +216,6 @@
     "eu": "Oraindik ez dago emaitzarik",
     "comment": "Race results empty state"
   },
-  "No results found.": {
-    "ca": "No s’han trobat resultats.",
-    "eu": "Ez da emaitzarik aurkitu.",
-    "comment": "Latest results empty state"
-  },
   "No riders or standings match “%@”.": {
     "ca": "Cap ciclista ni classificació coincideix amb “%@”.",
     "eu": "Ez dago “%@” bilaketarekin bat datorren txirrindulari edo sailkapenik.",

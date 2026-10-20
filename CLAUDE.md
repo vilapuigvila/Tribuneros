@@ -254,8 +254,7 @@ plain numbers; no item, no section); **Last round** (the latest past round, with
 "Latest results" has a race of the same name, else just the calendar winner); **Rounds left** (the 3 rounds after the
 next). Leader cards open `CXRiderDetailView` (`.standing`), podium rows `.podium`, a round the event detail, the pills
 the standings list / latest results / all races. `CXEventDetailView` (the hero over `CXMudArt`, info rows, `MudPanel` / `MudCardBox` sections from `CXMudComponents.swift`) and
-`CXAllRacesView` (chips, rows) are Mud too; the winner, rider, latest-results and standings screens are still Vapor. `CalendarView`,
-`CyclocrossStandingsSectionView` and `LatestResultsView` (the old panel cards) are no longer used.
+`CXAllRacesView` (chips, rows) are Mud too; the winner, rider, latest-results and standings screens are still Vapor.
 
 Standings list rows, and the leader rows on the old CX Zone standings summary card (the rest of that
 card still opens the list), open `CXRiderDetailView` with `CXRaces.RiderContext.standing`
@@ -300,7 +299,7 @@ Alfy's `Requester` notes:
   (`Color(hex:opacity:)`) belong.
 - Remote images go through `CachedImageView(imageUrl:cornerRadius:)`
   (`Tabs/HomeRaces/Components/RaceFinishedCardRow.swift`, wraps Kingfisher's `KFImage`), not
-  `AsyncImage` — `AsyncImageView.swift` is an older hand-rolled loader kept only where already used.
+  `AsyncImage`.
 - Calls with more than one argument are formatted multiline (one arg per line).
 - Screens that wait for network data show redacted placeholders at once, not a spinner: stand-in
   data shaped like real content (`static let placeholders`, see `Paddock.Section.placeholders`,

@@ -7,10 +7,6 @@
     "ca": "%1$@ · actualitzat %2$@",
     "eu": "%1$@ · eguneratua: %2$@"
   },
-  "%@ - Kms": {
-    "ca": "%@ - km",
-    "eu": "%@ - km"
-  },
   "%@ isn't in this day's TV listings.": {
     "ca": "%@ no és a la graella de TV d’aquest dia.",
     "eu": "%@ ez dago egun honetako telebista-programazioan."
@@ -75,10 +71,6 @@
     "ca": "Explora les temporades anteriors",
     "eu": "Arakatu aurreko denboraldiak"
   },
-  "CAT.": {
-    "ca": "CAT.",
-    "eu": "KAT."
-  },
   "Climb": {
     "ca": "Port",
     "eu": "Mendatea"
@@ -136,17 +128,9 @@
     "ca": "Fet",
     "eu": "Eginda"
   },
-  "Duration - %@": {
-    "ca": "Durada - %@",
-    "eu": "Iraupena - %@"
-  },
   "ETA": {
     "ca": "ARRIBADA",
     "eu": "HELMUGA"
-  },
-  "ETA - %@": {
-    "ca": "ARRIBADA - %@",
-    "eu": "HELMUGA - %@"
   },
   "Elevation profile, %lld percent ridden": {
     "ca": "Perfil d’altimetria, %lld per cent recorregut",
@@ -179,10 +163,6 @@
   "History": {
     "ca": "Historial",
     "eu": "Historia"
-  },
-  "KM": {
-    "ca": "KM",
-    "eu": "KM"
   },
   "Key points": {
     "ca": "Punts clau",
@@ -249,10 +229,6 @@
   "Map": {
     "ca": "Mapa",
     "eu": "Mapa"
-  },
-  "More info": {
-    "ca": "Més informació",
-    "eu": "Informazio gehiago"
   },
   "NO RACES": {
     "ca": "CAP CURSA",
@@ -327,10 +303,6 @@
     "ca": "Pròleg %@",
     "eu": "Prologoa %@"
   },
-  "Race": {
-    "ca": "Cursa",
-    "eu": "Lasterketa"
-  },
   "Race Preview": {
     "ca": "Prèvia de la cursa",
     "eu": "Lasterketaren aurrebista"
@@ -387,10 +359,6 @@
     "ca": "Mostra-ho tot: %@",
     "eu": "Ikusi guztiak: %@"
   },
-  "Show less": {
-    "ca": "Mostra’n menys",
-    "eu": "Erakutsi gutxiago"
-  },
   "Show results": {
     "ca": "Mostra els resultats",
     "eu": "Erakutsi emaitzak"
@@ -443,10 +411,6 @@
     "ca": "Avui",
     "eu": "Gaur",
     "comment": "Paddock day group"
-  },
-  "Today - Next to finish": {
-    "ca": "Avui - Pròxima a arribar",
-    "eu": "Gaur - Helmugara hurrengoa"
   },
   "Today's races": {
     "ca": "Curses d’avui",
