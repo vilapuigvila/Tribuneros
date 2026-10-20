@@ -251,7 +251,7 @@ struct NextToFinishRaceDetail: View {
             InfoItem(
                 systemImage: "mountain.2",
                 title: L10n.tr("Vertical"),
-                value: info.verticalMeters.allSatisfy(\.isNumber) ? L10n.tr("%@ m", info.verticalMeters) : info.verticalMeters
+                value: !info.verticalMeters.isEmpty && info.verticalMeters.allSatisfy(\.isNumber) ? L10n.tr("%@ m", info.verticalMeters) : info.verticalMeters
             ),
             InfoItem(systemImage: "flag", title: L10n.tr("Departure"), value: info.departure),
             InfoItem(systemImage: "flag.checkered", title: L10n.tr("Arrival"), value: info.arrival)
