@@ -317,6 +317,10 @@ private struct NextRoundSection: View {
         .accessibilityElement(children: .combine)
     }
 
+    private var segmentSpacing: CGFloat {
+        min(4, 120 / CGFloat(max(lens.rounds.count, 1)))
+    }
+
     private var progress: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .firstTextBaseline) {
@@ -338,7 +342,7 @@ private struct NextRoundSection: View {
                     lineLimit: 1
                 )
             }
-            HStack(spacing: 4) {
+            HStack(spacing: segmentSpacing) {
                 ForEach(lens.rounds) { round in
                     Capsule()
                         .fill(segmentColor(round))

@@ -195,7 +195,8 @@ enum CxMock {
             path: String,
             id: Int,
             daysFromNow: Int,
-            winner: Int? = nil
+            winner: Int? = nil,
+            country: String = "Belgium"
         ) -> DTO.CXCalendarEvent {
             let rider = winner.map { riders[$0] }
             return .init(
@@ -211,13 +212,24 @@ enum CxMock {
                 resultsURL: url("race/\(id)/"),
                 videoURL: nil,
                 websiteURL: nil,
-                raceCountry: "Belgium",
+                raceCountry: country,
                 winnerURL: winner.flatMap(riderURL),
                 winnerCountry: rider?.country,
                 winnerFlagURL: nil
             )
         }
-        return [
+        let others = (0..<120).map { index in
+            event(
+                "Mock Open \(index + 1)",
+                raceClass: "C2",
+                path: "race/mock-open-\(index + 1)/",
+                id: 19_000 + index,
+                daysFromNow: index < 10 ? index - 40 : (index - 9),
+                winner: index < 10 ? index % 3 : nil,
+                country: "Netherlands"
+            )
+        }
+        return others + [
             event("Kleeberg Cross Mechelen", raceClass: "C2", path: kleebergPath, id: 18001, daysFromNow: -10, winner: 0),
             event("Superprestige Gavere", raceClass: "C1", path: gaverePath, id: 17001, daysFromNow: -1, winner: 0),
             event("Exact Cross Mol", raceClass: "C2", path: molPath, id: 17002, daysFromNow: -1, winner: 1),
