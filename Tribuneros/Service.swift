@@ -792,6 +792,22 @@ struct Service {
         return pairs
     }
 
+    /// The meta description is empty on some race pages (CX), so the `h1` without its year and class parts stands in.
+    static func raceTitle(_ doc: Document) -> String {
+        if let desc = try? doc.select("meta[name=description]").first()?.attr("content"),
+           !desc.isEmpty {
+            return desc
+        }
+        guard let heading = try? doc.select("h1").first() else { return "" }
+        _ = try? heading.select("font.hideIfMobile").remove()
+        return (try? heading.text().trimmingCharacters(in: .whitespacesAndNewlines)) ?? ""
+    }
+
+    static func raceStartTime(_ value: String) -> String {
+        value.range(of: #"^\d{1,2}:\d{2}(?=:\d{2}$)"#, options: .regularExpression)
+            .map { String(value[$0]) } ?? value
+    }
+
     static func getNextToFinishRaceDetail(_ urlString: String) async throws -> DTO.RaceDetailInfo? {
         #if DEBUG
         if HomeRaces.MockScenario.current != nil {
@@ -836,7 +852,7 @@ struct Service {
                         case let key where key.contains("date") && date.isEmpty:
                             date = value
                         case let key where key.contains("start time") && startTime.isEmpty:
-                            startTime = value
+                            startTime = raceStartTime(value)
                         case let key where key.contains("classification") && classification.isEmpty:
                             classification = value
                         case let key where key.contains("category") && category.isEmpty:
@@ -853,14 +869,7 @@ struct Service {
                             break
                         }
                     }
-                    let title: String = {
-                        guard let metaDesc = try? doc.select("meta[name=description]").first(),
-                              let desc = try? metaDesc.attr("content")
-                        else {
-                            return ""
-                        }
-                        return desc
-                    }()
+                    let title = raceTitle(doc)
                 /*
                     let imgURL: URL? = {
                         guard let relativeURL: Element = try? doc.select("div.mt10 img").first(),

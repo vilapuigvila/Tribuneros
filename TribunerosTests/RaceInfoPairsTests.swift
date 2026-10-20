@@ -37,4 +37,28 @@ final class RaceInfoPairsTests: XCTestCase {
     func testSiteStartTimeDropsSeconds() {
         XCTAssertEqual(HomeRaces.TodayRaces.siteStartTime("12:10:00"), "12:10")
     }
+
+    func testRaceStartTimeDropsOnlyTrailingSeconds() {
+        XCTAssertEqual(Service.raceStartTime("20:40:00"), "20:40")
+        XCTAssertEqual(Service.raceStartTime("09:12 (03:12 CET)"), "09:12 (03:12 CET)")
+        XCTAssertEqual(Service.raceStartTime(""), "")
+    }
+
+    func testRaceTitleFallsBackToTheHeadingWhenTheDescriptionIsEmpty() throws {
+        let html = """
+        <head><meta name="description" content=""></head>\
+        <h1><font class="hideIfMobile">2026 &nbsp; &raquo;  &nbsp;  </font>Kiremko Nacht Van Woerden \
+        <font class="hideIfMobile">(CJ)</font></h1>
+        """
+
+        XCTAssertEqual(Service.raceTitle(try SwiftSoup.parse(html)), "Kiremko Nacht Van Woerden")
+    }
+
+    func testRaceTitlePrefersTheDescription() throws {
+        let html = """
+        <head><meta name="description" content="CRO Race 2026 Stage 1"></head><h1>Other</h1>
+        """
+
+        XCTAssertEqual(Service.raceTitle(try SwiftSoup.parse(html)), "CRO Race 2026 Stage 1")
+    }
 }

@@ -27,6 +27,12 @@ struct HomeRacesView: View {
                     )
                 } else {
                     EmptyView()
+                        .onAppear {
+                            nonFatalCrashlytics(
+                                false,
+                                "Next to finish race \(index) has no race page (\(sections.nextToFinish.count) races)"
+                            )
+                        }
                 }
             case .todayRaces:
                 TodayRacesListView(races: sections.nextToFinish) {
