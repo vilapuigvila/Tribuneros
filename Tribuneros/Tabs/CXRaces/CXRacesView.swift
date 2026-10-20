@@ -9,9 +9,13 @@ import SwiftUI
 
 struct CXRacesRacesView: View {
     @ObservedObject var viewModel: CXRaces.ViewModel<CXRaces.InteractorImpl>
-    
+    @State private var lensSeries: CXRaces.RaceSeries?
+
     var body: some View {
-        CXRaces.MainView(state: viewModel.stateView) {
+        CXRaces.MainView(
+            state: viewModel.stateView,
+            selectedSeries: $lensSeries
+        ) {
             switch $0 {
             case .didAppeared:
                 viewModel.action(.didAppeared)
@@ -25,7 +29,13 @@ struct CXRacesRacesView: View {
             case .cxZone(.allRaces(let series)):
                 CXAllRacesView(
                     events: viewModel.stateView.result.calendarEvents,
-                    initialSeries: series
+                    initialSeries: series,
+                    onSeriesChange: { picked in
+                        // "All" has no chip on the CX Zone page, so it keeps the current one.
+                        if let picked {
+                            lensSeries = picked
+                        }
+                    }
                 ) { event in
                     viewModel.action(.didTapOnCalendarEvent(event))
                 }

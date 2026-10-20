@@ -38,9 +38,9 @@ extension Paddock.PressPage {
             case .onAppear:
                 interactor.useCase(.load)
             case .openArticle(let url):
-                router.openInSystem(url)
+                router.routeTo(.article(url))
             case .openSite:
-                router.openInSystem(interactor.domain.item.url)
+                router.routeTo(.article(interactor.domain.item.url))
             }
         }
 

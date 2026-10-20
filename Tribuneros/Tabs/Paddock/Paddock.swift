@@ -106,6 +106,14 @@ extension Paddock {
         let name: String
         let domain: String?
 
+        // Cloudflare blocks the app from these sites' feeds, so their circle opens the site itself.
+        private static let webOnlyHosts: Set<String> = ["ciclismo2005.com"]
+
+        var opensInWebView: Bool {
+            let host = url.host()?.lowercased() ?? ""
+            return Self.webOnlyHosts.contains(host.hasPrefix("www.") ? String(host.dropFirst(4)) : host)
+        }
+
         /// "Escape Collective" → "EC", "cyclingnews.com" → "CY": the press circle's stand-in logo.
         var monogram: String {
             // A bare domain ("cyclingnews.com") is one word: its site name, without the TLD.

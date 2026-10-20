@@ -115,14 +115,6 @@ extension Paddock {
                     color: .tribuneru(.kitAvatarText),
                     lineLimit: 1
                 )
-                if let domain = item.domain {
-                    TribuneruText(
-                        content: domain,
-                        style: .vaporMonoMeta,
-                        color: .tribuneru(.kitTextSecondary),
-                        lineLimit: 1
-                    )
-                }
             }
             .frame(width: Sizes.width)
             .contentShape(Rectangle())

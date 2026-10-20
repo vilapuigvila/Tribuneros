@@ -1,0 +1,57 @@
+# CX Zone series chip and the All races filter stay in step both ways: All races opens on the
+# chip picked on CX Zone, and a series picked in All races is selected (and scrolled into view)
+# back on CX Zone. Mock data (mock scenario live): no network.
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- tapOn: "CX Zone"
+- extendedWaitUntil:
+    visible: "NEXT ROUND"
+    timeout: 45000
+
+# CX Zone Superprestige -> All races on Superprestige -> back keeps Superprestige
+- tapOn:
+    id: "cx.series.superprestige"
+- scrollUntilVisible:
+    element: "Calendar"
+- tapOn: "Calendar"
+- assertVisible: "All races"
+- assertVisible: "\\d\\d-\\d\\d-\\d{4}, Superprestige Niel.*"
+- assertNotVisible: "\\d\\d-\\d\\d-\\d{4}, .*World Cup.*"
+- tapOn:
+    id: "BackButton"
+- scrollUntilVisible:
+    element:
+      id: "cx.series.superprestige"
+    direction: UP
+- assertVisible:
+    id: "cx.series.superprestige"
+    selected: true
+
+# All races "Others" -> back: CX Zone shows Others, selected and in view
+- scrollUntilVisible:
+    element: "Calendar"
+- tapOn: "Calendar"
+- assertVisible: "All races"
+- swipe:
+    start: 90%, 23%
+    end: 5%, 23%
+- swipe:
+    start: 90%, 23%
+    end: 5%, 23%
+- tapOn: "OTHERS, \\d+"
+- assertNotVisible: "\\d\\d-\\d\\d-\\d{4}, Superprestige.*"
+- tapOn:
+    id: "BackButton"
+- scrollUntilVisible:
+    element:
+      id: "cx.series.others"
+    direction: UP
+- assertVisible:
+    id: "cx.series.others"
+    selected: true

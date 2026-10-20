@@ -182,7 +182,7 @@ final class PaddockNativePagesTests: XCTestCase {
         }
     }
 
-    func testHeadlineAndOpenSiteHandOffToTheSystem() {
+    func testHeadlineOpensInTheInAppReader() {
         let router = Router()
         var opened: [URL] = []
         router.openExternally = { opened.append($0) }
@@ -193,11 +193,44 @@ final class PaddockNativePagesTests: XCTestCase {
         let url = URL(string: "https://www.escapecollective.com/story")!
 
         viewModel.action(.openArticle(url))
+
+        XCTAssertEqual(router.webPage?.url, url)
+        XCTAssertEqual(router.webPage?.prefersReader, true)
+        XCTAssertTrue(opened.isEmpty)
+        XCTAssertEqual(router.navPath.count, 0)
+    }
+
+    func testOpenSiteOpensTheSiteInTheInAppReader() {
+        let router = Router()
+        var opened: [URL] = []
+        router.openExternally = { opened.append($0) }
+        let viewModel = pressViewModel(
+            router: router,
+            feed: nil
+        )
+
         viewModel.action(.openSite)
 
-        XCTAssertEqual(opened, [url, press.url])
-        XCTAssertNil(router.webPage)
+        XCTAssertEqual(router.webPage?.url, press.url)
+        XCTAssertTrue(opened.isEmpty)
+    }
+
+    func testWebOnlyPressCircleOpensTheSiteDirectly() {
+        let router = Router()
+        let viewModel = paddockViewModel(router: router)
+        let ciclismo = Paddock.PressItem(
+            url: URL(string: "https://www.ciclismo2005.com")!,
+            name: "Ciclismo 2005",
+            domain: "ciclismo2005.com"
+        )
+
+        viewModel.action(.didTapOnPress(ciclismo))
+
+        XCTAssertEqual(router.webPage?.url, ciclismo.url)
+        XCTAssertEqual(router.webPage?.prefersReader, true)
         XCTAssertEqual(router.navPath.count, 0)
+        XCTAssertTrue(ciclismo.opensInWebView)
+        XCTAssertFalse(press.opensInWebView)
     }
 
     // MARK: - Rider sections

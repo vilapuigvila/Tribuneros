@@ -22,14 +22,19 @@ tags:
 - extendedWaitUntil:
     visible: "MOCK Escape Collective headline 1"
     timeout: 45000
-# A headline leaves the app (system browser); coming back shows no in-app sheet and still Paddock.
+# A headline opens in the in-app reader sheet, over the headlines screen.
 - tapOn:
     id: "paddock.press.article.0"
-- launchApp:
-    stopApp: false
-- assertNotVisible: "Done"
-- assertVisible:
-    id: "paddock.press.header"
+- extendedWaitUntil:
+    notVisible:
+      id: "paddock.press.header"
+    timeout: 20000
+- tapOn:
+    id: "Close"
+- extendedWaitUntil:
+    visible:
+      id: "paddock.press.header"
+    timeout: 20000
 - swipe:
     start: 1%, 50%
     end: 70%, 50%
@@ -45,6 +50,24 @@ tags:
 - swipe:
     start: 1%, 50%
     end: 70%, 50%
+# A site whose feed Cloudflare blocks opens straight in the in-app reader, with no headlines screen.
+# The fourth circle starts past the screen edge: swipe the press strip itself.
+- swipe:
+    start: 85%, 27%
+    end: 15%, 27%
+- tapOn:
+    id: "paddock.press.ciclismo2005.com"
+- extendedWaitUntil:
+    visible:
+      id: "Close"
+    timeout: 20000
+- assertNotVisible:
+    id: "paddock.press.header"
+- tapOn:
+    id: "Close"
+- extendedWaitUntil:
+    visible: "Birthdays today"
+    timeout: 20000
 # A Moves card opens the rider screen with the PCS sections.
 - scrollUntilVisible:
     element: "TRANSFER,.*"

@@ -18,6 +18,8 @@ struct CXAllRacesView: View {
     
     let events: [DTO.CXCalendarEvent]
     let action: (DTO.CXCalendarEvent) -> Void
+    /// Reports a picked series back to the CX Zone page; `nil` is "All".
+    let onSeriesChange: (CXRaces.RaceSeries?) -> Void
     /// `nil` shows every race.
     @State private var selectedSeries: CXRaces.RaceSeries?
     @State private var searchText = ""
@@ -29,9 +31,11 @@ struct CXAllRacesView: View {
     init(
         events: [DTO.CXCalendarEvent],
         initialSeries: CXRaces.RaceSeries? = nil,
+        onSeriesChange: @escaping (CXRaces.RaceSeries?) -> Void = { _ in },
         action: @escaping (DTO.CXCalendarEvent) -> Void
     ) {
         self.events = events
+        self.onSeriesChange = onSeriesChange
         self.action = action
         // No chip for the series (not in this season's events): start on "All".
         let hasChip = initialSeries.map { series in events.contains { $0.series == series } } ?? false
@@ -233,6 +237,7 @@ struct CXAllRacesView: View {
                 }
             }
             .onChange(of: selectedSeries) {
+                onSeriesChange(selectedSeries)
                 withAnimation {
                     chipProxy.scrollTo(selectedSeries?.id ?? UI.allChipID, anchor: .center)
                 }

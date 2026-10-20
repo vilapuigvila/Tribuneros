@@ -60,7 +60,8 @@ enum PaddockMock {
     static let pressLinks: [DTO.PressLink] = [
         DTO.PressLink(name: "Cycling News", url: URL(string: "https://www.cyclingnews.com")!),
         DTO.PressLink(name: "Escape Collective", url: URL(string: "https://escapecollective.com")!),
-        DTO.PressLink(name: "Joan Seguidor", url: URL(string: "https://joanseguidor.com")!)
+        DTO.PressLink(name: "Joan Seguidor", url: URL(string: "https://joanseguidor.com")!),
+        DTO.PressLink(name: "Ciclismo 2005", url: URL(string: "https://ciclismo2005.com")!)
     ]
 
     /// Any rider URL gets a page named after its slug.

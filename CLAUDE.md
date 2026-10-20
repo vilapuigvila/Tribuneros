@@ -142,10 +142,12 @@ bot challenge: Node/curl requests get HTTP 403 with a "Just a moment..." page, w
   `/feed/`, `/rss/` and `/sitemap/news.xml`; `parsePressFeed` (Foundation `XMLParser`) reads RSS 2.0, Atom and Google
   News sitemaps (cyclinguptodate and ciclismoaldia serve RSS 2.0 at `/sitemap/news.xml`, ~1 MB), newest first, at
   most 30, nil when empty. Requests use a 30 min TTL. Summary-only: title, date, image and the feed's own summary
-  (tags stripped, cut near 240 characters); a headline and the empty state's "Open site" leave through
-  `Router.openInSystem`. ciclismo2005.com is behind Cloudflare even for `URLSession`, so it always shows the empty
-  state. Mock: `PaddockMock.pressFeed(for:)` gives 8 headlines for the cyclingnews and escapecollective hosts and nil
-  (empty state) for others; `PaddockMock.riderPage(url:)` fills every rider section.
+  (tags stripped, cut near 240 characters); a headline and the empty state's "Open site" open in the in-app Safari
+  Reader sheet (`.article(url)`). ciclismo2005.com is behind Cloudflare even for `URLSession`, so its circle skips the
+  Press screen and opens the site in that sheet directly (`PressItem.opensInWebView`, host list `webOnlyHosts`). Mock:
+  the press list adds "Ciclismo 2005" as a fourth circle; `PaddockMock.pressFeed(for:)` gives 8 headlines for the
+  cyclingnews and escapecollective hosts and nil (empty state) for others; `PaddockMock.riderPage(url:)` fills every
+  rider section.
 
 **The Today Races screen** (`HomeRaces.MainView`) is one scroll: a header (bicycle, "Races", the
 date; the navigation bar is hidden on this root and `StatusBarScrim` fades content under the status
@@ -191,7 +193,7 @@ browser User-Agent, so `CachedImageView` adds both for PCS URLs (`Service.addPCS
 **The Paddock screen** (`Paddock.MainView`, `Paddock.Subviews.swift`) is the "Kit" look (`kit*` tokens in
 `Color.Palette`; Vapor type styles), navigation bar hidden like Today Races: a header (megaphone, "Paddock", the date),
 the press sites as 92pt circles (`PressStrip`, monogram from `PressItem.monogram`; three in view and the edge of a
-fourth; each opens the Press screen), a "Birthdays today" card (rows open the rider screen) over `PaddockBirthdayArt` (`ViewState.birthdays`, every birthday event; hidden
+fourth; each opens the Press screen, except web-only hosts, which open the site in the in-app reader), a "Birthdays today" card (rows open the rider screen) over `PaddockBirthdayArt` (`ViewState.birthdays`, every birthday event; hidden
 when none), then **Moves**: a Transfers | Programs segmented control (`Paddock.Segment`, stored as `Domain.filter`,
 default `.transfers`; `.all` / `.birthdays` still exist for the feed mapping and fall back to Transfers) with counts
 (`ViewState.transferCount` / `programCount`) over a timeline of that kind's cards, grouped by day on a time rail.

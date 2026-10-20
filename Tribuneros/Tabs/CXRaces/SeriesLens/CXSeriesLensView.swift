@@ -25,7 +25,7 @@ extension CXRaces {
     /// and the rounds still to come.
     struct SeriesLensView: View {
         @Environment(\.safeAreaInsets) private var safeAreaInsets
-        @State private var selectedSeries: RaceSeries?
+        @Binding var selectedSeries: RaceSeries?
 
         let representable: Representable
         let action: (CXRaces.Action) -> Void
@@ -122,44 +122,58 @@ extension CXRaces {
         }
 
         private var chips: some View {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(availableSeries) { chip in
-                        let isSelected = chip == series
-                        Button {
-                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                            selectedSeries = chip
-                        } label: {
-                            TribuneruText(
-                                content: chip.title,
-                                style: .vaporLink,
-                                color: .tribuneru(isSelected ? .mudAccent : .mudTextMuted),
-                                lineLimit: 1
-                            )
-                            .padding(.horizontal, 16)
-                            .frame(minHeight: 40)
-                            .background(
-                                Capsule().fill(
-                                    isSelected
-                                        ? Color.tribuneru(.mudAccent).opacity(0.14)
-                                        : Color.tribuneru(.mudCardSurface)
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(availableSeries) { chip in
+                            let isSelected = chip == series
+                            Button {
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                selectedSeries = chip
+                            } label: {
+                                TribuneruText(
+                                    content: chip.title,
+                                    style: .vaporLink,
+                                    color: .tribuneru(isSelected ? .mudAccent : .mudTextMuted),
+                                    lineLimit: 1
                                 )
-                            )
-                            .overlay(
-                                Capsule().strokeBorder(
-                                    isSelected
-                                        ? Color.tribuneru(.mudAccent).opacity(0.4)
-                                        : Color.tribuneru(.mudTextPrimary).opacity(0.08),
-                                    lineWidth: 1
+                                .padding(.horizontal, 16)
+                                .frame(minHeight: 40)
+                                .background(
+                                    Capsule().fill(
+                                        isSelected
+                                            ? Color.tribuneru(.mudAccent).opacity(0.14)
+                                            : Color.tribuneru(.mudCardSurface)
+                                    )
                                 )
-                            )
+                                .overlay(
+                                    Capsule().strokeBorder(
+                                        isSelected
+                                            ? Color.tribuneru(.mudAccent).opacity(0.4)
+                                            : Color.tribuneru(.mudTextPrimary).opacity(0.08),
+                                        lineWidth: 1
+                                    )
+                                )
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityAddTraits(isSelected ? .isSelected : [])
+                            .accessibilityIdentifier("cx.series.\(chip.rawValue)")
+                            .id(chip.id)
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityAddTraits(isSelected ? .isSelected : [])
-                        .accessibilityIdentifier("cx.series.\(chip.rawValue)")
+                    }
+                    .padding(.horizontal, 16)
+                }
+                .onAppear {
+                    // Wait one runloop so the chips are laid out before centering.
+                    DispatchQueue.main.async {
+                        proxy.scrollTo(series?.id, anchor: .center)
                     }
                 }
-                .padding(.horizontal, 16)
+                .onChange(of: series) {
+                    withAnimation {
+                        proxy.scrollTo(series?.id, anchor: .center)
+                    }
+                }
             }
             .padding(.horizontal, -16)
             .accessibilityLabel(L10n.tr("Series"))

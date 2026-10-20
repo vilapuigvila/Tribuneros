@@ -47,7 +47,7 @@ extension Paddock {
             case .didSelectFilter(let filter):
                 interactor.useCase(.selectFilter(filter))
             case .didTapOnPress(let item):
-                router.routeTo(.paddockPress(item))
+                router.routeTo(item.opensInWebView ? .article(item.url) : .paddockPress(item))
             case .didTapOnRider(let context):
                 router.routeTo(.paddockRider(context))
             case .didTapOnSeasonResults(let context):
