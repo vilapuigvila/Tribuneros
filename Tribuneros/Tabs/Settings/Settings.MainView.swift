@@ -230,43 +230,52 @@ private struct HideResultsTile: View {
                 HStack {
                     Image(systemName: "eye.slash")
                         .font(.system(size: 22, weight: .regular))
-                        .foregroundColor(isOn ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary))
+                        .animation(Settings.SpoilerModePreview.switchAnimation) {
+                            $0.foregroundColor(isOn ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary))
+                        }
                     Spacer(minLength: 8)
-                    TribuneruText(
-                        content: isOn ? L10n.tr("ON") : L10n.tr("OFF"),
-                        style: .vaporSpoilerChip,
-                        color: isOn ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary),
-                        lineLimit: 1
-                    )
+                    HideResultsSwitch(isOn: isOn)
                 }
-                VStack(alignment: .leading, spacing: 4) {
-                    TribuneruText(
-                        content: L10n.tr("Hide results"),
-                        style: .vaporBannerTitle,
-                        color: .tribuneru(.vaporTextPrimary),
-                        lineLimit: 1
-                    )
-                    TribuneruText(
-                        content: isOn
-                            ? L10n.tr("Results stay hidden until you press and hold them.")
-                            : L10n.tr("Results are shown as soon as you open the app."),
-                        style: .vaporRowMeta,
-                        color: .tribuneru(.vaporTextMuted),
-                        lineLimit: 3
-                    )
-                    .multilineTextAlignment(.leading)
+                HStack(alignment: .bottom, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        TribuneruText(
+                            content: L10n.tr("Hide results"),
+                            style: .vaporBannerTitle,
+                            color: .tribuneru(.vaporTextPrimary),
+                            lineLimit: 1
+                        )
+                        TribuneruText(
+                            content: isOn
+                                ? L10n.tr("Results stay hidden until you press and hold them.")
+                                : L10n.tr("Results are shown as soon as you open the app."),
+                            style: .vaporRowMeta,
+                            color: .tribuneru(.vaporTextMuted),
+                            lineLimit: 3
+                        )
+                        .multilineTextAlignment(.leading)
+                        .contentTransition(.opacity)
+                        .animation(
+                            Settings.SpoilerModePreview.switchAnimation,
+                            value: isOn
+                        )
+                    }
+                    Spacer(minLength: 0)
+                    Settings.SpoilerModePreview(isOn: isOn)
+                        .accessibilityIdentifier("settings.hideResults.preview")
                 }
             }
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .settingsCard(
-                fill: isOn
-                    ? Color.tribuneru(.vaporAccent).opacity(0.12)
-                    : .tribuneru(.vaporCardSurface),
-                border: isOn
-                    ? Color.tribuneru(.vaporAccent).opacity(0.4)
-                    : Color.tribuneru(.vaporTextPrimary).opacity(0.08)
-            )
+            .animation(Settings.SpoilerModePreview.switchAnimation) {
+                $0.settingsCard(
+                    fill: isOn
+                        ? Color.tribuneru(.vaporAccent).opacity(0.12)
+                        : .tribuneru(.vaporCardSurface),
+                    border: isOn
+                        ? Color.tribuneru(.vaporAccent).opacity(0.4)
+                        : Color.tribuneru(.vaporTextPrimary).opacity(0.08)
+                )
+            }
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -275,6 +284,52 @@ private struct HideResultsTile: View {
         .accessibilityValue(isOn ? L10n.tr("ON") : L10n.tr("OFF"))
         .accessibilityAddTraits([.isButton, .isToggle])
         .accessibilityIdentifier("settings.hideResults")
+    }
+}
+
+/// The tile's switch: the knob slides in step with the preview changing mode.
+private struct HideResultsSwitch: View {
+    private static let knob: CGFloat = 22
+    private static let inset: CGFloat = 3
+
+    let isOn: Bool
+
+    var body: some View {
+        TribuneruText(
+            content: isOn ? L10n.tr("ON") : L10n.tr("OFF"),
+            style: .vaporSpoilerChip,
+            color: isOn ? .tribuneru(.vaporPageBackground) : .tribuneru(.vaporTextSecondary),
+            lineLimit: 1
+        )
+        .fixedSize()
+        .padding(.leading, isOn ? 11 : Self.knob + Self.inset + 7)
+        .padding(.trailing, isOn ? Self.knob + Self.inset + 7 : 11)
+        .frame(
+            minWidth: 66,
+            minHeight: Self.knob + 2 * Self.inset
+        )
+        .background(
+            Color.tribuneru(isOn ? .vaporAccent : .vaporTagNeutral),
+            in: Capsule()
+        )
+        .overlay(alignment: isOn ? .trailing : .leading) {
+            Circle()
+                .fill(Color.tribuneru(isOn ? .vaporTextPrimary : .vaporTextSecondary))
+                .shadow(
+                    color: .tribuneru(.vaporPageBackground).opacity(0.35),
+                    radius: 1.5,
+                    y: 1
+                )
+                .frame(
+                    width: Self.knob,
+                    height: Self.knob
+                )
+                .padding(Self.inset)
+        }
+        .animation(
+            Settings.SpoilerModePreview.switchAnimation,
+            value: isOn
+        )
     }
 }
 

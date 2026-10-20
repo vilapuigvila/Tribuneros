@@ -1,5 +1,5 @@
 # Settings tab (Debug build, mocked launch): the tiles, the on-demand onboarding replay (shows even
-# though mocked launches skip it), the Hide results tile and the Language sheet with "System default" selected.
+# though mocked launches skip it), the Hide results tile and its preview, and the Language sheet with "System default" selected.
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -74,10 +74,27 @@ tags:
     id: "settings.language.system"
 - assertVisible:
     id: "settings.onboarding"
-# The Hide results tile flips in place.
+# The Hide results tile flips in place (switch and preview animate together), its preview showing the current mode.
 - assertVisible:
     id: "settings.hideResults"
+    text: "ON"
+- assertVisible:
+    id: "settings.hideResults.preview"
 - assertVisible: "Results stay hidden until you press and hold them."
 - tapOn:
     id: "settings.hideResults"
+- assertVisible:
+    id: "settings.hideResults"
+    text: "OFF"
+- assertVisible:
+    id: "settings.hideResults.preview"
 - assertVisible: "Results are shown as soon as you open the app."
+# Flipping back to ON replays the preview's loops.
+- tapOn:
+    id: "settings.hideResults"
+- assertVisible:
+    id: "settings.hideResults"
+    text: "ON"
+- assertVisible:
+    id: "settings.hideResults.preview"
+- assertVisible: "Results stay hidden until you press and hold them."
