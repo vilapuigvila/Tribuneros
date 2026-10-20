@@ -180,6 +180,16 @@
     "ca": "En directe",
     "eu": "Zuzenean"
   },
+  "Live updates on": {
+    "ca": "Actualitzacions en directe actives",
+    "eu": "Zuzeneko eguneraketak aktibatuta",
+    "comment": "VoiceOver label of the live race polling dot while it refreshes"
+  },
+  "Live updates paused": {
+    "ca": "Actualitzacions en directe en pausa",
+    "eu": "Zuzeneko eguneraketak pausatuta",
+    "comment": "VoiceOver label of the live race polling dot once polling has stopped"
+  },
   "Loading": {
     "ca": "S’està carregant",
     "eu": "Kargatzen"

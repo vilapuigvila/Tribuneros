@@ -772,7 +772,7 @@ private struct LiveRacePollingDot: View {
                 updatePulse()
             }
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(isPolling ? "Live updates on" : "Live updates paused")
+            .accessibilityLabel(isPolling ? L10n.tr("Live updates on") : L10n.tr("Live updates paused"))
             .accessibilityIdentifier("liveRace.pollingDot")
     }
 

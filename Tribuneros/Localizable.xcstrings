@@ -1584,6 +1584,42 @@
         }
       }
     },
+    "Live updates on" : {
+      "comment" : "VoiceOver label of the live race polling dot while it refreshes",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualitzacions en directe actives"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zuzeneko eguneraketak aktibatuta"
+          }
+        }
+      }
+    },
+    "Live updates paused" : {
+      "comment" : "VoiceOver label of the live race polling dot once polling has stopped",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualitzacions en directe en pausa"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zuzeneko eguneraketak pausatuta"
+          }
+        }
+      }
+    },
     "Loading" : {
       "extractionState" : "manual",
       "localizations" : {
