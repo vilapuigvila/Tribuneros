@@ -24,7 +24,19 @@ struct CXAllRacesView: View {
     @State private var showTodayButton = false
     @State private var isScrolling = false
     @State private var scrollTimer: Timer?
-    
+
+    init(
+        events: [DTO.CXCalendarEvent],
+        initialSeries: CXRaces.RaceSeries? = nil,
+        action: @escaping (DTO.CXCalendarEvent) -> Void
+    ) {
+        self.events = events
+        self.action = action
+        // No chip for the series (not in this season's events): start on "All".
+        let hasChip = initialSeries.map { series in events.contains { $0.series == series } } ?? false
+        _selectedSeries = State(initialValue: hasChip ? initialSeries : nil)
+    }
+
     var body: some View {
         ScrollViewReader { proxy in
             ZStack(alignment: .bottomTrailing) {

@@ -19,6 +19,7 @@ tags:
     element: "Calendar"
 - tapOn: "Calendar"
 - assertVisible: "All races"
+- tapOn: "ALL,? ?\\d+"
 - tapOn: "Race, country, winner..."
 - inputText: "Kleeberg"
 - tapOn: "Kleeberg Cross Mechelen.*"

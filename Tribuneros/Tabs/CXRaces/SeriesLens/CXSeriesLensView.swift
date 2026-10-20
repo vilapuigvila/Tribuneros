@@ -74,7 +74,7 @@ extension CXRaces {
                             RoundsLeftSection(
                                 rounds: lens.roundsLeft,
                                 open: { action(.didTapOnCalendarEvent($0)) },
-                                openCalendar: { action(.didTapOnNextRaces) }
+                                openCalendar: { action(.didTapOnNextRaces(series: series)) }
                             )
                         }
                     } else {

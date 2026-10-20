@@ -13,7 +13,7 @@ enum CXRaces { }
 extension CXRaces {
     enum Action {
         case didAppeared
-        case didTapOnNextRaces
+        case didTapOnNextRaces(series: CXRaces.RaceSeries?)
         case didTapOnLatestResults
         case didTapOnCalendarEvent(DTO.CXCalendarEvent)
         /// A third-party link (broadcaster, organiser, YouTube): handed to the system, not shown in the app.

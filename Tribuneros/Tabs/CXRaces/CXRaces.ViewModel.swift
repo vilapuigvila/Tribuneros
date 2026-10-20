@@ -38,8 +38,8 @@ extension CXRaces {
             switch action {
             case .didAppeared:
                 interactor.useCase(.request)
-            case .didTapOnNextRaces:
-                router.routeTo(.cxZone(.allRaces))
+            case .didTapOnNextRaces(let series):
+                router.routeTo(.cxZone(.allRaces(series: series)))
             case .didTapOnLatestResults:
                 router.routeTo(.cxZone(.latestResults))
             case .didTapOnCalendarEvent(let event):

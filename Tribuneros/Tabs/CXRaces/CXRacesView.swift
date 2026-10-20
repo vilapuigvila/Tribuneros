@@ -22,8 +22,11 @@ struct CXRacesRacesView: View {
         .navigationDestination(for: Router.Destination.self) { destination in
             let _ = print("avvp [Navigation] - \(destination)")
             switch destination {
-            case .cxZone(.allRaces):
-                CXAllRacesView(events: viewModel.stateView.result.calendarEvents) { event in
+            case .cxZone(.allRaces(let series)):
+                CXAllRacesView(
+                    events: viewModel.stateView.result.calendarEvents,
+                    initialSeries: series
+                ) { event in
                     viewModel.action(.didTapOnCalendarEvent(event))
                 }
                 .navigationTitle(L10n.tr("All races"))

@@ -56,6 +56,10 @@ tags:
     element: "Calendar"
 - tapOn: "Calendar"
 - assertVisible: "All races"
+# Opens on the series chosen on CX Zone (Superprestige): its rounds show, other series' don't
+- assertVisible: ".*Superprestige Niel.*"
+- assertNotVisible: ".*World Cup Namur.*"
+- tapOn: "ALL,? ?\\d+"
 - tapOn: "Race, country, winner..."
 - inputText: "Kleeberg"
 - tapOn: "Kleeberg Cross Mechelen.*"
