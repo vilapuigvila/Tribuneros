@@ -1,0 +1,56 @@
+# Race info that can't be shown: an error message appears over the screen and goes away by itself
+# (~2.5 s). Mock data: in mockScenario "later" the hero is Chrono des Nations; mockRaceInfo makes its
+# race info throw ("error") or come back empty ("blank").
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: later
+      mockRaceInfo: error
+- extendedWaitUntil:
+    visible:
+      id: "home.today.hero"
+    timeout: 20000
+- tapOn:
+    id: "home.today.hero"
+- extendedWaitUntil:
+    visible:
+      id: "errorFlash"
+    timeout: 10000
+- assertVisible:
+    id: "errorFlash"
+    text: ".*Couldn.t load the race info.*"
+- extendedWaitUntil:
+    notVisible:
+      id: "errorFlash"
+    timeout: 4000
+- assertNotVisible:
+    id: "errorFlash"
+
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: later
+      mockRaceInfo: blank
+- extendedWaitUntil:
+    visible:
+      id: "home.today.hero"
+    timeout: 20000
+- tapOn:
+    id: "home.today.hero"
+- extendedWaitUntil:
+    visible:
+      id: "errorFlash"
+    timeout: 10000
+- assertVisible:
+    id: "errorFlash"
+- extendedWaitUntil:
+    notVisible:
+      id: "errorFlash"
+    timeout: 4000
+- assertNotVisible:
+    id: "errorFlash"

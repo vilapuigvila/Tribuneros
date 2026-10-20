@@ -36,9 +36,14 @@ struct NextToFinishRaceDetail: View {
     // The profile images download after the race info is in, so their placeholder stays until they are.
     @State private var isLoadingImages = true
     @State private var errorMessage: String?
+    @State private var flashMessage: String?
     @State private var webPage: WebPage?
     @State private var coverage: HomeRaces.WhereToWatch.Coverage?
     @State private var isCoverageLoaded = false
+
+    private static var loadFailureMessage: String {
+        L10n.tr("Couldn’t load the race info. Check your connection and try again.")
+    }
 
     private static let whereToWatchURL = URL(string: "https://coursedujour.com/")!
 
@@ -83,13 +88,19 @@ struct NextToFinishRaceDetail: View {
                 async let stageProfileTask = Service.getInfoProfiles(urlInfo)
 
                 let (info, stageProfile) = try await (raceInfoTask, stageProfileTask)
-                raceInfo = info
+                if let info, !info.isBlank {
+                    raceInfo = info
+                } else {
+                    raceInfo = nil
+                    flashMessage = Self.loadFailureMessage
+                }
                 isLoading = false
 
                 await downloadProfileImages(stageProfile)
                 isLoadingImages = false
             } catch {
-                errorMessage = L10n.tr("Couldn’t load the race info. Check your connection and try again.")
+                errorMessage = Self.loadFailureMessage
+                flashMessage = Self.loadFailureMessage
                 isLoading = false
                 isLoadingImages = false
                 nonFatalCrashlytics(false, error.localizedDescription)
@@ -100,6 +111,7 @@ struct NextToFinishRaceDetail: View {
             coverage = await Service.getCourseDuJourCoverage(for: watchKey)
             isCoverageLoaded = true
         }
+        .errorFlash(message: $flashMessage)
         .sheet(isPresented: $showZoom) { zoomSheet }
         .webPage($webPage)
     }
