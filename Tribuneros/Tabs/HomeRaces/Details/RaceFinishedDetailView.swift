@@ -40,7 +40,10 @@ struct RaceFinishedDetailView: View {
         let state = viewModel.stateView
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                header(state)
+                RaceDetailHero(
+                    title: state.title,
+                    subtitle: state.subtitle
+                )
 
                 if let imageURL = state.winnerImgURL {
                     CachedImageView(
@@ -76,7 +79,7 @@ struct RaceFinishedDetailView: View {
                 }
             }
             .padding(16)
-            .padding(.bottom, 24)
+            .padding(.bottom, 48)
         }
         .background(Color.tribuneru(.vaporPageBackground))
         .preferredColorScheme(.dark)
@@ -87,29 +90,66 @@ struct RaceFinishedDetailView: View {
         }
     }
 
-    private func header(_ state: RaceResult.ViewState) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            TribuneruText(
-                content: state.title,
-                style: .vaporHeading,
-                color: .tribuneru(.vaporTextPrimary),
-                lineLimit: 3
-            )
-            .accessibilityAddTraits(.isHeader)
+}
 
-            if !state.subtitle.isEmpty {
+// MARK: - Hero -
+
+struct RaceDetailHero<Accessory: View>: View {
+    let title: String
+    let subtitle: String
+    var art: RaceArt = .day
+    var titleIdentifier: String? = nil
+    @ViewBuilder var accessory: () -> Accessory
+
+    var body: some View {
+        ZStack(alignment: .bottomLeading) {
+            RaceArtView(art: art)
+            ImageScrim()
+            VStack(alignment: .leading, spacing: 6) {
+                accessory()
+                Spacer(minLength: 0)
                 TribuneruText(
-                    content: state.subtitle,
-                    style: .vaporRowMeta,
-                    color: .tribuneru(.vaporTextSecondary),
-                    lineLimit: 2
+                    content: title,
+                    style: .vaporHeroTitle,
+                    color: .tribuneru(.vaporTextPrimary),
+                    lineLimit: 3
                 )
+                .artTitleShadow()
+                .accessibilityAddTraits(.isHeader)
+                .accessibilityIdentifier(titleIdentifier ?? "raceDetail.title")
+                if !subtitle.isEmpty {
+                    TribuneruText(
+                        content: subtitle,
+                        style: .vaporHeroSubtitle,
+                        color: Color.tribuneru(.vaporTextPrimary).opacity(0.88),
+                        lineLimit: 2
+                    )
+                }
             }
+            .frame(
+                maxWidth: .infinity,
+                alignment: .leading
+            )
+            .padding(14)
         }
-        .frame(
-            maxWidth: .infinity,
-            alignment: .leading
-        )
+        .frame(height: 200)
+        .homeCard()
+    }
+}
+
+extension RaceDetailHero where Accessory == EmptyView {
+    init(
+        title: String,
+        subtitle: String,
+        art: RaceArt = .day,
+        titleIdentifier: String? = nil
+    ) {
+        self.init(
+            title: title,
+            subtitle: subtitle,
+            art: art,
+            titleIdentifier: titleIdentifier
+        ) { EmptyView() }
     }
 }
 

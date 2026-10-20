@@ -36,7 +36,11 @@ struct RacePreviewDetailView: View {
         let state = viewModel.stateView
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                header(state)
+                RaceDetailHero(
+                    title: state.title,
+                    subtitle: state.subtitle,
+                    titleIdentifier: "previewDetail.title"
+                )
                 content(state.body)
                 if state.pcsURL != nil {
                     Button {
@@ -50,7 +54,7 @@ struct RacePreviewDetailView: View {
                 }
             }
             .padding(16)
-            .padding(.bottom, 24)
+            .padding(.bottom, 48)
         }
         .background(Color.tribuneru(.vaporPageBackground))
         .preferredColorScheme(.dark)
@@ -59,32 +63,6 @@ struct RacePreviewDetailView: View {
         .onAppear {
             viewModel.action(.onAppear)
         }
-    }
-
-    private func header(_ state: RacePreview.ViewState) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            TribuneruText(
-                content: state.title,
-                style: .vaporHeading,
-                color: .tribuneru(.vaporTextPrimary),
-                lineLimit: 3
-            )
-            .accessibilityAddTraits(.isHeader)
-            .accessibilityIdentifier("previewDetail.title")
-
-            if !state.subtitle.isEmpty {
-                TribuneruText(
-                    content: state.subtitle,
-                    style: .vaporRowMeta,
-                    color: .tribuneru(.vaporTextSecondary),
-                    lineLimit: 2
-                )
-            }
-        }
-        .frame(
-            maxWidth: .infinity,
-            alignment: .leading
-        )
     }
 
     @ViewBuilder
@@ -200,25 +178,40 @@ private struct PreviewSections: View {
 private struct FactCard: View {
     let fact: HomeRaces.RacePreview.ViewState.Fact
 
+    private var hasTable: Bool {
+        !fact.header.isEmpty || !fact.rows.isEmpty
+    }
+
     var body: some View {
-        VaporCard(spacing: 10) {
+        VaporCard(spacing: 0) {
             TribuneruText(
                 content: fact.text,
                 style: .vaporRowTitle,
                 color: .tribuneru(.vaporTextPrimary),
                 lineLimit: 4
             )
-            if !fact.header.isEmpty {
-                tableRow(
-                    fact.header,
-                    color: .tribuneru(.vaporTextSecondary)
-                )
-            }
-            ForEach(Array(fact.rows.enumerated()), id: \.offset) { _, row in
-                tableRow(
-                    row,
-                    color: .tribuneru(.vaporTextPrimary)
-                )
+            .frame(
+                maxWidth: .infinity,
+                alignment: .leading
+            )
+            if hasTable {
+                if !fact.header.isEmpty {
+                    tableRow(
+                        fact.header,
+                        isHeader: true
+                    )
+                    .padding(.top, 12)
+                }
+                ForEach(Array(fact.rows.enumerated()), id: \.offset) { _, row in
+                    TribunerosDivider(
+                        height: 1,
+                        color: Color.tribuneru(.vaporTextPrimary).opacity(0.08)
+                    )
+                    tableRow(
+                        row,
+                        isHeader: false
+                    )
+                }
             }
         }
         .accessibilityElement(children: .combine)
@@ -226,21 +219,22 @@ private struct FactCard: View {
 
     private func tableRow(
         _ cells: [String],
-        color: Color
+        isHeader: Bool
     ) -> some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 12) {
             ForEach(Array(cells.enumerated()), id: \.offset) { index, cell in
                 TribuneruText(
-                    content: cell,
-                    style: .vaporRowMeta,
-                    color: color,
+                    content: isHeader ? cell.uppercased(with: L10n.locale) : cell,
+                    style: isHeader ? .vaporGroupLabel : (index == 0 ? .vaporRaceNameNext : .vaporResultTime),
+                    color: isHeader ? .tribuneru(.vaporTextSecondary) : .tribuneru(.vaporTextPrimary),
                     lineLimit: 1
                 )
                 .frame(
-                    maxWidth: index == 1 ? .infinity : nil,
-                    alignment: .leading
+                    maxWidth: index == 0 ? .infinity : nil,
+                    alignment: index == 0 ? .leading : .trailing
                 )
             }
         }
+        .padding(.vertical, isHeader ? 6 : 10)
     }
 }

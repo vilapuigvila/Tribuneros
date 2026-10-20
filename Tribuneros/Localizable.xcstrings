@@ -419,24 +419,6 @@
         }
       }
     },
-    "ACKNOWLEDGEMENTS" : {
-      "comment" : "Acknowledgements screen navigation title",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AGRAÏMENTS"
-          }
-        },
-        "eu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AITORPENAK"
-          }
-        }
-      }
-    },
     "About" : {
       "comment" : "Race detail panel header for the summary",
       "extractionState" : "manual",
@@ -2090,24 +2072,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ez da kategoriarik aurkitu sailkapen honetarako."
-          }
-        }
-      }
-    },
-    "No categories found." : {
-      "comment" : "Standings card without categories",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No s’han trobat categories."
-          }
-        },
-        "eu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ez da kategoriarik aurkitu."
           }
         }
       }

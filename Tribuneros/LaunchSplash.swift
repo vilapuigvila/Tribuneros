@@ -208,6 +208,17 @@ struct LaunchSplashView: View {
                         contentMode: .fit
                     )
                     .frame(maxWidth: 400)
+                    .overlay(alignment: .bottom) {
+                        LinearGradient(
+                            colors: [
+                                Color.tribuneru(.vaporPageBackground).opacity(0),
+                                Color.tribuneru(.vaporPageBackground)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .frame(height: 90)
+                    }
                     .accessibilityHidden(true)
                 TribuneruText(
                     content: LaunchSplash.title,

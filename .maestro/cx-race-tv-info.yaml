@@ -10,13 +10,11 @@ tags:
       mockScenario: live
 - tapOn: "CX Zone"
 - extendedWaitUntil:
-    visible: "Latest results"
+    visible: "NEXT ROUND"
     timeout: 45000
 - scrollUntilVisible:
-    element: "more info"
-- tapOn:
-    text: "more info"
-    below: "Next races"
+    element: "Calendar"
+- tapOn: "Calendar"
 - assertVisible: "All races"
 - tapOn: "Race, country, winner..."
 - inputText: "koksijde"

@@ -14,8 +14,13 @@ tags:
     visible:
       id: "home.today.hero"
     timeout: 20000
+# The hero (CRO Race) is LIVE and opens the live race screen; race info is reached from a
+# non-live race in "See all".
 - tapOn:
-    id: "home.today.hero"
+    id: "home.today.seeAll"
+- tapOn:
+    id: "todayRaces.row.3"
+    text: ".*GP de Montréal.*"
 - extendedWaitUntil:
     visible:
       id: "raceInfo.whereToWatch"
@@ -36,11 +41,11 @@ tags:
     id: "whereToWatch.section.Road"
 - assertVisible:
     id: "whereToWatch.featured"
-    text: "CRO Race — Stage 1, 2.1 \\(Men\\)  ·  Zagreb, Croatia, live now.*"
+    text: "GP de Montréal, 1.UWT \\(Men\\)  ·  Montréal, Canada, .*"
 - assertVisible:
     id: "whereToWatch.channel.Sporza / VRT"
 - assertVisible:
-    id: "whereToWatch.race.GP de Montréal"
+    id: "whereToWatch.race.CRO Race — Stage 1"
 - assertVisible:
     id: "whereToWatch.channel.FloBikes"
 - scrollUntilVisible:

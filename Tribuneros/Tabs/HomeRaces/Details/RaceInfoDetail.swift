@@ -69,7 +69,7 @@ struct NextToFinishRaceDetail: View {
                 }
             }
             .padding()
-            .padding(.bottom, 40)
+            .padding(.bottom, 48)
         }
         .background(Color.tribuneru(.vaporPageBackground))
         .preferredColorScheme(.dark)
@@ -107,27 +107,23 @@ struct NextToFinishRaceDetail: View {
     private func infoPanel(_ info: DTO.RaceDetailInfo) -> some View {
         let items = infoItems(info)
         let tags = [info.classification, info.category].filter { !$0.isEmpty }
-        return VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: L10n.tr("Race info"))
-        } content: {
-            VStack(alignment: .leading, spacing: 12) {
+        return VStack(alignment: .leading, spacing: 20) {
+            RaceDetailHero(
+                title: info.title,
+                subtitle: ""
+            ) {
                 if !tags.isEmpty {
                     HStack(spacing: 6) {
                         ForEach(tags, id: \.self) { CXDetailTag(title: $0) }
                     }
+                    .frame(
+                        maxWidth: .infinity,
+                        alignment: .leading
+                    )
                 }
+            }
 
-                if !info.title.isEmpty {
-                    VaporCard {
-                        TribuneruText(
-                            content: info.title,
-                            style: .vaporRaceNameNext,
-                            color: .tribuneru(.vaporTextPrimary),
-                            lineLimit: 4
-                        )
-                    }
-                }
-
+            VStack(alignment: .leading, spacing: 12) {
                 if !items.isEmpty {
                     VaporCard(spacing: 0) {
                         ForEach(items) { item in
@@ -203,9 +199,7 @@ struct NextToFinishRaceDetail: View {
     }
 
     private var unavailablePanel: some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: L10n.tr("Race info"))
-        } content: {
+        VStack(alignment: .leading, spacing: 12) {
             VStack(alignment: .leading, spacing: 12) {
                 VaporCard {
                     TribuneruText(
@@ -239,9 +233,13 @@ struct NextToFinishRaceDetail: View {
     // MARK: - Profile -
 
     private var profilePanel: some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-            VaporSectionHeader(title: L10n.tr("Race profile"))
-        } content: {
+        VStack(alignment: .leading, spacing: 10) {
+            TribuneruText(
+                content: L10n.tr("Race profile"),
+                style: .vaporRowTitle,
+                color: .tribuneru(.vaporTextPrimary),
+                lineLimit: 1
+            )
             VStack(spacing: 10) {
                 ForEach(profileImages) { profile in
                     Button {
@@ -268,9 +266,13 @@ struct NextToFinishRaceDetail: View {
     }
 
     private var profilePlaceholderPanel: some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-            VaporSectionHeader(title: L10n.tr("Race profile"))
-        } content: {
+        VStack(alignment: .leading, spacing: 10) {
+            TribuneruText(
+                content: L10n.tr("Race profile"),
+                style: .vaporRowTitle,
+                color: .tribuneru(.vaporTextPrimary),
+                lineLimit: 1
+            )
             VaporCard {
                 TribuneruText(
                     content: L10n.tr("PROFILE"),
@@ -285,7 +287,7 @@ struct NextToFinishRaceDetail: View {
     }
 
     private var zoomSheet: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 Color.tribuneru(.vaporPageBackground).ignoresSafeArea()
                 TabView(selection: $zoomedImageID) {

@@ -178,7 +178,7 @@ extension Settings {
             .background(Color.tribuneru(.vaporPageBackground))
             .preferredColorScheme(.dark)
             .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle(L10n.tr("ACKNOWLEDGEMENTS"))
+            .navigationTitle(L10n.tr("Acknowledgements"))
         }
     }
 }

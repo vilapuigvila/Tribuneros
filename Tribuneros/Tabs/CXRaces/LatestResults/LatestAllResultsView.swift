@@ -14,36 +14,31 @@ struct LatestAllResultsView: View {
     let action: (DTO.CX24Homepage.Race) -> Void
     
     var body: some View {
-        List {
-            ForEach(races.sections.indices, id: \.self) { sectionIndex in
-                let section = races.sections[sectionIndex]
-                Section {
-                    ForEach(section.races.indices, id: \.self) { raceIndex in
-                        let race = section.races[raceIndex]
-                        RaceRowView(
-                            race: race,
-                            openRider: openRider
-                        )
-                            .listRowInsets(.init(top: 8, leading: 16, bottom: 8, trailing: 16))
-                            .listRowBackground(Color.clear)
-                            .onTapGesture {
-                                action(race)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 26) {
+                ForEach(races.sections.indices, id: \.self) { sectionIndex in
+                    let section = races.sections[sectionIndex]
+                    MudPanel(title: section.title) {
+                        VStack(spacing: 12) {
+                            ForEach(section.races.indices, id: \.self) { raceIndex in
+                                let race = section.races[raceIndex]
+                                RaceRowView(
+                                    race: race,
+                                    openRider: openRider
+                                )
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    action(race)
+                                }
                             }
+                        }
                     }
-                } header: {
-                    TribuneruText(
-                        content: section.title,
-                        style: .vaporSpoilerChip,
-                        color: .tribuneru(.vaporAccent)
-                    )
-                    .textCase(nil)
-                    .padding(.top, 8)
                 }
             }
+            .padding()
+            .padding(.bottom, 40)
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-        .background(Color.tribuneru(.vaporPageBackground))
+        .background(Color.tribuneru(.mudPageBackground))
         .preferredColorScheme(.dark)
     }
 }
@@ -53,29 +48,30 @@ private struct RaceRowView: View {
     let openRider: (CXRaces.RiderPodium) -> Void
 
     var body: some View {
-        VaporCard {
+        MudCardBox(spacing: 12) {
             HStack(spacing: 10) {
                 VaporFlagView(url: race.countryFlagURL)
 
                 TribuneruText(
                     content: race.title,
                     style: .vaporRaceNameNext,
-                    color: .tribuneru(.vaporTextPrimary),
+                    color: .tribuneru(.mudTextPrimary),
                     lineLimit: 2
                 )
 
                 Spacer(minLength: 0)
             }
+            .padding(.top, 6)
 
             HStack(spacing: 10) {
                 HStack(spacing: 6) {
                     Image(systemName: "calendar")
                         .font(.system(size: 11, weight: .regular))
-                        .foregroundColor(.tribuneru(.vaporTextSecondary))
+                        .foregroundColor(.tribuneru(.mudTextSecondary))
                     TribuneruText(
                         content: race.date,
                         style: .vaporMeta,
-                        color: .tribuneru(.vaporTextSecondary),
+                        color: .tribuneru(.mudTextSecondary),
                         lineLimit: 1
                     )
                 }
@@ -83,11 +79,11 @@ private struct RaceRowView: View {
                 HStack(spacing: 6) {
                     Image(systemName: "mappin.and.ellipse")
                         .font(.system(size: 11, weight: .regular))
-                        .foregroundColor(.tribuneru(.vaporTextSecondary))
+                        .foregroundColor(.tribuneru(.mudTextSecondary))
                     TribuneruText(
                         content: race.location,
                         style: .vaporMeta,
-                        color: .tribuneru(.vaporTextSecondary),
+                        color: .tribuneru(.mudTextSecondary),
                         lineLimit: 1
                     )
                 }
@@ -109,6 +105,7 @@ private struct RaceRowView: View {
                     }
                 }
             }
+            .padding(.bottom, 6)
         }
     }
 }
@@ -119,21 +116,19 @@ private struct CategoryResultsView: View {
 
     var body: some View {
         let podiums = Array(category.podium.prefix(3))
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 8) {
-                TribuneruText(
-                    content: category.title.uppercased(with: L10n.locale),
-                    style: .vaporMeta,
-                    color: .tribuneru(.vaporTextSecondary)
-                )
+        VStack(alignment: .leading, spacing: 4) {
+            TribuneruText(
+                content: category.title.uppercased(with: L10n.locale),
+                style: .vaporGroupLabel,
+                color: .tribuneru(.mudTextSecondary)
+            )
 
-                Spacer(minLength: 0)
-            }
-
-            HStack(alignment: .top, spacing: 12) {
-                CachedImageView(imageUrl: category.winnerImageURL, cornerRadius: 999)
-                    .frame(width: 56, height: 56)
-                    .clipShape(Circle())
+            HStack(alignment: .center, spacing: 12) {
+                if category.winnerImageURL != nil {
+                    CachedImageView(imageUrl: category.winnerImageURL, cornerRadius: 999)
+                        .frame(width: 56, height: 56)
+                        .clipShape(Circle())
+                }
 
                 VStack(spacing: 0) {
                     ForEach(podiums.indices, id: \.self) { idx in
@@ -148,10 +143,7 @@ private struct CategoryResultsView: View {
                         .buttonStyle(.plain)
 
                         if idx < podiums.count - 1 {
-                            TribunerosDivider(
-                                height: 0.5,
-                                color: .tribuneru(.vaporTextSecondary).opacity(0.2)
-                            )
+                            MudDivider()
                         }
                     }
                 }
@@ -168,7 +160,7 @@ private struct PodiumRow: View {
             TribuneruText(
                 content: "\(podium.position)",
                 style: .vaporFinishTime,
-                color: .tribuneru(.vaporTextSecondary)
+                color: .tribuneru(.mudTextSecondary)
             )
             .frame(width: 18, alignment: .leading)
 
@@ -177,7 +169,7 @@ private struct PodiumRow: View {
             TribuneruText(
                 content: podium.rider,
                 style: .vaporRaceNameResult,
-                color: .tribuneru(.vaporTextPrimary),
+                color: .tribuneru(.mudTextPrimary),
                 lineLimit: 1
             )
 
@@ -186,15 +178,15 @@ private struct PodiumRow: View {
             TribuneruText(
                 content: podium.time,
                 style: .vaporFinishTime,
-                color: .tribuneru(.vaporTextSecondary),
+                color: .tribuneru(.mudTextSecondary),
                 lineLimit: 1
             )
 
             Image(systemName: "chevron.right")
                 .font(.system(size: 11, weight: .semibold))
-                .foregroundColor(.tribuneru(.vaporTextSecondary))
+                .foregroundColor(.tribuneru(.mudTextSecondary))
         }
-        .padding(.vertical, 6)
+        .padding(.vertical, 8)
     }
 }
 

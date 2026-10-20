@@ -63,7 +63,7 @@ struct CXRiderDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 26) {
                 profilePanel
                 switch context {
                 case .standing(let standing):
@@ -78,9 +78,13 @@ struct CXRiderDetailView: View {
 
                 if isLoading {
                     VStack(alignment: .leading, spacing: 20) {
-                        CXRiderFactsPanel(facts: DTO.CXRiderPage.Fact.placeholders)
+                        CXRiderFactsPanel(
+                            facts: DTO.CXRiderPage.Fact.placeholders,
+                            look: .mud
+                        )
                         CXRiderRecentResultsPanel(
                             results: DTO.CXRiderPage.Result.placeholders,
+                            look: .mud,
                             openResult: { _ in }
                         )
                     }
@@ -90,11 +94,15 @@ struct CXRiderDetailView: View {
                     .accessibilityLabel(L10n.tr("Loading the rider"))
                 } else if let page {
                     if !page.facts.isEmpty {
-                        CXRiderFactsPanel(facts: page.facts)
+                        CXRiderFactsPanel(
+                            facts: page.facts,
+                            look: .mud
+                        )
                     }
                     if !page.results.isEmpty {
                         CXRiderRecentResultsPanel(
                             results: page.results,
+                            look: .mud,
                             openResult: { openRaceResult($0, riderRef) }
                         )
                     }
@@ -104,9 +112,10 @@ struct CXRiderDetailView: View {
                     Button {
                         openURL(riderURL)
                     } label: {
-                        VaporCard {
-                            VaporMoreInfoLink(title: L10n.tr("rider page on cyclocross24"))
-                        }
+                        RiderPageLink(
+                            look: .mud,
+                            title: L10n.tr("rider page on cyclocross24")
+                        )
                     }
                     .buttonStyle(.plain)
                 }
@@ -114,7 +123,7 @@ struct CXRiderDetailView: View {
             .padding()
             .padding(.bottom, 40)
         }
-        .background(Color.tribuneru(.vaporPageBackground))
+        .background(RiderLook.mud.page)
         .preferredColorScheme(.dark)
         .navigationTitle(L10n.tr("Rider"))
         .task {
@@ -129,81 +138,53 @@ struct CXRiderDetailView: View {
     // MARK: - Profile -
 
     private var profilePanel: some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-            HStack(spacing: 6) {
-                CXDetailTag(
-                    title: "#\(context.position)",
-                    color: context.position == "1" ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary)
-                )
-                CXDetailTag(title: context.category)
-            }
-        } content: {
-            HStack(alignment: .center, spacing: 16) {
-                CXRiderAvatar(url: page?.avatarURL)
-
-                VStack(alignment: .leading, spacing: 6) {
-                    TribuneruText(
-                        content: riderName,
-                        style: .vaporSectionTitle,
-                        color: .tribuneru(.vaporTextPrimary),
-                        lineLimit: 2
-                    )
-                    HStack(spacing: 8) {
-                        VaporFlagView(url: context.flagURL)
-                        TribuneruText(
-                            content: page?.nationality ?? context.country ?? "-",
-                            style: .vaporMeta,
-                            color: .tribuneru(.vaporTextSecondary),
-                            lineLimit: 1
-                        )
-                    }
-                    if let team = page?.team ?? context.team ?? winTeam {
-                        TribuneruText(
-                            content: team,
-                            style: .vaporMeta,
-                            color: .tribuneru(.vaporTextSecondary),
-                            lineLimit: 2
-                        )
-                    }
-                }
-            }
-        }
+        RiderHeaderCard(
+            look: .mud,
+            tags: [
+                ("#\(context.position)", context.position == "1"),
+                (context.category, false)
+            ],
+            avatarURL: page?.avatarURL,
+            name: riderName,
+            flag: VaporFlagView(url: context.flagURL),
+            country: page?.nationality ?? context.country ?? "-",
+            team: page?.team ?? context.team ?? winTeam
+        )
     }
 
     // MARK: - Standing -
 
     private func standingPanel(_ standing: CXRaces.RiderStanding) -> some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: L10n.tr("Standing"))
-        } content: {
+        RiderPanel(
+            look: .mud,
+            title: L10n.tr("Standing")
+        ) {
             VStack(alignment: .leading, spacing: 10) {
                 Button {
                     if let standingsURL = standing.standingsURL {
                         openURL(standingsURL)
                     }
                 } label: {
-                    VaporCard {
+                    RiderCardBox(look: .mud) {
                         HStack(spacing: 10) {
                             rankingLogo(standing.rankingLogoURL)
                             VStack(alignment: .leading, spacing: 2) {
                                 TribuneruText(
                                     content: standing.rankingTitle,
                                     style: .vaporRaceNameNext,
-                                    color: .tribuneru(.vaporTextPrimary),
+                                    color: RiderLook.mud.primary,
                                     lineLimit: 2
                                 )
                                 TribuneruText(
                                     content: standing.category,
                                     style: .vaporMeta,
-                                    color: .tribuneru(.vaporTextSecondary),
+                                    color: RiderLook.mud.secondary,
                                     lineLimit: 1
                                 )
                             }
                             Spacer(minLength: 0)
                             if standing.standingsURL != nil {
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 11, weight: .semibold))
-                                    .foregroundColor(.tribuneru(.vaporTextSecondary))
+                                RiderChevron(look: .mud)
                             }
                         }
                     }
@@ -215,11 +196,13 @@ struct CXRiderDetailView: View {
                 HStack(spacing: 10) {
                     CXStatTile(
                         label: L10n.tr("Position"),
-                        value: "#\(standing.position)"
+                        value: "#\(standing.position)",
+                        look: .mud
                     )
                     CXStatTile(
                         label: L10n.tr("Points"),
-                        value: standing.points.isEmpty ? "-" : standing.points
+                        value: standing.points.isEmpty ? "-" : standing.points,
+                        look: .mud
                     )
                 }
             }
@@ -237,32 +220,33 @@ struct CXRiderDetailView: View {
                 Image(systemName: "trophy")
                     .resizable()
                     .scaledToFit()
-                    .foregroundColor(.tribuneru(.vaporTextSecondary))
+                    .foregroundColor(RiderLook.mud.secondary)
                     .padding(4)
             }
         }
         .frame(width: 28, height: 28)
-        .background(Color.tribuneru(.vaporPageBackground).opacity(0.6))
+        .background(RiderLook.mud.raised)
         .cornerRadius(6)
     }
 
     // MARK: - Podium -
 
     private func podiumPanel(_ podium: CXRaces.RiderPodium) -> some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: L10n.tr("Result"))
-        } content: {
+        RiderPanel(
+            look: .mud,
+            title: L10n.tr("Result")
+        ) {
             VStack(alignment: .leading, spacing: 10) {
                 Button {
                     openRace(podium.race)
                 } label: {
-                    VaporCard {
+                    RiderCardBox(look: .mud) {
                         HStack(spacing: 10) {
                             VStack(alignment: .leading, spacing: 4) {
                                 TribuneruText(
                                     content: podium.race.title,
                                     style: .vaporRaceNameNext,
-                                    color: .tribuneru(.vaporTextPrimary),
+                                    color: RiderLook.mud.primary,
                                     lineLimit: 2
                                 )
                                 HStack(spacing: 6) {
@@ -272,15 +256,13 @@ struct CXRiderDetailView: View {
                                             .filter { !$0.isEmpty }
                                             .joined(separator: " · "),
                                         style: .vaporMeta,
-                                        color: .tribuneru(.vaporTextSecondary),
+                                        color: RiderLook.mud.secondary,
                                         lineLimit: 1
                                     )
                                 }
                             }
                             Spacer(minLength: 0)
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundColor(.tribuneru(.vaporTextSecondary))
+                            RiderChevron(look: .mud)
                         }
                     }
                     .contentShape(Rectangle())
@@ -290,11 +272,13 @@ struct CXRiderDetailView: View {
                 HStack(spacing: 10) {
                     CXStatTile(
                         label: L10n.tr("Position"),
-                        value: "#\(podium.position)"
+                        value: "#\(podium.position)",
+                        look: .mud
                     )
                     CXStatTile(
                         label: L10n.tr("Time"),
-                        value: podium.time.isEmpty ? "-" : podium.time
+                        value: podium.time.isEmpty ? "-" : podium.time,
+                        look: .mud
                     )
                 }
             }
@@ -305,15 +289,19 @@ struct CXRiderDetailView: View {
 
     /// Opened from the race screen it describes, so the race card isn't a link back.
     private func resultPanel(_ result: CXRaces.RiderResult) -> some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: L10n.tr("Result"))
-        } content: {
+        RiderPanel(
+            look: .mud,
+            title: L10n.tr("Result")
+        ) {
             VStack(alignment: .leading, spacing: 10) {
-                VaporCard(spacing: 4) {
+                RiderCardBox(
+                    look: .mud,
+                    spacing: 4
+                ) {
                     TribuneruText(
                         content: result.raceTitle,
                         style: .vaporRaceNameNext,
-                        color: .tribuneru(.vaporTextPrimary),
+                        color: RiderLook.mud.primary,
                         lineLimit: 2
                     )
                     HStack(spacing: 6) {
@@ -323,7 +311,7 @@ struct CXRiderDetailView: View {
                                 .filter { !$0.isEmpty }
                                 .joined(separator: " · "),
                             style: .vaporMeta,
-                            color: .tribuneru(.vaporTextSecondary),
+                            color: RiderLook.mud.secondary,
                             lineLimit: 1
                         )
                     }
@@ -332,16 +320,19 @@ struct CXRiderDetailView: View {
                 HStack(spacing: 10) {
                     CXStatTile(
                         label: L10n.tr("Position"),
-                        value: "#\(result.result.position)"
+                        value: "#\(result.result.position)",
+                        look: .mud
                     )
                     CXStatTile(
                         label: L10n.tr("Time"),
-                        value: result.result.time.isEmpty ? "-" : result.result.time
+                        value: result.result.time.isEmpty ? "-" : result.result.time,
+                        look: .mud
                     )
                     if !result.result.age.isEmpty {
                         CXStatTile(
                             label: L10n.tr("Age"),
-                            value: result.result.age
+                            value: result.result.age,
+                            look: .mud
                         )
                     }
                 }
@@ -353,20 +344,21 @@ struct CXRiderDetailView: View {
 
     /// A past edition won by this rider; the race card opens that edition.
     private func winPanel(_ winner: CXRaces.Winner) -> some View {
-        VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-            VaporSectionHeader(title: L10n.tr("Victory"))
-        } content: {
+        RiderPanel(
+            look: .mud,
+            title: L10n.tr("Victory")
+        ) {
             VStack(alignment: .leading, spacing: 10) {
                 Button {
                     openEvent(winner.raceEvent)
                 } label: {
-                    VaporCard {
+                    RiderCardBox(look: .mud) {
                         HStack(spacing: 10) {
                             VStack(alignment: .leading, spacing: 4) {
                                 TribuneruText(
                                     content: winner.race,
                                     style: .vaporRaceNameNext,
-                                    color: .tribuneru(.vaporTextPrimary),
+                                    color: RiderLook.mud.primary,
                                     lineLimit: 2
                                 )
                                 HStack(spacing: 6) {
@@ -376,15 +368,13 @@ struct CXRiderDetailView: View {
                                             .filter { !$0.isEmpty }
                                             .joined(separator: " · "),
                                         style: .vaporMeta,
-                                        color: .tribuneru(.vaporTextSecondary),
+                                        color: RiderLook.mud.secondary,
                                         lineLimit: 1
                                     )
                                 }
                             }
                             Spacer(minLength: 0)
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundColor(.tribuneru(.vaporTextSecondary))
+                            RiderChevron(look: .mud)
                         }
                     }
                     .contentShape(Rectangle())
@@ -395,18 +385,21 @@ struct CXRiderDetailView: View {
                     if let time = winResult?.time, !time.isEmpty {
                         CXStatTile(
                             label: L10n.tr("Time"),
-                            value: time
+                            value: time,
+                            look: .mud
                         )
                     }
                     if let age = winResult?.age, !age.isEmpty {
                         CXStatTile(
                             label: L10n.tr("Age"),
-                            value: age
+                            value: age,
+                            look: .mud
                         )
                     }
                     CXStatTile(
                         label: L10n.tr("Series"),
-                        value: winner.series.title
+                        value: winner.series.title,
+                        look: .mud
                     )
                 }
             }

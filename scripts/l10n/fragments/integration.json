@@ -8,7 +8,6 @@
   "System default": {"ca": "Predeterminat del sistema", "eu": "Sistemaren lehenetsia", "comment": "Language option: follow the device languages"},
   "More languages are coming.": {"ca": "Aviat hi haurà més idiomes.", "eu": "Hizkuntza gehiago laster.", "comment": "Footer under the language list"},
   "Acknowledgements": {"ca": "Agraïments", "eu": "Aitorpenak", "comment": "Settings row"},
-  "ACKNOWLEDGEMENTS": {"ca": "AGRAÏMENTS", "eu": "AITORPENAK", "comment": "Acknowledgements screen navigation title"},
   "Music provided by Ciscu Bates": {"ca": "Música de Ciscu Bates", "eu": "Musika: Ciscu Bates", "comment": "Acknowledgements: credit for the onboarding music"},
   "© 2026 Ciscu Bates. All rights reserved.": {"ca": "© 2026 Ciscu Bates. Tots els drets reservats.", "eu": "© 2026 Ciscu Bates. Eskubide guztiak erreserbatuta.", "comment": "Acknowledgements: copyright notice for the onboarding music"},
   "Onboarding": {"ca": "Presentació", "eu": "Aurkezpena", "comment": "Settings tile title: replay the onboarding"},

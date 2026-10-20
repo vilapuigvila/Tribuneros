@@ -40,7 +40,7 @@ extension Paddock {
 
         var body: some View {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 26) {
                     profilePanel
 
                     switch context {
@@ -51,22 +51,29 @@ extension Paddock {
                     }
 
                     if isLoading {
-                        CXRiderFactsPanel(facts: DTO.CXRiderPage.Fact.placeholders)
+                        CXRiderFactsPanel(
+                            facts: DTO.CXRiderPage.Fact.placeholders,
+                            look: .kit
+                        )
                             .redacted(reason: .placeholder)
                             .disabled(true)
                             .accessibilityElement(children: .ignore)
                             .accessibilityLabel(L10n.tr("Loading the rider"))
                     } else if let facts = page?.facts, !facts.isEmpty {
-                        CXRiderFactsPanel(facts: facts)
+                        CXRiderFactsPanel(
+                            facts: facts,
+                            look: .kit
+                        )
                     }
 
                     if let riderURL = context.rider.url {
                         Button {
                             openURL(riderURL)
                         } label: {
-                            VaporCard {
-                                VaporMoreInfoLink(title: L10n.tr("rider page on ProCyclingStats"))
-                            }
+                            RiderPageLink(
+                                look: .kit,
+                                title: L10n.tr("rider page on ProCyclingStats")
+                            )
                         }
                         .buttonStyle(.plain)
                     }
@@ -74,7 +81,7 @@ extension Paddock {
                 .padding()
                 .padding(.bottom, 40)
             }
-            .background(Color.tribuneru(.vaporPageBackground))
+            .background(RiderLook.kit.page)
             .preferredColorScheme(.dark)
             .navigationTitle(L10n.tr("Rider"))
             .task {
@@ -87,44 +94,15 @@ extension Paddock {
         // MARK: - Profile -
 
         private var profilePanel: some View {
-            VaporPanel(panelColor: .tribuneru(.vaporPanelToday)) {
-                CXDetailTag(
-                    title: tag,
-                    color: .tribuneru(.vaporAccent)
-                )
-            } content: {
-                HStack(alignment: .center, spacing: 16) {
-                    CXRiderAvatar(url: page?.imageURL)
-
-                    VStack(alignment: .leading, spacing: 6) {
-                        TribuneruText(
-                            content: context.rider.name,
-                            style: .vaporSectionTitle,
-                            color: .tribuneru(.vaporTextPrimary),
-                            lineLimit: 2
-                        )
-                        if !context.rider.countryCode.isEmpty {
-                            HStack(spacing: 8) {
-                                VaporFlagView(countryCode: context.rider.countryCode)
-                                TribuneruText(
-                                    content: nationality ?? context.rider.countryCode.uppercased(),
-                                    style: .vaporMeta,
-                                    color: .tribuneru(.vaporTextSecondary),
-                                    lineLimit: 1
-                                )
-                            }
-                        }
-                        if let team = page?.team {
-                            TribuneruText(
-                                content: team,
-                                style: .vaporMeta,
-                                color: .tribuneru(.vaporTextSecondary),
-                                lineLimit: 2
-                            )
-                        }
-                    }
-                }
-            }
+            RiderHeaderCard(
+                look: .kit,
+                tags: [(tag, true)],
+                avatarURL: page?.imageURL,
+                name: context.rider.name,
+                flag: context.rider.countryCode.isEmpty ? nil : VaporFlagView(countryCode: context.rider.countryCode),
+                country: context.rider.countryCode.isEmpty ? nil : (nationality ?? context.rider.countryCode.uppercased()),
+                team: page?.team
+            )
         }
 
         private var tag: String {
@@ -148,32 +126,37 @@ private extension Paddock {
         let card: TransferCard
 
         var body: some View {
-            VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-                VaporSectionHeader(title: L10n.tr("Transfer"))
-            } content: {
+            RiderPanel(
+                look: .kit,
+                title: L10n.tr("Transfer")
+            ) {
                 VStack(alignment: .leading, spacing: 10) {
-                    VaporCard(spacing: 6) {
+                    RiderCardBox(
+                        look: .kit,
+                        spacing: 6
+                    ) {
                         TribuneruText(
                             content: L10n.tr("JOINS"),
                             style: .vaporGroupLabel,
-                            color: .tribuneru(.vaporTextSecondary),
+                            color: RiderLook.kit.secondary,
                             lineLimit: 1
                         )
                         HStack(spacing: 8) {
                             Image(systemName: "arrow.right")
                                 .font(.system(size: 13, weight: .semibold))
-                                .foregroundColor(.tribuneru(.vaporAccent))
+                                .foregroundColor(RiderLook.kit.accent)
                             TribuneruText(
                                 content: card.teamName,
                                 style: .vaporRaceNameNext,
-                                color: .tribuneru(.vaporTextPrimary),
+                                color: RiderLook.kit.primary,
                                 lineLimit: 2
                             )
                         }
                     }
                     CXStatTile(
                         label: L10n.tr("Announced"),
-                        value: card.date
+                        value: card.date,
+                        look: .kit
                     )
                 }
             }
@@ -184,16 +167,17 @@ private extension Paddock {
         let card: ProgramCard
 
         var body: some View {
-            VaporPanel(panelColor: .tribuneru(.vaporPanelRacing)) {
-                VaporSectionHeader(title: L10n.tr("Program update")) {
+            RiderPanel(
+                look: .kit,
+                title: L10n.tr("Program update"),
+                trailing: {
                     TribuneruText(
                         content: L10n.tr("%@ ago", card.timeAgo),
                         style: .vaporScreenDate,
-                        color: .tribuneru(.vaporTextSecondary)
+                        color: RiderLook.kit.secondary
                     )
-                    .padding(.top, 12)
                 }
-            } content: {
+            ) {
                 VStack(alignment: .leading, spacing: 10) {
                     changes(
                         title: L10n.tr("Added"),
@@ -216,11 +200,14 @@ private extension Paddock {
                 .filter { $0.isAdded == isAdded }
                 .map(\.raceName)
             if !races.isEmpty {
-                VaporCard(spacing: 8) {
+                RiderCardBox(
+                    look: .kit,
+                    spacing: 8
+                ) {
                     TribuneruText(
                         content: title.uppercased(with: L10n.locale),
                         style: .vaporGroupLabel,
-                        color: isAdded ? .tribuneru(.vaporLive) : .tribuneru(.vaporNegative),
+                        color: isAdded ? .tribuneru(.kitAdded) : .tribuneru(.kitDropped),
                         lineLimit: 1
                     )
                     ForEach(races.indices, id: \.self) { index in
@@ -228,14 +215,14 @@ private extension Paddock {
                             TribuneruText(
                                 content: isAdded ? "+" : "−",
                                 style: .vaporChangeSign,
-                                color: isAdded ? .tribuneru(.vaporLive) : .tribuneru(.vaporNegative)
+                                color: isAdded ? .tribuneru(.kitAdded) : .tribuneru(.kitDropped)
                             )
                             .frame(width: 10, alignment: .leading)
                             .accessibilityHidden(true)
                             TribuneruText(
                                 content: races[index],
                                 style: .vaporRaceNameResult,
-                                color: .tribuneru(.vaporTextPrimary),
+                                color: RiderLook.kit.primary,
                                 lineLimit: 2
                             )
                         }

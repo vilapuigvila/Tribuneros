@@ -10,7 +10,7 @@ import SwiftUI
     
 struct CXAllRacesView: View {
     private enum UI {
-        static let rowHeight: CGFloat = 84
+        static let rowHeight: CGFloat = 56
         static let autoScrollDelay: TimeInterval = 0.5
         static let showButtonDelay: TimeInterval = 0.5
     }
@@ -30,59 +30,69 @@ struct CXAllRacesView: View {
             ZStack(alignment: .bottomTrailing) {
                 VStack(spacing: 0) {
                     seriesFilterBar
-                    List {
-                        ForEach(filteredEvents.indices, id: \.self) { idx in
-                            let event = filteredEvents[idx]
-                            Button {
-                                action(event)
-                            } label: {
-                                HStack(spacing: 12) {
-                                    TribuneruText(
-                                        content: event.date,
-                                        style: .vaporMeta,
-                                        color: .tribuneru(.mudTextSecondary)
-                                    )
-                                    .frame(width: 84, alignment: .leading)
-
-                                    VaporFlagView(url: event.flagURL)
-
-                                    VStack(alignment: .leading, spacing: 2) {
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(filteredEvents.indices, id: \.self) { idx in
+                                let event = filteredEvents[idx]
+                                Button {
+                                    action(event)
+                                } label: {
+                                    HStack(spacing: 12) {
                                         TribuneruText(
-                                            content: event.race,
-                                            style: .vaporRaceNameNext,
-                                            color: .tribuneru(.mudTextPrimary),
-                                            lineLimit: 2
+                                            content: event.date,
+                                            style: .vaporMeta,
+                                            color: .tribuneru(.mudTextSecondary)
                                         )
-                                        if event.isCancelled {
+                                        .frame(width: 84, alignment: .leading)
+
+                                        VaporFlagView(url: event.flagURL)
+
+                                        VStack(alignment: .leading, spacing: 2) {
                                             TribuneruText(
-                                                content: L10n.tr("Cancelled"),
-                                                style: .vaporMeta,
-                                                color: .tribuneru(.mudNegative)
+                                                content: event.race,
+                                                style: .vaporRaceNameNext,
+                                                color: .tribuneru(.mudTextPrimary),
+                                                lineLimit: 2
                                             )
-                                        } else if !event.winnerName.isEmpty {
-                                            TribuneruText(
-                                                content: event.winnerName,
-                                                style: .vaporMeta,
-                                                color: .tribuneru(.mudTextSecondary)
-                                            )
+                                            if event.isCancelled {
+                                                TribuneruText(
+                                                    content: L10n.tr("Cancelled"),
+                                                    style: .vaporMeta,
+                                                    color: .tribuneru(.mudNegative)
+                                                )
+                                            } else if !event.winnerName.isEmpty {
+                                                TribuneruText(
+                                                    content: event.winnerName,
+                                                    style: .vaporMeta,
+                                                    color: .tribuneru(.mudTextSecondary)
+                                                )
+                                            }
                                         }
+
+                                        Spacer(minLength: 0)
+
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 11, weight: .semibold))
+                                            .foregroundColor(.tribuneru(.mudTextSecondary))
                                     }
-
-                                    Spacer(minLength: 0)
-
-                                    Image(systemName: "chevron.right")
-                                        .font(.system(size: 11, weight: .semibold))
-                                        .foregroundColor(.tribuneru(.mudTextSecondary))
+                                    .padding(.vertical, 12)
+                                    .frame(minHeight: UI.rowHeight)
+                                    .contentShape(Rectangle())
                                 }
-                                .frame(height: UI.rowHeight)
-                                .contentShape(Rectangle())
+                                .buttonStyle(.plain)
+                                .id(idx)
+
+                                if idx < filteredEvents.count - 1 {
+                                    MudDivider()
+                                }
                             }
-                            .buttonStyle(.plain)
-                            .id(idx)
-                            .listRowInsets(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
-                            .listRowBackground(Color.tribuneru(.mudCardSurface))
-                            .listRowSeparatorTint(Color.tribuneru(.mudTextPrimary).opacity(0.08))
                         }
+                        .padding(.horizontal, 14)
+                        .frame(maxWidth: .infinity)
+                        .mudCard()
+                        .padding(.horizontal)
+                        .padding(.top, 4)
+                        .padding(.bottom, 40)
                     }
                     .onAppear {
                         guard !didAutoScrollToToday else { return }
@@ -108,10 +118,7 @@ struct CXAllRacesView: View {
                             .padding(24)
                         }
                     }
-                    .listStyle(.plain)
-                    .scrollContentBackground(.hidden)
                     .background(Color.tribuneru(.mudPageBackground))
-                    .environment(\.defaultMinListRowHeight, UI.rowHeight)
                     .preferredColorScheme(.dark)
                     .simultaneousGesture(
                         DragGesture()

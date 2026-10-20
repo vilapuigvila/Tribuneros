@@ -30,41 +30,37 @@ struct RaceDetailView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    headerView
-                    
-                    if isLoading {
-                        VStack(alignment: .leading, spacing: 16) {
-                            categoryTabsView
-                            resultsList(DTO.CX24Homepage.CategoryResult.placeholders)
-                        }
-                        .redacted(reason: .placeholder)
-                        .disabled(true)
-                        .accessibilityElement(children: .ignore)
-                        .accessibilityLabel(L10n.tr("Loading the results"))
-                    } else if let error = errorMessage {
-                        TribuneruText(
-                            content: error,
-                            style: .vaporMeta,
-                            color: .tribuneru(.vaporNegative)
-                        )
-                        .padding()
-                    } else {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                headerView
+
+                if isLoading {
+                    VStack(alignment: .leading, spacing: 16) {
                         categoryTabsView
-                        resultsList()
+                        resultsList(DTO.CX24Homepage.CategoryResult.placeholders)
                     }
-
-                    Spacer()
+                    .redacted(reason: .placeholder)
+                    .disabled(true)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(L10n.tr("Loading the results"))
+                } else if let error = errorMessage {
+                    TribuneruText(
+                        content: error,
+                        style: .vaporMeta,
+                        color: .tribuneru(.mudNegative)
+                    )
+                    .padding()
+                } else {
+                    categoryTabsView
+                    resultsList()
                 }
-                .padding(8)
-                .padding(.bottom, 88)
-            }
 
-            raceVideosFloatingButton
+                raceVideosRow
+            }
+            .padding()
+            .padding(.bottom, 40)
         }
-        .background(Color.tribuneru(.vaporPageBackground))
+        .background(Color.tribuneru(.mudPageBackground))
         .preferredColorScheme(.dark)
         .fullScreenCover(item: $videoSheet) { sheet in
             YoutubeVideoView(url: sheet.url)
@@ -83,51 +79,60 @@ struct RaceDetailView: View {
             isLoading = false
         }
     }
-    
+
     private var headerView: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 10) {
-                VaporFlagView(url: race.countryFlagURL)
-
-                TribuneruText(
-                    content: race.title,
-                    style: .vaporSectionTitle,
-                    color: .tribuneru(.vaporTextPrimary),
-                    lineLimit: 2
-                )
-            }
-
-            HStack(spacing: 10) {
-                HStack(spacing: 6) {
-                    Image(systemName: "calendar")
-                        .font(.system(size: 12, weight: .regular))
-                        .foregroundColor(.tribuneru(.vaporTextSecondary))
+        ZStack {
+            CXMudArt()
+            ImageScrim(
+                top: 0.5,
+                topEnd: 0.34,
+                bottom: 0.8,
+                bottomEnd: 0.46,
+                tint: .tribuneru(.mudPageBackground)
+            )
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(spacing: 8) {
+                    VaporFlagView(url: race.countryFlagURL)
+                    Spacer(minLength: 0)
+                }
+                Spacer(minLength: 0)
+                VStack(alignment: .leading, spacing: 4) {
                     TribuneruText(
-                        content: race.date,
-                        style: .vaporMeta,
-                        color: .tribuneru(.vaporTextSecondary)
+                        content: race.title,
+                        style: .vaporHeroTitle,
+                        color: .tribuneru(.white(level: 1)),
+                        lineLimit: 2
+                    )
+                    .artTitleShadow()
+                    TribuneruText(
+                        content: [race.date, race.location]
+                            .filter { !$0.isEmpty }
+                            .joined(separator: " · "),
+                        style: .vaporHeroSubtitle,
+                        color: Color.tribuneru(.mudTextPrimary).opacity(0.88),
+                        lineLimit: 1
                     )
                 }
-
-                HStack(spacing: 6) {
-                    Image(systemName: "mappin.and.ellipse")
-                        .font(.system(size: 12, weight: .regular))
-                        .foregroundColor(.tribuneru(.vaporTextSecondary))
-                    TribuneruText(
-                        content: race.location,
-                        style: .vaporMeta,
-                        color: .tribuneru(.vaporTextSecondary)
-                    )
-                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 2)
             }
+            .padding(14)
         }
-        .padding(.horizontal, 8)
-        .padding(.top, 8)
+        .frame(height: 196)
+        .frame(maxWidth: .infinity)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .strokeBorder(
+                    Color.tribuneru(.mudTextPrimary).opacity(0.08),
+                    lineWidth: 1
+                )
+        )
     }
-    
+
     private var categoryTabsView: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 4) {
+            HStack(spacing: 8) {
                 ForEach(race.categories.indices, id: \.self) { index in
                     let category = race.categories[index]
                     CategoryTabButton(
@@ -140,10 +145,10 @@ struct RaceDetailView: View {
             }
         }
     }
-    
+
     /// The selected category's loaded results, or `placeholders` drawn in their place.
     private func resultsList(_ placeholders: [DTO.CX24Homepage.CategoryResult]? = nil) -> some View {
-        VStack(spacing: 0) {
+        MudCardBox {
             if selectedCategory < race.categories.count {
                 let category = race.categories[selectedCategory]
                 let results = placeholders ?? categoryResults[category.title] ?? []
@@ -154,7 +159,7 @@ struct RaceDetailView: View {
                         style: .vaporMeta,
                         color: .tribuneru(.vaporTextSecondary)
                     )
-                    .padding(.top, 20)
+                    .padding(.vertical, 12)
                 } else {
                     resultsHeaderRow
 
@@ -169,24 +174,18 @@ struct RaceDetailView: View {
                             )
                         } label: {
                             ResultRow(result: results[index])
-                                .frame(height: 64)
+                                .frame(minHeight: 52)
                                 .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
 
                         if index < results.count - 1 {
-                            TribunerosDivider(
-                                height: 1,
-                                color: .tribuneru(.vaporTextSecondary).opacity(0.2)
-                            )
+                            MudDivider()
                         }
                     }
                 }
             }
         }
-        .padding(12)
-        .background(Color.tribuneru(.vaporCardSurface))
-        .cornerRadius(8)
     }
 
     private var resultsHeaderRow: some View {
@@ -194,35 +193,35 @@ struct RaceDetailView: View {
             TribuneruText(
                 content: "#",
                 style: .vaporMeta,
-                color: .tribuneru(.vaporTextSecondary)
+                color: .tribuneru(.mudTextSecondary)
             )
-            .frame(width: 16, alignment: .leading)
+            .frame(width: 24, alignment: .leading)
 
             TribuneruText(
                 content: L10n.tr("Rider"),
                 style: .vaporMeta,
-                color: .tribuneru(.vaporTextSecondary)
+                color: .tribuneru(.mudTextSecondary)
             )
             .frame(maxWidth: .infinity, alignment: .leading)
 
             TribuneruText(
                 content: L10n.tr("Age"),
                 style: .vaporMeta,
-                color: .tribuneru(.vaporTextSecondary)
+                color: .tribuneru(.mudTextSecondary)
             )
-            .frame(width: 40, alignment: .center)
+            .frame(width: 32, alignment: .center)
 
             TribuneruText(
                 content: L10n.tr("Team"),
                 style: .vaporMeta,
-                color: .tribuneru(.vaporTextSecondary)
+                color: .tribuneru(.mudTextSecondary)
             )
-            .frame(width: 92, alignment: .leading)
+            .frame(width: 84, alignment: .leading)
 
             TribuneruText(
                 content: L10n.tr("Time"),
                 style: .vaporMeta,
-                color: .tribuneru(.vaporTextSecondary)
+                color: .tribuneru(.mudTextSecondary)
             )
             .frame(width: 48, alignment: .trailing)
         }
@@ -271,42 +270,43 @@ struct RaceDetailView: View {
         )
     }
     
-    private var raceVideosFloatingButton: some View {
+    private var raceVideosRow: some View {
         let buttonState = raceVideosButtonState
         let isEnabled = buttonState.url != nil
-        let textColor: Color = isEnabled
-            ? Color.tribuneru(.vaporPageBackground)
-            : Color.tribuneru(.vaporTextSecondary)
-        let iconColor: Color = textColor
-        let backgroundColor: Color = isEnabled
-            ? Color.tribuneru(.vaporAccent)
-            : Color.tribuneru(.vaporCardSurface)
 
         return Button {
             guard let url = buttonState.url else { return }
             videoSheet = VideoSheet(url: url)
         } label: {
-            HStack(spacing: 8) {
-                Image(systemName: buttonState.systemImage)
-                    .foregroundStyle(iconColor)
+            MudCardBox {
+                HStack(spacing: 10) {
+                    Image(systemName: buttonState.systemImage)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.tribuneru(isEnabled ? .mudAccent : .mudTextMuted))
+                        .frame(width: 20)
 
-                TribuneruText(
-                    content: buttonState.title,
-                    style: .vaporRaceNameNext,
-                    color: textColor
-                )
+                    TribuneruText(
+                        content: buttonState.title,
+                        style: .vaporRaceNameNext,
+                        color: .tribuneru(isEnabled ? .mudTextPrimary : .mudTextSecondary),
+                        lineLimit: 1
+                    )
+
+                    Spacer(minLength: 0)
+
+                    if isEnabled {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(.tribuneru(.mudTextSecondary))
+                    }
+                }
+                .padding(.vertical, 12)
+                .contentShape(Rectangle())
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 12)
-            .background(backgroundColor)
-            .cornerRadius(8)
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)
         .redacted(reason: isLoading ? .placeholder : [])
-        .clipShape(Capsule())
-        .padding(16)
-        .padding(.bottom, 16)
     }
 }
 
@@ -325,17 +325,21 @@ private struct CategoryTabButton: View {
             TribuneruText(
                 content: title,
                 style: .vaporSpoilerChip,
-                color: isSelected ? .tribuneru(.vaporPageBackground) : .tribuneru(.vaporTextSecondary)
+                color: isSelected ? .tribuneru(.mudPageBackground) : .tribuneru(.mudTextSecondary)
             )
-            .padding(.horizontal, 20)
-            .padding(.vertical, 10)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 9)
             .background(
-                isSelected
-                ? Color.tribuneru(.vaporAccent)
-                : Color.tribuneru(.vaporCardSurface)
+                Color.tribuneru(isSelected ? .mudAccent : .mudCardSurface),
+                in: Capsule()
+            )
+            .overlay(
+                Capsule().strokeBorder(
+                    Color.tribuneru(.mudTextPrimary).opacity(isSelected ? 0 : 0.08),
+                    lineWidth: 1
+                )
             )
         }
-        .cornerRadius(6)
     }
 }
 
@@ -347,9 +351,9 @@ private struct ResultRow: View {
             TribuneruText(
                 content: result.position,
                 style: .vaporFinishTime,
-                color: .tribuneru(.vaporTextPrimary)
+                color: .tribuneru(.mudTextPrimary)
             )
-            .frame(width: 16, alignment: .leading)
+            .frame(width: 24, alignment: .leading)
 
             HStack(spacing: 6) {
                 if let flagURL = result.countryFlagURL {
@@ -359,7 +363,7 @@ private struct ResultRow: View {
                 TribuneruText(
                     content: result.rider,
                     style: .vaporRaceNameResult,
-                    color: .tribuneru(.vaporTextPrimary),
+                    color: .tribuneru(.mudTextPrimary),
                     lineLimit: 1
                 )
             }
@@ -368,26 +372,26 @@ private struct ResultRow: View {
             TribuneruText(
                 content: result.age,
                 style: .vaporFinishTime,
-                color: .tribuneru(.vaporTextSecondary)
+                color: .tribuneru(.mudTextSecondary)
             )
-            .frame(width: 40, alignment: .center)
+            .frame(width: 32, alignment: .center)
 
             TribuneruText(
                 content: result.team,
                 style: .vaporMeta,
-                color: .tribuneru(.vaporTextSecondary),
+                color: .tribuneru(.mudTextSecondary),
                 lineLimit: 1
             )
-            .frame(width: 92, alignment: .leading)
+            .frame(width: 84, alignment: .leading)
 
             TribuneruText(
                 content: result.time,
                 style: .vaporFinishTime,
-                color: .tribuneru(.vaporTextSecondary)
+                color: .tribuneru(.mudTextSecondary)
             )
             .frame(width: 48, alignment: .trailing)
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 10)
     }
 }
 

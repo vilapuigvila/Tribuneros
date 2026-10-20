@@ -34,49 +34,53 @@ struct ErrorCardView: View {
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 44, weight: .semibold))
-                .symbolRenderingMode(.palette)
-                .foregroundStyle(Color.red, Color.orange)
-                .padding(.top, 16)
+                .font(.system(size: 40, weight: .semibold))
+                .foregroundColor(.tribuneru(.vaporNegative))
+                .padding(.top, 20)
+                .accessibilityHidden(true)
 
-            Text(title)
-                .font(.title3).bold()
-                .multilineTextAlignment(.center)
+            TribuneruText(
+                content: title,
+                style: .vaporRowTitle,
+                color: .tribuneru(.vaporTextPrimary),
+                lineLimit: 2
+            )
+            .multilineTextAlignment(.center)
 
-            Text(message)
-                .font(.body)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 8)
-                .padding(.bottom, showTryAgainButton ? 0 : 16)
+            TribuneruText(
+                content: message,
+                style: .vaporRowMeta,
+                color: .tribuneru(.vaporTextSecondary),
+                lineLimit: 4
+            )
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 16)
+            .padding(.bottom, showTryAgainButton ? 0 : 20)
             
             if showTryAgainButton {
-                Button(primaryButtonTitle, action: primaryAction)
-                    .buttonStyle(.borderedProminent)
-                    .padding(.bottom, 16)
+                Button(action: primaryAction) {
+                    TribuneruText(
+                        content: primaryButtonTitle,
+                        style: .vaporRowTitle,
+                        color: .tribuneru(.vaporPageBackground)
+                    )
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 10)
+                    .background(
+                        Color.tribuneru(.vaporAccent),
+                        in: Capsule()
+                    )
+                }
+                .buttonStyle(.plain)
+                .padding(.bottom, 20)
             }
         }
         .frame(maxWidth: .infinity)
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            Color.red.opacity(0.25),
-                            Color.orange.opacity(0.15),
-                            Color.black.opacity(0.2)
-                        ]),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
+            Color.tribuneru(.vaporCardSurface),
+            in: RoundedRectangle(cornerRadius: 16, style: .continuous)
         )
         .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-//        .onTapGesture { primaryAction() }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
     }
