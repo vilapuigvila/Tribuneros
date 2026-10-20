@@ -248,7 +248,7 @@ what the standings document holds: the top five of each category.
 **The CX Zone screen** (`CXRaces.SeriesLensView`, `Tabs/CXRaces/SeriesLens/`) is the "Mud" look (`mud*` tokens in
 `Color.Palette`; Vapor type styles): a header with the season ("2026–27", from July), series chips
 (`CXRaces.RaceSeries` with at least one non-cancelled round this season; the first is selected), then for the selected
-series, all from `CXRaces.SeriesLens`: the next round as a hero over `CXMudArt` plus a rounds-raced bar; **Leaders**
+series, all from `CXRaces.SeriesLens`: the next round as a hero over the series' painting (`CXSeriesArt(series:)`, one `Canvas` per series in `SeriesLens/CX*Art.swift` with `cx*` colors; `.others` keeps `CXMudArt`) plus a rounds-raced bar; **Leaders**
 (first two categories of the standings item whose title names the series, with the points gap to second when both are
 plain numbers; no item, no section); **Last round** (the latest past round, with the Men Elite top 3 when the homepage
 "Latest results" has a race of the same name, else just the calendar winner); **Rounds left** (the 3 rounds after the
@@ -312,7 +312,7 @@ Alfy's `Requester` notes:
 
 A fourth tab (`Tabs/Settings/`, `Tab.settings`, last in `CustomTabBar`, own `Router`), drawn as quick tiles (the
 navigation bar is hidden on the root; header "Settings" and the app version): a wide "Hide results" tile that flips
-the spoiler mode in place, then "Language" and "Onboarding" tiles, then an "Acknowledgements" row.
+the spoiler mode in place (a drawn switch plus `Settings.SpoilerModePreview`: after a flip to ON it plays three press-and-hold reveals, man, woman, neutral winner, then rests covered; OFF shows the result; at rest on appear), then "Language" and "Onboarding" tiles, then an "Acknowledgements" row.
 "Onboarding" calls the `replayOnboarding` environment closure that `OnboardingHost` sets
 (`Presenter.replay()`): it bypasses `isEnabled` (so mocked launches show it), never saves, leaves the
 two-showing schedule alone and opens on the "Welcome back" page. "Language" opens a bottom sheet (view-local state, no

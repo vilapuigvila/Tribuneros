@@ -231,46 +231,45 @@ struct Service {
         guard let heading = try? document.select("h4:contains(Next to finish)").first(),
               let table = try? heading.nextElementSibling(),
               table.tagName() == "table",
-              let tbody = try? table.select("tbody").first(),
-              let rows = try? tbody.select("tr")
+              let headers = try? table.select("thead th").array().map({ try $0.text() }),
+              let rows = try? table.select("tbody tr")
         else {
             print("avvp [NETWORK] - empty next to finish")
             return []
         }
-        var results: [[String]] = []
-        
-        for row in rows {
-            guard let cells = try? row.select("td") else {
-                continue
-            }
-            var rowData: [String] = []
-            
-            for cell in cells {
-                guard let cellText = try? cell.text() else {
-                    continue
-                }
-                rowData.append(cellText)
-            }
-            // get race path url
-            if let pathURL = try? row.select("a").first(), let href = try? pathURL.attr("href") {
-                let urlString = "https://www.procyclingstats.com/\(href)"
-                rowData.append(urlString)
-            } else {
-                rowData.append("")
-            }
-            if let flagSpan = try? row.select("span.flag").first() {
-               let classNames = try? flagSpan.className().split(separator: " ")
-                if let flagCode = classNames?.first(where: { $0 != "flag" }) {
-                    rowData.append(String(flagCode))
-                } else {
-                    rowData.append("")
-                }
-            } else {
-                rowData.append("")
-            }
-            results.append(rowData)
+        // PCS reorders and adds columns, so they're found by header; the hours-to-go column follows ETA.
+        guard let eta = headers.firstIndex(of: "ETA"),
+              let race = headers.firstIndex(of: "race")
+        else {
+            nonFatalCrashlytics(false, "Next to finish headers changed: \(headers)")
+            return []
         }
-        return DTO.NextToFinishResult.parse(cells: results)
+        let category = headers.firstIndex(of: "Cat")
+        let raceClass = headers.firstIndex(of: "Class")
+
+        return rows.compactMap { row in
+            guard let cells = try? row.select("td").array().map({ try $0.text() }),
+                  cells.count == headers.count
+            else {
+                nonFatalCrashlytics(false, "Next to finish row doesn't match its \(headers.count) headers")
+                return nil
+            }
+            let href = (try? row.select("a").first()?.attr("href")) ?? nil
+            let flagClasses = (try? row.select("span.flag").first()?.className()) ?? nil
+            return DTO.NextToFinishResult(
+                eta: cells[eta],
+                duration: eta + 1 < cells.count ? cells[eta + 1] : "",
+                name: cells[race],
+                category: category.map { cells[$0] } ?? "",
+                raceType: raceClass.map { cells[$0] } ?? "",
+                distance: "",
+                urlPath: href.map { "https://www.procyclingstats.com/\($0)" } ?? "",
+                flagCode: flagClasses?
+                    .split(separator: " ")
+                    .first { $0 != "flag" }
+                    .map(String.init) ?? ""
+            )
+        }
     }
     
     // MARK: - Parsing Function -

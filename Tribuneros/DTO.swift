@@ -37,27 +37,6 @@ enum DTO {
         let distance: String
         let urlPath: String
         let flagCode: String
-        
-        static func parse(cells: [[String]]) -> [NextToFinishResult] {
-            // New "Next to finish" row layout has 6 <td> (icon, ETA, duration, race, Cat, Class)
-            // plus the appended url and flag code, so 8 entries at indices 0...7 — there is no
-            // distance column any more, so that field is fed "".
-            cells.compactMap { row in
-                guard row.count >= 8 else {
-                    nonFatalCrashlytics(false, "NextToFinishResult row has \(row.count) cells, expected at least 8")
-                    return nil
-                }
-                return NextToFinishResult(
-                    eta: row[1],
-                    duration: row[2],
-                    name: row[3],
-                    category: row[4],
-                    raceType: row[5],
-                    distance: "",
-                    urlPath: row[6],
-                    flagCode: row[7])
-            }
-        }
     }
     
     struct TodayResult: Codable, Equatable {

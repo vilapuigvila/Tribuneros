@@ -70,6 +70,34 @@ final class RequesterHomeParsingTests: XCTestCase {
         XCTAssertNotNil(match, "Expected a row matching eta/name/flagCode/urlPath/distance shape. Got: \(results)")
     }
 
+    func testNextToFinishFindsColumnsByHeaderInOctober2026Layout() throws {
+        let html = """
+        <h4>Next to finish</h4><table class=" basic hp-next-to-finish"><thead><tr>
+        <th class="w8 ">ETA</th><th class="w8 fs10 green"></th><th class="w4 "></th>
+        <th class="w60 ">race</th><th class="w8 fs10">Cat</th><th class="w8 fs10">Class</th><th class="w4 "></th>
+        </tr></thead><tbody>
+        <tr class=""><td>20:30</td><td class="fs10 green" >4h</td><td>CX</td><td><span class="flag nl"></span> <a  href="race/nacht-van-woerden-2027-nacht-van-woerden-we">Kiremko Nacht Van Woerden</a></td><td class="fs10" >WE</td><td class="fs10" >C2</td><td><span class="icon profile p mg_rp4 "></span></td></tr>
+        </tbody></table>
+        """
+        let results = Service.parseNextToFinishResults(try SwiftSoup.parse(html))
+
+        XCTAssertEqual(
+            results,
+            [
+                DTO.NextToFinishResult(
+                    eta: "20:30",
+                    duration: "4h",
+                    name: "Kiremko Nacht Van Woerden",
+                    category: "WE",
+                    raceType: "C2",
+                    distance: "",
+                    urlPath: "https://www.procyclingstats.com/race/nacht-van-woerden-2027-nacht-van-woerden-we",
+                    flagCode: "nl"
+                )
+            ]
+        )
+    }
+
     // MARK: - Results yesterday
 
     func testResultsYesterdayParsesRealMarkup() throws {
