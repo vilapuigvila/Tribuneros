@@ -143,7 +143,6 @@ struct TabBarView: View {
             if !isKeyboardVisible {
                 CustomTabBar(
                     selectedTab: $selectedTab,
-                    cxZoneSymbolName: "bicycle",
                     onTabTap: handleTabSelection
                 )
             }
@@ -193,7 +192,6 @@ struct TabBarView: View {
 
 private struct CustomTabBar: View {
     @Binding var selectedTab: Tab
-    let cxZoneSymbolName: String
     let onTabTap: (Tab) -> Void
     
     var body: some View {
@@ -203,7 +201,7 @@ private struct CustomTabBar: View {
             HStack {
                 TabBarButton(
                     title: L10n.tr("Road"),
-                    systemImage: "figure.indoor.cycle",
+                    imageName: "TabRoad",
                     isSelected: selectedTab == .home
                 ) {
                     onTabTap(.home)
@@ -213,9 +211,9 @@ private struct CustomTabBar: View {
                 
                 TabBarButton(
                     title: L10n.tr("CX Zone"),
-                    systemImage: cxZoneSymbolName,
-                    isSelected: selectedTab == .cxZone,
-                    animateWhenSelected: true
+                    imageName: "TabCXZone",
+                    selectedColor: .mudAccent,
+                    isSelected: selectedTab == .cxZone
                 ) {
                     onTabTap(.cxZone)
                 }
@@ -224,7 +222,8 @@ private struct CustomTabBar: View {
                 
                 TabBarButton(
                     title: L10n.tr("Paddock"),
-                    systemImage: "megaphone.fill",
+                    imageName: "TabPaddock",
+                    selectedColor: .kitAccent,
                     isSelected: selectedTab == .paddock
                 ) {
                     onTabTap(.paddock)
@@ -234,7 +233,7 @@ private struct CustomTabBar: View {
 
                 TabBarButton(
                     title: L10n.tr("Settings"),
-                    systemImage: "gearshape",
+                    imageName: "TabSettings",
                     isSelected: selectedTab == .settings
                 ) {
                     onTabTap(.settings)
@@ -251,35 +250,28 @@ private struct CustomTabBar: View {
 
 private struct TabBarButton: View {
     let title: String
-    let systemImage: String
+    let imageName: String
+    var selectedColor: Color.Palette = .vaporAccent
     let isSelected: Bool
-    let animateWhenSelected: Bool
     let action: () -> Void
-    
-    init(
-        title: String,
-        systemImage: String,
-        isSelected: Bool,
-        animateWhenSelected: Bool = false,
-        action: @escaping () -> Void
-    ) {
-        self.title = title
-        self.systemImage = systemImage
-        self.isSelected = isSelected
-        self.animateWhenSelected = animateWhenSelected
-        self.action = action
-    }
+
+    private var tint: Color.Palette { isSelected ? selectedColor : .vaporTextSecondary }
     
     var body: some View {
         Button(action: action) {
             VStack(spacing: 6) {
-                icon
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(isSelected ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary))
+                Image(imageName)
+                    .renderingMode(.template)
+                    .resizable()
+                    .frame(
+                        width: 24,
+                        height: 24
+                    )
+                    .foregroundColor(.tribuneru(tint))
                 TribuneruText(
                     content: title,
                     style: .vaporTabLabel,
-                    color: isSelected ? .tribuneru(.vaporAccent) : .tribuneru(.vaporTextSecondary),
+                    color: .tribuneru(tint),
                     lineLimit: 1
                 )
             }
@@ -287,20 +279,6 @@ private struct TabBarButton: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-    }
-    
-    @ViewBuilder
-    private var icon: some View {
-        let image = Image(systemName: systemImage)
-        if animateWhenSelected && isSelected {
-            if #available(iOS 18.0, *) {
-                image.symbolEffect(.bounce.down.byLayer, options: .repeat(.periodic(2, delay: 0.5)))
-            } else {
-                image
-            }
-        } else {
-            image
-        }
     }
 }
 
