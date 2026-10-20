@@ -15,7 +15,7 @@ extension Paddock {
     /// those hides when it comes back empty.
     struct RiderDetailView: View {
         let context: RiderContext
-        let openURL: (URL) -> Void
+        let openSeasonResults: (SeasonResultsContext) -> Void
         /// Fetches the PCS rider page; injectable so previews never hit the network.
         private let loadPage: (URL) async -> DTO.PCSRiderPage?
 
@@ -28,10 +28,10 @@ extension Paddock {
             loadPage: @escaping (URL) async -> DTO.PCSRiderPage? = {
                 await Service.getPCSRiderPage(url: $0)
             },
-            openURL: @escaping (URL) -> Void
+            openSeasonResults: @escaping (SeasonResultsContext) -> Void
         ) {
             self.context = context
-            self.openURL = openURL
+            self.openSeasonResults = openSeasonResults
             self.loadPage = loadPage
             _page = State(initialValue: page)
             let isLoading = page == nil && context.rider.url != nil
@@ -48,6 +48,8 @@ extension Paddock {
                         TransferPanel(card: card)
                     case .program(let card):
                         ProgramPanel(card: card)
+                    case .birthday(let entry):
+                        BirthdayPanel(entry: entry)
                     }
 
                     if isLoading {
@@ -66,16 +68,12 @@ extension Paddock {
                         )
                     }
 
-                    if let riderURL = context.rider.url {
-                        Button {
-                            openURL(riderURL)
-                        } label: {
-                            RiderPageLink(
-                                look: .kit,
-                                title: L10n.tr("rider page on ProCyclingStats")
-                            )
-                        }
-                        .buttonStyle(.plain)
+                    if !isLoading {
+                        RiderSectionsView(
+                            sections: sections,
+                            riderName: page?.name ?? context.rider.name,
+                            openSeasonResults: openSeasonResults
+                        )
                     }
                 }
                 .padding()
@@ -105,10 +103,15 @@ extension Paddock {
             )
         }
 
+        private var sections: RiderSections {
+            RiderSections(page: page)
+        }
+
         private var tag: String {
             switch context {
             case .transfer: L10n.tr("Transfer")
             case .program: L10n.tr("Program update")
+            case .birthday: L10n.tr("Birthday")
             }
         }
 
@@ -159,6 +162,24 @@ private extension Paddock {
                         look: .kit
                     )
                 }
+            }
+        }
+    }
+
+    struct BirthdayPanel: View {
+        let entry: BirthdaysCard.Entry
+
+        var body: some View {
+            RiderPanel(
+                look: .kit,
+                title: L10n.tr("Birthday")
+            ) {
+                CXStatTile(
+                    label: L10n.tr("Age today"),
+                    value: entry.age,
+                    look: .kit
+                )
+                .accessibilityIdentifier("paddock.rider.birthday")
             }
         }
     }

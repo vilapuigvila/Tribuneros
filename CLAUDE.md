@@ -124,13 +124,28 @@ bot challenge: Node/curl requests get HTTP 403 with a "Just a moment..." page, w
   updates" and "Birthdays". Program-update times are relative ("16h") and transfer dates have no
   year ("20/09"); `Paddock.InteractorImpl` resolves both against the fetch time, and the feed
   groups by calendar day. An empty program-updates list is normal — PCS often has none.
-- Transfer and program cards open `Paddock.RiderDetailView` (route `paddockRider(Paddock.RiderContext)`):
-  the card's data (new team / added and dropped races) plus the rider's PCS page, fetched on
-  demand by `Service.getPCSRiderPage` (10 min TTL). `parsePCSRiderPage` is best-effort (the `h1`
-  name, the first rider photo, a `team/` link in the title block, and "Label:" elements in `b`,
-  `strong` or `.bold` followed by their value) and covered only by synthetic HTML in
-  `PaddockTests`; capture a real rider page with `URLSession` to tighten it. Birthday rows still
-  open the PCS page in Safari.
+- Transfer, program and birthday cards open `Paddock.RiderDetailView` (route `paddockRider(Paddock.RiderContext)`;
+  birthdays use `RiderContext.birthday`: tag and panel "Birthday", an "AGE TODAY" tile): the card's data
+  (new team / added and dropped races) plus the rider's PCS page, fetched on demand by
+  `Service.getPCSRiderPage` (12 h TTL). `parsePCSRiderPage` is anchored on the real page
+  `TribunerosTests/pcs_rider.html` (captured with `URLSession`, covered by `PaddockDataTests`): the `h1` name, the
+  rider photo, the `h2` team, "Label:" facts, and the sections specialties (`ul.pps`), key statistics (`ul.rider-kpi`),
+  top results (`ul.topresults`), team history (`ul.rdr-teams2 li.main`), the race program (list after the "Program"
+  `h4`), PCS ranking per season (table after its `h4`, duplicate seasons dropped) and the season results
+  (`table.rdrResults`, race rows and stage sub-rows; race rows carry no result or points, only stage rows do). Each
+  section hides when empty, so a markup change gives fewer sections, not a broken screen. The results preview shows
+  ~10 rows and "Season results" (route `paddockSeasonResults(Paddock.SeasonResultsContext)`, Kit) lists the whole
+  table from the same page with no extra request; result rows aren't tappable. No Paddock tap opens a web view.
+- **Press screen** (`paddockPress(Paddock.PressItem)`, feature module `Paddock.PressPage`, Kit look, reuses
+  `CXRaces.PageLoad`): `Service.getPressFeed(for:)` (`Service+Press.swift`) fetches the site's homepage and takes the
+  first RSS/Atom `<link rel="alternate">` (`pressFeedURL(fromHomepage:siteURL:)`, comment feeds skipped), else tries
+  `/feed/`, `/rss/` and `/sitemap/news.xml`; `parsePressFeed` (Foundation `XMLParser`) reads RSS 2.0, Atom and Google
+  News sitemaps (cyclinguptodate and ciclismoaldia serve RSS 2.0 at `/sitemap/news.xml`, ~1 MB), newest first, at
+  most 30, nil when empty. Requests use a 30 min TTL. Summary-only: title, date, image and the feed's own summary
+  (tags stripped, cut near 240 characters); a headline and the empty state's "Open site" leave through
+  `Router.openInSystem`. ciclismo2005.com is behind Cloudflare even for `URLSession`, so it always shows the empty
+  state. Mock: `PaddockMock.pressFeed(for:)` gives 8 headlines for the cyclingnews and escapecollective hosts and nil
+  (empty state) for others; `PaddockMock.riderPage(url:)` fills every rider section.
 
 **The Today Races screen** (`HomeRaces.MainView`) is one scroll: a header (bicycle, "Races", the
 date; the navigation bar is hidden on this root and `StatusBarScrim` fades content under the status
@@ -176,7 +191,7 @@ browser User-Agent, so `CachedImageView` adds both for PCS URLs (`Service.addPCS
 **The Paddock screen** (`Paddock.MainView`, `Paddock.Subviews.swift`) is the "Kit" look (`kit*` tokens in
 `Color.Palette`; Vapor type styles), navigation bar hidden like Today Races: a header (megaphone, "Paddock", the date),
 the press sites as 92pt circles (`PressStrip`, monogram from `PressItem.monogram`; three in view and the edge of a
-fourth), a "Birthdays today" card over `PaddockBirthdayArt` (`ViewState.birthdays`, every birthday event; hidden
+fourth; each opens the Press screen), a "Birthdays today" card (rows open the rider screen) over `PaddockBirthdayArt` (`ViewState.birthdays`, every birthday event; hidden
 when none), then **Moves**: a Transfers | Programs segmented control (`Paddock.Segment`, stored as `Domain.filter`,
 default `.transfers`; `.all` / `.birthdays` still exist for the feed mapping and fall back to Transfers) with counts
 (`ViewState.transferCount` / `programCount`) over a timeline of that kind's cards, grouped by day on a time rail.

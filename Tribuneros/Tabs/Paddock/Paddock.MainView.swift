@@ -18,8 +18,15 @@ struct PaddockView: View {
             switch destination {
             case .paddockRider(let context):
                 Paddock.RiderDetailView(context: context) {
-                    viewModel.action(.didTapOnLink($0))
+                    viewModel.action(.didTapOnSeasonResults($0))
                 }
+            case .paddockPress(let item):
+                Paddock.PressView(
+                    item: item,
+                    router: viewModel.router
+                )
+            case .paddockSeasonResults(let context):
+                Paddock.SeasonResultsView(context: context)
             default:
                 EmptyView()
             }
@@ -51,8 +58,8 @@ extension Paddock {
                             .disabled(true)
                             .padding(.top, 14)
                     case .loaded(let items) where !items.isEmpty:
-                        PressStrip(items: items) { url in
-                            action(.didTapOnPressLink(url))
+                        PressStrip(items: items) { item in
+                            action(.didTapOnPress(item))
                         }
                         .padding(.top, 14)
                     case .loaded:
@@ -60,8 +67,8 @@ extension Paddock {
                     }
 
                     if !state.birthdays.isEmpty {
-                        BirthdaysSection(entries: state.birthdays) { url in
-                            action(.didTapOnLink(url))
+                        BirthdaysSection(entries: state.birthdays) { entry in
+                            action(.didTapOnRider(.birthday(entry)))
                         }
                     }
 

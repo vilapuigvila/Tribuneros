@@ -67,14 +67,14 @@ extension Paddock {
         }
 
         let items: [PressItem]
-        let onTap: (URL) -> Void
+        let onTap: (PressItem) -> Void
 
         var body: some View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: 14) {
                     ForEach(items) { item in
                         Button {
-                            onTap(item.url)
+                            onTap(item)
                         } label: {
                             bubble(item)
                         }
@@ -164,7 +164,7 @@ extension Paddock {
 
     struct BirthdaysSection: View {
         let entries: [BirthdaysCard.Entry]
-        let onTap: (URL?) -> Void
+        let onTap: (BirthdaysCard.Entry) -> Void
 
         var body: some View {
             KitSection(title: L10n.tr("Birthdays today")) {
@@ -188,7 +188,7 @@ extension Paddock {
                                 )
                             }
                             Button {
-                                onTap(entry.rider.url)
+                                onTap(entry)
                             } label: {
                                 row(entry)
                             }

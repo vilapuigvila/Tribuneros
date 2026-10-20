@@ -1,0 +1,79 @@
+# Paddock without web views: press headlines screen, the hand-off leaving no in-app sheet, the rider
+# screen's PCS sections and the Season results screen, on Debug mock data (mock scenario live): no network.
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- tapOn: "Paddock"
+- extendedWaitUntil:
+    visible: "Birthdays today"
+    timeout: 45000
+# A press circle with headlines opens the headlines screen.
+- tapOn:
+    id: "paddock.press.escapecollective.com"
+- extendedWaitUntil:
+    visible:
+      id: "paddock.press.header"
+    timeout: 45000
+- extendedWaitUntil:
+    visible: "MOCK Escape Collective headline 1"
+    timeout: 45000
+# A headline leaves the app (system browser); coming back shows no in-app sheet and still Paddock.
+- tapOn:
+    id: "paddock.press.article.0"
+- launchApp:
+    stopApp: false
+- assertNotVisible: "Done"
+- assertVisible:
+    id: "paddock.press.header"
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- assertVisible: "Birthdays today"
+# A site without a feed shows the empty state and "Open site".
+- tapOn:
+    id: "paddock.press.joanseguidor.com"
+- extendedWaitUntil:
+    visible:
+      id: "paddock.press.unavailable"
+    timeout: 45000
+- assertVisible: "Open site"
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+# A Moves card opens the rider screen with the PCS sections.
+- scrollUntilVisible:
+    element: "TRANSFER,.*"
+- tapOn: "TRANSFER,.*"
+- extendedWaitUntil:
+    visible: "Profile"
+    timeout: 45000
+- scrollUntilVisible:
+    element: "Specialties"
+- scrollUntilVisible:
+    element: "Key statistics"
+- scrollUntilVisible:
+    element: "Top results"
+- scrollUntilVisible:
+    element: "Program"
+- scrollUntilVisible:
+    element: "Teams"
+- scrollUntilVisible:
+    element: "PCS ranking"
+- scrollUntilVisible:
+    element: "Season results"
+- scrollUntilVisible:
+    element:
+      id: "paddock.rider.seasonResultsLink"
+- tapOn:
+    id: "paddock.rider.seasonResultsLink"
+- extendedWaitUntil:
+    visible:
+      id: "paddock.seasonResults.header"
+    timeout: 45000
+- assertVisible: "Season results"
+- assertVisible: "[0-9]+ RESULTS"

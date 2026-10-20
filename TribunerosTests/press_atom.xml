@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
+  <title>Example Atom Cycling</title>
+  <link href="https://example-atom.test/" rel="alternate"/>
+  <link href="https://example-atom.test/atom.xml" rel="self"/>
+  <updated>2026-10-20T10:00:00Z</updated>
+  <entry>
+    <title>Atom first entry</title>
+    <link rel="self" href="https://example-atom.test/self/first"/>
+    <link rel="alternate" type="text/html" href="https://example-atom.test/first"/>
+    <updated>2026-10-20T10:00:00Z</updated>
+    <published>2026-10-19T08:00:00Z</published>
+    <summary type="html">&lt;p&gt;Short &lt;b&gt;summary&lt;/b&gt; with &amp;amp; entity.&lt;/p&gt;</summary>
+    <media:thumbnail url="https://example-atom.test/thumb.jpg"/>
+  </entry>
+  <entry>
+    <title>Atom second entry</title>
+    <link href="https://example-atom.test/second"/>
+    <updated>2026-10-17T10:00:00+02:00</updated>
+  </entry>
+</feed>

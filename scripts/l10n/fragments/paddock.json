@@ -83,11 +83,6 @@
     "eu": "Txirrindularia kargatzen",
     "comment": "Rider screen accessibility label"
   },
-  "rider page on ProCyclingStats": {
-    "ca": "pàgina del ciclista a ProCyclingStats",
-    "eu": "txirrindulariaren orria ProCyclingStats-en",
-    "comment": "Rider screen link"
-  },
   "Rider": {
     "ca": "Ciclista",
     "eu": "Txirrindularia",
@@ -234,5 +229,75 @@
       }
     },
     "comment": "Count of birthdays today"
+  },
+  "Birthday": {
+    "ca": "Aniversari",
+    "eu": "Urtebetetzea",
+    "comment": "Rider screen tag and panel title"
+  },
+  "Age today": {
+    "ca": "Edat avui",
+    "eu": "Gaurko adina",
+    "comment": "Rider screen birthday tile"
+  },
+  "Specialties": {
+    "ca": "Especialitats",
+    "eu": "Espezialitateak",
+    "comment": "Rider screen section"
+  },
+  "Key statistics": {
+    "ca": "Estadístiques clau",
+    "eu": "Estatistika nagusiak",
+    "comment": "Rider screen section"
+  },
+  "Top results": {
+    "ca": "Millors resultats",
+    "eu": "Emaitza onenak",
+    "comment": "Rider screen section"
+  },
+  "Program": {
+    "ca": "Programa",
+    "eu": "Egitaraua",
+    "comment": "Rider screen section: upcoming races"
+  },
+  "Teams": {
+    "ca": "Equips",
+    "eu": "Taldeak",
+    "comment": "Rider screen section: team history"
+  },
+  "PCS ranking": {
+    "ca": "Rànquing PCS",
+    "eu": "PCS sailkapena",
+    "comment": "Rider screen section: ranking per season"
+  },
+  "Season results": {
+    "ca": "Resultats de la temporada",
+    "eu": "Denboraldiko emaitzak",
+    "comment": "Rider screen section and screen title"
+  },
+  "%@ pts": {
+    "ca": "%@ punts",
+    "eu": "%@ puntu",
+    "comment": "Points, e.g. 1200 pts"
+  },
+  "Open site": {
+    "ca": "Obre el web",
+    "eu": "Ireki webgunea",
+    "comment": "Press screen button"
+  },
+  "Loading the headlines": {
+    "ca": "Carregant els titulars",
+    "eu": "Titularrak kargatzen",
+    "comment": "Press screen accessibility label"
+  },
+  "No headlines found for this site.": {
+    "ca": "No s’han trobat titulars d’aquest web.",
+    "eu": "Ez da titularrik aurkitu webgune honetan.",
+    "comment": "Press screen empty state"
+  },
+  "Couldn’t load the headlines for this site.": {
+    "ca": "No s’han pogut carregar els titulars d’aquest web.",
+    "eu": "Ezin izan dira webgune honetako titularrak kargatu.",
+    "comment": "Press screen failed state"
   }
 }

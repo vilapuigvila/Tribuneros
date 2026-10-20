@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://example-cycling.test/news/older-story</loc>
+    <news:news>
+      <news:publication><news:name>Example Cycling</news:name><news:language>en</news:language></news:publication>
+      <news:publication_date>2026-10-18T07:30:00+00:00</news:publication_date>
+      <news:title>Older story &amp; its title</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://example-cycling.test/news/newest-story</loc>
+    <news:news>
+      <news:publication><news:name>Example Cycling</news:name><news:language>en</news:language></news:publication>
+      <news:publication_date>2026-10-20T09:00:00+02:00</news:publication_date>
+      <news:title>Newest story</news:title>
+    </news:news>
+    <image:image><image:loc>https://example-cycling.test/img/newest.jpg</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://example-cycling.test/news/middle-story</loc>
+    <news:news>
+      <news:publication><news:name>Example Cycling</news:name><news:language>en</news:language></news:publication>
+      <news:publication_date>2026-10-19T12:00:00Z</news:publication_date>
+      <news:title>Middle story</news:title>
+    </news:news>
+  </url>
+</urlset>

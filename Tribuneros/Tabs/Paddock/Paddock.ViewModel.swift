@@ -46,13 +46,12 @@ extension Paddock {
                 interactor.useCase(.request)
             case .didSelectFilter(let filter):
                 interactor.useCase(.selectFilter(filter))
-            case .didTapOnLink(let url):
-                guard let url else { return }
-                router.routeTo(.web(url))
-            case .didTapOnPressLink(let url):
-                router.routeTo(.article(url))
+            case .didTapOnPress(let item):
+                router.routeTo(.paddockPress(item))
             case .didTapOnRider(let context):
                 router.routeTo(.paddockRider(context))
+            case .didTapOnSeasonResults(let context):
+                router.routeTo(.paddockSeasonResults(context))
             }
         }
 

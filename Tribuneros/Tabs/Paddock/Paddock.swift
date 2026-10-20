@@ -15,11 +15,12 @@ extension Paddock {
         case didAppear
         case didRequestRefresh
         case didSelectFilter(Filter)
-        case didTapOnLink(URL?)
-        /// Press panel cards open in Safari Reader when the site supports it.
-        case didTapOnPressLink(URL)
-        /// Transfer and program cards open the native rider screen; birthday rows still open the web page.
+        /// A press circle opens the site's native headlines screen.
+        case didTapOnPress(PressItem)
+        /// Transfer, program and birthday cards open the native rider screen.
         case didTapOnRider(RiderContext)
+        /// The rider screen's "Season results" link.
+        case didTapOnSeasonResults(SeasonResultsContext)
     }
 
     enum Filter: CaseIterable, Sendable {
@@ -99,7 +100,7 @@ extension Paddock {
         case error
     }
 
-    struct PressItem: Identifiable, Equatable {
+    struct PressItem: Identifiable, Hashable {
         var id: URL { url }
         let url: URL
         let name: String
@@ -224,11 +225,13 @@ extension Paddock {
     enum RiderContext: Hashable {
         case transfer(TransferCard)
         case program(ProgramCard)
+        case birthday(BirthdaysCard.Entry)
 
         var rider: Rider {
             switch self {
             case .transfer(let card): card.rider
             case .program(let card): card.rider
+            case .birthday(let entry): entry.rider
             }
         }
     }
@@ -259,7 +262,7 @@ extension Paddock {
     }
 
     struct BirthdaysCard: Equatable {
-        struct Entry: Equatable {
+        struct Entry: Hashable {
             let rider: Rider
             let age: String
         }

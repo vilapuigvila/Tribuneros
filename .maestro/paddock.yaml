@@ -15,8 +15,19 @@ tags:
 - extendedWaitUntil:
     notVisible: "Loading the paddock"
     timeout: 45000
-# Transfer and program cards open the rider screen (birthdays open the web page); the mock feed
-# has both, one per side of the Moves segmented control.
+# Birthday rows, transfer cards and program cards all open the native rider screen; the mock feed
+# has all three (transfers and programs sit on either side of the Moves segmented control).
+- tapOn:
+    id: "paddock.birthday.0"
+- assertVisible: "Birthday"
+- assertVisible: "AGE TODAY"
+- extendedWaitUntil:
+    visible: "Profile"
+    timeout: 45000
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- assertVisible: "Birthdays today"
 - scrollUntilVisible:
     element: "Moves"
 - scrollUntilVisible:

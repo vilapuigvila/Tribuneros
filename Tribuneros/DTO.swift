@@ -321,10 +321,103 @@ extension DTO {
     /// A PCS rider page (`rider/<slug>`), parsed best-effort for Paddock's rider screen.
     /// Facts share the CX rider page's label/value type so the same profile panel renders both.
     struct PCSRiderPage: Equatable, Sendable {
+        struct Specialty: Equatable, Sendable, Hashable {
+            let title: String
+            let points: Int
+        }
+
+        struct KeyStat: Equatable, Sendable, Hashable {
+            let value: String
+            let title: String
+            let detail: String?
+        }
+
+        struct TopResult: Equatable, Sendable, Hashable {
+            let count: String
+            let kind: String?
+            let race: String
+            let years: String?
+        }
+
+        struct TeamSeason: Equatable, Sendable, Hashable {
+            let season: String
+            let team: String
+            let level: String?
+        }
+
+        struct ProgramRace: Equatable, Sendable, Hashable {
+            let date: String
+            let race: String
+            let countryCode: String?
+        }
+
+        struct SeasonRank: Equatable, Sendable, Hashable {
+            let season: String
+            let points: String
+            let rank: String
+        }
+
+        struct SeasonResult: Equatable, Sendable, Hashable {
+            let date: String
+            let result: String
+            let race: String
+            let raceClass: String?
+            let distance: String?
+            let pcsPoints: String?
+            let isStage: Bool
+        }
+
         let name: String
         let imageURL: URL?
         let team: String?
         let facts: [CXRiderPage.Fact]
+        let specialties: [Specialty]
+        let keyStats: [KeyStat]
+        let topResults: [TopResult]
+        let teams: [TeamSeason]
+        let program: [ProgramRace]
+        let rankingBySeason: [SeasonRank]
+        let seasonResults: [SeasonResult]
+
+        init(
+            name: String,
+            imageURL: URL?,
+            team: String?,
+            facts: [CXRiderPage.Fact],
+            specialties: [Specialty] = [],
+            keyStats: [KeyStat] = [],
+            topResults: [TopResult] = [],
+            teams: [TeamSeason] = [],
+            program: [ProgramRace] = [],
+            rankingBySeason: [SeasonRank] = [],
+            seasonResults: [SeasonResult] = []
+        ) {
+            self.name = name
+            self.imageURL = imageURL
+            self.team = team
+            self.facts = facts
+            self.specialties = specialties
+            self.keyStats = keyStats
+            self.topResults = topResults
+            self.teams = teams
+            self.program = program
+            self.rankingBySeason = rankingBySeason
+            self.seasonResults = seasonResults
+        }
+    }
+
+    /// A publisher's latest headlines, read from its feed.
+    struct PressFeed: Equatable, Sendable {
+        struct Article: Equatable, Sendable, Hashable, Identifiable {
+            var id: URL { url }
+            let title: String
+            let url: URL
+            let date: Date?
+            let imageURL: URL?
+            let summary: String?
+        }
+
+        let articles: [Article]
     }
 }
 

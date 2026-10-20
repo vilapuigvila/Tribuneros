@@ -45,6 +45,10 @@ final class Router: ObservableObject {
         case detail(Detail)
         case cxZone(CXZone)
         case paddockRider(Paddock.RiderContext)
+        /// A press site's native headlines screen.
+        case paddockPress(Paddock.PressItem)
+        /// A rider's whole current-season table.
+        case paddockSeasonResults(Paddock.SeasonResultsContext)
         case settingsAcknowledgements
         /// The native schedule behind "Where to watch", opened on the race's day with the race pinned.
         case whereToWatch(HomeRaces.WhereToWatch.RaceKey?)

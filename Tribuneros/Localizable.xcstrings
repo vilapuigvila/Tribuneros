@@ -122,6 +122,24 @@
         }
       }
     },
+    "%@ pts" : {
+      "comment" : "Points, e.g. 1200 pts",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ punts"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ puntu"
+          }
+        }
+      }
+    },
     "%@, finished" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -551,6 +569,24 @@
         }
       }
     },
+    "Age today" : {
+      "comment" : "Rider screen birthday tile",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edat avui"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gaurko adina"
+          }
+        }
+      }
+    },
     "All" : {
       "comment" : "Paddock filter chip",
       "extractionState" : "manual",
@@ -636,6 +672,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Helmuga"
+          }
+        }
+      }
+    },
+    "Birthday" : {
+      "comment" : "Rider screen tag and panel title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aniversari"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Urtebetetzea"
           }
         }
       }
@@ -988,6 +1042,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ezin izan dira ziklo-kros lasterketak kargatu. Egiaztatu konexioa eta saiatu berriro."
+          }
+        }
+      }
+    },
+    "Couldn’t load the headlines for this site." : {
+      "comment" : "Press screen failed state",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’han pogut carregar els titulars d’aquest web."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezin izan dira webgune honetako titularrak kargatu."
           }
         }
       }
@@ -1521,6 +1593,24 @@
         }
       }
     },
+    "Key statistics" : {
+      "comment" : "Rider screen section",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estadístiques clau"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estatistika nagusiak"
+          }
+        }
+      }
+    },
     "LIVE" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1764,6 +1854,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Emaitzak kargatzen"
+          }
+        }
+      }
+    },
+    "Loading the headlines" : {
+      "comment" : "Press screen accessibility label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carregant els titulars"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Titularrak kargatzen"
           }
         }
       }
@@ -2268,6 +2376,24 @@
         }
       }
     },
+    "No headlines found for this site." : {
+      "comment" : "Press screen empty state",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’han trobat titulars d’aquest web."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez da titularrik aurkitu webgune honetan."
+          }
+        }
+      }
+    },
     "No info available" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2726,6 +2852,24 @@
         }
       }
     },
+    "Open site" : {
+      "comment" : "Press screen button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obre el web"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ireki webgunea"
+          }
+        }
+      }
+    },
     "Other Belgian" : {
       "comment" : "Series filter chip",
       "extractionState" : "manual",
@@ -2758,6 +2902,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Besteak"
+          }
+        }
+      }
+    },
+    "PCS ranking" : {
+      "comment" : "Rider screen section: ranking per season",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rànquing PCS"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PCS sailkapena"
           }
         }
       }
@@ -2917,6 +3079,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Profila"
+          }
+        }
+      }
+    },
+    "Program" : {
+      "comment" : "Rider screen section: upcoming races",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Programa"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Egitaraua"
           }
         }
       }
@@ -3573,6 +3753,24 @@
         }
       }
     },
+    "Season results" : {
+      "comment" : "Rider screen section and screen title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultats de la temporada"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denboraldiko emaitzak"
+          }
+        }
+      }
+    },
     "See all" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3726,6 +3924,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zerbait gaizki joan da"
+          }
+        }
+      }
+    },
+    "Specialties" : {
+      "comment" : "Rider screen section",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Especialitats"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espezialitateak"
           }
         }
       }
@@ -3974,6 +4190,24 @@
         }
       }
     },
+    "Teams" : {
+      "comment" : "Rider screen section: team history",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Equips"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taldeak"
+          }
+        }
+      }
+    },
     "The Paddock" : {
       "comment" : "Onboarding page 4 title",
       "extractionState" : "manual",
@@ -4130,6 +4364,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bihar"
+          }
+        }
+      }
+    },
+    "Top results" : {
+      "comment" : "Rider screen section",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Millors resultats"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emaitza onenak"
           }
         }
       }
@@ -4778,24 +5030,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "bat ere ez"
-          }
-        }
-      }
-    },
-    "rider page on ProCyclingStats" : {
-      "comment" : "Rider screen link",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "pàgina del ciclista a ProCyclingStats"
-          }
-        },
-        "eu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "txirrindulariaren orria ProCyclingStats-en"
           }
         }
       }
