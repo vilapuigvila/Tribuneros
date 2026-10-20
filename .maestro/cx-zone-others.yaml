@@ -32,3 +32,11 @@ tags:
     text: "Others"
     enabled: true
 - assertVisible: "Season 2026–27"
+
+# Calendar opens All races on Others, its chip scrolled to the middle (the "All" chip off screen)
+- scrollUntilVisible:
+    element: "Calendar"
+- tapOn: "Calendar"
+- assertVisible: "All races"
+- assertVisible: "OTHERS,? ?\\d+"
+- assertNotVisible: "ALL,? ?\\d+"

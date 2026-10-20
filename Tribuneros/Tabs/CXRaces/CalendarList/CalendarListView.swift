@@ -13,6 +13,7 @@ struct CXAllRacesView: View {
         static let rowHeight: CGFloat = 56
         static let autoScrollDelay: TimeInterval = 0.5
         static let showButtonDelay: TimeInterval = 0.5
+        static let allChipID = "all"
     }
     
     let events: [DTO.CXCalendarEvent]
@@ -198,29 +199,44 @@ struct CXAllRacesView: View {
     }
 
     private var seriesFilterBar: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 6) {
-                CXSeriesFilterChip(
-                    title: L10n.tr("All"),
-                    count: searchedEvents.count,
-                    isSelected: selectedSeries == nil
-                ) {
-                    selectedSeries = nil
-                }
-                // Only the series present in this season's calendar get a chip.
-                let counts = seriesCounts
-                ForEach(seasonSeries) { series in
+        ScrollViewReader { chipProxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
                     CXSeriesFilterChip(
-                        title: series.title,
-                        count: counts[series] ?? 0,
-                        isSelected: selectedSeries == series
+                        title: L10n.tr("All"),
+                        count: searchedEvents.count,
+                        isSelected: selectedSeries == nil
                     ) {
-                        selectedSeries = selectedSeries == series ? nil : series
+                        selectedSeries = nil
+                    }
+                    .id(UI.allChipID)
+                    // Only the series present in this season's calendar get a chip.
+                    let counts = seriesCounts
+                    ForEach(seasonSeries) { series in
+                        CXSeriesFilterChip(
+                            title: series.title,
+                            count: counts[series] ?? 0,
+                            isSelected: selectedSeries == series
+                        ) {
+                            selectedSeries = selectedSeries == series ? nil : series
+                        }
+                        .id(series.id)
                     }
                 }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
+            .onAppear {
+                // Wait one runloop so the chips are laid out before centering.
+                DispatchQueue.main.async {
+                    chipProxy.scrollTo(selectedSeries?.id ?? UI.allChipID, anchor: .center)
+                }
+            }
+            .onChange(of: selectedSeries) {
+                withAnimation {
+                    chipProxy.scrollTo(selectedSeries?.id ?? UI.allChipID, anchor: .center)
+                }
+            }
         }
     }
 
