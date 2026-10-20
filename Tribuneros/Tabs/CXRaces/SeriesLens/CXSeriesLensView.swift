@@ -237,6 +237,7 @@ private struct NextRoundSection: View {
                     open(round.event)
                 } label: {
                     hero(
+                        series: lens.series,
                         tag: L10n.tr("NEXT ROUND"),
                         pill: countdown(to: round),
                         title: round.event.race,
@@ -247,6 +248,7 @@ private struct NextRoundSection: View {
                 .accessibilityIdentifier("cx.nextRound")
             } else {
                 hero(
+                    series: lens.series,
                     tag: L10n.tr("Finished"),
                     pill: nil,
                     title: L10n.tr("Season finished"),
@@ -259,13 +261,14 @@ private struct NextRoundSection: View {
     }
 
     private func hero(
+        series: CXRaces.RaceSeries,
         tag: String,
         pill: String?,
         title: String,
         subtitle: String
     ) -> some View {
         ZStack {
-            CXMudArt()
+            CXSeriesArt(series: series)
             ImageScrim(
                 top: 0.5,
                 topEnd: 0.34,

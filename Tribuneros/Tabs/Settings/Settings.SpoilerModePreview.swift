@@ -7,7 +7,7 @@ import SwiftUI
 
 extension Settings {
 
-    /// A mini result card that acts out the Hide results mode: ON is covered until a press and hold, OFF is open.
+    /// A mini result card that acts out the Hide results mode: a flip to ON plays the press-and-hold loops, then rests covered; OFF is open.
     struct SpoilerModePreview: View {
         enum Layout {
             static let card = CGSize(width: 82, height: 100)
@@ -56,7 +56,8 @@ extension Settings {
             .accessibilityElement(children: .ignore)
             .accessibilityHidden(true)
             .onAppear {
-                restart(from: isOn ? .covered : .shown(.man))
+                start = .distantPast
+                isPlaying = false
             }
             .onChange(of: isOn) { wasOn, _ in
                 restart(
