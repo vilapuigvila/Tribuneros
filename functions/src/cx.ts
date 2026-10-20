@@ -66,6 +66,22 @@ export interface Standings {
   items: StandingsItem[];
 }
 
+export interface StandingRow {
+  position: number;
+  rider: string;
+  riderURL: string | null;
+  countryFlagURL: string | null;
+  team: string | null;
+  points: string;
+}
+
+export interface StandingPage {
+  title: string;
+  categories: {title: string; url: string | null}[];
+  selectedIndex: number;
+  rows: StandingRow[];
+}
+
 export interface CalendarEvent {
   date: string;
   race: string;
@@ -375,10 +391,11 @@ function parseStandingsCategories($: CheerioAPI): {categories: {title: string; u
   return {categories, selectedIndex};
 }
 
-function parseStandingsLeaders($: CheerioAPI): Leader[] {
+// UCI ranking pages use r1_uci_* cells, series standings pages stand_* cells; limit cuts the table rows before parsing.
+function parseStandingRows($: CheerioAPI, limit?: number): StandingRow[] {
   return $("tr.r1_row")
-    .slice(0, 5)
-    .map((_, row): Leader | null => {
+    .slice(0, limit)
+    .map((_, row): StandingRow | null => {
       const $row = $(row);
       const uciPosition = strictInt(clean($row.find("td.r1_uci_position").first().text()));
       const standPosition = strictInt(clean($row.find("td.stand_position").first().text()));
@@ -395,11 +412,36 @@ function parseStandingsLeaders($: CheerioAPI): Leader[] {
         rider,
         riderURL: absoluteURL(riderAnchor.attr("href")),
         countryFlagURL: absoluteURL($row.find("img.flag").first().attr("src")),
+        team: clean($row.find("td.r1_uci_team, td.stand_team").first().text()) || null,
         points: clean($row.find(pointsSelector).first().text()),
       };
     })
     .get()
-    .filter((leader): leader is Leader => leader !== null);
+    .filter((row): row is StandingRow => row !== null);
+}
+
+function parseStandingsLeaders($: CheerioAPI): Leader[] {
+  return parseStandingRows($, 5).map(({team: _team, ...leader}) => leader);
+}
+
+// The full table of one /uciranking/ or /standings/ category page.
+export function parseStandingPage($: CheerioAPI): StandingPage {
+  const parsed = parseStandingsCategories($);
+  return {
+    title: normalizedStandingsTitle(clean($("h1.main_title").first().text())),
+    categories: parsed.categories,
+    selectedIndex: Math.min(parsed.selectedIndex, Math.max(0, parsed.categories.length - 1)),
+    rows: parseStandingRows($),
+  };
+}
+
+// Ids are the path segments joined by "~" (Firestore ids can't hold "/"), e.g. uciranking~2026-2027~ME.
+export function standingPageURL(id: string): string {
+  return `${BASE_URL}/${id.split("~").join("/")}/`;
+}
+
+export async function scrapeStandingPage(id: string): Promise<StandingPage> {
+  return parseStandingPage(await fetchDocument(standingPageURL(id)));
 }
 
 async function fetchRiderAvatarURL(riderURL: string): Promise<string | null> {
@@ -516,7 +558,7 @@ export interface CategoryResult {
 }
 
 const RIDER_FACTS_LIMIT = 8;
-const RIDER_RESULTS_LIMIT = 10;
+const RIDER_RESULTS_LIMIT = 200;
 const PAST_WINNERS_CATEGORY = "Men Elite";
 
 function mainTitle($: CheerioAPI): string {

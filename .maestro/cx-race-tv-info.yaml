@@ -1,5 +1,7 @@
 # CX calendar race detail: the "TV Info & Livestream" panel and a broadcaster tap, on Debug mock
-# data (mock scenario live): no network.
+# data (mock scenario live): no network. A channel tap hands the link to the system (Safari or the
+# broadcaster's app) instead of an in-app sheet, so the flow comes back to the app and checks the
+# race detail is still showing with no cyclocross24 page over it.
 appId: com.pskmoons.Tribuneros
 tags:
   - mock
@@ -24,7 +26,14 @@ tags:
     timeout: 45000
 - assertVisible: "Sporza"
 - assertVisible: "Eurosport\\*"
-- tapOn: "Sporza"
+- assertVisible:
+    id: "tv-channel-Sporza"
+- tapOn:
+    id: "tv-channel-Sporza"
+- launchApp:
+    stopApp: false
 - extendedWaitUntil:
-    visible: ".*cyclocross24.*"
+    visible: "TV Info & Livestream"
     timeout: 20000
+- assertNotVisible: ".*cyclocross24.*"
+- assertNotVisible: "Done"

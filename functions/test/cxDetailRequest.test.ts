@@ -11,6 +11,37 @@ test("request: accepts a slug per kind and a numeric results id", () => {
   assert.equal(detailKind("results", "18209"), DETAIL_KINDS.results);
 });
 
+test("request: a standing id is a uciranking or standings path of up to three plain segments", () => {
+  for (const id of [
+    "uciranking~2025-2026~ME",
+    "standings~superprestige",
+    "standings~superprestige~2025-2026~WE",
+    "uciranking",
+  ]) {
+    assert.equal(detailKind("standing", id), DETAIL_KINDS.standing, id);
+  }
+});
+
+test("request: rejects standing ids with slashes, other paths, extra segments or odd characters", () => {
+  for (const id of [
+    "uciranking/2025-2026/ME",
+    "/uciranking~2025-2026~ME",
+    "uciranking~2025-2026~ME~",
+    "rider~wout-van-aert",
+    "calendar~2025-2026~ME",
+    "https://cyclocross24.com/uciranking/2025-2026/ME/",
+    "standings~superprestige~2025-2026~ME~extra",
+    "standings~super prestige",
+    "standings~superprestige?x=1",
+    "standings~..",
+    "standings~super_prestige",
+    "standings~" + "a".repeat(61),
+    "UCIRANKING~2025-2026~ME",
+  ]) {
+    assert.equal(detailKind("standing", id), null, id);
+  }
+});
+
 test("request: rejects unknown kinds, missing ids and anything that isn't a plain slug", () => {
   for (const [kind, id] of [
     ["rider", undefined],
@@ -37,6 +68,15 @@ test("freshness: riders expire after a day, races after a week, results never", 
   assert.equal(isFresh(ago(8 * 24), DETAIL_KINDS.race.maxAgeMs, now), false);
   assert.equal(isFresh(ago(10_000), DETAIL_KINDS.results.maxAgeMs, now), true);
   assert.equal(isFresh(undefined, DETAIL_KINDS.results.maxAgeMs, now), false);
+});
+
+test("freshness: standings expire after 12 hours", () => {
+  const now = new Date("2026-09-29T12:00:00Z");
+  const ago = (hours: number) => new Date(now.getTime() - hours * HOUR_MS);
+
+  assert.equal(DETAIL_KINDS.standing.collection, "cxStandings");
+  assert.equal(isFresh(ago(11), DETAIL_KINDS.standing.maxAgeMs, now), true);
+  assert.equal(isFresh(ago(13), DETAIL_KINDS.standing.maxAgeMs, now), false);
 });
 
 test("missing pages: only a 404/410 counts, other failures aren't remembered", () => {

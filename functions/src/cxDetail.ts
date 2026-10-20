@@ -2,13 +2,13 @@ import "./options";
 import * as logger from "firebase-functions/logger";
 import {onRequest} from "firebase-functions/v2/https";
 import {Timestamp, getFirestore, type Firestore} from "firebase-admin/firestore";
-import {HttpStatusError, scrapeCategoryResults, scrapeRacePage, scrapeRiderPage} from "./cx";
+import {HttpStatusError, scrapeCategoryResults, scrapeRacePage, scrapeRiderPage, scrapeStandingPage} from "./cx";
 
 const HOUR_MS = 3_600_000;
 
 // Pages cyclocross24 doesn't have (or that parse to nothing, e.g. results before a race ends) are
 // remembered briefly, so a script asking for made-up names can't make every call scrape the site.
-// Kept in their own collection: the app reads cxRiders/cxRaces/cxResults directly and must only find pages there.
+// Kept in their own collection: the app reads cxRiders/cxRaces/cxResults/cxStandings directly and must only find pages there.
 const MISSING_COLLECTION = "cxMissing";
 export const MISSING_MAX_AGE_MS = HOUR_MS;
 
@@ -52,6 +52,16 @@ export const DETAIL_KINDS: Record<string, DetailKind> = {
     scrape: async (id) => {
       const results = await scrapeCategoryResults(id);
       return results.length > 0 ? {results} : null;
+    },
+  },
+  standing: {
+    collection: "cxStandings",
+    // A /uciranking/ or /standings/ path, its segments joined by "~"; mirrored by the Swift CxDetailKind.
+    idPattern: /^(uciranking|standings)(~[A-Za-z0-9-]{1,60}){0,3}$/,
+    maxAgeMs: 12 * HOUR_MS,
+    scrape: async (id) => {
+      const page = await scrapeStandingPage(id);
+      return page.rows.length > 0 ? page : null;
     },
   },
 };
@@ -136,7 +146,7 @@ export const cxDetail = onRequest(
     }
     const kind = detailKind(request.query.kind, request.query.id);
     if (!kind) {
-      response.status(400).json({error: "expected ?kind=rider|race|results&id=<slug or results id>"});
+      response.status(400).json({error: "expected ?kind=rider|race|results|standing&id=<slug, results id or standings path>"});
       return;
     }
     const result = await loadDetail(getFirestore(), kind, request.query.id as string);

@@ -86,7 +86,8 @@ Every tab follows the same shape, split across `<Feature>.swift` (namespace enum
   `NavigationPath`), created once in `TabBarView.init()` and threaded into that tab's
   `NavigationStack`. `Router.Destination` is a single enum shared across tabs (`detail`,
   `cxZone`, `nextToFinishRace`, `todayRaces`, `yesterdayResults`, and `web(URL)`, which opens any link
-  in `Helpers/SafariView.swift`).
+  in `Helpers/SafariView.swift`). CX Zone never uses `.web`: `Router.openInSystem(_:)` hands a link to the
+  system (Safari app or the app that claims it) through the swappable `openExternally` closure (tests replace it).
 
 When adding a new tab or reworking one of these, match this Domain/UseCase/Interactor/ViewModel
 split rather than putting networking or state directly in a View.
@@ -201,24 +202,48 @@ Swift DTOs (all `Decodable`). Server-side behaviour to preserve:
 - cyclocross24 answers bursts with HTTP 429, so all requests are spaced 750 ms apart with
   `Retry-After`-aware retries. A full run takes ~25s against a 120s timeout.
 - The calendar season is derived from the date (from July onward, the next season), not hardcoded.
-- Firestore rules (`firestore.rules`): `cx/*` is publicly readable and never client-writable. Only
+- Firestore rules (`firestore.rules`): `cx/*` (and the `cxDetail` collections `cxRiders`, `cxRaces`,
+  `cxResults`, `cxStandings`) is publicly readable and never client-writable. Only
   the function writes, through the Admin SDK, which bypasses rules.
 - Every function module imports `functions/src/options.ts` first: `setGlobalOptions` (region
   `europe-west1`) only applies to functions defined after it runs.
 
 **CX detail pages come from `cxDetail`** (HTTP, on demand):
-`GET …/cxDetail?kind=rider|race|results&id=<slug or results id>` serves `cxRiders/{slug}` (fresh for
-24h), `cxRaces/{slug}` (7 days) or `cxResults/{id}` (forever once non-empty), scraping and storing on
-a miss or stale entry, and falling back to the stale copy if the scrape fails. Ids are validated as
+`GET …/cxDetail?kind=rider|race|results|standing&id=<slug, results id or standing id>` serves `cxRiders/{slug}` (fresh for
+24h), `cxRaces/{slug}` (7 days), `cxResults/{id}` (forever once non-empty) or `cxStandings/{id}` (12 h, matching
+`scrapeCx`), scraping and storing on a miss or stale entry, and falling back to the stale copy if the scrape fails.
+A standing id is the cyclocross24 `/uciranking/…` or `/standings/…` path with its segments joined by `~`
+(`/uciranking/2025-2026/ME/` → `uciranking~2025-2026~ME`; rule `^(uciranking|standings)(~[A-Za-z0-9-]{1,60}){0,3}$`,
+mirrored by `CxDetailKind.standing.id(for:)` / `standingURL(forID:)`); the page (`StandingPage` in `cx.ts`,
+`DTO.CXStandingPage`: title, every category tab, the selected index, the rows) is not stored when it has no rows. UCI
+rankings store the first page only (top 100, cyclocross24 paginates by 100); series standings hold the full table and
+no team. Rider pages keep up to `RIDER_RESULTS_LIMIT` (200) results, but documents cached before that hold 10, and the
+app renders whatever a document holds. `/uciranking/` answers curl with a Cloudflare challenge while Node's `fetch`
+passes, so re-capture `uciranking-*.html` with Node. Other ids are validated as
 plain slugs so it can't be pointed at other URLs; a page cyclocross24 doesn't have (404/410, or one that
 parses to nothing) is remembered for an hour in `cxMissing/{collection}_{id}` (function-only, no client
 access) so made-up names can't force a scrape per call, and other failures (429, 503) aren't remembered; `maxInstances: 2` keeps the per-instance 750 ms
 spacing meaningful. Same rules as `cx/*`. On the app side, `Service.getCxDetail` reads the Firestore
 document (cache first), calls the function on a miss, and on a stale copy returns it while a
-background call refreshes it; `Service.CxDetailKind` mirrors the id rules and freshness windows, so
+background call refreshes it; the function call goes through Alfy's `Requester.makeRequest(…).ttl(900)` (15 min on
+device; a 502 still maps to "unavailable"); `Service.CxDetailKind` mirrors the id rules and freshness windows, so
 change both sides together. The parsers live only in `functions/src/cx.ts`; the rider, race
-(calendar and latest-results) and results screens all read through this cache. Only the YouTube
-lookup (`getYoutubeRaceURL`: race page, then YouTube search) still scrapes on the device.
+(calendar and latest-results), results, full-results, rider-results and ranking screens all read through this cache
+(`Service.getCxStandingPage` for the ranking). Only the YouTube
+lookup (`getYoutubeRaceURL`: race page, then YouTube search) still scrapes on the device. `MOCK_SCENARIO`
+serves every kind from `CxMock.detail` (rider pages with ~25 results over two seasons, `CxMock.standingPage(id:)` with
+3 categories and 30 rows for any valid id; the mock standings document carries real-shaped ranking and category URLs).
+
+No CX tap opens a web view. The cyclocross24 links ("race page on cyclocross24", the rider/winner "rider page" card)
+are gone, replaced by native Mud screens; TV channel tiles, "Race video", "Official website" and `RaceDetailView`'s
+"Race videos" leave the app through `Router.openInSystem`. The three screens behind the old links
+(`Tabs/CXRaces/FullResults/`, `RiderResults/`, `Ranking/`, each with its own Interactor/ViewModel and redacted
+placeholders) are routes in `Router.Destination.CXZone`: `fullResults(event, results:)` (the event detail's "full
+results" link: every Men Elite row; the winner row opens the winner screen, others `.result`), `riderResults(RiderRef)`
+(the rider and winner screens' "All results": the whole table newest first, grouped by season, rows opening races as
+recent results do; the rider screens still preview 10) and `ranking(RankingContext)` (the rider screen's standing card,
+on its category, and the standings list's ranking chevron, on the default category: category chips over the full
+table, rows open `CXRiderDetailView` with `.standing`).
 
 The "All races" calendar has a search bar (`CXRaces.calendarEvent(_:matches:)`: every word must
 appear, case- and accent-insensitively, in the race name, country, winner, UCI class or series)

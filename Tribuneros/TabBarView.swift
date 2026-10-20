@@ -119,7 +119,6 @@ struct TabBarView: View {
             NavigationStack(path: $cxRouter.navPath) {
                 CXRacesRacesView(viewModel: cxRacesViewModel)
             }
-            .webPage($cxRouter.webPage)
             .tag(Tab.cxZone)
             
             // Paddock -

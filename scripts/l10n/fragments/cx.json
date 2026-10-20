@@ -4,6 +4,23 @@
     "eu": "%2$lld probatatik %1$lld jokatuta",
     "comment": "Rounds raced of the series total"
   },
+  "%lld RESULTS": {
+    "plural": {
+      "en": {
+        "one": "%lld RESULT",
+        "other": "%lld RESULTS"
+      },
+      "ca": {
+        "one": "%lld RESULTAT",
+        "other": "%lld RESULTATS"
+      },
+      "eu": {
+        "one": "EMAITZA %lld",
+        "other": "%lld EMAITZA"
+      }
+    },
+    "comment": "Rider all-results screen subtitle"
+  },
   "%lld categories": {
     "plural": {
       "ca": {
@@ -39,6 +56,11 @@
     "ca": "Totes les curses",
     "eu": "Lasterketa guztiak",
     "comment": "CX Zone calendar screen title"
+  },
+  "All results": {
+    "ca": "Tots els resultats",
+    "eu": "Emaitza guztiak",
+    "comment": "Link and screen title for a rider's whole results table"
   },
   "CX ZONE": {
     "ca": "ZONA CX",
@@ -85,6 +107,11 @@
     "eu": "Ezin izan dira emaitzak kargatu. Egiaztatu konexioa eta saiatu berriro.",
     "comment": "Race results error message"
   },
+  "Couldn’t load the rider’s results. Check your connection and try again.": {
+    "ca": "No s’han pogut carregar els resultats del corredor. Comprova la connexió i torna-ho a provar.",
+    "eu": "Ezin izan dira txirrindulariaren emaitzak kargatu. Egiaztatu konexioa eta saiatu berriro.",
+    "comment": "Rider all-results error state"
+  },
   "Country": {
     "ca": "País",
     "eu": "Herrialdea",
@@ -99,6 +126,11 @@
     "ca": "Acabada",
     "eu": "Amaituta",
     "comment": "Status tag: race already run"
+  },
+  "Full ranking": {
+    "ca": "Classificació completa",
+    "eu": "Sailkapen osoa",
+    "comment": "Accessibility label of the chevron that opens a ranking's full table"
   },
   "In %lld days": {
     "plural": {
@@ -146,6 +178,11 @@
     "eu": "Lasterketa kargatzen",
     "comment": "Race detail placeholder accessibility label"
   },
+  "Loading the ranking": {
+    "ca": "S’està carregant la classificació",
+    "eu": "Sailkapena kargatzen",
+    "comment": "Ranking placeholder accessibility label"
+  },
   "Loading the results": {
     "ca": "S’estan carregant els resultats",
     "eu": "Emaitzak kargatzen",
@@ -155,6 +192,23 @@
     "ca": "S’està carregant el ciclista",
     "eu": "Txirrindularia kargatzen",
     "comment": "Rider screen accessibility label"
+  },
+  "MEN ELITE · %lld RIDERS": {
+    "plural": {
+      "en": {
+        "one": "MEN ELITE · %lld RIDER",
+        "other": "MEN ELITE · %lld RIDERS"
+      },
+      "ca": {
+        "one": "HOMES ELIT · %lld CORREDOR",
+        "other": "HOMES ELIT · %lld CORREDORS"
+      },
+      "eu": {
+        "one": "GIZON ELITEA · TXIRRINDULARI %lld",
+        "other": "GIZON ELITEA · %lld TXIRRINDULARI"
+      }
+    },
+    "comment": "Full results screen subtitle: how many riders finished"
   },
   "MEN ELITE · TOP %lld": {
     "ca": "ELIT MASCULINA · TOP %lld",
@@ -211,6 +265,16 @@
     "eu": "Oraindik ez dago emaitzarik",
     "comment": "Race results empty state"
   },
+  "No results for this rider yet.": {
+    "ca": "Encara no hi ha resultats d’aquest corredor.",
+    "eu": "Txirrindulari honek ez du emaitzarik oraindik.",
+    "comment": "Rider all-results empty state"
+  },
+  "No riders in this ranking yet.": {
+    "ca": "Encara no hi ha corredors en aquesta classificació.",
+    "eu": "Oraindik ez dago txirrindularirik sailkapen honetan.",
+    "comment": "Ranking screen empty table"
+  },
   "No riders or standings match “%@”.": {
     "ca": "Cap ciclista ni classificació coincideix amb “%@”.",
     "eu": "Ez dago “%@” bilaketarekin bat datorren txirrindulari edo sailkapenik.",
@@ -256,11 +320,6 @@
     "eu": "Profila",
     "comment": "Rider profile panel header"
   },
-  "Race page on cyclocross24": {
-    "ca": "Pàgina de la cursa a cyclocross24",
-    "eu": "Lasterketaren orria cyclocross24-n",
-    "comment": "Race detail link"
-  },
   "Race video": {
     "ca": "Vídeo de la cursa",
     "eu": "Lasterketaren bideoa",
@@ -280,6 +339,11 @@
     "ca": "Cursa, país, guanyador...",
     "eu": "Lasterketa, herrialdea, irabazlea...",
     "comment": "Calendar search prompt"
+  },
+  "Ranking": {
+    "ca": "Classificació",
+    "eu": "Sailkapena",
+    "comment": "Full ranking screen title"
   },
   "Recent results": {
     "ca": "Resultats recents",
@@ -351,6 +415,11 @@
     "eu": "Taldea",
     "comment": "Results column header"
   },
+  "This ranking isn’t available yet. It may not have started this season, or the connection failed.": {
+    "ca": "Aquesta classificació encara no està disponible. Potser aquesta temporada encara no ha començat, o la connexió ha fallat.",
+    "eu": "Sailkapen hau ez dago erabilgarri oraindik. Agian denboraldi honetan ez da hasi, edo konexioak huts egin du.",
+    "comment": "Ranking screen when the page couldn't be loaded"
+  },
   "Time": {
     "ca": "Temps",
     "eu": "Denbora",
@@ -420,10 +489,5 @@
     "ca": "resultats complets",
     "eu": "emaitza guztiak",
     "comment": "Race detail link to the full results page"
-  },
-  "rider page on cyclocross24": {
-    "ca": "pàgina del ciclista a cyclocross24",
-    "eu": "txirrindulariaren orria cyclocross24-n",
-    "comment": "Rider screen link to the cyclocross24 page"
   }
 }

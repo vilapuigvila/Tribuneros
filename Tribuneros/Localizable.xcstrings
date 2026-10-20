@@ -139,6 +139,66 @@
         }
       }
     },
+    "%lld RESULTS" : {
+      "comment" : "Rider all-results screen subtitle",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld RESULTAT"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld RESULTATS"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld RESULT"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld RESULTS"
+                }
+              }
+            }
+          }
+        },
+        "eu" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "EMAITZA %lld"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld EMAITZA"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld categories" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -523,6 +583,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lasterketa guztiak"
+          }
+        }
+      }
+    },
+    "All results" : {
+      "comment" : "Link and screen title for a rider's whole results table",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tots els resultats"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emaitza guztiak"
           }
         }
       }
@@ -966,6 +1044,24 @@
         }
       }
     },
+    "Couldn’t load the rider’s results. Check your connection and try again." : {
+      "comment" : "Rider all-results error state",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’han pogut carregar els resultats del corredor. Comprova la connexió i torna-ho a provar."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezin izan dira txirrindulariaren emaitzak kargatu. Egiaztatu konexioa eta saiatu berriro."
+          }
+        }
+      }
+    },
     "Country" : {
       "comment" : "Race detail info row label",
       "extractionState" : "manual",
@@ -1241,6 +1337,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lehen helmuga aurreikusia: %@"
+          }
+        }
+      }
+    },
+    "Full ranking" : {
+      "comment" : "Accessibility label of the chevron that opens a ranking's full table",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Classificació completa"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sailkapen osoa"
           }
         }
       }
@@ -1758,6 +1872,24 @@
         }
       }
     },
+    "Loading the ranking" : {
+      "comment" : "Ranking placeholder accessibility label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’està carregant la classificació"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sailkapena kargatzen"
+          }
+        }
+      }
+    },
     "Loading the results" : {
       "comment" : "Race results placeholder accessibility label",
       "extractionState" : "manual",
@@ -1841,6 +1973,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "GIZONAK"
+          }
+        }
+      }
+    },
+    "MEN ELITE · %lld RIDERS" : {
+      "comment" : "Full results screen subtitle: how many riders finished",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "HOMES ELIT · %lld CORREDOR"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "HOMES ELIT · %lld CORREDORS"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "MEN ELITE · %lld RIDER"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "MEN ELITE · %lld RIDERS"
+                }
+              }
+            }
+          }
+        },
+        "eu" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "GIZON ELITEA · TXIRRINDULARI %lld"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "GIZON ELITEA · %lld TXIRRINDULARI"
+                }
+              }
+            }
           }
         }
       }
@@ -2218,6 +2410,24 @@
         }
       }
     },
+    "No results for this rider yet." : {
+      "comment" : "Rider all-results empty state",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encara no hi ha resultats d’aquest corredor."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Txirrindulari honek ez du emaitzarik oraindik."
+          }
+        }
+      }
+    },
     "No results yesterday" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2265,6 +2475,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Oraindik ez dago emaitzarik; lehen helmuga aurreikusia: %@"
+          }
+        }
+      }
+    },
+    "No riders in this ranking yet." : {
+      "comment" : "Ranking screen empty table",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encara no hi ha corredors en aquesta classificació."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oraindik ez dago txirrindularirik sailkapen honetan."
           }
         }
       }
@@ -2831,24 +3059,6 @@
         }
       }
     },
-    "Race page on cyclocross24" : {
-      "comment" : "Race detail link",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pàgina de la cursa a cyclocross24"
-          }
-        },
-        "eu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lasterketaren orria cyclocross24-n"
-          }
-        }
-      }
-    },
     "Race profile" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2951,6 +3161,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lasterketak"
+          }
+        }
+      }
+    },
+    "Ranking" : {
+      "comment" : "Full ranking screen title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Classificació"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sailkapena"
           }
         }
       }
@@ -3799,6 +4027,24 @@
         }
       }
     },
+    "This ranking isn’t available yet. It may not have started this season, or the connection failed." : {
+      "comment" : "Ranking screen when the page couldn't be loaded",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aquesta classificació encara no està disponible. Potser aquesta temporada encara no ha començat, o la connexió ha fallat."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sailkapen hau ez dago erabilgarri oraindik. Agian denboraldi honetan ez da hasi, edo konexioak huts egin du."
+          }
+        }
+      }
+    },
     "Time" : {
       "comment" : "Stat tile label and results column header",
       "extractionState" : "manual",
@@ -4550,24 +4796,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "txirrindulariaren orria ProCyclingStats-en"
-          }
-        }
-      }
-    },
-    "rider page on cyclocross24" : {
-      "comment" : "Rider screen link to the cyclocross24 page",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ca" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "pàgina del ciclista a cyclocross24"
-          }
-        },
-        "eu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "txirrindulariaren orria cyclocross24-n"
           }
         }
       }

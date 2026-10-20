@@ -10,6 +10,8 @@ import SwiftUI
 struct CXStandingsListView: View {
     let standings: DTO.CXStandings
     var openRider: (CXRaces.RiderStanding) -> Void = { _ in }
+    /// The chevron on a ranking's header opens its full table (`CXRankingView`).
+    var openRanking: (CXRaces.RankingContext) -> Void = { _ in }
     @State private var searchText = ""
 
     var body: some View {
@@ -36,7 +38,8 @@ struct CXStandingsListView: View {
                     ForEach(filtered.items, id: \.title) { item in
                         StandingsItemView(
                             item: item,
-                            openRider: openRider
+                            openRider: openRider,
+                            openRanking: openRanking
                         )
                     }
                 }
@@ -58,8 +61,8 @@ struct CXStandingsListView: View {
 private struct StandingsItemView: View {
     let item: DTO.CXStandings.Item
     let openRider: (CXRaces.RiderStanding) -> Void
+    let openRanking: (CXRaces.RankingContext) -> Void
     @State private var selectedCategoryIndex: Int = 0
-    @State private var webPage: WebPage?
 
     var body: some View {
         MudCardBox(spacing: 10) {
@@ -86,9 +89,9 @@ private struct StandingsItemView: View {
 
                 Spacer(minLength: 0)
 
-                if let url = item.url {
+                if item.url != nil {
                     Button {
-                        webPage = WebPage(url: url)
+                        openRanking(CXRaces.RankingContext(item: item))
                     } label: {
                         Image(systemName: "chevron.right")
                             .font(.system(size: 11, weight: .semibold))
@@ -97,6 +100,8 @@ private struct StandingsItemView: View {
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel(L10n.tr("Full ranking"))
+                    .accessibilityIdentifier("standings-ranking-\(item.title)")
                 }
             }
             .padding(.top, 4)
@@ -124,7 +129,6 @@ private struct StandingsItemView: View {
                 }
             }
         }
-        .webPage($webPage)
     }
 }
 

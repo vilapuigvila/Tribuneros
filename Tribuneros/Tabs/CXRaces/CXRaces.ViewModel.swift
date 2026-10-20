@@ -44,8 +44,14 @@ extension CXRaces {
                 router.routeTo(.cxZone(.latestResults))
             case .didTapOnCalendarEvent(let event):
                 router.routeTo(.cxZone(.eventDetail(event)))
-            case .didTapOnLink(let url):
-                router.routeTo(.web(url))
+            case .didTapOnExternalLink(let url):
+                router.openInSystem(url)
+            case .didTapOnFullResults(let event, let results):
+                router.routeTo(.cxZone(.fullResults(event, results: results)))
+            case .didTapOnAllRiderResults(let rider):
+                router.routeTo(.cxZone(.riderResults(rider)))
+            case .didTapOnRanking(let context):
+                router.routeTo(.cxZone(.ranking(context)))
             case .didTapOnWinner(let winner, let from):
                 router.routeTo(.cxZone(.winnerDetail(winner, from: from)))
             case .didTapOnWinnerRace(let event, let openedFrom):
@@ -63,20 +69,13 @@ extension CXRaces {
             case .didTapOnPastWinnerRider(let winner):
                 router.routeTo(.cxZone(.riderDetail(.win(winner))))
             case .didTapOnRiderResult(let result, let rider):
-                let event = CXRaces.calendarEvent(
-                    for: result,
-                    in: interactor.domain.calendar
-                )
-                if result.position == "1" {
-                    let winner = CXRaces.Winner(
-                        riderResult: result,
+                router.routeTo(
+                    CXRaces.destination(
+                        forRiderResult: result,
                         rider: rider,
-                        raceEvent: event
+                        calendar: interactor.domain.calendar
                     )
-                    router.routeTo(.cxZone(.winnerDetail(winner, from: nil)))
-                } else {
-                    router.routeTo(.cxZone(.eventDetail(event)))
-                }
+                )
             case .didTapOnRaceDetail(let race):
                 router.routeTo(.cxZone(.raceDetail(race)))
             case .didTapOnStandings:

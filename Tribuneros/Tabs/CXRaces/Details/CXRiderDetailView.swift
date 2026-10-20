@@ -13,7 +13,10 @@ import SwiftUI
 /// device — each section hides when it comes back empty.
 struct CXRiderDetailView: View {
     let context: CXRaces.RiderContext
-    let openURL: (URL) -> Void
+    /// Opens the rider's whole results table (`CXRiderResultsView`).
+    let openAllResults: (CXRaces.RiderRef) -> Void
+    /// Opens the full ranking of the standing panel (`CXRankingView`).
+    private let openRanking: (CXRaces.RankingContext) -> Void
     /// Opens the podium's race results (`RaceDetailView`).
     private let openRace: (DTO.CX24Homepage.Race) -> Void
     /// Opens a past win's edition (`CXEventDetailView`).
@@ -41,10 +44,12 @@ struct CXRiderDetailView: View {
         openRace: @escaping (DTO.CX24Homepage.Race) -> Void = { _ in },
         openEvent: @escaping (DTO.CXCalendarEvent) -> Void = { _ in },
         openRaceResult: @escaping (DTO.CXRiderPage.Result, CXRaces.RiderRef) -> Void = { _, _ in },
-        openURL: @escaping (URL) -> Void
+        openRanking: @escaping (CXRaces.RankingContext) -> Void = { _ in },
+        openAllResults: @escaping (CXRaces.RiderRef) -> Void
     ) {
         self.context = context
-        self.openURL = openURL
+        self.openAllResults = openAllResults
+        self.openRanking = openRanking
         self.openRace = openRace
         self.openEvent = openEvent
         self.openRaceResult = openRaceResult
@@ -101,23 +106,24 @@ struct CXRiderDetailView: View {
                     }
                     if !page.results.isEmpty {
                         CXRiderRecentResultsPanel(
-                            results: page.results,
+                            results: Array(page.results.prefix(CXRiderRecentResultsPanel.previewLimit)),
                             look: .mud,
                             openResult: { openRaceResult($0, riderRef) }
                         )
                     }
                 }
 
-                if let riderURL = context.riderURL {
+                if !isLoading, context.riderURL != nil, page?.results.isEmpty == false {
                     Button {
-                        openURL(riderURL)
+                        openAllResults(riderRef)
                     } label: {
                         RiderPageLink(
                             look: .mud,
-                            title: L10n.tr("rider page on cyclocross24")
+                            title: L10n.tr("All results")
                         )
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier("rider-all-results")
                 }
             }
             .padding()
@@ -161,9 +167,7 @@ struct CXRiderDetailView: View {
         ) {
             VStack(alignment: .leading, spacing: 10) {
                 Button {
-                    if let standingsURL = standing.standingsURL {
-                        openURL(standingsURL)
-                    }
+                    openRanking(CXRaces.RankingContext(standing: standing))
                 } label: {
                     RiderCardBox(look: .mud) {
                         HStack(spacing: 10) {
@@ -192,6 +196,7 @@ struct CXRiderDetailView: View {
                 }
                 .buttonStyle(.plain)
                 .disabled(standing.standingsURL == nil)
+                .accessibilityIdentifier("rider-standing-ranking")
 
                 HStack(spacing: 10) {
                     CXStatTile(

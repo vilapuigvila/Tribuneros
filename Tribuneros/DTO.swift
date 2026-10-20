@@ -512,6 +512,29 @@ extension DTO {
         let facts: [Fact]
         let results: [Result]
     }
+
+    /// A full cyclocross24 ranking or series standings page (`/uciranking/...`, `/standings/...`),
+    /// parsed by the `cxDetail` Cloud Function (`StandingPage` in `functions/src/cx.ts`).
+    struct CXStandingPage: Equatable, Sendable, Hashable, Decodable {
+        struct Category: Equatable, Sendable, Hashable, Decodable {
+            let title: String
+            let url: URL?
+        }
+
+        struct Row: Equatable, Sendable, Hashable, Decodable {
+            let position: Int
+            let rider: String
+            let riderURL: URL?
+            let countryFlagURL: URL?
+            let team: String?
+            let points: String
+        }
+
+        let title: String
+        let categories: [Category]
+        let selectedIndex: Int
+        let rows: [Row]
+    }
 }
 
 // MARK: - Course du Jour -

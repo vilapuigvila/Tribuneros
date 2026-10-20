@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import UIKit
 
 final class Router: ObservableObject {
     
@@ -25,6 +26,12 @@ final class Router: ObservableObject {
             /// `nil` when opened from a rider screen, where there's no race to go back to.
             case winnerDetail(CXRaces.Winner, from: DTO.CXCalendarEvent?)
             case standings
+            /// Every Men Elite row of a race's results (`results` as the event detail loaded them).
+            case fullResults(DTO.CXCalendarEvent, results: [DTO.CX24Homepage.CategoryResult])
+            /// A rider's whole results table, grouped by season.
+            case riderResults(CXRaces.RiderRef)
+            /// A full ranking or series standings table, with its category chips.
+            case ranking(CXRaces.RankingContext)
         }
 
         case nextToFinishRace(index: Int)
@@ -49,6 +56,12 @@ final class Router: ObservableObject {
     @Published var navPath = NavigationPath()
     /// The web page shown full screen over this tab (see `View.webPage(_:)`).
     @Published var webPage: WebPage?
+    /// Hands a link to the system (Safari, or the app that claims it, e.g. YouTube); swapped in tests.
+    var openExternally: (URL) -> Void = { url in
+        Task { @MainActor in
+            UIApplication.shared.open(url)
+        }
+    }
 
     // NavigationPath can't be inspected: a same-destination push is a double tap only while the path is still the length it was right after that push.
     private var lastPushed: Destination?
@@ -71,6 +84,11 @@ final class Router: ObservableObject {
         }
     }
     
+    /// Leaves the app for `url`, unlike `.web`, which shows it in an in-app Safari sheet.
+    func openInSystem(_ url: URL) {
+        openExternally(url)
+    }
+
     func popToPrevious() {
         navPath.removeLast()
     }

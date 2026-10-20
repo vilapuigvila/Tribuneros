@@ -145,16 +145,27 @@ enum CxMock {
 
     private static func standing(
         _ title: String,
+        series: String,
         men: [Int],
         women: [Int]
     ) -> DTO.CXStandings.Item {
         .init(
             title: title,
-            url: nil,
+            url: url("standings/\(series)/"),
             logoURL: nil,
             categories: [
-                .init(title: "Men Elite", url: nil, leaders: leaders(men), leaderImageURL: nil),
-                .init(title: "Women Elite", url: nil, leaders: leaders(women), leaderImageURL: nil)
+                .init(
+                    title: "Men Elite",
+                    url: url("standings/\(series)/men-elite/"),
+                    leaders: leaders(men),
+                    leaderImageURL: nil
+                ),
+                .init(
+                    title: "Women Elite",
+                    url: url("standings/\(series)/women-elite/"),
+                    leaders: leaders(women),
+                    leaderImageURL: nil
+                )
             ]
         )
     }
@@ -163,12 +174,12 @@ enum CxMock {
         items: [
             .init(
                 title: "UCI Ranking",
-                url: nil,
+                url: url("uciranking/"),
                 logoURL: nil,
                 categories: [
                     .init(
                         title: "Men Elite",
-                        url: nil,
+                        url: url("uciranking/2025-2026/ME/"),
                         leaders: (0..<3).map { index in
                             .init(
                                 position: index + 1,
@@ -182,8 +193,8 @@ enum CxMock {
                     )
                 ]
             ),
-            standing("UCI World Cup", men: [240, 198, 176], women: [215, 197, 150]),
-            standing("Superprestige", men: [58, 55, 49], women: [56, 54, 40])
+            standing("UCI World Cup", series: "world-cup", men: [240, 198, 176], women: [215, 197, 150]),
+            standing("Superprestige", series: "superprestige", men: [58, 55, 49], women: [56, 54, 40])
         ]
     )
 
@@ -261,9 +272,28 @@ enum CxMock {
             results: [
                 .init(date: "01-02-2026", race: "Kleeberg Cross Mechelen", position: "2", raceURL: url(kleebergPath)),
                 .init(date: "25-01-2026", race: "Superprestige Gavere", position: "1", raceURL: url(gaverePath))
-            ]
+            ] + olderResults
         )
     }
+
+    /// 23 more rows after the two above, newest first: the rest of 2025–26, then 2024–25.
+    private static let olderResults: [DTO.CXRiderPage.Result] = {
+        let days = [18, 11, 4]
+        let thisSeason = [(1, 2026), (12, 2025), (11, 2025), (10, 2025)].flatMap { month, year in
+            days.map { (day: $0, month: month, year: year) }
+        }.dropFirst(2)
+        let lastSeason = [(2, 2025), (1, 2025), (12, 2024), (11, 2024), (10, 2024)].flatMap { month, year in
+            days.map { (day: $0, month: month, year: year) }
+        }.prefix(13)
+        return (Array(thisSeason) + Array(lastSeason)).enumerated().map { index, date in
+            .init(
+                date: String(format: "%02d-%02d-%04d", date.day, date.month, date.year),
+                race: "Mock Open \(index + 1)",
+                position: "\(index % 7 + 1)",
+                raceURL: url("race/mock-open-\(index + 1)/")
+            )
+        }
+    }()
 
     /// Every race slug gets the same three past winners, the newest from last year.
     static func racePage(id: String, now: Date = Date()) -> DTO.CXRacePage {
@@ -311,7 +341,38 @@ enum CxMock {
         case .rider: riderPage(id: id)
         case .race: racePage(id: id)
         case .results: Service.ResultsDocument(results: results)
+        case .standing: standingPage(id: id)
         }
+    }
+
+    /// Any valid id gets three categories and 30 rows; the id's last segment picks the category.
+    static func standingPage(id: String) -> DTO.CXStandingPage {
+        let segments = id.split(separator: "~").map(String.init)
+        let isUCI = segments.first == "uciranking"
+        let codes = isUCI ? ["ME", "WE", "MU23"] : ["men-elite", "women-elite", "men-u23"]
+        let titles = ["Men Elite", "Women Elite", "Men U23"]
+        let selectedIndex = segments.last.flatMap { codes.firstIndex(of: $0) } ?? 0
+        let middle = segments.dropFirst().filter { !codes.contains($0) }
+        let base = segments[0] + "/" + (middle.first ?? (isUCI ? "2025-2026" : "superprestige")) + "/"
+        return .init(
+            title: isUCI ? "UCI Ranking" : words(middle.first ?? "superprestige"),
+            categories: zip(titles, codes).map { title, code in
+                .init(title: title, url: url(base + code + "/"))
+            },
+            selectedIndex: selectedIndex,
+            rows: (0..<30).map { index in
+                let rider = index < riders.count ? riders[index] : nil
+                let slug = rider?.slug ?? "mock-rider-\(index + 1)"
+                return .init(
+                    position: index + 1,
+                    rider: rider?.name ?? "MOCK Rider \(index + 1)",
+                    riderURL: url("rider/\(slug)/"),
+                    countryFlagURL: nil,
+                    team: rider?.team ?? "Mock Racing Team",
+                    points: "\(isUCI ? 3_200 - index * 85 : 120 - index * 3)"
+                )
+            }
+        )
     }
 
     static let videoURL = URL(string: "https://www.example.com/mock-race-video")

@@ -38,9 +38,12 @@ struct CXRacesRacesView: View {
                     },
                     openWinner: { winner in
                         viewModel.action(.didTapOnWinner(winner, from: event))
+                    },
+                    openFullResults: { results in
+                        viewModel.action(.didTapOnFullResults(event, results: results))
                     }
                 ) { url in
-                    viewModel.action(.didTapOnLink(url))
+                    viewModel.action(.didTapOnExternalLink(url))
                 }
             case .cxZone(.winnerDetail(let winner, let from)):
                 CXWinnerDetailView(
@@ -51,8 +54,8 @@ struct CXRacesRacesView: View {
                     openRaceResult: { result, rider in
                         viewModel.action(.didTapOnRiderResult(result, rider: rider))
                     }
-                ) { url in
-                    viewModel.action(.didTapOnLink(url))
+                ) { rider in
+                    viewModel.action(.didTapOnAllRiderResults(rider))
                 }
             case .cxZone(.latestResults):
                 LatestAllResultsView(
@@ -65,14 +68,24 @@ struct CXRacesRacesView: View {
                 }
                 .navigationTitle(L10n.tr("Latest results"))
             case .cxZone(.raceDetail(let race)):
-                RaceDetailView(race: race) { result in
+                RaceDetailView(
+                    race: race,
+                    openVideo: { url in
+                        viewModel.action(.didTapOnExternalLink(url))
+                    }
+                ) { result in
                     viewModel.action(.didTapOnResultRider(result))
                 }
-//                    .navigationTitle("Race Details")
             case .cxZone(.standings):
-                CXStandingsListView(standings: viewModel.stateView.result.standings) { standing in
-                    viewModel.action(.didTapOnStandingRider(standing))
-                }
+                CXStandingsListView(
+                    standings: viewModel.stateView.result.standings,
+                    openRider: { standing in
+                        viewModel.action(.didTapOnStandingRider(standing))
+                    },
+                    openRanking: { context in
+                        viewModel.action(.didTapOnRanking(context))
+                    }
+                )
                 .navigationTitle(L10n.tr("Standings"))
             case .cxZone(.riderDetail(let context)):
                 CXRiderDetailView(
@@ -85,12 +98,30 @@ struct CXRacesRacesView: View {
                     },
                     openRaceResult: { result, rider in
                         viewModel.action(.didTapOnRiderResult(result, rider: rider))
+                    },
+                    openRanking: { context in
+                        viewModel.action(.didTapOnRanking(context))
                     }
-                ) { url in
-                    viewModel.action(.didTapOnLink(url))
+                ) { rider in
+                    viewModel.action(.didTapOnAllRiderResults(rider))
                 }
-            case .detail(.race(let urlInfo)):
-                SafariView(url: URL(string: urlInfo))
+            case .cxZone(.fullResults(let event, let results)):
+                CXFullResultsView(
+                    event: event,
+                    results: results,
+                    router: viewModel.router
+                )
+            case .cxZone(.riderResults(let rider)):
+                CXRiderResultsView(
+                    rider: rider,
+                    calendar: viewModel.stateView.result.calendarEvents,
+                    router: viewModel.router
+                )
+            case .cxZone(.ranking(let context)):
+                CXRankingView(
+                    context: context,
+                    router: viewModel.router
+                )
             default:
                 EmptyView()
             }

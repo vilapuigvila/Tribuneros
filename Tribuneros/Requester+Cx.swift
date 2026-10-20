@@ -11,6 +11,7 @@ import FoundationXML // Necessary for XML parsing on certain platforms
 #endif
 import `SwiftSoup` // Add SwiftSoup for HTML parsing
 import FirebaseFirestore
+import Alfy
 
 private let cacheTimeinterval = 24 * 60 * 60
 private let cxRunGrace: TimeInterval = 5 * 60
@@ -344,17 +345,28 @@ extension Service {
         )
     }
 
+    // MARK: - Standings page -
+
+    static func getCxStandingPage(_ url: URL?) async -> DTO.CXStandingPage? {
+        await getCxDetail(
+            .standing,
+            url: url,
+            as: DTO.CXStandingPage.self
+        )
+    }
+
     // MARK: - Detail page cache -
 
     /// A cyclocross24 page parsed and cached in Firestore by the `cxDetail` Cloud Function.
     enum CxDetailKind: String {
-        case rider, race, results
+        case rider, race, results, standing
 
         var collection: String {
             switch self {
             case .rider: "cxRiders"
             case .race: "cxRaces"
             case .results: "cxResults"
+            case .standing: "cxStandings"
             }
         }
 
@@ -364,14 +376,32 @@ extension Service {
             case .rider: Double(cacheTimeinterval)
             case .race: Double(7 * cacheTimeinterval)
             case .results: nil
+            case .standing: Double(12 * 60 * 60)
             }
         }
 
+        /// Same rule as `cxDetail.ts`: `uciranking` or `standings`, then up to 3 plain segments, joined by `~`.
+        static func isValidStandingID(_ id: String) -> Bool {
+            id.wholeMatch(of: /(uciranking|standings)(~[A-Za-z0-9-]{1,60}){0,3}/) != nil
+        }
+
+        /// The cyclocross24 page a `.standing` id stands for, e.g. `uciranking~2025-2026~ME` →
+        /// `https://cyclocross24.com/uciranking/2025-2026/ME/`.
+        static func standingURL(forID id: String) -> URL? {
+            guard isValidStandingID(id) else { return nil }
+            return URL(string: "https://cyclocross24.com/" + id.split(separator: "~").joined(separator: "/") + "/")
+        }
+
         /// The document id for a cyclocross24 link: the slug of `/rider/<slug>/` or `/race/<slug>/`,
-        /// or the number of a results page, `/race/<id>/`. Anything else has no cached page.
+        /// the number of a results page, `/race/<id>/`, or the `~`-joined path of a ranking page.
+        /// Anything else has no cached page.
         func id(for url: URL?) -> String? {
             guard let url, url.host()?.hasSuffix("cyclocross24.com") == true else { return nil }
             let components = url.path().split(separator: "/").map(String.init)
+            if self == .standing {
+                let id = components.joined(separator: "~")
+                return !components.contains { $0.contains("~") } && Self.isValidStandingID(id) ? id : nil
+            }
             guard components.count >= 2,
                   components[1].wholeMatch(of: /[a-z0-9-]{1,100}/) != nil else { return nil }
             let id = components[1]
@@ -380,6 +410,7 @@ extension Service {
             case .rider: return components[0] == "rider" ? id : nil
             case .race: return components[0] == "race" && !isNumeric ? id : nil
             case .results: return components[0] == "race" && isNumeric ? id : nil
+            case .standing: return nil
             }
         }
 
@@ -457,11 +488,18 @@ extension Service {
             URLQueryItem(name: "id", value: id)
         ]
         guard let url = components?.url else { throw URLError(.badURL) }
-        let (data, response) = try await URLSession.shared.data(from: url)
-        switch (response as? HTTPURLResponse)?.statusCode {
-        case 200: return data
-        case 502: throw CxDetailError.unavailable
-        case let status: throw CxDetailError.status(status ?? 0)
+        do {
+            let (data, response) = try await Requester
+                .makeRequest(url.absoluteString)
+                .ttl(900)
+                .send()
+            switch (response as? HTTPURLResponse)?.statusCode {
+            case 200: return data
+            case 502: throw CxDetailError.unavailable
+            case let status: throw CxDetailError.status(status ?? 0)
+            }
+        } catch Requester.ErrorReason.generic(statusCode: 502) {
+            throw CxDetailError.unavailable
         }
     }
 

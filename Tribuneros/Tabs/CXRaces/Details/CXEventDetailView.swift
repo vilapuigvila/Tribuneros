@@ -20,7 +20,10 @@ struct CXEventDetailView: View {
     }
 
     let event: DTO.CXCalendarEvent
+    /// Hands a third-party link (broadcaster, organiser, video) to the system.
     let openURL: (URL) -> Void
+    /// Opens every Men Elite row (`CXFullResultsView`).
+    private let openFullResults: ([DTO.CX24Homepage.CategoryResult]) -> Void
     /// Opens the native winner screen for this season's winner.
     private let openWinner: (CXRaces.Winner) -> Void
     /// Opens the rider screen for a "Past winners" row.
@@ -32,7 +35,6 @@ struct CXEventDetailView: View {
 
     @State private var detail: DTO.CXEventDetail
     @State private var isLoading: Bool
-    @State private var videoSheet: VideoSheet?
 
     init(
         event: DTO.CXCalendarEvent,
@@ -46,11 +48,13 @@ struct CXEventDetailView: View {
         openPastWinner: @escaping (CXRaces.Winner) -> Void = { _ in },
         openResultRider: @escaping (CXRaces.RiderResult) -> Void = { _ in },
         openWinner: @escaping (CXRaces.Winner) -> Void = { _ in },
+        openFullResults: @escaping ([DTO.CX24Homepage.CategoryResult]) -> Void = { _ in },
         openURL: @escaping (URL) -> Void
     ) {
         self.event = event
         self.openURL = openURL
         self.openWinner = openWinner
+        self.openFullResults = openFullResults
         self.openResultRider = openResultRider
         self.openPastWinner = openPastWinner
         self.loadDetail = loadDetail
@@ -96,7 +100,9 @@ struct CXEventDetailView: View {
                     }
                 }
 
-                linksPanel
+                if !links.isEmpty {
+                    linksPanel
+                }
             }
             .padding()
             .padding(.bottom, 40)
@@ -104,9 +110,6 @@ struct CXEventDetailView: View {
         .background(Color.tribuneru(.mudPageBackground))
         .preferredColorScheme(.dark)
         .navigationTitle(event.series.title)
-        .fullScreenCover(item: $videoSheet) { sheet in
-            YoutubeVideoView(url: sheet.url)
-        }
         .task {
             guard isLoading else { return }
             detail = await loadDetail(
@@ -291,13 +294,14 @@ struct CXEventDetailView: View {
                     }
                 }
 
-                if let resultsURL = event.resultsURL {
+                if !allResults.isEmpty {
                     Button {
-                        openURL(resultsURL)
+                        openFullResults(allResults)
                     } label: {
                         MudMoreLink(title: L10n.tr("full results"))
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier("event-full-results")
                 }
             }
         }
@@ -461,7 +465,7 @@ struct CXEventDetailView: View {
                     title: L10n.tr("Race video"),
                     systemImage: "play.rectangle.fill"
                 ) {
-                    videoSheet = VideoSheet(url: videoURL)
+                    openURL(videoURL)
                 }
             )
         }
@@ -472,16 +476,6 @@ struct CXEventDetailView: View {
                     systemImage: "globe"
                 ) {
                     openURL(websiteURL)
-                }
-            )
-        }
-        if let raceURL = event.raceURL {
-            links.append(
-                .init(
-                    title: L10n.tr("Race page on cyclocross24"),
-                    systemImage: "safari"
-                ) {
-                    openURL(raceURL)
                 }
             )
         }
@@ -596,11 +590,6 @@ private extension CXEventDetailView {
         let title: String
         let systemImage: String
         let handler: () -> Void
-    }
-
-    struct VideoSheet: Identifiable {
-        let id = UUID()
-        let url: URL
     }
 
     struct InfoRow: View {

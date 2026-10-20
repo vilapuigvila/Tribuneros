@@ -14,17 +14,20 @@ struct RaceDetailView: View {
     @State private var selectedCategory: Int = 0
     @State private var isLoading: Bool = true
     @State private var errorMessage: String?
-    @State private var videoSheet: VideoSheet?
     /// A results row opens the rider screen.
     private let openRider: (CXRaces.RiderResult) -> Void
+    /// Hands the race video to the system (the YouTube app when installed).
+    private let openVideo: (URL) -> Void
     
     init(
         race: DTO.CX24Homepage.Race,
         categoryResults: [String: [DTO.CX24Homepage.CategoryResult]] = [:],
+        openVideo: @escaping (URL) -> Void = { _ in },
         openRider: @escaping (CXRaces.RiderResult) -> Void = { _ in }
     ) {
         self.race = race
         self.openRider = openRider
+        self.openVideo = openVideo
         _categoryResults = State(initialValue: categoryResults)
         _isLoading = State(initialValue: categoryResults.isEmpty)
     }
@@ -62,9 +65,6 @@ struct RaceDetailView: View {
         }
         .background(Color.tribuneru(.mudPageBackground))
         .preferredColorScheme(.dark)
-        .fullScreenCover(item: $videoSheet) { sheet in
-            YoutubeVideoView(url: sheet.url)
-        }
         .task {
             if !categoryResults.isEmpty {
                 return
@@ -276,7 +276,7 @@ struct RaceDetailView: View {
 
         return Button {
             guard let url = buttonState.url else { return }
-            videoSheet = VideoSheet(url: url)
+            openVideo(url)
         } label: {
             MudCardBox {
                 HStack(spacing: 10) {
@@ -308,11 +308,6 @@ struct RaceDetailView: View {
         .disabled(!isEnabled)
         .redacted(reason: isLoading ? .placeholder : [])
     }
-}
-
-private struct VideoSheet: Identifiable {
-    let id = UUID()
-    let url: URL
 }
 
 private struct CategoryTabButton: View {

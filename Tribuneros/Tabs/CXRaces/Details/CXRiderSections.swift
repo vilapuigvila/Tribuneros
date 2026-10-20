@@ -245,7 +245,7 @@ struct RiderHeaderCard: View {
     }
 }
 
-/// The footer link to the rider's page on the source site.
+/// The footer link of a rider screen ("All results").
 struct RiderPageLink: View {
     let look: RiderLook
     let title: String
@@ -372,6 +372,9 @@ struct CXRiderFactsPanel: View {
 /// "Recent results" panel; a row with a race link goes through `openResult` (the view model
 /// opens the winner screen for a win, the race detail otherwise).
 struct CXRiderRecentResultsPanel: View {
+    /// The rider screens show this many; "All results" has the rest.
+    static let previewLimit = 10
+
     let results: [DTO.CXRiderPage.Result]
     let look: RiderLook
     let openResult: (DTO.CXRiderPage.Result) -> Void

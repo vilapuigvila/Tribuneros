@@ -1,0 +1,135 @@
+# CX native pages that replaced the cyclocross24 web views: full results from a race, a rider's
+# and a winner's "All results" (grouped by season), and the ranking screen from a rider's standing
+# card and from the standings list, on Debug mock data (mock scenario live): no network.
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- tapOn: "CX Zone"
+- extendedWaitUntil:
+    visible: "NEXT ROUND"
+    timeout: 45000
+
+# Calendar race with results -> full results -> a rider -> All results
+- scrollUntilVisible:
+    element: "Calendar"
+- tapOn: "Calendar"
+- assertVisible: "All races"
+- tapOn: "Race, country, winner..."
+- inputText: "Kleeberg"
+- tapOn: "Kleeberg Cross Mechelen.*"
+- extendedWaitUntil:
+    visible: "Winner"
+    timeout: 45000
+- scrollUntilVisible:
+    element:
+      id: "event-full-results"
+- tapOn:
+    id: "event-full-results"
+- extendedWaitUntil:
+    visible:
+      id: "full-results-row-2"
+    timeout: 45000
+- assertVisible: "Results"
+- tapOn:
+    id: "full-results-row-2"
+- extendedWaitUntil:
+    visible: "Profile"
+    timeout: 45000
+- scrollUntilVisible:
+    element:
+      id: "rider-all-results"
+- tapOn:
+    id: "rider-all-results"
+- extendedWaitUntil:
+    visible: "2025–26"
+    timeout: 45000
+- scrollUntilVisible:
+    element: "2024–25"
+- assertNotVisible: ".*cyclocross24.*"
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+
+# Full results: the winner's row opens the winner screen -> All results
+- tapOn:
+    id: "full-results-row-1"
+- assertVisible: "Victory"
+- extendedWaitUntil:
+    visible: "Profile"
+    timeout: 45000
+- scrollUntilVisible:
+    element:
+      id: "rider-all-results"
+- tapOn:
+    id: "rider-all-results"
+- extendedWaitUntil:
+    visible: "2025–26"
+    timeout: 45000
+- scrollUntilVisible:
+    element: "2024–25"
+
+# Standings list -> chevron -> ranking, switch a chip, a row opens the rider
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- tapOn: "CX Zone"
+- extendedWaitUntil:
+    visible: "NEXT ROUND"
+    timeout: 45000
+- tapOn:
+    id: "cx.leaders.standings"
+- extendedWaitUntil:
+    visible:
+      id: "standings-ranking-UCI Ranking"
+    timeout: 45000
+- tapOn:
+    id: "standings-ranking-UCI Ranking"
+- extendedWaitUntil:
+    visible:
+      id: "ranking-row-1"
+    timeout: 45000
+- assertVisible: "Ranking"
+- tapOn:
+    id: "ranking-chip-Women Elite"
+- extendedWaitUntil:
+    visible:
+      id: "ranking-row-1"
+    timeout: 45000
+- tapOn:
+    id: "ranking-row-1"
+- extendedWaitUntil:
+    visible: "Profile"
+    timeout: 45000
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+
+# Standings row -> rider -> standing card -> ranking on that category
+- tapOn:
+    text: "MOCK Rider Two"
+    below: "UCI World Cup"
+- extendedWaitUntil:
+    visible:
+      id: "rider-standing-ranking"
+    timeout: 45000
+- tapOn:
+    id: "rider-standing-ranking"
+- extendedWaitUntil:
+    visible:
+      id: "ranking-row-1"
+    timeout: 45000
+- assertVisible: "Ranking"
+- assertVisible:
+    id: "ranking-chip-Men Elite"

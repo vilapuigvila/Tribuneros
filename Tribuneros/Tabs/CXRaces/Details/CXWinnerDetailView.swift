@@ -14,7 +14,8 @@ import SwiftUI
 /// from their cyclocross24 page, parsed best-effort — each section hides when it comes back empty.
 struct CXWinnerDetailView: View {
     let winner: CXRaces.Winner
-    let openURL: (URL) -> Void
+    /// Opens the rider's whole results table (`CXRiderResultsView`).
+    let openAllResults: (CXRaces.RiderRef) -> Void
     /// Opens the winning race (the "Victory" card) as a native race detail.
     private let openRace: (DTO.CXCalendarEvent) -> Void
     /// Opens a "Recent results" row as a native race detail.
@@ -37,10 +38,10 @@ struct CXWinnerDetailView: View {
         },
         openRace: @escaping (DTO.CXCalendarEvent) -> Void = { _ in },
         openRaceResult: @escaping (DTO.CXRiderPage.Result, CXRaces.RiderRef) -> Void = { _, _ in },
-        openURL: @escaping (URL) -> Void
+        openAllResults: @escaping (CXRaces.RiderRef) -> Void
     ) {
         self.winner = winner
-        self.openURL = openURL
+        self.openAllResults = openAllResults
         self.openRace = openRace
         self.openRaceResult = openRaceResult
         self.loadDetail = loadDetail
@@ -82,23 +83,24 @@ struct CXWinnerDetailView: View {
                     }
                     if !page.results.isEmpty {
                         CXRiderRecentResultsPanel(
-                            results: page.results,
+                            results: Array(page.results.prefix(CXRiderRecentResultsPanel.previewLimit)),
                             look: .mud,
                             openResult: { openRaceResult($0, riderRef) }
                         )
                     }
                 }
 
-                if let riderURL = winner.riderURL {
+                if !isLoading, winner.riderURL != nil, page?.results.isEmpty == false {
                     Button {
-                        openURL(riderURL)
+                        openAllResults(riderRef)
                     } label: {
                         RiderPageLink(
                             look: .mud,
-                            title: L10n.tr("rider page on cyclocross24")
+                            title: L10n.tr("All results")
                         )
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier("rider-all-results")
                 }
             }
             .padding()

@@ -16,7 +16,11 @@ extension CXRaces {
         case didTapOnNextRaces
         case didTapOnLatestResults
         case didTapOnCalendarEvent(DTO.CXCalendarEvent)
-        case didTapOnLink(URL)
+        /// A third-party link (broadcaster, organiser, YouTube): handed to the system, not shown in the app.
+        case didTapOnExternalLink(URL)
+        case didTapOnFullResults(DTO.CXCalendarEvent, results: [DTO.CX24Homepage.CategoryResult])
+        case didTapOnAllRiderResults(CXRaces.RiderRef)
+        case didTapOnRanking(CXRaces.RankingContext)
         case didTapOnWinner(CXRaces.Winner, from: DTO.CXCalendarEvent)
         case didTapOnWinnerRace(DTO.CXCalendarEvent, openedFrom: DTO.CXCalendarEvent?)
         /// A "Recent results" row; `rider` is whose page it is, used when the row is a win.
@@ -385,6 +389,66 @@ extension CXRaces {
             self.category = category.title
             standingsURL = category.url ?? item.url
         }
+
+        /// A row of a full ranking page (`CXRaces.Ranking`); `pageURL` is the page it was read from.
+        init(
+            row: DTO.CXStandingPage.Row,
+            page: DTO.CXStandingPage,
+            pageURL: URL?,
+            rankingLogoURL: URL?
+        ) {
+            rider = row.rider
+            riderURL = row.riderURL
+            flagURL = row.countryFlagURL
+            position = row.position
+            points = row.points
+            rankingTitle = page.title
+            self.rankingLogoURL = rankingLogoURL
+            category = page.categories.indices.contains(page.selectedIndex)
+                ? page.categories[page.selectedIndex].title
+                : ""
+            standingsURL = pageURL
+        }
+    }
+
+    /// What the ranking screen (`CXRaces.Ranking`) opens on: a cyclocross24 ranking or standings
+    /// page, with what is already known about it to show while it loads.
+    struct RankingContext: Hashable {
+        let title: String
+        /// The category it opens on, when known (a rider's standing); `nil` for the page's default.
+        let category: String?
+        let url: URL?
+        let logoURL: URL?
+
+        init(
+            title: String,
+            category: String?,
+            url: URL?,
+            logoURL: URL?
+        ) {
+            self.title = title
+            self.category = category
+            self.url = url
+            self.logoURL = logoURL
+        }
+
+        init(standing: RiderStanding) {
+            self.init(
+                title: standing.rankingTitle,
+                category: standing.category,
+                url: standing.standingsURL,
+                logoURL: standing.rankingLogoURL
+            )
+        }
+
+        init(item: DTO.CXStandings.Item) {
+            self.init(
+                title: item.title,
+                category: nil,
+                url: item.url,
+                logoURL: item.logoURL
+            )
+        }
     }
 }
 
@@ -538,6 +602,27 @@ extension CXRaces {
 
 // MARK: - Rider result → calendar event -
 extension CXRaces {
+
+    /// Where a rider-page result row leads: the winner screen for a win, the race detail otherwise.
+    static func destination(
+        forRiderResult result: DTO.CXRiderPage.Result,
+        rider: RiderRef,
+        calendar: [DTO.CXCalendarEvent]
+    ) -> Router.Destination {
+        let event = calendarEvent(
+            for: result,
+            in: calendar
+        )
+        guard result.position == "1" else {
+            return .cxZone(.eventDetail(event))
+        }
+        let winner = Winner(
+            riderResult: result,
+            rider: rider,
+            raceEvent: event
+        )
+        return .cxZone(.winnerDetail(winner, from: nil))
+    }
 
     /// The calendar event a rider-page result points at: this season's calendar entry when one
     /// matches (by results/race link, then by date and name), otherwise a minimal event built from
