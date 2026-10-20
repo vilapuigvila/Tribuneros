@@ -32,15 +32,39 @@ extension HomeRaces.WhereToWatch {
 
     /// What the schedule says about the opened race, for the Race info button.
     enum Coverage: Equatable, Sendable {
-        case channels([String])
+        case channels([Channel])
         case noBroadcast
         case notListed
+
+        /// A schedule channel as listed ("Eurosport / HBO Max") with the logo tiles it expands to.
+        struct Channel: Equatable, Sendable, ExpressibleByStringLiteral {
+            let name: String
+            let tiles: [BroadcasterLogo.Tile]
+
+            init(name: String) {
+                self.name = name
+                self.tiles = BroadcasterLogo.tiles(in: name)
+            }
+
+            init(stringLiteral value: String) {
+                self.init(name: value)
+            }
+        }
+
+        /// Logo tiles for every channel, one per distinct name, in schedule order.
+        var tiles: [BroadcasterLogo.Tile] {
+            guard case .channels(let channels) = self else { return [] }
+            var seen = Set<String>()
+            return channels
+                .flatMap(\.tiles)
+                .filter { seen.insert($0.name.lowercased()).inserted }
+        }
 
         /// "FloBikes · Eurosport / HBO Max"
         var summary: String {
             switch self {
             case .channels(let names):
-                let shown = names.prefix(3).joined(separator: " · ")
+                let shown = names.prefix(3).map(\.name).joined(separator: " · ")
                 return names.count > 3 ? "\(shown) +\(names.count - 3)" : shown
             case .noBroadcast:
                 return L10n.tr("Listed, no broadcast yet")
@@ -83,7 +107,7 @@ extension HomeRaces.WhereToWatch {
         guard let race = match(key, in: page) else { return .notListed }
         var seen = Set<String>()
         let names = race.broadcasters.map(\.name).filter { seen.insert($0).inserted }
-        return names.isEmpty ? .noBroadcast : .channels(names)
+        return names.isEmpty ? .noBroadcast : .channels(names.map { Coverage.Channel(name: $0) })
     }
 
     /// nil rules the row out; otherwise higher is closer.

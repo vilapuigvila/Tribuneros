@@ -1,4 +1,4 @@
-# "Where to watch" finds the race Race info was opened from: the button names its channels, and
+# "Where to watch" finds the race Race info was opened from: the card shows its channels, and
 # the schedule pins it as "Your race" on its day only. Mock data (mockScenario); ctCoursedujourNative forces the flag.
 appId: com.pskmoons.Tribuneros
 tags:
@@ -14,14 +14,19 @@ tags:
     visible:
       id: "home.today.hero"
     timeout: 20000
+# The hero (CRO Race) is LIVE and opens the live race screen; race info is reached from a
+# non-live race in "See all".
 - tapOn:
-    id: "home.today.hero"
+    id: "home.today.seeAll"
+- tapOn:
+    id: "todayRaces.row.3"
+    text: ".*GP de Montréal.*"
 
-# Race info already knows where CRO Race is on
+# Race info already knows where GP de Montréal is on
 - extendedWaitUntil:
     visible:
       id: "raceInfo.whereToWatch"
-      text: ".*Where to watch.*Sporza / VRT.*"
+      text: ".*Where to watch.*FloBikes.*"
     timeout: 10000
 - tapOn:
     id: "raceInfo.whereToWatch"
@@ -34,14 +39,14 @@ tags:
 - assertVisible: "YOUR RACE"
 - assertVisible:
     id: "whereToWatch.featured"
-    text: "CRO Race — Stage 1, 2.1 \\(Men\\)  ·  Zagreb, Croatia, live now.*"
+    text: "GP de Montréal, 1.UWT \\(Men\\)  ·  Montréal, Canada, .*"
 - assertNotVisible:
     id: "whereToWatch.notListed"
 - assertNotVisible:
-    id: "whereToWatch.race.CRO Race — Stage 1"
+    id: "whereToWatch.race.GP de Montréal"
 - scrollUntilVisible:
     element:
-      id: "whereToWatch.race.GP de Montréal"
+      id: "whereToWatch.race.CRO Race — Stage 1"
 
 # Another day has no pin
 - scrollUntilVisible:

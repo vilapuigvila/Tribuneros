@@ -38,6 +38,7 @@ struct NextToFinishRaceDetail: View {
     @State private var errorMessage: String?
     @State private var webPage: WebPage?
     @State private var coverage: HomeRaces.WhereToWatch.Coverage?
+    @State private var isCoverageLoaded = false
 
     private static let whereToWatchURL = URL(string: "https://coursedujour.com/")!
 
@@ -97,6 +98,7 @@ struct NextToFinishRaceDetail: View {
         .task {
             guard Service.isCourseDuJourNativeEnabled, let watchKey else { return }
             coverage = await Service.getCourseDuJourCoverage(for: watchKey)
+            isCoverageLoaded = true
         }
         .sheet(isPresented: $showZoom) { zoomSheet }
         .webPage($webPage)
@@ -146,7 +148,8 @@ struct NextToFinishRaceDetail: View {
             NavigationLink(value: Router.Destination.whereToWatch(watchKey)) {
                 watchLabel(
                     trailingIcon: "chevron.right",
-                    summary: coverage?.summary
+                    coverage: coverage,
+                    isLoading: watchKey != nil && !isCoverageLoaded
                 )
             }
             .buttonStyle(.plain)
@@ -157,7 +160,8 @@ struct NextToFinishRaceDetail: View {
             } label: {
                 watchLabel(
                     trailingIcon: "arrow.up.right",
-                    summary: nil
+                    coverage: nil,
+                    isLoading: false
                 )
             }
             .buttonStyle(.plain)
@@ -167,7 +171,8 @@ struct NextToFinishRaceDetail: View {
 
     private func watchLabel(
         trailingIcon: String,
-        summary: String?
+        coverage: HomeRaces.WhereToWatch.Coverage?,
+        isLoading: Bool
     ) -> some View {
         VaporCard {
             HStack(spacing: 10) {
@@ -175,27 +180,39 @@ struct NextToFinishRaceDetail: View {
                     .font(.system(size: 12, weight: .regular))
                     .foregroundColor(.tribuneru(.vaporAccent))
                     .frame(width: 18)
-                VStack(alignment: .leading, spacing: 2) {
-                    TribuneruText(
-                        content: L10n.tr("Where to watch"),
-                        style: .vaporRaceNameResult,
-                        color: .tribuneru(.vaporAccent)
-                    )
-                    if let summary {
-                        TribuneruText(
-                            content: summary,
-                            style: .vaporMeta,
-                            color: .tribuneru(.vaporTextSecondary),
-                            lineLimit: 2
-                        )
-                    }
-                }
+                TribuneruText(
+                    content: L10n.tr("Where to watch"),
+                    style: .vaporRaceNameResult,
+                    color: .tribuneru(.vaporAccent)
+                )
                 Spacer(minLength: 0)
                 Image(systemName: trailingIcon)
                     .font(.system(size: 12, weight: .regular))
                     .foregroundColor(.tribuneru(.vaporTextSecondary))
             }
+            if isLoading {
+                WatchTiles(tiles: WatchTiles.placeholders)
+                    .redacted(reason: .placeholder)
+            } else if let coverage {
+                switch coverage {
+                case .channels:
+                    WatchTiles(tiles: coverage.tiles)
+                case .noBroadcast, .notListed:
+                    TribuneruText(
+                        content: coverage.summary,
+                        style: .vaporMeta,
+                        color: .tribuneru(.vaporTextSecondary),
+                        lineLimit: 2
+                    )
+                }
+            }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            [L10n.tr("Where to watch"), isLoading ? nil : coverage?.summary]
+                .compactMap { $0 }
+                .joined(separator: ". ")
+        )
     }
 
     private var unavailablePanel: some View {

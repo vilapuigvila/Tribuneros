@@ -1,0 +1,34 @@
+# CX Zone "Others" chip (dozens of rounds): the page must stay inside the screen width.
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- tapOn: "CX Zone"
+- extendedWaitUntil:
+    visible: "NEXT ROUND"
+    timeout: 45000
+- swipe:
+    start: 90%, 18%
+    end: 5%, 18%
+- swipe:
+    start: 90%, 18%
+    end: 5%, 18%
+- tapOn: "Others"
+- extendedWaitUntil:
+    visible: "SEASON PROGRESS"
+    timeout: 15000
+- takeScreenshot: others
+- assertScreenshot:
+    path: cx-zone-others-ref.png
+    thresholdPercentage: 95
+- assertVisible: "SEASON PROGRESS"
+- assertVisible: ".*of 120 raced"
+- assertVisible: "NEXT ROUND"
+- assertVisible:
+    text: "Others"
+    enabled: true
+- assertVisible: "Season 2026–27"
