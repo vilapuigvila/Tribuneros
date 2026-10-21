@@ -158,6 +158,21 @@
     "eu": "Azken emaitzak",
     "comment": "CX Zone latest results header and screen title"
   },
+  "LATEST RESULT": {
+    "ca": "ÚLTIM RESULTAT",
+    "eu": "AZKEN EMAITZA",
+    "comment": "CX Zone latest result card tag"
+  },
+  "+%lld": {
+    "ca": "+%lld",
+    "eu": "+%lld",
+    "comment": "CX Zone latest result card: how many more results the list holds"
+  },
+  "Hold the painting to see the winner": {
+    "ca": "Mantén premut el quadre per veure el guanyador",
+    "eu": "Eduki sakatuta marrazkia irabazlea ikusteko",
+    "comment": "CX Zone latest result card hint while the winner is hidden"
+  },
   "Leaders": {
     "ca": "Líders",
     "eu": "Liderrak",

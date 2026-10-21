@@ -205,6 +205,7 @@ private struct CustomTabBar: View {
                 ) {
                     onTabTap(.home)
                 }
+                .accessibilityIdentifier("tab.home")
                 
                 Spacer(minLength: 0)
                 

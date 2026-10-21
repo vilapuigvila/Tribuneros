@@ -17,6 +17,11 @@ tags:
 - tapOn:
     id: home.spoilerHint
     optional: true
+# Previews push Results today under the tab bar; bring it to the middle before pressing.
+- scrollUntilVisible:
+    element:
+      id: "home.results.card.0"
+    centerElement: true
 - assertVisible:
     id: "home.results.spoilerArt.1"
 - longPressOn:

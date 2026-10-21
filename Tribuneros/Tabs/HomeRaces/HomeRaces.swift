@@ -62,6 +62,7 @@ enum HomeRaces {
             var raceURL: URL? = nil
             var visibility: ResultVisibility = .shown
             var raceCountryCode: String = ""
+            var spoilerCover: SpoilerCover = .classic
         }
         struct RaceNext: Identifiable {
             let id = UUID()

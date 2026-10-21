@@ -1,0 +1,37 @@
+# CX Zone latest result card (floats over the bottom of the page): hidden until its painting is held, the
+# winner shows, then a tap on the card opens every latest result. Mock data only (mockScenario live).
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- tapOn: "CX Zone"
+- extendedWaitUntil:
+    visible: "NEXT ROUND"
+    timeout: 45000
+- assertVisible: "LATEST RESULT"
+- assertVisible: "Superprestige Gavere \\(C1\\)"
+- assertVisible: "Hold the painting to see the winner"
+- assertNotVisible: "MOCK Rider One.*58:12"
+
+# Hold the painting: the winner shows; hold again: hidden
+- longPressOn:
+    id: "cx.latestResult.thumbnail"
+    retryTapIfNoChange: false
+    delay: 1
+- assertVisible: "MOCK Rider One.*58:12"
+- assertNotVisible: "Hold the painting to see the winner"
+- longPressOn:
+    id: "cx.latestResult.thumbnail"
+    retryTapIfNoChange: false
+    delay: 1
+- assertVisible: "Hold the painting to see the winner"
+
+# Tap the card: every latest result
+- tapOn: "Superprestige Gavere \\(C1\\)"
+- extendedWaitUntil:
+    visible: "Latest Cyclocross Results"
+    timeout: 45000

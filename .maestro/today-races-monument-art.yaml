@@ -1,0 +1,55 @@
+# With Hide results OFF, a Yesterday row hidden by a long press is covered by a random Monuments
+# triple-champion painting (Roubaix, Sanremo or Flanders) instead of the classic spoiler art; Results
+# today keeps the classic art (mock scenario "live", Debug build only).
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- extendedWaitUntil:
+    visible:
+      id: "home.results.spoilerArt.0"
+    timeout: 20000
+- tapOn:
+    id: home.spoilerHint
+    optional: true
+- tapOn:
+    id: "tab.settings"
+- tapOn:
+    id: "settings.hideResults"
+- assertVisible:
+    id: "settings.hideResults"
+    text: "OFF"
+- tapOn:
+    id: "tab.home"
+- scrollUntilVisible:
+    element:
+      id: "home.yesterday.row.0"
+- assertNotVisible:
+    id: "home.yesterday.spoilerArt.monument.0"
+- longPressOn:
+    id: "home.yesterday.row.0"
+    retryTapIfNoChange: false
+    delay: 1
+- assertVisible:
+    id: "home.yesterday.spoilerArt.monument.0"
+- assertNotVisible:
+    id: "home.yesterday.spoilerArt.0"
+- assertNotVisible:
+    id: "home.yesterday.spoilerArt.monument.1"
+- longPressOn:
+    id: "home.yesterday.spoilerArt.monument.0"
+    retryTapIfNoChange: false
+    delay: 1
+- assertNotVisible:
+    id: "home.yesterday.spoilerArt.monument.0"
+- longPressOn:
+    id: "home.results.card.0"
+    retryTapIfNoChange: false
+    delay: 1
+- assertVisible:
+    id: "home.results.spoilerArt.0"

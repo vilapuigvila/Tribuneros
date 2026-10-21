@@ -36,7 +36,7 @@ extension CXRaces {
             var podium: [DTO.CX24Homepage.Podium] { Array(category.podium.prefix(3)) }
         }
 
-        static let roundsLeftLimit = 3
+        static let roundsLeftLimit = 2
 
         let series: RaceSeries
         let rounds: [Round]
@@ -183,6 +183,28 @@ extension CXRaces.SeriesLens {
             $0.title.caseInsensitiveCompare("Men Elite") == .orderedSame && !$0.podium.isEmpty
         } ?? race.categories.first { !$0.podium.isEmpty }
         return category.map { LastPodium(race: race, category: $0) }
+    }
+}
+
+// MARK: - Latest result -
+extension CXRaces.SeriesLens {
+
+    /// The first race of the first non-empty section: cyclocross24 lists the newest first.
+    static func latestRace(in homepage: DTO.CX24Homepage) -> DTO.CX24Homepage.Race? {
+        homepage.sections.first { !$0.races.isEmpty }?.races.first
+    }
+
+    /// The other races on the homepage, shown as "+N" beside the latest one.
+    static func otherLatestResultCount(in homepage: DTO.CX24Homepage) -> Int {
+        max(homepage.sections.reduce(0) { $0 + $1.races.count } - 1, 0)
+    }
+
+    /// The Men Elite winner of a race, else the first category's winner.
+    static func winner(of race: DTO.CX24Homepage.Race) -> DTO.CX24Homepage.Podium? {
+        let category = race.categories.first {
+            $0.title.caseInsensitiveCompare("Men Elite") == .orderedSame && !$0.podium.isEmpty
+        } ?? race.categories.first { !$0.podium.isEmpty }
+        return category?.podium.first
     }
 }
 

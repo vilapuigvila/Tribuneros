@@ -242,8 +242,8 @@ extension Service {
                     let results = await getCxDetail(
                         .results,
                         url: categoryURL,
-                        as: ResultsDocument.self
-                    )?.results
+                            as: ResultsDocument.self
+                        )?.results
                     return (
                         category.title,
                         results?.map { $0.with(raceVideosURL: raceVideosURL) }

@@ -115,7 +115,7 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
                             title: "",
                             nextToFinish: nextToFinish(domain),
                             racesFinished: finishedRaces(domain.todayRaces, toggled: domain.revealedRaces, hidesResults: domain.hidesResults),
-                            yesterdayResults: finishedRaces(domain.yesterdayResults, toggled: domain.revealedRaces, hidesResults: domain.hidesResults),
+                            yesterdayResults: finishedRaces(domain.yesterdayResults, toggled: domain.revealedRaces, hidesResults: domain.hidesResults, monumentCovers: !domain.hidesResults),
                             historyResults: finishedRaces(domain.historyResults, toggled: domain.revealedRaces, hidesResults: domain.hidesResults),
                             previews: previews(domain),
                             firstFinishExpected: HomeRaces.TodayRaces.firstFinishTime(nextToFinish(domain))
@@ -155,7 +155,8 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
     private func finishedRaces(
         _ results: [DTO.TodayResult],
         toggled: Set<String>,
-        hidesResults: Bool
+        hidesResults: Bool,
+        monumentCovers: Bool = false
     ) -> [HomeRaces.Representable.RaceFinished] {
         results.map { race in
             var finished = HomeRaces.Representable.RaceFinished(
@@ -170,6 +171,9 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
             // A toggled race flips the Settings default: revealed when results hide, hidden when they show.
             let hidden = hidesResults != toggled.contains(finished.revealKey)
             finished.visibility = hidden ? .hidden : .shown
+            if monumentCovers {
+                finished.spoilerCover = .randomMonument(for: finished.revealKey)
+            }
             return finished
         }
     }

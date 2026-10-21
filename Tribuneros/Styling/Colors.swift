@@ -251,6 +251,30 @@ extension Color {
             Color(hex: 0xFACC15)
         case .championGreen:
             Color(hex: 0x16A34A)
+        case .monumentSkin:
+            Color(hex: 0xFF9EC4)
+        case .monumentFaceBar:
+            Color(hex: 0x0B0B0B)
+        case .monumentInk:
+            Color(hex: 0x111111)
+        case .monumentOrange:
+            Color(hex: 0xFF7A1A)
+        case .monumentYellow:
+            Color(hex: 0xFFD60A)
+        case .monumentRed:
+            Color(hex: 0xFF1F4B)
+        case .monumentBlue:
+            Color(hex: 0x1E6FFF)
+        case .monumentWhite:
+            Color(hex: 0xFFFFFF)
+        case .monumentSlate:
+            Color(hex: 0x4B5563)
+        case .monumentPaveLight:
+            Color(hex: 0xC9CED6)
+        case .monumentPaveDark:
+            Color(hex: 0xAEB5C0)
+        case .monumentTrophy:
+            Color(hex: 0xB8BEC8)
         }
     }
 
@@ -385,6 +409,19 @@ extension Color {
         case championBlack
         case championYellow
         case championGreen
+        /// The Monuments triple-champion paintings (Results yesterday covers when results show).
+        case monumentSkin
+        case monumentFaceBar
+        case monumentInk
+        case monumentOrange
+        case monumentYellow
+        case monumentRed
+        case monumentBlue
+        case monumentWhite
+        case monumentSlate
+        case monumentPaveLight
+        case monumentPaveDark
+        case monumentTrophy
     }
 }
 

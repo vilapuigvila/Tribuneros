@@ -118,7 +118,7 @@ final class CXSeriesLensTests: XCTestCase {
         XCTAssertEqual(lens.lastRound?.event.race, "World Cup Maasmechelen")
         XCTAssertEqual(
             lens.roundsLeft.map(\.number),
-            [4, 5, 6],
+            [4, 5],
             "The rounds after the next one, numbered by their place in the season."
         )
         XCTAssertEqual(lens.days(to: lens.nextRound!, now: now), 3)
@@ -303,6 +303,27 @@ final class CXSeriesLensTests: XCTestCase {
         XCTAssertEqual(lens.lastRound?.event.winnerName, "Winner Two")
     }
 
+    // MARK: - Latest result -
+
+    func testLatestRaceIsTheFirstOfTheFirstNonEmptySection() {
+        let homepage = DTO.CX24Homepage(sections: [
+            .init(title: "Empty", races: []),
+            .init(title: "Latest", races: [latestRace(title: "Newest"), latestRace(title: "Older")])
+        ])
+        XCTAssertEqual(CXRaces.SeriesLens.latestRace(in: homepage)?.title, "Newest")
+        XCTAssertEqual(CXRaces.SeriesLens.otherLatestResultCount(in: homepage), 1)
+    }
+
+    func testNoLatestRaceWithoutResults() {
+        let homepage = DTO.CX24Homepage(sections: [.init(title: "Empty", races: [])])
+        XCTAssertNil(CXRaces.SeriesLens.latestRace(in: homepage))
+        XCTAssertEqual(CXRaces.SeriesLens.otherLatestResultCount(in: homepage), 0)
+    }
+
+    func testWinnerIsTheMenEliteFirstPlace() {
+        XCTAssertEqual(CXRaces.SeriesLens.winner(of: latestRace(title: "Race"))?.rider, "MAN 1")
+    }
+
     // MARK: - Helpers -
 
     func testRiderInitialsTakeGivenNameThenSurname() {
@@ -333,6 +354,6 @@ final class CXSeriesLensTests: XCTestCase {
         XCTAssertNotNil(lens.lastRound)
         XCTAssertNotNil(lens.lastPodium)
         XCTAssertEqual(lens.leaders.count, 2)
-        XCTAssertEqual(lens.roundsLeft.count, 3)
+        XCTAssertEqual(lens.roundsLeft.count, 2)
     }
 }

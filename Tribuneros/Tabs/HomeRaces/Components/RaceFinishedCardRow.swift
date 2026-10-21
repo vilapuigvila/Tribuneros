@@ -243,11 +243,13 @@ extension View {
         _ visibility: HomeRaces.ResultVisibility,
         size: CGSize,
         alignment: Alignment,
-        identifier: String?
+        identifier: String?,
+        cover: SpoilerCover = .classic
     ) -> some View {
         modifier(
             SpoilerArtOverlay(
                 visibility: visibility,
+                cover: cover,
                 size: size,
                 alignment: alignment,
                 identifier: identifier
@@ -258,6 +260,7 @@ extension View {
 
 private struct SpoilerArtOverlay: ViewModifier {
     let visibility: HomeRaces.ResultVisibility
+    let cover: SpoilerCover
     let size: CGSize
     let alignment: Alignment
     let identifier: String?
@@ -266,11 +269,13 @@ private struct SpoilerArtOverlay: ViewModifier {
 
     init(
         visibility: HomeRaces.ResultVisibility,
+        cover: SpoilerCover,
         size: CGSize,
         alignment: Alignment,
         identifier: String?
     ) {
         self.visibility = visibility
+        self.cover = cover
         self.size = size
         self.alignment = alignment
         self.identifier = identifier
@@ -282,7 +287,7 @@ private struct SpoilerArtOverlay: ViewModifier {
             .overlay(alignment: alignment) {
                 ZStack {
                     if visibility != .placeholder {
-                        RaceArtView(art: .spoiler)
+                        SpoilerCoverView(cover: cover)
                             .frame(
                                 width: size.width,
                                 height: size.height

@@ -72,7 +72,8 @@ struct YesterdayResultsCard: View {
                         race.visibility,
                         size: CGSize(width: 72, height: 72),
                         alignment: .leading,
-                        identifier: artIdentifierPrefix.map { "\($0).\(index)" }
+                        identifier: artIdentifierPrefix.map { race.spoilerCover == .classic ? "\($0).\(index)" : "\($0).monument.\(index)" },
+                        cover: race.spoilerCover
                     )
                     .resultGestures(
                         race.visibility,

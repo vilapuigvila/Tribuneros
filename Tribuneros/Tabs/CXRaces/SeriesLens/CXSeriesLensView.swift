@@ -26,12 +26,18 @@ extension CXRaces {
     struct SeriesLensView: View {
         @Environment(\.safeAreaInsets) private var safeAreaInsets
         @Binding var selectedSeries: RaceSeries?
+        @State private var flipsLatestResult = false
 
         let representable: Representable
         let action: (CXRaces.Action) -> Void
 
         private var availableSeries: [RaceSeries] {
             SeriesLens.availableSeries(in: representable.calendarEvents)
+        }
+
+        /// Hide results on: every result is hidden until held. Off: each starts shown, a hold hides it.
+        private var isLatestResultShown: Bool {
+            (UserSettings.hidesResults ?? true) ? flipsLatestResult : !flipsLatestResult
         }
 
         private var series: RaceSeries? {
@@ -81,12 +87,26 @@ extension CXRaces {
                         EmptyCalendarCard()
                     }
                     Color.clear
-                        .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
+                        .frame(height: safeAreaInsets.bottom * 3 + 96)
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
             }
             .background(Color.tribuneru(.mudPageBackground))
+            .overlay(alignment: .bottom) {
+                if let latest = SeriesLens.latestRace(in: representable.races) {
+                    LatestResultCard(
+                        race: latest,
+                        winner: SeriesLens.winner(of: latest),
+                        otherCount: SeriesLens.otherLatestResultCount(in: representable.races),
+                        isShown: isLatestResultShown,
+                        toggle: { flipsLatestResult.toggle() },
+                        openAll: { action(.didTapOnLatestResults) }
+                    )
+                    .padding(.horizontal, 12)
+                    .padding(.bottom, 12)
+                }
+            }
         }
 
         private var header: some View {
@@ -710,6 +730,137 @@ private struct RoundsLeftSection: View {
         }
         .padding(.vertical, 12)
         .contentShape(Rectangle())
+    }
+}
+
+// MARK: - Latest result -
+
+/// The latest result floating over the bottom of the page. Its painting hides the winner until held,
+/// and a tap opens every latest result.
+private struct LatestResultCard: View {
+    let race: DTO.CX24Homepage.Race
+    let winner: DTO.CX24Homepage.Podium?
+    let otherCount: Int
+    let isShown: Bool
+    let toggle: () -> Void
+    let openAll: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            thumbnail
+            VStack(alignment: .leading, spacing: 3) {
+                TribuneruText(
+                    content: L10n.tr("LATEST RESULT"),
+                    style: .vaporTagSmall,
+                    color: .tribuneru(.mudPageBackground),
+                    lineLimit: 1
+                )
+                TribuneruText(
+                    content: race.title,
+                    style: .vaporResultTitle,
+                    color: .tribuneru(.mudPageBackground),
+                    lineLimit: 1
+                )
+                subtitle
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+            .onTapGesture(perform: openList)
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityAction(.default) {
+                openList()
+            }
+            if otherCount > 0 {
+                TribuneruText(
+                    content: L10n.tr("+%lld", otherCount),
+                    style: .vaporSeeAll,
+                    color: .tribuneru(.mudPageBackground),
+                    lineLimit: 1
+                )
+                .padding(.horizontal, 10)
+                .frame(height: 32)
+                .background(
+                    Capsule().fill(Color.tribuneru(.mudPageBackground).opacity(0.18))
+                )
+                .contentShape(Capsule())
+                .onTapGesture(perform: openList)
+            }
+        }
+        .padding(.leading, 10)
+        .padding(.trailing, 14)
+        .frame(height: 72)
+        .background(
+            RoundedRectangle(cornerRadius: 22)
+                .fill(Color.tribuneru(.mudAccent))
+        )
+        .opacity(0.8)
+    }
+
+    private func openList() {
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        openAll()
+    }
+
+    private var thumbnail: some View {
+        ZStack {
+            Color.tribuneru(.mudPageBackground)
+            if let winner {
+                TribuneruText(
+                    content: CXRaces.riderInitials(winner.rider),
+                    style: .vaporResultTitle,
+                    color: .tribuneru(.mudAccent)
+                )
+            }
+            RaceArtView(art: .spoiler)
+                .opacity(isShown ? 0 : 1)
+                .animation(
+                    isShown ? .easeInOut(duration: SpoilerHold.revealDuration) : nil,
+                    value: isShown
+                )
+        }
+        .frame(width: 52, height: 52)
+        .clipShape(RoundedRectangle(cornerRadius: 15))
+        .overlay(
+            RoundedRectangle(cornerRadius: 15)
+                .strokeBorder(Color.tribuneru(.mudPageBackground), lineWidth: 2)
+        )
+        .onLongPressGesture(
+            minimumDuration: isShown ? SpoilerHold.hideDuration : SpoilerHold.duration,
+            perform: holdThumbnail
+        )
+        .accessibilityElement()
+        .accessibilityLabel(isShown ? (winner?.rider ?? "") : L10n.tr("Result hidden"))
+        .accessibilityAction(named: isShown ? L10n.tr("Hide results") : L10n.tr("Show results"), toggle)
+        .accessibilityIdentifier("cx.latestResult.thumbnail")
+    }
+
+    @ViewBuilder
+    private var subtitle: some View {
+        if !isShown {
+            TribuneruText(
+                content: L10n.tr("Hold the painting to see the winner"),
+                style: .vaporRowMeta,
+                color: .tribuneru(.mudPageBackground),
+                lineLimit: 1
+            )
+        } else if let winner {
+            TribuneruText(
+                content: "\(winner.rider) · \(winner.time)",
+                style: .vaporRowMeta,
+                color: .tribuneru(.mudPageBackground),
+                lineLimit: 1
+            )
+        }
+    }
+
+    private func holdThumbnail() {
+        if isShown {
+            UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+        } else {
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+        }
+        toggle()
     }
 }
 
