@@ -83,7 +83,8 @@ enum CxMock {
                     .init(
                         title: "Men Elite",
                         categoryURL: url("race/\(resultsID)/"),
-                        winnerImageURL: nil,
+                        // A missing local file: the winner photo fails without a network request.
+                        winnerImageURL: URL(fileURLWithPath: "/mock/cx-winner-missing.jpg"),
                         podium: [
                             podium(1, 0, "58:12"),
                             podium(2, 1, "+0:14"),

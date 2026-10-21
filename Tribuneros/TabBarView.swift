@@ -57,6 +57,7 @@ struct TabBarView: View {
     @Binding var selectedTab: Tab
     /// The bar hides while typing; as a bottom inset it would otherwise ride up on the keyboard.
     @State private var isKeyboardVisible = false
+    @State private var tabBarHeight: CGFloat = 0
     @StateObject private var homeRouter: Router
     @StateObject private var cxRouter: Router
     @StateObject private var paddockRouter: Router
@@ -144,8 +145,10 @@ struct TabBarView: View {
                     selectedTab: $selectedTab,
                     onTabTap: handleTabSelection
                 )
+                .onGeometryChange(for: CGFloat.self, of: \.size.height) { tabBarHeight = $0 }
             }
         }
+        .environment(\.tabBarHeight, tabBarHeight)
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
             isKeyboardVisible = true
         }
@@ -187,6 +190,11 @@ struct TabBarView: View {
         }
         homeRacesViewModel.action(.onAppear)
     }
+}
+
+extension EnvironmentValues {
+    /// Height of `CustomTabBar` above the device's bottom inset; the tab pages' safe area doesn't include it.
+    @Entry var tabBarHeight: CGFloat = 0
 }
 
 private struct CustomTabBar: View {

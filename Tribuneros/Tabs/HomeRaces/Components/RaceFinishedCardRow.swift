@@ -19,15 +19,19 @@ struct CachedImageView: View {
     let imageUrl: URL?
     let cornerRadius: Double
     let presentation: Presentation
+    /// Replaces both the loading placeholder and the failure image when set.
+    let fallback: AnyView?
 
     init(
         imageUrl: URL?,
         cornerRadius: Double = 5,
-        presentation: Presentation = .fitted
+        presentation: Presentation = .fitted,
+        fallback: AnyView? = nil
     ) {
         self.imageUrl = imageUrl
         self.cornerRadius = cornerRadius
         self.presentation = presentation
+        self.fallback = fallback
     }
 
     var body: some View {
@@ -62,25 +66,33 @@ struct CachedImageView: View {
 
     @ViewBuilder
     private func buildPlaceholder() -> some View {
-        switch presentation {
-        case .fitted:
-            ProgressView()
-        case .racePhoto:
-            RaceArtView.fallback
+        if let fallback {
+            fallback
+        } else {
+            switch presentation {
+            case .fitted:
+                ProgressView()
+            case .racePhoto:
+                RaceArtView.fallback
+            }
         }
     }
 
     @ViewBuilder
     private func buildFailureImage() -> some View {
-        switch presentation {
-        case .fitted:
-            Image(systemName: "figure.indoor.cycle")
-                .resizable()
-                .scaledToFit()
-                .foregroundColor(.gray)
-                .scaleEffect(0.35)
-        case .racePhoto:
-            RaceArtView.fallback
+        if let fallback {
+            fallback
+        } else {
+            switch presentation {
+            case .fitted:
+                Image(systemName: "figure.indoor.cycle")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(.gray)
+                    .scaleEffect(0.35)
+            case .racePhoto:
+                RaceArtView.fallback
+            }
         }
     }
 }

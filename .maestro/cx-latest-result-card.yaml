@@ -35,3 +35,7 @@ tags:
 - extendedWaitUntil:
     visible: "Latest Cyclocross Results"
     timeout: 45000
+
+# The mock winner photo fails to load: the winner's initials disc stands in
+- assertVisible: "OM"
+- takeScreenshot: cx-latest-results-initials

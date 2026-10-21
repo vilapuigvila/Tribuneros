@@ -25,6 +25,7 @@ extension CXRaces {
     /// and the rounds still to come.
     struct SeriesLensView: View {
         @Environment(\.safeAreaInsets) private var safeAreaInsets
+        @Environment(\.tabBarHeight) private var tabBarHeight
         @Binding var selectedSeries: RaceSeries?
         @State private var flipsLatestResult = false
 
@@ -93,18 +94,22 @@ extension CXRaces {
                 .padding(.top, 8)
             }
             .background(Color.tribuneru(.mudPageBackground))
-            .overlay(alignment: .bottom) {
+            .overlay {
                 if let latest = SeriesLens.latestRace(in: representable.races) {
-                    LatestResultCard(
-                        race: latest,
-                        winner: SeriesLens.winner(of: latest),
-                        otherCount: SeriesLens.otherLatestResultCount(in: representable.races),
-                        isShown: isLatestResultShown,
-                        toggle: { flipsLatestResult.toggle() },
-                        openAll: { action(.didTapOnLatestResults) }
-                    )
-                    .padding(.horizontal, 12)
-                    .padding(.bottom, 12)
+                    VStack(spacing: 0) {
+                        Spacer(minLength: 0)
+                        LatestResultCard(
+                            race: latest,
+                            winner: SeriesLens.winner(of: latest),
+                            otherCount: SeriesLens.otherLatestResultCount(in: representable.races),
+                            isShown: isLatestResultShown,
+                            toggle: { flipsLatestResult.toggle() },
+                            openAll: { action(.didTapOnLatestResults) }
+                        )
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, safeAreaInsets.bottom + tabBarHeight + 8)
+                    }
+                    .ignoresSafeArea(edges: .bottom)
                 }
             }
         }

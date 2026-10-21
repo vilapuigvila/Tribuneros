@@ -124,10 +124,11 @@ private struct CategoryResultsView: View {
             )
 
             HStack(alignment: .center, spacing: 12) {
-                if category.winnerImageURL != nil {
-                    CachedImageView(imageUrl: category.winnerImageURL, cornerRadius: 999)
-                        .frame(width: 56, height: 56)
-                        .clipShape(Circle())
+                if let imageURL = category.winnerImageURL {
+                    WinnerAvatar(
+                        imageURL: imageURL,
+                        name: category.podium.first?.rider
+                    )
                 }
 
                 VStack(spacing: 0) {
@@ -147,6 +148,40 @@ private struct CategoryResultsView: View {
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+/// 56pt winner photo; the Leaders-style initials disc shows while loading and when the photo fails.
+private struct WinnerAvatar: View {
+    let imageURL: URL
+    let name: String?
+
+    var body: some View {
+        ZStack {
+            initialsDisc
+            CachedImageView(
+                imageUrl: imageURL,
+                cornerRadius: 0,
+                presentation: .racePhoto,
+                fallback: AnyView(initialsDisc)
+            )
+        }
+        .frame(width: 56, height: 56)
+        .clipShape(Circle())
+        .overlay(Circle().strokeBorder(Color.tribuneru(.mudAccent), lineWidth: 2))
+    }
+
+    private var initialsDisc: some View {
+        ZStack {
+            Color.tribuneru(.mudTagNeutral)
+            if let name {
+                TribuneruText(
+                    content: CXRaces.riderInitials(name),
+                    style: .vaporResultTitle,
+                    color: .tribuneru(.mudTagNeutralText)
+                )
             }
         }
     }
