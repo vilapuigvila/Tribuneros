@@ -1,0 +1,57 @@
+# Paddock "Birthdays today" card: three rows at most, a "See all 5 birthdays" button opening a sheet with all of them,
+# and a sheet row still opening the rider screen. Mock scenario live has five birthdays: no network.
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- tapOn: "Paddock"
+- extendedWaitUntil:
+    visible: "Birthdays today"
+    timeout: 45000
+- extendedWaitUntil:
+    notVisible: "Loading the paddock"
+    timeout: 45000
+- assertVisible: "5 riders"
+- assertVisible:
+    id: "paddock.birthday.2"
+- assertNotVisible:
+    id: "paddock.birthday.3"
+- assertNotVisible: ".*MOCK Birthday Four.*"
+# A card row still opens the rider screen.
+- tapOn:
+    id: "paddock.birthday.0"
+- assertVisible: "Birthday"
+- assertVisible: "AGE TODAY"
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- assertVisible: "Birthdays today"
+- assertVisible: "See all 5 birthdays"
+- tapOn:
+    id: "paddock.birthday.more"
+- extendedWaitUntil:
+    visible:
+      id: "paddock.birthday.sheet.4"
+    timeout: 5000
+- assertVisible:
+    id: "paddock.birthday.sheet.0"
+- assertVisible: ".*MOCK Birthday One.*"
+- assertVisible: ".*MOCK Birthday Four.*"
+- assertVisible: ".*MOCK Birthday Five.*"
+# A sheet row closes the sheet and opens the rider screen on the Paddock stack.
+- tapOn:
+    id: "paddock.birthday.sheet.4"
+- extendedWaitUntil:
+    visible: "AGE TODAY"
+    timeout: 10000
+- assertVisible: ".*MOCK Birthday Five.*"
+- assertNotVisible:
+    id: "paddock.birthday.sheet.0"
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- assertVisible: "Birthdays today"

@@ -21,7 +21,7 @@ enum PaddockMock {
         )
     }
 
-    /// One transfer (dated yesterday), one program update and three birthdays.
+    /// One transfer (dated yesterday), one program update and five birthdays (three on the card, all five in the sheet).
     static func paddock(now: Date = Date()) -> DTO.Paddock {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -52,7 +52,9 @@ enum PaddockMock {
             birthdays: [
                 DTO.Birthday(rider: rider("MOCK Birthday One", slug: "mock-birthday-one", country: "dk"), age: "31"),
                 DTO.Birthday(rider: rider("MOCK Birthday Two", slug: "mock-birthday-two", country: "be"), age: "28"),
-                DTO.Birthday(rider: rider("MOCK Birthday Three", slug: "mock-birthday-three", country: "es"), age: "24")
+                DTO.Birthday(rider: rider("MOCK Birthday Three", slug: "mock-birthday-three", country: "es"), age: "24"),
+                DTO.Birthday(rider: rider("MOCK Birthday Four", slug: "mock-birthday-four", country: "fr"), age: "35"),
+                DTO.Birthday(rider: rider("MOCK Birthday Five", slug: "mock-birthday-five", country: "nl"), age: "22")
             ]
         )
     }

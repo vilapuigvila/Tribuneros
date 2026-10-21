@@ -230,6 +230,23 @@
     },
     "comment": "Count of birthdays today"
   },
+  "See all %lld birthdays": {
+    "plural": {
+      "en": {
+        "one": "See all %lld birthday",
+        "other": "See all %lld birthdays"
+      },
+      "ca": {
+        "one": "Veure %lld aniversari",
+        "other": "Veure els %lld aniversaris"
+      },
+      "eu": {
+        "one": "Ikusi urtebetetzea (%lld)",
+        "other": "Ikusi urtebetetze guztiak (%lld)"
+      }
+    },
+    "comment": "Button under the first three birthday rows; opens a sheet with every birthday"
+  },
   "Birthday": {
     "ca": "Aniversari",
     "eu": "Urtebetetzea",

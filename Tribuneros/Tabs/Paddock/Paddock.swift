@@ -70,6 +70,12 @@ extension Paddock {
         var transferCount = 0
         var programCount = 0
 
+        /// The birthday card shows at most this many rows; a sheet lists them all.
+        static let birthdaysPreviewLimit = 3
+
+        var previewBirthdays: [BirthdaysCard.Entry] { Array(birthdays.prefix(Self.birthdaysPreviewLimit)) }
+        var hasMoreBirthdays: Bool { birthdays.count > Self.birthdaysPreviewLimit }
+
         var segment: Segment { Segment(filter: filter) }
 
         func count(of segment: Segment) -> Int {

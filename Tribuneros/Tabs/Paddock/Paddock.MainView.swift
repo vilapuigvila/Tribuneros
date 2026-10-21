@@ -67,7 +67,10 @@ extension Paddock {
                     }
 
                     if !state.birthdays.isEmpty {
-                        BirthdaysSection(entries: state.birthdays) { entry in
+                        BirthdaysSection(
+                            entries: state.previewBirthdays,
+                            all: state.birthdays
+                        ) { entry in
                             action(.didTapOnRider(.birthday(entry)))
                         }
                     }

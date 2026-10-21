@@ -156,12 +156,16 @@ extension Paddock {
 
     struct BirthdaysSection: View {
         let entries: [BirthdaysCard.Entry]
+        let all: [BirthdaysCard.Entry]
         let onTap: (BirthdaysCard.Entry) -> Void
+
+        @State private var showsMore = false
+        @State private var pendingEntry: BirthdaysCard.Entry?
 
         var body: some View {
             KitSection(title: L10n.tr("Birthdays today")) {
                 TribuneruText(
-                    content: L10n.tr("%lld riders", entries.count),
+                    content: L10n.tr("%lld riders", all.count),
                     style: .vaporMonoMeta,
                     color: .tribuneru(.kitTextSecondary),
                     lineLimit: 1
@@ -172,20 +176,10 @@ extension Paddock {
                         .frame(height: 120)
                         .clipped()
                     VStack(spacing: 0) {
-                        ForEach(Array(entries.enumerated()), id: \.offset) { index, entry in
-                            if index > 0 {
-                                TribunerosDivider(
-                                    height: 0.5,
-                                    color: Color.tribuneru(.kitTextPrimary).opacity(0.08)
-                                )
-                            }
-                            Button {
-                                onTap(entry)
-                            } label: {
-                                row(entry)
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityIdentifier("paddock.birthday.\(index)")
+                        rows(entries, idPrefix: "paddock.birthday") { onTap($0) }
+                        if all.count > entries.count {
+                            divider
+                            moreButton
                         }
                     }
                     .padding(.horizontal, 16)
@@ -193,6 +187,98 @@ extension Paddock {
                 }
                 .kitCard()
             }
+            // Push only once the sheet is gone, so the rider screen lands on the Paddock stack.
+            .sheet(
+                isPresented: $showsMore,
+                onDismiss: {
+                    guard let entry = pendingEntry else { return }
+                    pendingEntry = nil
+                    onTap(entry)
+                }
+            ) {
+                moreSheet
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
+                    .presentationCornerRadius(24)
+                    .presentationBackground(Color.tribuneru(.kitPageBackground))
+                    .preferredColorScheme(.dark)
+            }
+        }
+
+        private var divider: some View {
+            TribunerosDivider(
+                height: 0.5,
+                color: Color.tribuneru(.kitTextPrimary).opacity(0.08)
+            )
+        }
+
+        private func rows(
+            _ entries: [BirthdaysCard.Entry],
+            idPrefix: String,
+            onTap: @escaping (BirthdaysCard.Entry) -> Void
+        ) -> some View {
+            ForEach(Array(entries.enumerated()), id: \.offset) { index, entry in
+                if index > 0 {
+                    divider
+                }
+                Button {
+                    onTap(entry)
+                } label: {
+                    row(entry)
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("\(idPrefix).\(index)")
+            }
+        }
+
+        private var moreButton: some View {
+            Button {
+                showsMore = true
+            } label: {
+                HStack(spacing: 6) {
+                    TribuneruText(
+                        content: L10n.tr("See all %lld birthdays", all.count),
+                        style: .vaporSeeAll,
+                        color: .tribuneru(.kitAccent),
+                        lineLimit: 1
+                    )
+                    Spacer(minLength: 8)
+                    Image(systemName: "chevron.up")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.tribuneru(.kitAccent))
+                        .accessibilityHidden(true)
+                }
+                .frame(minHeight: 48)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("paddock.birthday.more")
+        }
+
+        private var moreSheet: some View {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 8) {
+                    TribuneruText(
+                        content: L10n.tr("Birthdays today"),
+                        style: .vaporHeading,
+                        color: .tribuneru(.kitTextPrimary),
+                        lineLimit: 1
+                    )
+                    .padding(.top, 20)
+                    VStack(spacing: 0) {
+                        rows(all, idPrefix: "paddock.birthday.sheet") { entry in
+                            pendingEntry = entry
+                            showsMore = false
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 4)
+                    .kitCard()
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 24)
+            }
+            .accessibilityIdentifier("paddock.birthday.sheet")
         }
 
         private func row(_ entry: BirthdaysCard.Entry) -> some View {

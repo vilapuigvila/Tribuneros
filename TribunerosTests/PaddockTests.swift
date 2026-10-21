@@ -342,6 +342,23 @@ final class PaddockTests: XCTestCase {
         XCTAssertEqual(state.birthdays.first?.rider.name, "Rider")
     }
 
+    func testBirthdayCardShowsAtMostThreeRows() {
+        let entries = (1...5).map {
+            Paddock.BirthdaysCard.Entry(
+                rider: .init(name: "Rider \($0)", countryCode: "es", url: nil),
+                age: "\(20 + $0)"
+            )
+        }
+        var state = Paddock.ViewState(press: .loading, filter: .transfers, feed: .loading)
+        state.birthdays = entries
+        XCTAssertEqual(state.previewBirthdays, Array(entries.prefix(3)))
+        XCTAssertTrue(state.hasMoreBirthdays)
+
+        state.birthdays = Array(entries.prefix(3))
+        XCTAssertEqual(state.previewBirthdays.count, 3)
+        XCTAssertFalse(state.hasMoreBirthdays, "Three birthdays fit the card, no See all button")
+    }
+
     func testPressMonogram() {
         func monogram(_ name: String) -> String {
             Paddock.PressItem(
