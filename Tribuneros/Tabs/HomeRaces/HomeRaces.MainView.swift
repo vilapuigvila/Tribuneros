@@ -68,6 +68,10 @@ struct HomeRacesView: View {
                 HistoryResultsListView(races: sections.historyResults) {
                     viewModel.action($0)
                 }
+            case .racePreviews:
+                PreviewsListView(previews: sections.previews) {
+                    viewModel.action($0)
+                }
             default:
                 EmptyView()
             }
@@ -83,6 +87,7 @@ extension HomeRaces {
 
     struct MainView: View {
         @Environment(\.safeAreaInsets) private var safeAreaInsets
+        @Environment(\.tabBarHeight) private var tabBarHeight
         @State private var retryCount = 0
         // onAppear also fires when popping back from a detail; only the first one fetches.
         @State private var hasAppeared = false
@@ -159,13 +164,6 @@ extension HomeRaces {
                         action: action
                     )
 
-                    if !sections.previews.isEmpty {
-                        PreviewsSection(
-                            previews: sections.previews,
-                            action: action
-                        )
-                    }
-
                     ResultsTodaySection(
                         races: sections.racesFinished,
                         firstFinishExpected: sections.firstFinishExpected,
@@ -185,7 +183,7 @@ extension HomeRaces {
                     )
 
                     Color.clear
-                        .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
+                        .frame(height: safeAreaInsets.bottom * 3 + (sections.previews.isEmpty ? 0 : 96))
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
@@ -213,6 +211,21 @@ extension HomeRaces {
             .background(Color.tribuneru(.vaporPageBackground))
             .overlay(alignment: .top) {
                 StatusBarScrim()
+            }
+            .overlay {
+                if !isPlaceholder,
+                   !sections.previews.isEmpty {
+                    VStack(spacing: 0) {
+                        Spacer(minLength: 0)
+                        PreviewsFloatingCard(
+                            previews: sections.previews,
+                            action: action
+                        )
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, safeAreaInsets.bottom + tabBarHeight + 8)
+                    }
+                    .ignoresSafeArea(edges: .bottom)
+                }
             }
         }
     }

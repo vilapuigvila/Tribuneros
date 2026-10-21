@@ -63,6 +63,8 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
                 router.routeTo(.yesterdayResults)
             case .historyResults:
                 router.routeTo(.historyResults)
+            case .previews:
+                router.routeTo(.racePreviews)
             case .detail:
                 nonFatalCrashlytics(false, "can't navigate to detail")
                 break

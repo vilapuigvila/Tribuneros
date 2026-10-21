@@ -1,8 +1,8 @@
 # No races today but PCS has previews (mock scenario "previews", Debug build only): the resting
-# card shrinks to half height, a Previews section sits between Today and Results today, and a row
-# opens the preview detail screen. The preview page is mocked (MOCK-prefixed route), no PCS request.
-# With races today as well (mock scenario "live"), the first race keeps the Today hero and the
-# Previews section follows it.
+# card shrinks to half height and the first preview floats over the bottom of the page, Road colors.
+# A tap opens the preview detail; "+2" opens the list of every preview, whose rows open the detail too.
+# The preview page is mocked (MOCK-prefixed route), no PCS request.
+# With races today as well (mock scenario "live"), the Today hero stays and the card still floats.
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -14,23 +14,29 @@ tags:
       mockScenario: previews
 - extendedWaitUntil:
     visible:
-      id: "home.previews.row.0"
+      id: "home.previews.card"
     timeout: 20000
 - assertVisible:
     id: "home.today.empty"
     text: ".*The peloton is resting.*"
 - assertNotVisible:
     id: "home.today.hero"
-- assertVisible: "Previews"
+- assertVisible: "PREVIEW"
 - assertVisible:
-    id: "home.previews.row.0"
+    id: "home.previews.card"
     text: ".*MOCK Tour de Langkawi.*"
+# Only one preview card: the others sit behind the button
+- assertNotVisible: "MOCK Gran Piemonte"
+- assertNotVisible:
+    id: "home.previews.row.0"
 - assertVisible:
-    id: "home.previews.row.1"
+    id: "home.previews.more"
+- assertVisible: "\\+2"
 - assertVisible: "Results today"
+- takeScreenshot: today-races-previews-floating
 
 - tapOn:
-    id: "home.previews.row.0"
+    id: "home.previews.card"
 - extendedWaitUntil:
     visible:
       id: "previewDetail.title"
@@ -46,7 +52,32 @@ tags:
     start: 1%, 50%
     end: 70%, 50%
 - assertVisible:
-    id: "home.previews.row.0"
+    id: "home.previews.card"
+
+# The button: every preview in a list
+- tapOn:
+    id: "home.previews.more"
+- extendedWaitUntil:
+    visible:
+      id: "previews.title"
+    timeout: 10000
+- assertVisible:
+    id: "previews.row.0"
+    text: ".*MOCK Tour de Langkawi.*"
+- assertVisible:
+    id: "previews.row.1"
+    text: ".*MOCK Gran Piemonte.*"
+- assertVisible:
+    id: "previews.row.2"
+    text: ".*MOCK Paris-Bourges.*"
+- takeScreenshot: today-races-previews-list
+- tapOn:
+    id: "previews.row.0"
+- extendedWaitUntil:
+    visible:
+      id: "previewDetail.title"
+    timeout: 10000
+- assertVisible: ".*MOCK Kuala Kubu Bharu.*"
 
 - launchApp:
     clearState: true
@@ -58,11 +89,8 @@ tags:
     timeout: 20000
 - assertNotVisible:
     id: "home.today.empty"
-- scrollUntilVisible:
-    element:
-      id: "home.previews.row.0"
-    direction: DOWN
-- assertVisible: "Previews"
 - assertVisible:
-    id: "home.previews.row.0"
+    id: "home.previews.card"
     text: ".*MOCK Tour de Langkawi.*"
+- assertVisible:
+    id: "home.previews.more"

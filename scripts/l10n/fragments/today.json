@@ -296,6 +296,11 @@
     "ca": "Mantén premut un resultat per mostrar o amagar els espòilers",
     "eu": "Eduki sakatuta emaitza bat spoilerrak erakusteko edo ezkutatzeko"
   },
+  "PREVIEW": {
+    "ca": "PRÈVIA",
+    "eu": "AURREBISTA",
+    "comment": "Road floating preview card tag"
+  },
   "Previews": {
     "ca": "Prèvies",
     "eu": "Aurrebistak"

@@ -1,4 +1,5 @@
-# The native race result screen (RaceFinishedDetailView), opened from a Results today card, a
+# The native race result screen (RaceFinishedDetailView: text header, no painting, the winner
+# in a round photo card), opened from a Results today card, a
 # Yesterday row (home and "See all") and a History row, plus the History section itself
 # (mock scenario "history" = "live" plus five History rows, Debug build only). The result page is
 # mocked too: the race's winner, then "MOCK Chaser 2".."MOCK Chaser 10", so no PCS request is made.
@@ -29,7 +30,17 @@ tags:
     visible: "Race Result"
     timeout: 10000
 - assertVisible: "Giro della Toscana.*"
-- assertVisible: "MOCK Rider One"
+# Text header, no painting hero (RaceDetailHero's title id), and the winner's round photo
+- assertVisible:
+    id: "raceResult.title"
+    text: "Giro della Toscana.*"
+- assertNotVisible:
+    id: "raceDetail.title"
+- assertVisible:
+    id: "raceResult.winnerPhoto"
+- assertVisible:
+    id: "raceResult.winner"
+    text: ".*MOCK Rider One.*"
 - assertVisible: "MOCK Chaser 2"
 - assertNotVisible: "Couldn't load the full results.*"
 - swipe:
@@ -53,6 +64,10 @@ tags:
     timeout: 10000
 - assertVisible: "Tour de Langkawi.*"
 - assertVisible: "MOCK Rider Four"
+- assertVisible:
+    id: "raceResult.winnerPhoto"
+- assertNotVisible:
+    id: "raceDetail.title"
 - swipe:
     start: 1%, 50%
     end: 70%, 50%

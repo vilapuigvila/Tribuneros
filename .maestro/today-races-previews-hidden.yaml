@@ -1,4 +1,4 @@
-# No Previews section without previews (mock scenario "empty": full-size resting card).
+# No floating preview card without previews (mock scenario "empty": full-size resting card).
 # Debug build only.
 appId: com.pskmoons.Tribuneros
 tags:
@@ -13,6 +13,8 @@ tags:
     visible:
       id: "home.today.empty"
     timeout: 20000
-- assertNotVisible: "Previews"
+- assertNotVisible: "PREVIEW"
 - assertNotVisible:
-    id: "home.previews.row.0"
+    id: "home.previews.card"
+- assertNotVisible:
+    id: "home.previews.more"

@@ -33,9 +33,10 @@ struct ResultsTodaySection: View {
                     .spoilerHintAnchor(isHintAnchor && index == 0)
                     .spoilerArt(
                         race.visibility,
-                        size: CGSize(width: 180, height: 112),
+                        size: ResultHighlightCard.photoSize,
                         alignment: .top,
-                        identifier: "home.results.spoilerArt.\(index)"
+                        identifier: "home.results.spoilerArt.\(index)",
+                        cornerRadii: ResultHighlightCard.photoCornerRadii
                     )
                     .resultGestures(
                         race.visibility,
@@ -162,10 +163,16 @@ struct ResultsEmptyCard: View {
 
 struct ResultHighlightCard: View {
     private enum Sizes {
-        static let width: CGFloat = 180
-        static let photoHeight: CGFloat = 112
+        static let width: CGFloat = 162
+        static let photoHeight: CGFloat = 101
         static let cornerRadius: CGFloat = 16
     }
+
+    static let photoSize = CGSize(width: Sizes.width, height: Sizes.photoHeight)
+    static let photoCornerRadii = RectangleCornerRadii(
+        topLeading: Sizes.cornerRadius,
+        topTrailing: Sizes.cornerRadius
+    )
 
     let race: HomeRaces.Representable.RaceFinished
     var visibility: HomeRaces.ResultVisibility = .shown
@@ -182,7 +189,7 @@ struct ResultHighlightCard: View {
         VStack(alignment: .leading, spacing: 0) {
             WinnerPhoto(
                 url: shownRace.winnerImgURL,
-                size: CGSize(width: Sizes.width, height: Sizes.photoHeight),
+                size: Self.photoSize,
                 isHiddenBySpoiler: visibility == .hidden
             )
             details

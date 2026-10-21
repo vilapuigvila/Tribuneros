@@ -13,8 +13,13 @@ tags:
     visible:
       id: "home.today.hero"
     timeout: 20000
+# The hero (CRO Race) is LIVE and opens the live race screen; race info is reached from a
+# non-live race in "See all".
 - tapOn:
-    id: "home.today.hero"
+    id: "home.today.seeAll"
+- tapOn:
+    id: "todayRaces.row.3"
+    text: ".*GP de Montréal.*"
 - extendedWaitUntil:
     visible:
       id: "raceInfo.whereToWatch"

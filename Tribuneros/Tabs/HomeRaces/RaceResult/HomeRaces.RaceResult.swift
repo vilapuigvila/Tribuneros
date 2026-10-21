@@ -254,9 +254,17 @@ extension HomeRaces {
                 )
             }
 
+            struct Winner: Equatable {
+                let name: String
+                let team: String
+                var countryCode: String = ""
+            }
+
             let title: String
             let subtitle: String
             let winnerImgURL: URL?
+            /// The homepage podium's first row, known before the result page loads.
+            let winner: Winner?
             /// Empty when there's nothing to switch between (one-day races).
             let classifications: [Classification]
             let selected: Classification

@@ -40,20 +40,16 @@ struct RaceFinishedDetailView: View {
         let state = viewModel.stateView
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                RaceDetailHero(
+                RaceResultHeader(
                     title: state.title,
                     subtitle: state.subtitle
                 )
 
-                if let imageURL = state.winnerImgURL {
-                    CachedImageView(
-                        imageUrl: imageURL,
-                        cornerRadius: 12,
-                        presentation: .racePhoto
+                if let winner = state.winner {
+                    RaceResultWinnerCard(
+                        winner: winner,
+                        imageURL: state.winnerImgURL
                     )
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 200)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
 
                 if !state.classifications.isEmpty {
@@ -90,6 +86,124 @@ struct RaceFinishedDetailView: View {
         }
     }
 
+}
+
+// MARK: - Header -
+
+private struct RaceResultHeader: View {
+    let title: String
+    let subtitle: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            TribuneruText(
+                content: title,
+                style: .vaporHeroTitle,
+                color: .tribuneru(.vaporTextPrimary),
+                lineLimit: 3
+            )
+            .accessibilityAddTraits(.isHeader)
+            .accessibilityIdentifier("raceResult.title")
+            if !subtitle.isEmpty {
+                TribuneruText(
+                    content: subtitle,
+                    style: .vaporHeroSubtitle,
+                    color: .tribuneru(.vaporTextSecondary),
+                    lineLimit: 2
+                )
+                .accessibilityIdentifier("raceResult.subtitle")
+            }
+        }
+        .frame(
+            maxWidth: .infinity,
+            alignment: .leading
+        )
+        .padding(.top, 4)
+    }
+}
+
+// MARK: - Winner -
+
+private struct RaceResultWinnerCard: View {
+    let winner: HomeRaces.RaceResult.ViewState.Winner
+    let imageURL: URL?
+
+    private let photoSize: CGFloat = 72
+
+    var body: some View {
+        VaporCard {
+            HStack(alignment: .center, spacing: 14) {
+                CachedImageView(
+                    imageUrl: imageURL,
+                    cornerRadius: 0,
+                    presentation: .racePhoto,
+                    fallback: AnyView(WinnerPhotoFallback())
+                )
+                .frame(
+                    width: photoSize,
+                    height: photoSize
+                )
+                .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(
+                            Color.tribuneru(.vaporAccent),
+                            lineWidth: 2
+                        )
+                )
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(L10n.tr("Winner"))
+                .accessibilityIdentifier("raceResult.winnerPhoto")
+
+                VStack(alignment: .leading, spacing: 4) {
+                    TribuneruText(
+                        content: L10n.tr("Winner").uppercased(with: L10n.locale),
+                        style: .vaporSpoilerChip,
+                        color: .tribuneru(.vaporAccent),
+                        lineLimit: 1
+                    )
+                    HStack(spacing: 8) {
+                        if !winner.countryCode.isEmpty {
+                            VaporFlagView(countryCode: winner.countryCode)
+                        }
+                        TribuneruText(
+                            content: winner.name,
+                            style: .vaporRaceNameNext,
+                            color: .tribuneru(.vaporTextPrimary),
+                            lineLimit: 2
+                        )
+                    }
+                    if !winner.team.isEmpty {
+                        TribuneruText(
+                            content: winner.team,
+                            style: .vaporRowMeta,
+                            color: .tribuneru(.vaporTextSecondary),
+                            lineLimit: 1
+                        )
+                    }
+                }
+                .frame(
+                    maxWidth: .infinity,
+                    alignment: .leading
+                )
+                .accessibilityElement(children: .combine)
+                .accessibilityIdentifier("raceResult.winner")
+            }
+        }
+    }
+}
+
+private struct WinnerPhotoFallback: View {
+    var body: some View {
+        ZStack {
+            Color.tribuneru(.vaporPageBackground)
+            Image(systemName: "person.fill")
+                .resizable()
+                .scaledToFit()
+                .padding(18)
+                .foregroundStyle(Color.tribuneru(.vaporTextMuted))
+        }
+    }
 }
 
 // MARK: - Hero -

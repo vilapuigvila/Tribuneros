@@ -161,6 +161,7 @@ enum HomeRaces {
         case todayResults
         case yesterdayResults
         case historyResults
+        case previews
         case tomorrowRaces
         case detail(Detail)
     }

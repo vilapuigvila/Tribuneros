@@ -64,6 +64,13 @@ extension HomeRaces.RaceResult {
                 title: race.race,
                 subtitle: descriptor.subtitle(page: stagePage),
                 winnerImgURL: race.winnerImgURL,
+                winner: race.podium.first.map {
+                    ViewState.Winner(
+                        name: $0.name,
+                        team: cleaned($0.team),
+                        countryCode: $0.countryCode
+                    )
+                },
                 classifications: descriptor.classifications,
                 selected: domain.selected,
                 table: table(

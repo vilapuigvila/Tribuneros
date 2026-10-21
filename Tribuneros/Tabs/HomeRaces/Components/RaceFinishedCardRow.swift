@@ -256,7 +256,8 @@ extension View {
         size: CGSize,
         alignment: Alignment,
         identifier: String?,
-        cover: SpoilerCover = .classic
+        cover: SpoilerCover = .classic,
+        cornerRadii: RectangleCornerRadii = .init()
     ) -> some View {
         modifier(
             SpoilerArtOverlay(
@@ -264,7 +265,8 @@ extension View {
                 cover: cover,
                 size: size,
                 alignment: alignment,
-                identifier: identifier
+                identifier: identifier,
+                cornerRadii: cornerRadii
             )
         )
     }
@@ -276,6 +278,7 @@ private struct SpoilerArtOverlay: ViewModifier {
     let size: CGSize
     let alignment: Alignment
     let identifier: String?
+    let cornerRadii: RectangleCornerRadii
 
     @State private var artOpacity: Double
 
@@ -284,13 +287,15 @@ private struct SpoilerArtOverlay: ViewModifier {
         cover: SpoilerCover,
         size: CGSize,
         alignment: Alignment,
-        identifier: String?
+        identifier: String?,
+        cornerRadii: RectangleCornerRadii
     ) {
         self.visibility = visibility
         self.cover = cover
         self.size = size
         self.alignment = alignment
         self.identifier = identifier
+        self.cornerRadii = cornerRadii
         _artOpacity = State(initialValue: visibility == .hidden ? 1 : 0)
     }
 
@@ -316,7 +321,7 @@ private struct SpoilerArtOverlay: ViewModifier {
                     width: size.width,
                     height: size.height
                 )
-                .clipped()
+                .clipShape(UnevenRoundedRectangle(cornerRadii: cornerRadii))
             }
             .onChange(of: visibility) { _, newValue in
                 // The parent's update arrives outside any animation, so the fade is driven from local state.

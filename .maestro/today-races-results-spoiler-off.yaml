@@ -1,0 +1,46 @@
+# Results today with "Hide results" off (mock scenario "live", Debug build only): every card starts
+# shown, and the cards are narrow enough that part of the third one peeks in at the right edge.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- extendedWaitUntil:
+    visible:
+      id: "home.results.card.0"
+    timeout: 20000
+- tapOn:
+    id: home.spoilerHint
+    optional: true
+- tapOn:
+    id: "tab.settings"
+- tapOn:
+    id: "settings.hideResults"
+- tapOn:
+    id: "tab.home"
+- scrollUntilVisible:
+    element:
+      id: "home.yesterday.row.0"
+- extendedWaitUntil:
+    visible:
+      id: "home.results.card.0"
+      text: "Giro della Toscana.*MOCK Rider One.*"
+    timeout: 10000
+- assertNotVisible:
+    id: "home.results.spoilerArt.0"
+- assertVisible:
+    id: "home.results.card.2"
+- takeScreenshot: today-results-spoiler-off
+# A long press hides that one race again: the painting covers the photo with the card's rounded top corners
+- longPressOn:
+    id: "home.results.card.0"
+    retryTapIfNoChange: false
+    delay: 1
+- assertVisible:
+    id: "home.results.spoilerArt.0"
+- assertNotVisible: ".*MOCK Rider One.*"
+- takeScreenshot: today-results-spoiler-off-hidden

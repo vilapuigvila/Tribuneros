@@ -2978,6 +2978,24 @@
         }
       }
     },
+    "PREVIEW" : {
+      "comment" : "Road floating preview card tag",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PRÈVIA"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AURREBISTA"
+          }
+        }
+      }
+    },
     "PROFILE" : {
       "extractionState" : "manual",
       "localizations" : {

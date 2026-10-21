@@ -38,6 +38,7 @@ final class Router: ObservableObject {
         case todayRaces
         case yesterdayResults
         case historyResults
+        case racePreviews
         case raceResultDetail(HomeRaces.Representable.RaceFinished)
         case racePreview(HomeRaces.Representable.RacePreview)
         /// A LIVE Today race's PCS live page (`LiveRaceDetailView`).
