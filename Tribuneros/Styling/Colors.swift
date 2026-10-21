@@ -409,7 +409,7 @@ extension Color {
         case championBlack
         case championYellow
         case championGreen
-        /// The Monuments triple-champion paintings (Results yesterday covers when results show).
+        /// The Monuments triple-champion paintings (Results yesterday spoiler covers).
         case monumentSkin
         case monumentFaceBar
         case monumentInk

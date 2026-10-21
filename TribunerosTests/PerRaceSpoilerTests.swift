@@ -174,6 +174,21 @@ final class PerRaceSpoilerTests: XCTestCase {
         XCTAssertEqual(try visibilities(shown, in: \.yesterdayResults), [.shown, .shown])
     }
 
+    func testYesterdayRowsGetDifferentMonumentsAndTodayKeepsTheClassicArt() throws {
+        let sections = try representable(domain(revealed: [])).sections
+
+        let covers = sections.yesterdayResults.map(\.spoilerCover)
+        XCTAssertEqual(covers, [SpoilerCover.monument(forRow: 0), SpoilerCover.monument(forRow: 1)])
+        XCTAssertNotEqual(covers[0], covers[1])
+        XCTAssertFalse(covers.contains(.classic))
+        XCTAssertEqual(sections.racesFinished.map(\.spoilerCover), [.classic, .classic])
+    }
+
+    func testThreeRowsInARowNeverRepeatAMonument() {
+        XCTAssertEqual(Set((0..<3).map(SpoilerCover.monument(forRow:))).count, 3)
+        XCTAssertEqual(SpoilerCover.monument(forRow: 3), SpoilerCover.monument(forRow: 0))
+    }
+
     func testWithResultsShownAToggledRaceIsHidden() throws {
         var shown = domain(revealed: [finished("A", url: raceA).revealKey])
         shown.hidesResults = false

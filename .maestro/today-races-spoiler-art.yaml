@@ -1,4 +1,4 @@
-# The spoiler art in the photo slot of every Results today card and Yesterday row while hidden;
+# The spoiler art in the photo slot of every Results today card (Yesterday rows: a Monuments painting) while hidden;
 # a long press removes it from that one race only, and a second long press brings it back (mock
 # scenario "live", Debug build only).
 appId: com.pskmoons.Tribuneros
@@ -40,20 +40,20 @@ tags:
     id: "home.results.spoilerArt.0"
 - scrollUntilVisible:
     element:
-      id: "home.yesterday.spoilerArt.0"
+      id: "home.yesterday.spoilerArt.monument.0"
 - assertVisible:
-    id: "home.yesterday.spoilerArt.1"
+    id: "home.yesterday.spoilerArt.monument.1"
 - longPressOn:
-    id: "home.yesterday.spoilerArt.0"
+    id: "home.yesterday.spoilerArt.monument.0"
     retryTapIfNoChange: false
     delay: 1
 - assertNotVisible:
-    id: "home.yesterday.spoilerArt.0"
+    id: "home.yesterday.spoilerArt.monument.0"
 - assertVisible:
-    id: "home.yesterday.spoilerArt.1"
+    id: "home.yesterday.spoilerArt.monument.1"
 - longPressOn:
     id: "home.yesterday.row.0"
     retryTapIfNoChange: false
     delay: 1
 - assertVisible:
-    id: "home.yesterday.spoilerArt.0"
+    id: "home.yesterday.spoilerArt.monument.0"

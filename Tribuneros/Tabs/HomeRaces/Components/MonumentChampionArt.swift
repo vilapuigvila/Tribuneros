@@ -16,10 +16,11 @@ enum SpoilerCover: Hashable, Sendable {
         case flanders
     }
 
-    /// Stable for a race within a launch, different across launches (`String` hashing is seeded per process).
-    static func randomMonument(for key: String) -> SpoilerCover {
-        let monuments = Monument.allCases
-        return .monument(monuments[Int(UInt(bitPattern: key.hashValue) % UInt(monuments.count))])
+    /// Shuffled once per launch, so neighbouring rows always differ and the order changes between launches.
+    static let monumentOrder = Monument.allCases.shuffled()
+
+    static func monument(forRow row: Int) -> SpoilerCover {
+        .monument(monumentOrder[row % monumentOrder.count])
     }
 }
 

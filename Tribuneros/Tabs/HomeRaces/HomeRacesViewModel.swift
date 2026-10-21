@@ -115,7 +115,7 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
                             title: "",
                             nextToFinish: nextToFinish(domain),
                             racesFinished: finishedRaces(domain.todayRaces, toggled: domain.revealedRaces, hidesResults: domain.hidesResults),
-                            yesterdayResults: finishedRaces(domain.yesterdayResults, toggled: domain.revealedRaces, hidesResults: domain.hidesResults, monumentCovers: !domain.hidesResults),
+                            yesterdayResults: finishedRaces(domain.yesterdayResults, toggled: domain.revealedRaces, hidesResults: domain.hidesResults, monumentCovers: true),
                             historyResults: finishedRaces(domain.historyResults, toggled: domain.revealedRaces, hidesResults: domain.hidesResults),
                             previews: previews(domain),
                             firstFinishExpected: HomeRaces.TodayRaces.firstFinishTime(nextToFinish(domain))
@@ -158,7 +158,7 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
         hidesResults: Bool,
         monumentCovers: Bool = false
     ) -> [HomeRaces.Representable.RaceFinished] {
-        results.map { race in
+        results.enumerated().map { row, race in
             var finished = HomeRaces.Representable.RaceFinished(
                 race: race.raceName,
                 raceDetails: race.raceDetails,
@@ -172,7 +172,7 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
             let hidden = hidesResults != toggled.contains(finished.revealKey)
             finished.visibility = hidden ? .hidden : .shown
             if monumentCovers {
-                finished.spoilerCover = .randomMonument(for: finished.revealKey)
+                finished.spoilerCover = .monument(forRow: row)
             }
             return finished
         }
