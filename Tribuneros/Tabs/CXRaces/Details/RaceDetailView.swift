@@ -208,18 +208,11 @@ struct RaceDetailView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             TribuneruText(
-                content: L10n.tr("Age"),
-                style: .vaporMeta,
-                color: .tribuneru(.mudTextSecondary)
-            )
-            .frame(width: 32, alignment: .center)
-
-            TribuneruText(
                 content: L10n.tr("Team"),
                 style: .vaporMeta,
                 color: .tribuneru(.mudTextSecondary)
             )
-            .frame(width: 72, alignment: .leading)
+            .frame(width: 96, alignment: .leading)
 
             TribuneruText(
                 content: L10n.tr("Time"),
@@ -370,19 +363,12 @@ private struct ResultRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             TribuneruText(
-                content: result.age,
-                style: .vaporFinishTime,
-                color: .tribuneru(.mudTextSecondary)
-            )
-            .frame(width: 32, alignment: .center)
-
-            TribuneruText(
                 content: result.team,
                 style: .vaporMeta,
                 color: .tribuneru(.mudTextSecondary),
                 lineLimit: 1
             )
-            .frame(width: 72, alignment: .leading)
+            .frame(width: 96, alignment: .leading)
 
             TribuneruText(
                 content: result.time,
