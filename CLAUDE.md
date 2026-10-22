@@ -415,3 +415,7 @@ false) at call sites instead of adding new error-throwing paths — this is the 
 "this shouldn't happen but don't crash the app" cases (missing HTML nodes, unreachable switch
 branches, etc.). Firebase itself is configured through `CrashlyticsManager.configure()` at app
 launch, which is also what makes Firestore usable.
+
+### Logging
+
+Never use `print`: log through `AppLogger.<network|navigation|images|preferences>` (`Helpers/AppLogger.swift`, `.debug` / `.log` / `.error`). It is Debug-only (Release compiles it away) and shows in Console.app under subsystem `com.pskmoons.Tribuneros`; `.debug` lines need Action → Include Debug Messages.

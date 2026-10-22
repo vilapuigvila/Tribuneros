@@ -24,7 +24,7 @@ struct CXRacesRacesView: View {
             }
         }
         .navigationDestination(for: Router.Destination.self) { destination in
-            let _ = print("avvp [Navigation] - \(destination)")
+            let _ = AppLogger.navigation.debug("\(destination)")
             switch destination {
             case .cxZone(.allRaces(let series)):
                 CXAllRacesView(

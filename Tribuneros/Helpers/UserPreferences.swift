@@ -91,12 +91,8 @@ struct UserDefault<T: Codable> {
     }*/
     
     private func printInfo(_ hasSet: Bool) {
-#if DEBUG
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm:ss"
         let source = hasSet ? "added" : "removed"
-        print("[PREFERENCE] - \(source) for key: \(key) at: \(formatter.string(from: Date()))")
-#endif
+        AppLogger.preferences.debug("\(source) for key: \(key)")
     }
 }
 

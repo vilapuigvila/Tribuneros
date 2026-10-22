@@ -31,7 +31,7 @@ extension Service {
               list.hasClass("hp-transfers"),
               let items = try? list.select("li")
         else {
-            print("avvp [NETWORK] - empty latest transfers")
+            AppLogger.network.log("empty latest transfers")
             return []
         }
         return items.array().compactMap { item in
@@ -56,7 +56,7 @@ extension Service {
               let block = try? heading.parent()?.nextElementSibling(),
               let items = try? block.select("ul.hp-list > li")
         else {
-            print("avvp [NETWORK] - empty program updates")
+            AppLogger.network.log("empty program updates")
             return []
         }
         return items.array().compactMap { item in
@@ -97,7 +97,7 @@ extension Service {
               let block = try? heading.parent()?.nextElementSibling(),
               let items = try? block.select("ul.list > li")
         else {
-            print("avvp [NETWORK] - empty birthdays")
+            AppLogger.network.log("empty birthdays")
             return []
         }
         return items.array().compactMap { item in

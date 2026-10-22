@@ -15,7 +15,7 @@ struct HomeRacesView: View {
             viewModel.action($0)
         }
         .navigationDestination(for: Router.Destination.self) { destination in
-            let _ = print("avvp [Navigation] - \(destination)")
+            let _ = AppLogger.navigation.debug("\(destination)")
             let sections = viewModel.stateView.result.sections
             switch destination {
             case .nextToFinishRace(let index):
