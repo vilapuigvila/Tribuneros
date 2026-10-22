@@ -1,7 +1,7 @@
 import {test} from "node:test";
 import assert from "node:assert/strict";
 import {HttpStatusError} from "../src/cx";
-import {DETAIL_KINDS, MISSING_MAX_AGE_MS, detailKind, isFresh, isMissingError} from "../src/cxDetail";
+import {DETAIL_KINDS, MISSING_MAX_AGE_MS, PROVISIONAL_MAX_AGE_MS, detailKind, isFresh, isMissingError} from "../src/cxDetail";
 
 const HOUR_MS = 3_600_000;
 
@@ -68,6 +68,16 @@ test("freshness: riders expire after a day, races after a week, results never", 
   assert.equal(isFresh(ago(8 * 24), DETAIL_KINDS.race.maxAgeMs, now), false);
   assert.equal(isFresh(ago(10_000), DETAIL_KINDS.results.maxAgeMs, now), true);
   assert.equal(isFresh(undefined, DETAIL_KINDS.results.maxAgeMs, now), false);
+});
+
+test("results: a document whose winner has no time is provisional and refreshed after 15 minutes", () => {
+  const isFinal = DETAIL_KINDS.results.isFinal!;
+  const row = {position: "1", rider: "NIEUWENHUIS Joris", age: "30", team: "", countryFlagURL: null, riderURL: null};
+
+  assert.equal(isFinal({results: [{...row, time: ""}, {...row, position: "2", time: ""}]}), false);
+  assert.equal(isFinal({results: []}), false);
+  assert.equal(isFinal({results: [{...row, time: "1:03:37"}, {...row, position: "2", time: "0:13"}]}), true);
+  assert.equal(PROVISIONAL_MAX_AGE_MS, 15 * 60_000);
 });
 
 test("freshness: standings expire after 12 hours", () => {

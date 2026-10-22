@@ -27,6 +27,22 @@ enum CxMock {
         Rider(slug: "mock-rider-ten", name: "MOCK Rider Ten", country: "Belgium", team: "Alpecin-Premier Tech")
     ]
 
+    private static let womenRiders = [
+        Rider(slug: "mock-woman-one", name: "MOCK Woman One", country: "Netherlands", team: "Fenix-Premier Tech"),
+        Rider(slug: "mock-woman-two", name: "MOCK Woman Two", country: "Belgium", team: "Crelan-Corendon"),
+        Rider(slug: "mock-woman-three", name: "MOCK Woman Three", country: "Belgium", team: "Baloise Trek Lions"),
+        Rider(slug: "mock-woman-four", name: "MOCK Woman Four", country: "Netherlands", team: "Pauwels Sauzen-Altez"),
+        Rider(slug: "mock-woman-five", name: "MOCK Woman Five", country: "Netherlands", team: "Visma-Lease a Bike"),
+        Rider(slug: "mock-woman-six", name: "MOCK Woman Six", country: "Belgium", team: "Ridley Racing Team"),
+        Rider(slug: "mock-woman-seven", name: "MOCK Woman Seven", country: "Belgium", team: "Crelan-Corendon"),
+        Rider(slug: "mock-woman-eight", name: "MOCK Woman Eight", country: "Netherlands", team: "Fenix-Premier Tech"),
+        Rider(slug: "mock-woman-nine", name: "MOCK Woman Nine", country: "Belgium", team: "Baloise Trek Lions"),
+        Rider(slug: "mock-woman-ten", name: "MOCK Woman Ten", country: "Netherlands", team: "Ridley Racing Team")
+    ]
+
+    /// The results ids of the mock Women Elite categories (the Men Elite ones are 17001, 17002).
+    private static let womenResultIDs: Set<String> = ["27001", "27002"]
+
     private static let site = "https://cyclocross24.com/"
     private static let gaverePath = "race/superprestige-gavere/"
     private static let molPath = "race/exact-cross-mol/"
@@ -70,7 +86,8 @@ enum CxMock {
             _ title: String,
             location: String,
             path: String,
-            resultsID: Int
+            resultsID: Int,
+            womenResultsID: Int
         ) -> DTO.CX24Homepage.Race {
             .init(
                 title: title,
@@ -90,6 +107,21 @@ enum CxMock {
                             podium(2, 1, "+0:14"),
                             podium(3, 2, "+0:31")
                         ]
+                    ),
+                    .init(
+                        title: "Women Elite",
+                        categoryURL: url("race/\(womenResultsID)/"),
+                        winnerImageURL: URL(fileURLWithPath: "/mock/cx-winner-missing.jpg"),
+                        podium: (0..<3).map { index in
+                            .init(
+                                position: index + 1,
+                                rider: womenRiders[index].name,
+                                riderURL: url("rider/\(womenRiders[index].slug)/"),
+                                country: womenRiders[index].country,
+                                countryFlagURL: nil,
+                                time: ["49:40", "+0:09", "+0:25"][index]
+                            )
+                        }
                     )
                 ]
             )
@@ -103,13 +135,15 @@ enum CxMock {
                             "Superprestige Gavere (C1)",
                             location: "Gavere, Belgium",
                             path: gaverePath,
-                            resultsID: 17001
+                            resultsID: 17001,
+                            womenResultsID: 27001
                         ),
                         race(
                             "Exact Cross Mol (C2)",
                             location: "Mol, Belgium",
                             path: molPath,
-                            resultsID: 17002
+                            resultsID: 17002,
+                            womenResultsID: 27002
                         )
                     ]
                 )
@@ -333,6 +367,20 @@ enum CxMock {
         )
     }
 
+    /// The Women Elite top ten the mock results ids in `womenResultIDs` serve.
+    static let womenResults: [DTO.CX24Homepage.CategoryResult] = womenRiders.enumerated().map { index, rider in
+        .init(
+            position: "\(index + 1)",
+            rider: rider.name,
+            age: "\(23 + index)",
+            team: rider.team,
+            time: index == 0 ? "49:40" : "+0:\(9 + index * 8)",
+            countryFlagURL: nil,
+            raceVideosURL: nil,
+            riderURL: url("rider/\(rider.slug)/")
+        )
+    }
+
     /// What `getCxDetail` serves per kind; the caller casts it to the type it asked for.
     static func detail(
         _ kind: Service.CxDetailKind,
@@ -341,7 +389,7 @@ enum CxMock {
         switch kind {
         case .rider: riderPage(id: id)
         case .race: racePage(id: id)
-        case .results: Service.ResultsDocument(results: results)
+        case .results: Service.ResultsDocument(results: womenResultIDs.contains(id) ? womenResults : results)
         case .standing: standingPage(id: id)
         }
     }

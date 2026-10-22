@@ -29,8 +29,28 @@ extension CXRaces {
         case didTapOnPodiumRider(CXRaces.RiderPodium)
         case didTapOnResultRider(CXRaces.RiderResult)
         case didTapOnPastWinnerRider(CXRaces.Winner)
-        case didTapOnRaceDetail(DTO.CX24Homepage.Race)
+        case didTapOnRaceDetail(DTO.CX24Homepage.Race, category: String? = nil)
+        /// A latest results card outside its category blocks: one of the card's categories, at random.
+        case didTapOnRaceHeader(DTO.CX24Homepage.Race)
         case didTapOnStandings
+    }
+}
+
+// MARK: - Latest results categories -
+extension CXRaces {
+
+    /// The categories a latest results card shows.
+    static func cardCategories(of race: DTO.CX24Homepage.Race) -> ArraySlice<DTO.CX24Homepage.Category> {
+        race.categories.prefix(2)
+    }
+
+    /// The tab index for `title`, the first tab when absent or unknown.
+    static func categoryIndex(
+        _ title: String?,
+        in race: DTO.CX24Homepage.Race
+    ) -> Int {
+        guard let title else { return 0 }
+        return race.categories.firstIndex { $0.title == title } ?? 0
     }
 }
 

@@ -109,7 +109,7 @@ extension Service {
 
     private static func readCxDocument<D: Decodable>(_ name: String, as type: D.Type) async throws -> D {
         let ref = Firestore.firestore().collection("cx").document(name)
-        if let cached = try? await ref.getDocument(source: .cache),
+        if let cached = try? await ref.loggedDocument(source: .cache),
            cached.exists,
            let updatedAt = (cached.get("updatedAt") as? Timestamp)?.dateValue(),
            let lastRun = lastCxRun(before: Date()) {
@@ -120,7 +120,7 @@ extension Service {
             }
         }
         await CxServerChecks.shared.mark(name)
-        return try await ref.getDocument().data(as: type)
+        return try await ref.loggedDocument(source: .default).data(as: type)
     }
 
     private static func extractFirstYouTubeVideoID(from html: String) -> String? {
@@ -142,6 +142,27 @@ extension Service {
         return nil
     }
     
+    private static func loggedData(for request: URLRequest) async throws -> Data {
+        let start = Date()
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            NetworkLog.page(
+                request.url,
+                status: (response as? HTTPURLResponse)?.statusCode,
+                bytes: data.count,
+                duration: Date().timeIntervalSince(start)
+            )
+            return data
+        } catch {
+            NetworkLog.failure(
+                request.url?.absoluteString ?? "-",
+                error: error,
+                duration: Date().timeIntervalSince(start)
+            )
+            throw error
+        }
+    }
+
     static func getYoutubeRaceURL(_ raceURL: URL) async -> URL? {
         #if DEBUG
         if HomeRaces.MockScenario.current != nil {
@@ -154,7 +175,7 @@ extension Service {
                 cachePolicy: .reloadIgnoringLocalCacheData,
                 timeoutInterval: 30
             )
-            let data = try await URLSession.shared.data(for: raceRequest).0
+            let data = try await loggedData(for: raceRequest)
             guard let htmlContent = String(data: data, encoding: .utf8) else {
                 throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
             }
@@ -196,7 +217,7 @@ extension Service {
                 )
 
                 do {
-                    let youtubeURLData = try await URLSession.shared.data(for: searchRequest).0
+                    let youtubeURLData = try await loggedData(for: searchRequest)
                     let html = String(decoding: youtubeURLData, as: UTF8.self)
                     if let videoId = extractFirstYouTubeVideoID(from: html),
                        let url = URL(string: "https://www.youtube.com/watch?v=\(videoId)") {
@@ -414,9 +435,10 @@ extension Service {
             }
         }
 
-        func isFresh(updatedAt: Date?, now: Date = Date()) -> Bool {
+        /// A results page whose winner has no time yet is provisional: same 15 min window as `cxDetail.ts`.
+        func isFresh(updatedAt: Date?, isProvisional: Bool = false, now: Date = Date()) -> Bool {
             guard let updatedAt else { return false }
-            guard let maxAge else { return true }
+            guard let maxAge = isProvisional ? 15 * 60 : maxAge else { return true }
             return now.timeIntervalSince(updatedAt) < maxAge
         }
     }
@@ -446,12 +468,18 @@ extension Service {
         var cached: D?
         do {
             var snapshot = try? await ref.getDocument(source: .cache)
-            if snapshot?.exists != true || !kind.isFresh(updatedAt: snapshot?.cxUpdatedAt) {
+            if snapshot?.exists != true || !kind.isFresh(
+                updatedAt: snapshot?.cxUpdatedAt,
+                isProvisional: snapshot?.cxIsProvisional == true
+            ) {
                 snapshot = try await ref.getDocument()
             }
             if let snapshot, snapshot.exists {
                 cached = try snapshot.data(as: type)
-                if kind.isFresh(updatedAt: snapshot.cxUpdatedAt) {
+                if kind.isFresh(
+                    updatedAt: snapshot.cxUpdatedAt,
+                    isProvisional: snapshot.cxIsProvisional
+                ) {
                     return cached
                 }
             }
@@ -562,6 +590,11 @@ private extension DocumentSnapshot {
     var cxUpdatedAt: Date? {
         (get("updatedAt") as? Timestamp)?.dateValue()
     }
+
+    var cxIsProvisional: Bool {
+        guard let first = (get("results") as? [Any])?.first as? [String: Any] else { return false }
+        return (first["time"] as? String ?? "").isEmpty
+    }
 }
 
 private extension DTO.CX24Homepage.CategoryResult {
@@ -576,5 +609,64 @@ private extension DTO.CX24Homepage.CategoryResult {
             raceVideosURL: raceVideosURL,
             riderURL: riderURL
         )
+    }
+}
+
+private extension DocumentReference {
+    /// `getDocument(source:)` that also writes the `[NETWORK]` lines; a cache miss logs as `missing`.
+    func loggedDocument(source: FirestoreSource) async throws -> DocumentSnapshot {
+        let start = Date()
+        do {
+            let snapshot = try await getDocument(source: source)
+            NetworkLog.json(
+                path,
+                source: snapshot.metadata.isFromCache ? .cache : .server,
+                object: snapshot.exists ? FirestoreJSON.object(snapshot.data() ?? [:]) : nil,
+                duration: Date().timeIntervalSince(start)
+            )
+            return snapshot
+        } catch {
+            if source == .cache {
+                NetworkLog.json(
+                    path,
+                    source: .cache,
+                    object: nil,
+                    duration: Date().timeIntervalSince(start)
+                )
+            } else {
+                NetworkLog.failure(
+                    path,
+                    error: error,
+                    duration: Date().timeIntervalSince(start)
+                )
+            }
+            throw error
+        }
+    }
+}
+
+private enum FirestoreJSON {
+    /// A Firestore value as JSON-compatible data; Timestamps become ISO 8601 strings.
+    static func object(_ value: Any) -> Any {
+        switch value {
+        case let timestamp as Timestamp:
+            return ISO8601DateFormatter().string(from: timestamp.dateValue())
+        case let date as Date:
+            return ISO8601DateFormatter().string(from: date)
+        case let dictionary as [String: Any]:
+            return dictionary.mapValues { object($0) }
+        case let array as [Any]:
+            return array.map { object($0) }
+        case let reference as DocumentReference:
+            return reference.path
+        case let point as GeoPoint:
+            return ["latitude": point.latitude, "longitude": point.longitude]
+        case let data as Data:
+            return data.base64EncodedString()
+        case is NSNull, is String, is NSNumber:
+            return value
+        default:
+            return "\(value)"
+        }
     }
 }

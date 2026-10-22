@@ -9,8 +9,8 @@ import SwiftUI
 
 struct LatestAllResultsView: View {
     let races: DTO.CX24Homepage
-    /// A podium row opens the rider screen; the rest of a race card opens the race (`action`).
-    var openRider: (CXRaces.RiderPodium) -> Void = { _ in }
+    /// A category block opens the race on that category; the rest of a race card opens it via `action`.
+    var openCategory: (DTO.CX24Homepage.Race, String) -> Void = { _, _ in }
     let action: (DTO.CX24Homepage.Race) -> Void
     
     var body: some View {
@@ -24,7 +24,7 @@ struct LatestAllResultsView: View {
                                 let race = section.races[raceIndex]
                                 RaceRowView(
                                     race: race,
-                                    openRider: openRider
+                                    openCategory: openCategory
                                 )
                                 .contentShape(Rectangle())
                                 .onTapGesture {
@@ -45,7 +45,7 @@ struct LatestAllResultsView: View {
 
 private struct RaceRowView: View {
     let race: DTO.CX24Homepage.Race
-    let openRider: (CXRaces.RiderPodium) -> Void
+    let openCategory: (DTO.CX24Homepage.Race, String) -> Void
 
     var body: some View {
         MudCardBox(spacing: 12) {
@@ -92,17 +92,16 @@ private struct RaceRowView: View {
             }
 
             VStack(spacing: 12) {
-                ForEach(race.categories.prefix(2).indices, id: \.self) { idx in
+                ForEach(CXRaces.cardCategories(of: race).indices, id: \.self) { idx in
                     let category = race.categories[idx]
-                    CategoryResultsView(category: category) { podium in
-                        openRider(
-                            CXRaces.RiderPodium(
-                                podium: podium,
-                                category: category,
-                                race: race
-                            )
-                        )
+                    // A button wins over the card's own tap gesture.
+                    Button {
+                        openCategory(race, category.title)
+                    } label: {
+                        CategoryResultsView(category: category)
+                            .contentShape(Rectangle())
                     }
+                    .buttonStyle(.plain)
                 }
             }
             .padding(.bottom, 6)
@@ -112,7 +111,6 @@ private struct RaceRowView: View {
 
 private struct CategoryResultsView: View {
     let category: DTO.CX24Homepage.Category
-    let openPodium: (DTO.CX24Homepage.Podium) -> Void
 
     var body: some View {
         let podiums = Array(category.podium.prefix(3))
@@ -134,14 +132,7 @@ private struct CategoryResultsView: View {
                 VStack(spacing: 0) {
                     ForEach(podiums.indices, id: \.self) { idx in
                         let podium = podiums[idx]
-                        // A button wins over the row's own tap gesture, so only the podium opens the rider.
-                        Button {
-                            openPodium(podium)
-                        } label: {
-                            PodiumRow(podium: podium)
-                                .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
+                        PodiumRow(podium: podium)
 
                         if idx < podiums.count - 1 {
                             MudDivider()

@@ -416,6 +416,85 @@ final class CXNativePagesTests: XCTestCase {
         XCTAssertNil(router.webPage)
     }
 
+    // MARK: - Latest results taps -
+
+    private func latestRace() -> DTO.CX24Homepage.Race {
+        CxMock.homepage().sections[0].races[0]
+    }
+
+    private func routedRaceDetail(_ action: CXRaces.Action) -> (DTO.CX24Homepage.Race, String?)? {
+        let router = Router()
+        let viewModel = CXRaces.ViewModel(
+            router: router,
+            interactor: CXRaces.InteractorImpl()
+        )
+        viewModel.action(action)
+        guard case .cxZone(.raceDetail(let race, let category)) = router.lastPushed else { return nil }
+        return (race, category)
+    }
+
+    func testCategoryTapRoutesToThatCategory() throws {
+        let race = latestRace()
+        XCTAssertEqual(race.categories.map(\.title), ["Men Elite", "Women Elite"])
+        for title in ["Men Elite", "Women Elite"] {
+            let routed = try XCTUnwrap(routedRaceDetail(.didTapOnRaceDetail(race, category: title)))
+            XCTAssertEqual(routed.0, race)
+            XCTAssertEqual(routed.1, title)
+        }
+    }
+
+    func testHeaderTapRoutesWithOneOfTheCardsCategories() throws {
+        let race = latestRace()
+        for _ in 0..<20 {
+            let routed = try XCTUnwrap(routedRaceDetail(.didTapOnRaceHeader(race)))
+            XCTAssertTrue(["Men Elite", "Women Elite"].contains(try XCTUnwrap(routed.1)))
+        }
+    }
+
+    func testHeaderTapOnOneOrNoCategories() throws {
+        let race = latestRace()
+        let one = DTO.CX24Homepage.Race(
+            title: race.title,
+            country: race.country,
+            countryFlagURL: nil,
+            date: race.date,
+            location: race.location,
+            raceURL: race.raceURL,
+            categories: [race.categories[1]]
+        )
+        let none = DTO.CX24Homepage.Race(
+            title: race.title,
+            country: race.country,
+            countryFlagURL: nil,
+            date: race.date,
+            location: race.location,
+            raceURL: race.raceURL,
+            categories: []
+        )
+        XCTAssertEqual(try XCTUnwrap(routedRaceDetail(.didTapOnRaceHeader(one))).1, "Women Elite")
+        XCTAssertNil(try XCTUnwrap(routedRaceDetail(.didTapOnRaceHeader(none))).1)
+    }
+
+    func testCategoryIndexMatchesTitleAndFallsBackToFirst() {
+        let race = latestRace()
+        XCTAssertEqual(CXRaces.categoryIndex("Women Elite", in: race), 1)
+        XCTAssertEqual(CXRaces.categoryIndex("Men Elite", in: race), 0)
+        XCTAssertEqual(CXRaces.categoryIndex("Junior", in: race), 0)
+        XCTAssertEqual(CXRaces.categoryIndex(nil, in: race), 0)
+    }
+
+    func testMockServesWomenResultsForWomenCategories() throws {
+        let race = latestRace()
+        let women = try XCTUnwrap(race.categories.last?.categoryURL)
+        let men = try XCTUnwrap(race.categories.first?.categoryURL)
+        let womenID = try XCTUnwrap(Service.CxDetailKind.results.id(for: women))
+        let menID = try XCTUnwrap(Service.CxDetailKind.results.id(for: men))
+        let womenDoc = try XCTUnwrap(CxMock.detail(.results, id: womenID) as? Service.ResultsDocument)
+        let menDoc = try XCTUnwrap(CxMock.detail(.results, id: menID) as? Service.ResultsDocument)
+        XCTAssertTrue(womenDoc.results[0].rider.contains("Woman"))
+        XCTAssertTrue(menDoc.results[0].rider.contains("Rider"))
+    }
+
     func testExternalLinksLeaveTheAppInsteadOfAWebSheet() throws {
         let router = Router()
         var opened: [URL] = []
