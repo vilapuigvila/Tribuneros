@@ -321,6 +321,7 @@ private struct ResultTable: View {
         case .loading:
             ResultRows(rows: HomeRaces.RaceResult.ViewState.Row.placeholders)
                 .redacted(reason: .placeholder)
+                .shimmering()
                 .disabled(true)
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(L10n.tr("Loading the results"))

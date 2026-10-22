@@ -26,6 +26,7 @@ extension CXRaces {
                         isPlaceholder: true
                     )
                     .redacted(reason: .placeholder)
+                    .shimmering()
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(L10n.tr("Loading cyclocross"))
                 case .error(let error):

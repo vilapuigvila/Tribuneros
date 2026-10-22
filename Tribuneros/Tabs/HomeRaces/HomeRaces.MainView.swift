@@ -105,6 +105,7 @@ extension HomeRaces {
                         isPlaceholder: true
                     )
                     .redacted(reason: .placeholder)
+                    .shimmering()
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(L10n.tr("Loading the races"))
                 case .loaded(let representable):

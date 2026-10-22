@@ -333,6 +333,7 @@ extension Paddock {
                     action: { _ in }
                 )
                 .redacted(reason: .placeholder)
+                .shimmering()
                 .disabled(true)
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(L10n.tr("Loading the paddock"))

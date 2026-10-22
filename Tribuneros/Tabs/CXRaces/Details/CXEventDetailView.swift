@@ -82,6 +82,7 @@ struct CXEventDetailView: View {
                         aboutPanel("About the race placeholder. A couple of lines of text stand in for the summary of the race until it loads.")
                     }
                     .redacted(reason: .placeholder)
+                    .shimmering()
                     .disabled(true)
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(L10n.tr("Loading the race"))

@@ -78,6 +78,7 @@ struct WhereToWatchView: View {
             }
         }
         .redacted(reason: .placeholder)
+        .shimmering()
         .disabled(true)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(L10n.tr("Loading the schedule"))

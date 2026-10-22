@@ -71,6 +71,7 @@ struct RacePreviewDetailView: View {
         case .loading:
             PreviewSections(content: .placeholders)
                 .redacted(reason: .placeholder)
+                .shimmering()
                 .disabled(true)
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(L10n.tr("Loading the race preview"))
