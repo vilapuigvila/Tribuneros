@@ -164,7 +164,7 @@ struct ResultsEmptyCard: View {
 struct ResultHighlightCard: View {
     private enum Sizes {
         static let width: CGFloat = 162
-        static let photoHeight: CGFloat = 101
+        static let photoHeight: CGFloat = 90
         static let cornerRadius: CGFloat = 16
     }
 
@@ -206,7 +206,7 @@ struct ResultHighlightCard: View {
     }
 
     private var details: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 4) {
             TribuneruText(
                 content: shownRace.race,
                 style: .vaporRaceNameResult,
@@ -242,6 +242,7 @@ struct ResultHighlightCard: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(12)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 9)
     }
 }
