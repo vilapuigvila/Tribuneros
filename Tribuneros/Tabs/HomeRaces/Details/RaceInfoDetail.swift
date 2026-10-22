@@ -56,6 +56,7 @@ struct NextToFinishRaceDetail: View {
                         profilePlaceholderPanel
                     }
                     .redacted(reason: .placeholder)
+                    .shimmering()
                     .disabled(true)
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(L10n.tr("Loading the race"))
@@ -64,6 +65,7 @@ struct NextToFinishRaceDetail: View {
                     if isLoadingImages {
                         profilePlaceholderPanel
                             .redacted(reason: .placeholder)
+                            .shimmering()
                             .disabled(true)
                             .accessibilityElement(children: .ignore)
                             .accessibilityLabel(L10n.tr("Loading the race profile"))
@@ -205,6 +207,7 @@ struct NextToFinishRaceDetail: View {
             if isLoading {
                 WatchTiles(tiles: WatchTiles.placeholders)
                     .redacted(reason: .placeholder)
+                    .shimmering()
             } else if let coverage {
                 switch coverage {
                 case .channels:

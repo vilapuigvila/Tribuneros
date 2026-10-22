@@ -89,7 +89,8 @@ extension CXRaces {
         ) -> CXRaces.ViewState {
             if domain.error != nil {
                 return .error(.unknown)
-            } else if domain.loading {
+            } else if domain.loading && domain.races.sections.isEmpty {
+                // A refresh keeps the loaded page; the placeholder is only for the first load.
                 return .loading
             } else if domain.races.sections.isEmpty {
                 return .error(.unknown)

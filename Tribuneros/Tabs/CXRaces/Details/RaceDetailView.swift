@@ -43,6 +43,7 @@ struct RaceDetailView: View {
                         resultsList(DTO.CX24Homepage.CategoryResult.placeholders)
                     }
                     .redacted(reason: .placeholder)
+                    .shimmering()
                     .disabled(true)
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(L10n.tr("Loading the results"))
@@ -307,6 +308,7 @@ struct RaceDetailView: View {
         .buttonStyle(.plain)
         .disabled(!isEnabled)
         .redacted(reason: isLoading ? .placeholder : [])
+        .shimmering(isLoading)
     }
 }
 

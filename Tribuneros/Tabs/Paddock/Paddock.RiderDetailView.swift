@@ -58,6 +58,7 @@ extension Paddock {
                             look: .kit
                         )
                             .redacted(reason: .placeholder)
+                            .shimmering()
                             .disabled(true)
                             .accessibilityElement(children: .ignore)
                             .accessibilityLabel(L10n.tr("Loading the rider"))

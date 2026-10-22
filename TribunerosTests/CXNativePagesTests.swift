@@ -430,4 +430,40 @@ final class CXNativePagesTests: XCTestCase {
         XCTAssertNil(router.webPage)
         XCTAssertEqual(router.navPath.count, 0)
     }
+
+    // MARK: - Refresh -
+
+    func testRefreshKeepsTheLoadedPage() {
+        let refreshing = CXRaces.Domain(
+            races: CxMock.homepage(),
+            calendar: [],
+            standings: .init(items: []),
+            loading: true,
+            error: nil
+        )
+        let state = CXRaces.ViewModel<CXRaces.InteractorImpl>.mapToRepresentable(
+            from: refreshing,
+            currentRepresentable: .idle
+        )
+        guard case .loaded = state else {
+            return XCTFail("A refresh with data showed \(state) instead of the loaded page")
+        }
+    }
+
+    func testFirstLoadShowsThePlaceholder() {
+        let firstLoad = CXRaces.Domain(
+            races: .init(sections: []),
+            calendar: [],
+            standings: .init(items: []),
+            loading: true,
+            error: nil
+        )
+        let state = CXRaces.ViewModel<CXRaces.InteractorImpl>.mapToRepresentable(
+            from: firstLoad,
+            currentRepresentable: .idle
+        )
+        guard case .loading = state else {
+            return XCTFail("The first load showed \(state) instead of the placeholder")
+        }
+    }
 }

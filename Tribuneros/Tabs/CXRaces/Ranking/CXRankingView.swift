@@ -45,6 +45,7 @@ struct CXRankingView: View {
                         rows(Ranking.ViewState.Row.placeholders)
                     }
                     .redacted(reason: .placeholder)
+                    .shimmering()
                     .disabled(true)
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(L10n.tr("Loading the ranking"))

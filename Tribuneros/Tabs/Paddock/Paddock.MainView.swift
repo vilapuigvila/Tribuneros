@@ -55,6 +55,7 @@ extension Paddock {
                     case .loading:
                         PressStrip(items: PressItem.placeholders) { _ in }
                             .redacted(reason: .placeholder)
+                            .shimmering()
                             .disabled(true)
                             .padding(.top, 14)
                     case .loaded(let items) where !items.isEmpty:
