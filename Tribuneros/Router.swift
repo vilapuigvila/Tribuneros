@@ -18,7 +18,8 @@ final class Router: ObservableObject {
         enum CXZone: Hashable {
             case allRaces(series: CXRaces.RaceSeries?)
             case latestResults
-            case raceDetail(DTO.CX24Homepage.Race)
+            /// `category` is the tab it opens on (a category title); `nil` opens the first.
+            case raceDetail(DTO.CX24Homepage.Race, category: String? = nil)
             case eventDetail(DTO.CXCalendarEvent)
             case riderDetail(CXRaces.RiderContext)
             /// `from` is the race detail the winner screen was opened from, so opening that same
@@ -69,7 +70,7 @@ final class Router: ObservableObject {
     }
 
     // NavigationPath can't be inspected: a same-destination push is a double tap only while the path is still the length it was right after that push.
-    private var lastPushed: Destination?
+    private(set) var lastPushed: Destination?
     private var countAfterLastPush = 0
 
     func routeTo(_ destination: Destination) {

@@ -1517,20 +1517,20 @@
         }
       }
     },
-    "Hold the painting to see the winner" : {
+    "Hold the card to see the winner" : {
       "comment" : "CX Zone latest result card hint while the winner is hidden",
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mantén premut el quadre per veure el guanyador"
+            "value" : "Mantén premuda la targeta per veure el guanyador"
           }
         },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eduki sakatuta marrazkia irabazlea ikusteko"
+            "value" : "Eduki sakatuta txartela irabazlea ikusteko"
           }
         }
       }

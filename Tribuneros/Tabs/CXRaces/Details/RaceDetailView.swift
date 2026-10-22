@@ -21,6 +21,7 @@ struct RaceDetailView: View {
     
     init(
         race: DTO.CX24Homepage.Race,
+        category: String? = nil,
         categoryResults: [String: [DTO.CX24Homepage.CategoryResult]] = [:],
         openVideo: @escaping (URL) -> Void = { _ in },
         openRider: @escaping (CXRaces.RiderResult) -> Void = { _ in }
@@ -29,6 +30,7 @@ struct RaceDetailView: View {
         self.openRider = openRider
         self.openVideo = openVideo
         _categoryResults = State(initialValue: categoryResults)
+        _selectedCategory = State(initialValue: CXRaces.categoryIndex(category, in: race))
         _isLoading = State(initialValue: categoryResults.isEmpty)
     }
 
@@ -206,25 +208,18 @@ struct RaceDetailView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             TribuneruText(
-                content: L10n.tr("Age"),
-                style: .vaporMeta,
-                color: .tribuneru(.mudTextSecondary)
-            )
-            .frame(width: 32, alignment: .center)
-
-            TribuneruText(
                 content: L10n.tr("Team"),
                 style: .vaporMeta,
                 color: .tribuneru(.mudTextSecondary)
             )
-            .frame(width: 84, alignment: .leading)
+            .frame(width: 96, alignment: .leading)
 
             TribuneruText(
                 content: L10n.tr("Time"),
                 style: .vaporMeta,
                 color: .tribuneru(.mudTextSecondary)
             )
-            .frame(width: 48, alignment: .trailing)
+            .frame(width: 60, alignment: .trailing)
         }
         .padding(.vertical, 8)
         .padding(.bottom, 4)
@@ -337,6 +332,7 @@ private struct CategoryTabButton: View {
                 )
             )
         }
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 
@@ -367,26 +363,19 @@ private struct ResultRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             TribuneruText(
-                content: result.age,
-                style: .vaporFinishTime,
-                color: .tribuneru(.mudTextSecondary)
-            )
-            .frame(width: 32, alignment: .center)
-
-            TribuneruText(
                 content: result.team,
                 style: .vaporMeta,
                 color: .tribuneru(.mudTextSecondary),
                 lineLimit: 1
             )
-            .frame(width: 84, alignment: .leading)
+            .frame(width: 96, alignment: .leading)
 
             TribuneruText(
                 content: result.time,
                 style: .vaporFinishTime,
                 color: .tribuneru(.mudTextSecondary)
             )
-            .frame(width: 48, alignment: .trailing)
+            .frame(width: 60, alignment: .trailing)
         }
         .padding(.vertical, 10)
     }

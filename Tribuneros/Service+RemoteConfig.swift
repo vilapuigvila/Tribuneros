@@ -40,10 +40,45 @@ extension Service {
         return config
     }()
 
+    /// `fetchAndActivate()` that never throws (a failed fetch keeps the cached values) and writes the `[NETWORK]` lines.
+    private static func fetchAndActivate() async -> RemoteConfigFetchAndActivateStatus? {
+        let start = Date()
+        do {
+            let status = try await remoteConfig.fetchAndActivate()
+            NetworkLog.json(
+                "remote-config",
+                source: status == .successUsingPreFetchedData ? .cache : .server,
+                object: remoteConfigJSON(),
+                duration: Date().timeIntervalSince(start)
+            )
+            return status
+        } catch {
+            NetworkLog.failure(
+                "remote-config",
+                error: error,
+                duration: Date().timeIntervalSince(start)
+            )
+            return nil
+        }
+    }
+
+    /// Every fetched key plus the three known ones; a value is JSON when it parses, else its text.
+    private static func remoteConfigJSON() -> [String: Any] {
+        let keys = Set(remoteConfig.allKeys(from: .remote))
+            .union([pressURLsKey, courseDuJourNativeKey, underMaintenanceKey])
+        return keys.reduce(into: [:]) { result, key in
+            let value = remoteConfig.configValue(forKey: key)
+            result[key] = (try? JSONSerialization.jsonObject(
+                with: value.dataValue,
+                options: [.fragmentsAllowed]
+            )) ?? value.stringValue
+        }
+    }
+
     /// Warms the activated values at launch, so flags are current without opening Paddock first.
     static func refreshRemoteConfig() {
         Task {
-            _ = try? await remoteConfig.fetchAndActivate()
+            _ = await fetchAndActivate()
         }
     }
 
@@ -85,7 +120,7 @@ extension Service {
 
     /// Fetches and activates Remote Config, then returns the maintenance flag; a failed fetch keeps the cached one.
     static func fetchUnderMaintenance() async -> Bool {
-        _ = try? await remoteConfig.fetchAndActivate()
+        _ = await fetchAndActivate()
         return cachedUnderMaintenance()
     }
 
@@ -96,7 +131,7 @@ extension Service {
         }
         #endif
         // A failed fetch keeps the last activated value, or the in-app default.
-        _ = try? await remoteConfig.fetchAndActivate()
+        _ = await fetchAndActivate()
         return cachedPressLinks()
     }
 

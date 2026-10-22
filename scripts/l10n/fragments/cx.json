@@ -168,9 +168,9 @@
     "eu": "+%lld",
     "comment": "CX Zone latest result card: how many more results the list holds"
   },
-  "Hold the painting to see the winner": {
-    "ca": "Mantén premut el quadre per veure el guanyador",
-    "eu": "Eduki sakatuta marrazkia irabazlea ikusteko",
+  "Hold the card to see the winner": {
+    "ca": "Mantén premuda la targeta per veure el guanyador",
+    "eu": "Eduki sakatuta txartela irabazlea ikusteko",
     "comment": "CX Zone latest result card hint while the winner is hidden"
   },
   "Leaders": {

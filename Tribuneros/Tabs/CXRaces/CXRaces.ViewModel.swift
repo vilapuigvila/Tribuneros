@@ -76,8 +76,17 @@ extension CXRaces {
                         calendar: interactor.domain.calendar
                     )
                 )
-            case .didTapOnRaceDetail(let race):
-                router.routeTo(.cxZone(.raceDetail(race)))
+            case .didTapOnRaceDetail(let race, let category):
+                router.routeTo(.cxZone(.raceDetail(race, category: category)))
+            case .didTapOnRaceHeader(let race):
+                router.routeTo(
+                    .cxZone(
+                        .raceDetail(
+                            race,
+                            category: CXRaces.cardCategories(of: race).randomElement()?.title
+                        )
+                    )
+                )
             case .didTapOnStandings:
                 router.routeTo(.cxZone(.standings))
             }

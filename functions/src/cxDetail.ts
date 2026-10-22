@@ -12,6 +12,9 @@ const HOUR_MS = 3_600_000;
 const MISSING_COLLECTION = "cxMissing";
 export const MISSING_MAX_AGE_MS = HOUR_MS;
 
+// A race's results page lists positions without times while it is still being filled in.
+export const PROVISIONAL_MAX_AGE_MS = 15 * 60_000;
+
 export function isMissingError(error: unknown): boolean {
   return error instanceof HttpStatusError && (error.status === 404 || error.status === 410);
 }
@@ -21,6 +24,8 @@ export interface DetailKind {
   idPattern: RegExp;
   // null: once stored, never refetched (a finished race's results don't change).
   maxAgeMs: number | null;
+  // A stored document that fails this is provisional and only fresh for PROVISIONAL_MAX_AGE_MS.
+  isFinal?: (data: FirebaseFirestore.DocumentData) => boolean;
   // Resolves to null when the page parsed to nothing usable, so the cache isn't overwritten with it.
   scrape: (id: string) => Promise<object | null>;
 }
@@ -49,6 +54,7 @@ export const DETAIL_KINDS: Record<string, DetailKind> = {
     collection: "cxResults",
     idPattern: /^\d{1,9}$/,
     maxAgeMs: null,
+    isFinal: (data) => Array.isArray(data.results) && data.results.length > 0 && !!data.results[0].time,
     scrape: async (id) => {
       const results = await scrapeCategoryResults(id);
       return results.length > 0 ? {results} : null;
@@ -93,7 +99,8 @@ export async function loadDetail(db: Firestore, kind: DetailKind, id: string, no
   const ref = db.collection(kind.collection).doc(id);
   const cached = (await ref.get()).data();
   const updatedAt = cached?.updatedAt instanceof Timestamp ? cached.updatedAt.toDate() : undefined;
-  if (cached && isFresh(updatedAt, kind.maxAgeMs, now)) {
+  const maxAgeMs = cached && kind.isFinal && !kind.isFinal(cached) ? PROVISIONAL_MAX_AGE_MS : kind.maxAgeMs;
+  if (cached && isFresh(updatedAt, maxAgeMs, now)) {
     return {status: 200, body: responseBody(cached)};
   }
 

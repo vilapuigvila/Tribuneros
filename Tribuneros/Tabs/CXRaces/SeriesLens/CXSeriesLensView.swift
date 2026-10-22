@@ -750,6 +750,8 @@ private struct LatestResultCard: View {
     let toggle: () -> Void
     let openAll: () -> Void
 
+    @State private var longPressCompleted = false
+
     var body: some View {
         HStack(spacing: 12) {
             thumbnail
@@ -769,13 +771,12 @@ private struct LatestResultCard: View {
                 subtitle
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .contentShape(Rectangle())
-            .onTapGesture(perform: openList)
             .accessibilityElement(children: .combine)
             .accessibilityAddTraits(.isButton)
             .accessibilityAction(.default) {
                 openList()
             }
+            .accessibilityAction(named: isShown ? L10n.tr("Hide results") : L10n.tr("Show results"), toggle)
             if otherCount > 0 {
                 TribuneruText(
                     content: L10n.tr("+%lld", otherCount),
@@ -788,8 +789,6 @@ private struct LatestResultCard: View {
                 .background(
                     Capsule().fill(Color.tribuneru(.mudPageBackground).opacity(0.18))
                 )
-                .contentShape(Capsule())
-                .onTapGesture(perform: openList)
             }
         }
         .padding(.leading, 10)
@@ -800,6 +799,25 @@ private struct LatestResultCard: View {
                 .fill(Color.tribuneru(.mudAccent))
         )
         .opacity(0.8)
+        .contentShape(RoundedRectangle(cornerRadius: 22))
+        .onTapGesture(perform: handleTap)
+        .onLongPressGesture(
+            minimumDuration: isShown ? SpoilerHold.hideDuration : SpoilerHold.duration,
+            perform: holdCard,
+            onPressingChanged: handlePressing
+        )
+    }
+
+    private func handlePressing(_ pressing: Bool) {
+        if pressing {
+            longPressCompleted = false
+        }
+    }
+
+    private func handleTap() {
+        // A completed long press must not also open the list when the finger lifts.
+        guard !longPressCompleted else { return }
+        openList()
     }
 
     private func openList() {
@@ -830,13 +848,8 @@ private struct LatestResultCard: View {
             RoundedRectangle(cornerRadius: 15)
                 .strokeBorder(Color.tribuneru(.mudPageBackground), lineWidth: 2)
         )
-        .onLongPressGesture(
-            minimumDuration: isShown ? SpoilerHold.hideDuration : SpoilerHold.duration,
-            perform: holdThumbnail
-        )
         .accessibilityElement()
         .accessibilityLabel(isShown ? (winner?.rider ?? "") : L10n.tr("Result hidden"))
-        .accessibilityAction(named: isShown ? L10n.tr("Hide results") : L10n.tr("Show results"), toggle)
         .accessibilityIdentifier("cx.latestResult.thumbnail")
     }
 
@@ -844,7 +857,7 @@ private struct LatestResultCard: View {
     private var subtitle: some View {
         if !isShown {
             TribuneruText(
-                content: L10n.tr("Hold the painting to see the winner"),
+                content: L10n.tr("Hold the card to see the winner"),
                 style: .vaporRowMeta,
                 color: .tribuneru(.mudPageBackground),
                 lineLimit: 1
@@ -859,7 +872,8 @@ private struct LatestResultCard: View {
         }
     }
 
-    private func holdThumbnail() {
+    private func holdCard() {
+        longPressCompleted = true
         if isShown {
             UIImpactFeedbackGenerator(style: .soft).impactOccurred()
         } else {

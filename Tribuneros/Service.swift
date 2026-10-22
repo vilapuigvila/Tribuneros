@@ -234,7 +234,7 @@ struct Service {
               let headers = try? table.select("thead th").array().map({ try $0.text() }),
               let rows = try? table.select("tbody tr")
         else {
-            print("avvp [NETWORK] - empty next to finish")
+            AppLogger.network.log("empty next to finish")
             return []
         }
         // PCS reorders and adds columns, so they're found by header; the hours-to-go column follows ETA.
@@ -290,7 +290,7 @@ struct Service {
         
         do {
             guard let resultsList = try document.select("div.h4bar:has(h4:contains(Results today)) ~ ul.hp2-results").first() else {
-                print("avvp [NETWORK] - empty today results")
+                AppLogger.network.log("empty today results")
                 return results
             }
             let raceItems = resultsList.children().array().filter { $0.tagName() == "li" && $0.hasClass("race") }
@@ -386,7 +386,7 @@ struct Service {
                 results.append(resultDTO)
             }
         } catch {
-            print("avvp [NETWORK] - \(error.localizedDescription)")
+            AppLogger.network.error("\(error.localizedDescription)")
         }
         return results
     }
@@ -398,7 +398,7 @@ struct Service {
        do {
            // Use an adjacent-sibling CSS selector to get the <ul> with results that immediately follows the header:
            guard let resultsUl = try document.select("div.h4bar:has(h4:contains(Results yesterday)) + ul.hp2-results").first() else {
-               print("avvp [NETWORK] - empty yesterday results")
+               AppLogger.network.log("empty yesterday results")
                return results
            }
            let raceItems = try resultsUl.select("li.race").array()
@@ -546,7 +546,7 @@ struct Service {
         do {
             let data = try await URLSession.shared.data(from: url).0
             guard let htmlContent = String(data: data, encoding: .utf8) else {
-                print("avvp [NETWORK] - error today races: invalid data encoding")
+                AppLogger.network.error("today races: invalid data encoding")
                 throw NSError(domain: "Invalid data encoding", code: 0, userInfo: nil)
             }
             
@@ -599,10 +599,10 @@ struct Service {
                     }
                     sections.append(TodaySectionModel(sectionName: "National Races", races: races))
                 } else {
-                    print("avvp [NETWORK] No National table found")
+                    AppLogger.network.log("No National table found")
                 }
             } else {
-                print("avvp [NETWORK] No National races section found")
+                AppLogger.network.log("No National races section found")
             }
             
             if let nationalSection = try document.select("div.mt30:has(h3:contains(CX races))").first() {
@@ -752,7 +752,7 @@ struct Service {
                 }
                 return nil
             }
-            print("avpv [NETWORK] get stage profile info - \(dump(stageImages))")
+            AppLogger.network.debug("stage profile info - \(stageImages)")
             return stageImages
         } catch {
             if !isOffline(error) {
@@ -932,14 +932,14 @@ struct Service {
                         verticalMeters: verticalMeters,
                         profileURL: nil // imgURL
                     )
-                    print("avpv [NETWORK] get next to finish race detail - \(raceInfo)")
+                    AppLogger.network.debug("next to finish race detail - \(raceInfo)")
                     return raceInfo
             /*    }
             else {
                     return nil
                 }*/
             } catch {
-                print("avvp [NETWORK - ERROR] get next to finish race detail - \(error)")
+                AppLogger.network.error("next to finish race detail - \(error)")
                 return nil
             }
         } catch {

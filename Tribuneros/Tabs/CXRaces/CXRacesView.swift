@@ -24,7 +24,7 @@ struct CXRacesRacesView: View {
             }
         }
         .navigationDestination(for: Router.Destination.self) { destination in
-            let _ = print("avvp [Navigation] - \(destination)")
+            let _ = AppLogger.navigation.debug("\(destination)")
             switch destination {
             case .cxZone(.allRaces(let series)):
                 CXAllRacesView(
@@ -73,16 +73,17 @@ struct CXRacesRacesView: View {
             case .cxZone(.latestResults):
                 LatestAllResultsView(
                     races: viewModel.stateView.result.races,
-                    openRider: { podium in
-                        viewModel.action(.didTapOnPodiumRider(podium))
+                    openCategory: { race, category in
+                        viewModel.action(.didTapOnRaceDetail(race, category: category))
                     }
                 ) { race in
-                    viewModel.action(.didTapOnRaceDetail(race))
+                    viewModel.action(.didTapOnRaceHeader(race))
                 }
                 .navigationTitle(L10n.tr("Latest results"))
-            case .cxZone(.raceDetail(let race)):
+            case .cxZone(.raceDetail(let race, let category)):
                 RaceDetailView(
                     race: race,
+                    category: category,
                     openVideo: { url in
                         viewModel.action(.didTapOnExternalLink(url))
                     }

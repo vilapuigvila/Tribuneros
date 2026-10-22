@@ -29,20 +29,22 @@ tags:
     text: ".*\\(C.*\\).*"
     below: "Latest Cyclocross Results"
 - extendedWaitUntil:
-    visible: "MEN ELITE"
+    visible: "(MEN|WOMEN) ELITE"
     timeout: 45000
 - assertVisible: "Rider"
-- swipe:
-    start: 1%, 50%
-    end: 70%, 50%
 
-# Podium row -> rider (Profile facts + Recent results)
+# Result row -> rider (Profile facts + Recent results); the header tap opens either tab
+- extendedWaitUntil:
+    visible: "MOCK (Rider|Woman) Four.*"
+    timeout: 45000
 - tapOn:
-    text: "\\d, [A-Z].*"
-    below: "MEN ELITE"
+    text: "MOCK (Rider|Woman) Four.*"
 - extendedWaitUntil:
     visible: "Profile"
     timeout: 45000
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
 - swipe:
     start: 1%, 50%
     end: 70%, 50%

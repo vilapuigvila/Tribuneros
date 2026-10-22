@@ -44,10 +44,10 @@ struct CachedImageView: View {
                         Service.addPCSImageHeaders(to: &request)
                     }
                     .onSuccess { result in
-                        print("[KINGFISHER] - Image loaded from: \(result.cacheType)")
+                        AppLogger.images.debug("loaded from: \(result.cacheType)")
                     }
                     .onFailure { error in
-                        print("[KINGFISHER] - error: \(error.localizedDescription)")
+                        AppLogger.images.error("\(error.localizedDescription)")
                         didFail = true
                     }
                     .placeholder {

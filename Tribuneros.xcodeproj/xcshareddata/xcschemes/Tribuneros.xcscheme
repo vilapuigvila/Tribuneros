@@ -140,5 +140,24 @@
    <ArchiveAction
       buildConfiguration = "Release"
       revealArchiveInOrganizer = "YES">
+      <PostActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Stub framework dSYMs"
+               scriptText = "&quot;${PROJECT_DIR}/scripts/stub-dsyms.sh&quot;&#10;"
+               shellToInvoke = "/bin/sh">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "50B365762D6489EF000DA4AC"
+                     BuildableName = "Cycling Tribune.app"
+                     BlueprintName = "Tribunerus"
+                     ReferencedContainer = "container:Tribuneros.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PostActions>
    </ArchiveAction>
 </Scheme>

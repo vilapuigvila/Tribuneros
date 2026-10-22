@@ -14,21 +14,21 @@ tags:
     timeout: 45000
 - assertVisible: "LATEST RESULT"
 - assertVisible: "Superprestige Gavere \\(C1\\)"
-- assertVisible: "Hold the painting to see the winner"
+- assertVisible: "Hold the card to see the winner"
 - assertNotVisible: "MOCK Rider One.*58:12"
 
-# Hold the painting: the winner shows; hold again: hidden
+# Hold the card title (not the thumbnail): the winner shows; hold the +N area: hidden
 - longPressOn:
-    id: "cx.latestResult.thumbnail"
+    text: "Superprestige Gavere \\(C1\\)"
     retryTapIfNoChange: false
     delay: 1
 - assertVisible: "MOCK Rider One.*58:12"
-- assertNotVisible: "Hold the painting to see the winner"
+- assertNotVisible: "Hold the card to see the winner"
 - longPressOn:
     id: "cx.latestResult.thumbnail"
     retryTapIfNoChange: false
     delay: 1
-- assertVisible: "Hold the painting to see the winner"
+- assertVisible: "Hold the card to see the winner"
 
 # Tap the card: every latest result
 - tapOn: "Superprestige Gavere \\(C1\\)"

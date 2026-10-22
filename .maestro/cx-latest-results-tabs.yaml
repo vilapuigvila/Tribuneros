@@ -1,0 +1,72 @@
+# CX latest results list: a tap on a category block opens the race on that category's tab, a tap on the
+# card header opens it on one of the card's two. Mock data only (mockScenario live): women's results have
+# "MOCK Woman" riders, men's "MOCK Rider".
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- tapOn: "CX Zone"
+- extendedWaitUntil:
+    visible: "NEXT ROUND"
+    timeout: 45000
+- tapOn: "Superprestige"
+- scrollUntilVisible:
+    element: "Results"
+- tapOn: "Results"
+- assertVisible: "Latest Cyclocross Results"
+
+# Women Elite block -> the WOMEN ELITE tab, women's riders
+- tapOn:
+    text: "WOMEN ELITE.*"
+    index: 0
+- extendedWaitUntil:
+    visible: "MOCK Woman Four.*"
+    timeout: 45000
+- assertVisible:
+    text: "WOMEN ELITE"
+    selected: true
+- assertNotVisible: "MOCK Rider Four.*"
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- assertVisible: "Latest Cyclocross Results"
+
+# Men Elite block -> the MEN ELITE tab, men's riders
+- tapOn:
+    text: "MEN ELITE.*"
+    index: 0
+- extendedWaitUntil:
+    visible: "MOCK Rider Four.*"
+    timeout: 45000
+- assertVisible:
+    text: "MEN ELITE"
+    selected: true
+- assertNotVisible: "MOCK Woman Four.*"
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- assertVisible: "Latest Cyclocross Results"
+
+# Header -> the detail opens with one of the two tabs selected
+- tapOn: "Superprestige Gavere \\(C1\\)"
+- extendedWaitUntil:
+    visible: "(MOCK Woman Four|MOCK Rider Four).*"
+    timeout: 45000
+- runFlow:
+    when:
+      visible: "MOCK Woman Four.*"
+    commands:
+      - assertVisible:
+          text: "WOMEN ELITE"
+          selected: true
+- runFlow:
+    when:
+      visible: "MOCK Rider Four.*"
+    commands:
+      - assertVisible:
+          text: "MEN ELITE"
+          selected: true
