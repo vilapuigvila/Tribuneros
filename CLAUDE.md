@@ -27,6 +27,17 @@ scraped server-side by a Firebase Cloud Function and read from Firestore (see "D
 - Launch tab (`Tab.launchTab(on:calendar:)` in `TabBarView.swift`, read once by `LocalizedRoot`'s initial `selectedTab`): a cold launch opens on CX Zone from 19 October through 31 January (device calendar and time zone), otherwise on Today Races; the tab bar itself is unchanged. Debug: a mock scenario keeps opening on Today Races unless `LAUNCH_DATE=YYYY-MM-DD` (or a `launchDate` launch argument) sets the date, which wins over the real one. Maestro: `.maestro/launch-tab.yaml`.
 - Preferences reset (`Helpers/PreferencesReset.swift`): `PreferencesReset.runAtLaunch()` is the first line of `TribunerosApp.init()` (before Crashlytics and any `UserSettings` read). If the stored `preferencesResetVersion` is missing or lower than `UserSettings.currentPreferencesResetVersion`, it removes every `UserPreferencesKey` (`CaseIterable`; add new `@UserDefault` keys to that enum) except the marker, then stores the constant. Bump the constant to reset everyone once more. It never touches other `UserDefaults` keys (Firebase, Remote Config), SwiftData or caches. Debug: `SIMULATE_APP_UPDATE=1` (or `simulateAppUpdate`) forgets the marker first. Maestro: `.maestro/preferences-reset.yaml`.
 
+### Release (fastlane)
+
+Run from the repo root with `LC_ALL=en_US.UTF-8` (fastlane 2.2x via `Gemfile`, `bundle install` once):
+- `bundle exec fastlane beta`: needs a clean tree; sets the app target's build number to the higher of App Store
+  Connect's latest and the project's, plus one, commits "Bump build number to N" (not pushed), archives Release into
+  `build/` and uploads to TestFlight without waiting for processing. Only when the user asks for an upload.
+- `bundle exec fastlane tests` (unit tests minus the two live-network ones, `TEST_DEVICE` to change the simulator) and
+  `bundle exec fastlane latest_build` (App Store Connect's and the project's build numbers).
+- The App Store Connect API key comes from the gitignored `fastlane/.env` (see `fastlane/.env.example`); the `.p8`
+  stays in `~/.appstoreconnect/private_keys/`. The app target is named `Tribunerus` (scheme `Tribuneros`).
+
 ### Tests
 
 - `RequesterHomeParsingTests` parses the saved PCS homepage fixture `TribunerosTests/pcs_real.html`,

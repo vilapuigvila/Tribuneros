@@ -84,3 +84,7 @@ ui-debug.log
 
 # Spec/plan working folders (screenshots, drafts)
 specs/
+
+# fastlane local config and bundler
+fastlane/.env
+vendor/bundle
