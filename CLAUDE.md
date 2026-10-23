@@ -33,6 +33,9 @@ Run from the repo root with `LC_ALL=en_US.UTF-8` (fastlane 2.2x via `Gemfile`, `
 - `bundle exec fastlane beta`: needs the `development` branch (`ensure_git_branch`) and a clean tree; sets the app target's build number to the higher of App Store
   Connect's latest and the project's, plus one, commits "Bump build number to N" (not pushed), archives Release into
   `build/` and uploads to TestFlight without waiting for processing. Only when the user asks for an upload.
+- `bundle exec fastlane beta_external`: the same checks, bump, archive and upload, but first asks in the terminal
+  for the "What to Test" text (several lines, ended by `END`), then waits for processing and sends the build to the
+  external TestFlight group `External-alfys` (`EXTERNAL_GROUP`; Beta App Review applies). Only when the user asks.
 - `bundle exec fastlane tests` (unit tests minus the two live-network ones, `TEST_DEVICE` to change the simulator) and
   `bundle exec fastlane latest_build` (App Store Connect's and the project's build numbers).
 - The App Store Connect API key comes from the gitignored `fastlane/.env` (see `fastlane/.env.example`); the `.p8`

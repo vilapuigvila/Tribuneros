@@ -3,6 +3,7 @@ default_platform(:ios)
 PROJECT = "Tribuneros.xcodeproj"
 SCHEME = "Tribuneros"
 APP_TARGET = "Tribunerus"
+EXTERNAL_GROUP = "External-alfys"
 
 platform :ios do
   desc "Run the unit tests (skips the two live-network tests)"
@@ -20,25 +21,8 @@ platform :ios do
 
   desc "Bump the build past App Store Connect's latest, commit it, archive and upload to TestFlight"
   lane :beta do
-    ensure_git_branch(branch: "^development$")
-    ensure_git_status_clean
-    api_key = asc_api_key
-
-    build = next_build_number(api_key)
-    set_app_build_number(build)
-    git_commit(
-      path: "#{PROJECT}/project.pbxproj",
-      message: "Bump build number to #{build}"
-    )
-
-    build_app(
-      project: PROJECT,
-      scheme: SCHEME,
-      configuration: "Release",
-      export_method: "app-store",
-      output_directory: "build",
-      xcargs: auth_xcargs # gym also passes xcargs to -exportArchive, so no export_xcargs (it would duplicate them)
-    )
+    ensure_release_ready
+    api_key, build = bump_and_archive
     upload_to_testflight(
       api_key: api_key,
       skip_waiting_for_build_processing: true
@@ -46,10 +30,63 @@ platform :ios do
     UI.success("Uploaded build #{build}; the bump commit is local, push it yourself")
   end
 
+  desc "Like beta, then send it to the External-alfys testers with a What to Test you type first"
+  lane :beta_external do
+    ensure_release_ready
+    whats_new = ask_whats_new
+    api_key, build = bump_and_archive
+    upload_to_testflight(
+      api_key: api_key,
+      changelog: whats_new,
+      distribute_external: true,
+      groups: [EXTERNAL_GROUP],
+      notify_external_testers: true
+    )
+    UI.success("Build #{build} sent to #{EXTERNAL_GROUP} (Beta App Review first if Apple asks); push the bump commit yourself")
+  end
+
   desc "Print the latest build number on App Store Connect"
   lane :latest_build do
     UI.message("App Store Connect: #{latest_testflight_build_number(api_key: asc_api_key, initial_build_number: 0)}")
     UI.message("Project: #{app_build_number}")
+  end
+end
+
+def ensure_release_ready
+  ensure_git_branch(branch: "^development$")
+  ensure_git_status_clean
+end
+
+# Returns [api_key, build]; the build number is committed (not pushed) before archiving.
+def bump_and_archive
+  api_key = asc_api_key
+  build = next_build_number(api_key)
+  set_app_build_number(build)
+  git_commit(
+    path: "#{PROJECT}/project.pbxproj",
+    message: "Bump build number to #{build}"
+  )
+  build_app(
+    project: PROJECT,
+    scheme: SCHEME,
+    configuration: "Release",
+    export_method: "app-store",
+    output_directory: "build",
+    xcargs: auth_xcargs # gym also passes xcargs to -exportArchive, so no export_xcargs (it would duplicate them)
+  )
+  [api_key, build]
+end
+
+# Asked before archiving, so nothing waits on the keyboard later. TestFlight caps What to Test at 4000 characters.
+def ask_whats_new
+  UI.user_error!("beta_external asks for the What to Test text, so it needs a terminal") unless UI.interactive?
+  loop do
+    text = prompt(
+      text: "What to Test for #{EXTERNAL_GROUP} (several lines; type END on its own line to finish):",
+      multi_line_end_keyword: "END"
+    ).to_s.strip
+    return text if !text.empty? && text.length <= 4000
+    UI.error(text.empty? ? "What to Test can't be empty." : "What to Test is #{text.length} characters; the limit is 4000.")
   end
 end
 
