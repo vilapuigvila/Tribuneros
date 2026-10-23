@@ -29,8 +29,8 @@ final class SettingsTests: XCTestCase {
         XCTAssertEqual(interactor.domain.language, "system")
         let state = Settings.ViewModel<Settings.InteractorImpl>.mapToViewState(from: interactor.domain)
         XCTAssertEqual(state.languageTitle, "System default")
-        XCTAssertEqual(state.languages.map(\.id), ["system", "en", "ca", "eu"])
-        XCTAssertEqual(state.languages.map(\.isSelected), [true, false, false, false])
+        XCTAssertEqual(state.languages.map(\.id), ["system", "en", "es", "ca", "eu"])
+        XCTAssertEqual(state.languages.map(\.isSelected), [true, false, false, false, false])
     }
 
     func testLanguagesAreNamedInThemselves() {
@@ -39,7 +39,7 @@ final class SettingsTests: XCTestCase {
         let state = Settings.ViewModel<Settings.InteractorImpl>.mapToViewState(
             from: Settings.Domain(language: "ca")
         )
-        XCTAssertEqual(state.languages.map(\.title), ["Predeterminat del sistema", "English", "Català", "Euskara"])
+        XCTAssertEqual(state.languages.map(\.title), ["Predeterminat del sistema", "English", "Castellano", "Català", "Euskara"])
         XCTAssertEqual(state.languageTitle, "Català")
     }
 

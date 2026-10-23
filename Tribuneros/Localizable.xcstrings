@@ -10,6 +10,12 @@
             "value" : "%1$@ %2$@, %3$@"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@, %3$@"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -25,6 +31,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ · actualitzat %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · actualizado %2$@"
           }
         },
         "eu" : {
@@ -45,6 +57,12 @@
             "value" : "%1$lld de %2$lld disputades"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld de %2$lld disputadas"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -61,6 +79,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "fa %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "hace %@"
           }
         },
         "eu" : {
@@ -80,6 +104,12 @@
             "value" : "%@ no és a la graella de TV d’aquest dia."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ no figura en la programación de TV de este día."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -97,6 +127,12 @@
             "value" : "%@ restants"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ restantes"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -109,6 +145,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ m"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ m"
@@ -132,6 +174,12 @@
             "value" : "%@ punts"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ pts"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -144,6 +192,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, acabada"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, acabada"
@@ -192,6 +246,24 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld RESULTS"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld RESULTADO"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld RESULTADOS"
                 }
               }
             }
@@ -256,6 +328,24 @@
             }
           }
         },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld categoría"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld categorías"
+                }
+              }
+            }
+          }
+        },
         "eu" : {
           "variations" : {
             "plural" : {
@@ -285,6 +375,12 @@
             "value" : "%lld més tard avui · per hora d’arribada"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld más tarde hoy · por hora de llegada"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -300,6 +396,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld en directe"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld en directo"
           }
         },
         "eu" : {
@@ -344,6 +446,24 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld races"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld carrera"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld carreras"
                 }
               }
             }
@@ -409,6 +529,24 @@
             }
           }
         },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld ciclista"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld ciclistas"
+                }
+              }
+            }
+          }
+        },
         "eu" : {
           "variations" : {
             "plural" : {
@@ -438,6 +576,12 @@
             "value" : "%lld h"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld h"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -455,6 +599,12 @@
             "value" : "%lld h %lld min"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld h %lld min"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -467,6 +617,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld min"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld min"
@@ -490,6 +646,12 @@
             "value" : "+%lld"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%lld"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -505,6 +667,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "+%lld més"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%lld más"
           }
         },
         "eu" : {
@@ -525,6 +693,12 @@
             "value" : "Sobre la cursa"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sobre la carrera"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -541,6 +715,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Agraïments"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agradecimientos"
           }
         },
         "eu" : {
@@ -561,6 +741,12 @@
             "value" : "Afegida"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadida"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -577,6 +763,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Edat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edad"
           }
         },
         "eu" : {
@@ -597,6 +789,12 @@
             "value" : "Edat avui"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edad hoy"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -613,6 +811,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tot"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo"
           }
         },
         "eu" : {
@@ -633,6 +837,12 @@
             "value" : "Totes les curses"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todas las carreras"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -649,6 +859,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tots els resultats"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos los resultados"
           }
         },
         "eu" : {
@@ -669,6 +885,12 @@
             "value" : "Anunciat"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anunciado"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -684,6 +906,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Arribada"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llegada"
           }
         },
         "eu" : {
@@ -704,6 +932,12 @@
             "value" : "Aniversari"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cumpleaños"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -720,6 +954,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aniversaris"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cumpleaños"
           }
         },
         "eu" : {
@@ -740,6 +980,12 @@
             "value" : "Aniversaris d’avui"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cumpleaños de hoy"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -757,6 +1003,12 @@
             "value" : "Explora les temporades anteriors"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explora las temporadas anteriores"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -770,6 +1022,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ZONA CX"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "ZONA CX"
@@ -793,6 +1051,12 @@
             "value" : "Zona CX"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zona CX"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -809,6 +1073,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Calendari"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calendario"
           }
         },
         "eu" : {
@@ -829,6 +1099,12 @@
             "value" : "El calendari està buit."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El calendario está vacío."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -845,6 +1121,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancel·lada"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelada"
           }
         },
         "eu" : {
@@ -865,6 +1147,12 @@
             "value" : "Campionats"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campeonatos"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -883,6 +1171,12 @@
             "value" : "Classe"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clase"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -898,6 +1192,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Port"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subida"
           }
         },
         "eu" : {
@@ -918,6 +1218,12 @@
             "value" : "Campionats continentals"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campeonatos continentales"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -933,6 +1239,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No s’han pogut carregar els resultats complets. Es mostra el podi."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han podido cargar los resultados completos. Se muestra el podio."
           }
         },
         "eu" : {
@@ -952,6 +1264,12 @@
             "value" : "No s’ha pogut carregar la classificació general."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido cargar la clasificación general."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -967,6 +1285,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No s’ha pogut carregar la cursa en directe. Estira cap avall per tornar-ho a provar."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido cargar la carrera en directo. Desliza hacia abajo para volver a intentarlo."
           }
         },
         "eu" : {
@@ -987,6 +1311,12 @@
             "value" : "No s’ha pogut carregar el paddock de ProCyclingStats."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido cargar el paddock de ProCyclingStats."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1002,6 +1332,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No s’ha pogut carregar la prèvia de la cursa."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido cargar la previa de la carrera."
           }
         },
         "eu" : {
@@ -1021,6 +1357,12 @@
             "value" : "No s’ha pogut carregar el calendari."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido cargar el calendario."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1036,6 +1378,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No s’ha pogut actualitzar"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido actualizar"
           }
         },
         "eu" : {
@@ -1056,6 +1404,12 @@
             "value" : "No s’han pogut carregar les curses de ciclocròs. Comprova la connexió i torna-ho a provar."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han podido cargar las carreras de ciclocross. Comprueba la conexión e inténtalo de nuevo."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1072,6 +1426,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No s’han pogut carregar els titulars d’aquest web."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han podido cargar los titulares de esta web."
           }
         },
         "eu" : {
@@ -1091,6 +1451,12 @@
             "value" : "No s’ha pogut carregar la informació de la cursa. Comprova la connexió i torna-ho a provar."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido cargar la información de la carrera. Comprueba la conexión e inténtalo de nuevo."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1106,6 +1472,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No s’han pogut carregar les curses. Comprova la connexió i torna-ho a provar."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han podido cargar las carreras. Comprueba la conexión e inténtalo de nuevo."
           }
         },
         "eu" : {
@@ -1126,6 +1498,12 @@
             "value" : "No s’han pogut carregar els resultats. Comprova la connexió i torna-ho a provar."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han podido cargar los resultados. Comprueba la conexión e inténtalo de nuevo."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1144,6 +1522,12 @@
             "value" : "No s’han pogut carregar els resultats del corredor. Comprova la connexió i torna-ho a provar."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han podido cargar los resultados del ciclista. Comprueba la conexión e inténtalo de nuevo."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1157,6 +1541,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "País"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "País"
@@ -1179,6 +1569,12 @@
             "value" : "Cobertura actualitzada %@"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cobertura actualizada %@"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1195,6 +1591,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cycling Tribune s’està actualitzant. Torna-ho a provar d’aquí a uns minuts."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cycling Tribune se está actualizando. Inténtalo de nuevo dentro de unos minutos."
           }
         },
         "eu" : {
@@ -1215,6 +1617,12 @@
             "value" : "Curses de ciclocròs, resultats, classificacions i el calendari de tota la temporada."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carreras de ciclocross, resultados, clasificaciones y el calendario de toda la temporada."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1231,6 +1639,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Data"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fecha"
           }
         },
         "eu" : {
@@ -1250,6 +1664,12 @@
             "value" : "Sortida"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salida"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1265,6 +1685,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Distància"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Distancia"
           }
         },
         "eu" : {
@@ -1284,6 +1710,12 @@
             "value" : "Fet"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hecho"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1297,6 +1729,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descartada"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Descartada"
@@ -1319,6 +1757,12 @@
             "value" : "ARRIBADA"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLEGADA"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1335,6 +1779,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Abans"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Antes"
           }
         },
         "eu" : {
@@ -1354,6 +1804,12 @@
             "value" : "Perfil d’altimetria, %lld per cent recorregut"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perfil de altimetría, %lld por ciento recorrido"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1366,6 +1822,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ACABADA"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "ACABADA"
@@ -1388,6 +1850,12 @@
             "value" : "Perfil de l’arribada"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perfil de la llegada"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1401,6 +1869,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acabada"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Acabada"
@@ -1423,6 +1897,12 @@
             "value" : "Primera arribada prevista a les %@"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Primera llegada prevista: %@"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1439,6 +1919,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Classificació completa"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clasificación completa"
           }
         },
         "eu" : {
@@ -1458,6 +1944,12 @@
             "value" : "GC"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CG"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1473,6 +1965,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Classificació general"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clasificación general"
           }
         },
         "eu" : {
@@ -1492,6 +1990,12 @@
             "value" : "Amaga els resultats"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar resultados"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1504,6 +2008,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historial"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Historial"
@@ -1525,6 +2035,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mantén premuda la targeta per veure el guanyador"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantén pulsado para ver al ganador"
           }
         },
         "eu" : {
@@ -1574,6 +2090,24 @@
             }
           }
         },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Dentro de %lld día"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Dentro de %lld días"
+                }
+              }
+            }
+          }
+        },
         "eu" : {
           "variations" : {
             "plural" : {
@@ -1604,6 +2138,12 @@
             "value" : "S’UNEIX"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FICHA POR"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1619,6 +2159,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Punts clau"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puntos clave"
           }
         },
         "eu" : {
@@ -1639,6 +2185,12 @@
             "value" : "Estadístiques clau"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estadísticas clave"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1655,6 +2207,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ÚLTIM RESULTAT"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ÚLTIMO RESULTADO"
           }
         },
         "eu" : {
@@ -1674,6 +2232,12 @@
             "value" : "EN DIRECTE"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EN DIRECTO"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1687,6 +2251,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Idioma"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Idioma"
@@ -1710,6 +2280,12 @@
             "value" : "Última cursa"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Última carrera"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1726,6 +2302,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Últims resultats"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Últimos resultados"
           }
         },
         "eu" : {
@@ -1746,6 +2328,12 @@
             "value" : "Líders"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Líderes"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1762,6 +2350,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Som-hi!"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡A rodar!"
           }
         },
         "eu" : {
@@ -1782,6 +2376,12 @@
             "value" : "Enllaços"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enlaces"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1799,6 +2399,12 @@
             "value" : "Llistada, sense retransmissió encara"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En la lista, sin retransmisión aún"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1814,6 +2420,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "En directe"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En directo"
           }
         },
         "eu" : {
@@ -1834,6 +2446,12 @@
             "value" : "Actualitzacions en directe actives"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizaciones en directo activadas"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1852,6 +2470,12 @@
             "value" : "Actualitzacions en directe en pausa"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizaciones en directo en pausa"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1867,6 +2491,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "S’està carregant"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando"
           }
         },
         "eu" : {
@@ -1887,6 +2517,12 @@
             "value" : "S’està carregant el ciclocròs"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando el ciclocross"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1902,6 +2538,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "S’estan carregant els resultats"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando los resultados"
           }
         },
         "eu" : {
@@ -1922,6 +2564,12 @@
             "value" : "Carregant els titulars"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando los titulares"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1937,6 +2585,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Carregant la cursa en directe"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando la carrera en directo"
           }
         },
         "eu" : {
@@ -1957,6 +2611,12 @@
             "value" : "S’està carregant el paddock"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando el paddock"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1973,6 +2633,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "S’està carregant la cursa"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando la carrera"
           }
         },
         "eu" : {
@@ -1992,6 +2658,12 @@
             "value" : "S’està carregant la prèvia de la cursa"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando la previa de la carrera"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2009,6 +2681,12 @@
             "value" : "S’està carregant el perfil de la cursa"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando el perfil de la carrera"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2024,6 +2702,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "S’estan carregant les curses"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando las carreras"
           }
         },
         "eu" : {
@@ -2044,6 +2728,12 @@
             "value" : "S’està carregant la classificació"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando la clasificación"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2060,6 +2750,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "S’estan carregant els resultats"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando los resultados"
           }
         },
         "eu" : {
@@ -2080,6 +2776,12 @@
             "value" : "S’està carregant el ciclista"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando el ciclista"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2095,6 +2797,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "S’està carregant el calendari"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando el calendario"
           }
         },
         "eu" : {
@@ -2114,6 +2822,12 @@
             "value" : "Circuit local"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Circuito local"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2129,6 +2843,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "HOMES"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HOMBRES"
           }
         },
         "eu" : {
@@ -2179,6 +2899,24 @@
             }
           }
         },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "ÉLITE MASCULINA · %lld CICLISTA"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "ÉLITE MASCULINA · %lld CICLISTAS"
+                }
+              }
+            }
+          }
+        },
         "eu" : {
           "variations" : {
             "plural" : {
@@ -2209,6 +2947,12 @@
             "value" : "ELIT MASCULINA · TOP %lld"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ÉLITE MASCULINA · TOP %lld"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2221,6 +2965,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mapa"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mapa"
@@ -2244,6 +2994,12 @@
             "value" : "Elit masculina"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Élite masculina"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2260,6 +3016,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aviat hi haurà més idiomes."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pronto habrá más idiomas."
           }
         },
         "eu" : {
@@ -2280,6 +3042,12 @@
             "value" : "Moviments"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Movimientos"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2293,6 +3061,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Música de Ciscu Bates"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Música de Ciscu Bates"
@@ -2316,6 +3090,12 @@
             "value" : "PROPERA CURSA"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PRÓXIMA CARRERA"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2331,6 +3111,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "CAP CURSA"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SIN CARRERAS"
           }
         },
         "eu" : {
@@ -2351,6 +3137,12 @@
             "value" : "Campionats nacionals"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campeonatos nacionales"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2369,6 +3161,12 @@
             "value" : "Següent"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siguiente"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2384,6 +3182,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Encara no hi ha cap retransmissió"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todavía no hay retransmisión"
           }
         },
         "eu" : {
@@ -2404,6 +3208,12 @@
             "value" : "Sense categories"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin categorías"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2420,6 +3230,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No s’han trobat categories per a aquesta classificació."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han encontrado categorías para esta clasificación."
           }
         },
         "eu" : {
@@ -2440,6 +3256,12 @@
             "value" : "No s’han trobat titulars d’aquest web."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han encontrado titulares de esta web."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2457,6 +3279,12 @@
             "value" : "Sense informació"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin información"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2472,6 +3300,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Encara no hi ha informació d’aquesta cursa."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todavía no hay información de esta carrera."
           }
         },
         "eu" : {
@@ -2492,6 +3326,12 @@
             "value" : "No queden més curses d’aquesta sèrie aquesta temporada."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No quedan más carreras de esta serie esta temporada."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2508,6 +3348,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ara mateix no hi ha canvis de programa."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ahora mismo no hay cambios de programa."
           }
         },
         "eu" : {
@@ -2528,6 +3374,12 @@
             "value" : "Sense vídeos de la cursa"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin vídeos de la carrera"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2544,6 +3396,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No hi ha curses en aquesta sèrie."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay carreras en esta serie."
           }
         },
         "eu" : {
@@ -2564,6 +3422,12 @@
             "value" : "No hi ha curses que coincideixin amb “%@”."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguna carrera coincide con “%@”."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2580,6 +3444,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Encara no hi ha resultats"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todavía no hay resultados"
           }
         },
         "eu" : {
@@ -2600,6 +3470,12 @@
             "value" : "Encara no hi ha resultats d’aquest corredor."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todavía no hay resultados de este ciclista."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2615,6 +3491,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ahir no hi va haver resultats"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ayer no hubo resultados"
           }
         },
         "eu" : {
@@ -2634,6 +3516,12 @@
             "value" : "Encara no hi ha resultats"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todavía no hay resultados"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2649,6 +3537,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Encara no hi ha resultats; la primera arribada és prevista a les %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todavía no hay resultados; primera llegada prevista: %@"
           }
         },
         "eu" : {
@@ -2669,6 +3563,12 @@
             "value" : "Encara no hi ha corredors en aquesta classificació."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todavía no hay ciclistas en esta clasificación."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2685,6 +3585,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cap ciclista ni classificació coincideix amb “%@”."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ningún ciclista ni clasificación coincide con “%@”."
           }
         },
         "eu" : {
@@ -2705,6 +3611,12 @@
             "value" : "No s’han trobat classificacions."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han encontrado clasificaciones."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2723,6 +3635,12 @@
             "value" : "Ara mateix no hi ha fitxatges."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ahora mismo no hay fichajes."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2738,6 +3656,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No és a la graella de TV"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin programación de TV"
           }
         },
         "eu" : {
@@ -2758,6 +3682,12 @@
             "value" : "Res de nou al paddock."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada nuevo en el paddock."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2775,6 +3705,12 @@
             "value" : "Encara no hi ha res a la llista d’avui. Les noves curses apareixeran aquí tan bon punt es publiquin."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todavía no hay nada en la lista de hoy. Las nuevas carreras aparecerán aquí en cuanto se publiquen."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2788,6 +3724,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NO"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "NO"
@@ -2811,6 +3753,12 @@
             "value" : "SÍ"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SÍ"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2824,6 +3772,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Web oficial"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Web oficial"
@@ -2846,6 +3800,12 @@
             "value" : "Sense connexió"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin conexión"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2862,6 +3822,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Presentació"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Presentación"
           }
         },
         "eu" : {
@@ -2881,6 +3847,12 @@
             "value" : "Cursa d’un dia"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carrera de un día"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2896,6 +3868,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Obre-ho a ProCyclingStats"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir en ProCyclingStats"
           }
         },
         "eu" : {
@@ -2916,6 +3894,12 @@
             "value" : "Obre el web"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir la web"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2932,6 +3916,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Altres belgues"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otras belgas"
           }
         },
         "eu" : {
@@ -2952,6 +3942,12 @@
             "value" : "Altres"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otras"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2968,6 +3964,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rànquing PCS"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ranking PCS"
           }
         },
         "eu" : {
@@ -2988,6 +3990,12 @@
             "value" : "PRÈVIA"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PREVIA"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3000,6 +4008,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PERFIL"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "PERFIL"
@@ -3023,6 +4037,12 @@
             "value" : "PROGRAMA"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PROGRAMA"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3036,6 +4056,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paddock"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Paddock"
@@ -3059,6 +4085,12 @@
             "value" : "Guanyadors anteriors"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ganadores anteriores"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3075,6 +4107,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Punts"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puntos"
           }
         },
         "eu" : {
@@ -3095,6 +4133,12 @@
             "value" : "Posició"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posición"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3110,6 +4154,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mantén premut un resultat per mostrar o amagar els espòilers"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantén pulsado un resultado para mostrar u ocultar los spoilers"
           }
         },
         "eu" : {
@@ -3129,6 +4179,12 @@
             "value" : "Prèvies"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Previas"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3142,6 +4198,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perfil"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Perfil"
@@ -3165,6 +4227,12 @@
             "value" : "Programa"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Programa"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3181,6 +4249,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Canvi de programa"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambio de programa"
           }
         },
         "eu" : {
@@ -3201,6 +4275,12 @@
             "value" : "Programes"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Programas"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3216,6 +4296,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pròleg"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prólogo"
           }
         },
         "eu" : {
@@ -3235,6 +4321,12 @@
             "value" : "Pròleg %@"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prólogo %@"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3250,6 +4342,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Prèvia de la cursa"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Previa de la carrera"
           }
         },
         "eu" : {
@@ -3269,6 +4367,12 @@
             "value" : "Resultat de la cursa"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultado de la carrera"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3284,6 +4388,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dades de la cursa"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datos de la carrera"
           }
         },
         "eu" : {
@@ -3303,6 +4413,12 @@
             "value" : "Informació de la cursa"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Información de la carrera"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3318,6 +4434,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Perfil de la cursa"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perfil de la carrera"
           }
         },
         "eu" : {
@@ -3338,6 +4460,12 @@
             "value" : "Vídeo de la cursa"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vídeo de la carrera"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3356,6 +4484,12 @@
             "value" : "Vídeos de la cursa"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vídeos de la carrera"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3369,6 +4503,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vídeos no disponibles"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vídeos no disponibles"
@@ -3392,6 +4532,12 @@
             "value" : "Cursa, país, guanyador..."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carrera, país, ganador..."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3407,6 +4553,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Curses"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carreras"
           }
         },
         "eu" : {
@@ -3427,6 +4579,12 @@
             "value" : "Classificació"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clasificación"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3443,6 +4601,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resultats recents"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultados recientes"
           }
         },
         "eu" : {
@@ -3463,6 +4627,12 @@
             "value" : "Resultat"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultado"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3478,6 +4648,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resultat ocult"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultado oculto"
           }
         },
         "eu" : {
@@ -3498,6 +4674,12 @@
             "value" : "Resultats"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultados"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3514,6 +4696,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Els resultats es mostren tan bon punt obres l’app."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los resultados se muestran en cuanto abres la app."
           }
         },
         "eu" : {
@@ -3534,6 +4722,12 @@
             "value" : "Els resultats apareixen amagats darrere d’una pintura. Mantén premut un per mostrar-lo o amagar-lo i, després, toca’l per obrir-lo."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los resultados empiezan ocultos tras una pintura. Mantén pulsado uno para mostrarlo u ocultarlo y, después, tócalo para abrirlo."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3552,6 +4746,12 @@
             "value" : "Els resultats queden amagats fins que els mantens premuts."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los resultados quedan ocultos hasta que los mantienes pulsados."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3567,6 +4767,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resultats d’avui"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultados de hoy"
           }
         },
         "eu" : {
@@ -3587,6 +4793,12 @@
             "value" : "Resultats sense espòilers"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultados sin spoilers"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3602,6 +4814,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resultats d’ahir"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultados de ayer"
           }
         },
         "eu" : {
@@ -3621,6 +4839,12 @@
             "value" : "Resultats, classificacions i més"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultados, clasificaciones y más"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3634,6 +4858,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ciclista"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ciclista"
@@ -3657,6 +4887,12 @@
             "value" : "Ciclista, rànquing, categoria..."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ciclista, ranking, categoría..."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3670,6 +4906,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carretera"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Carretera"
@@ -3693,6 +4935,12 @@
             "value" : "Resultats de carretera i de ciclocròs, calendaris i notícies del ciclisme, tot en un sol lloc."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultados de carretera y de ciclocross, calendarios y noticias del ciclismo, todo en un solo lugar."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3709,6 +4957,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Curses pendents"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carreras pendientes"
           }
         },
         "eu" : {
@@ -3729,6 +4983,12 @@
             "value" : "PROGRÉS DE LA TEMPORADA"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PROGRESO DE LA TEMPORADA"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3745,6 +5005,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "CONFIGURACIÓ"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AJUSTES"
           }
         },
         "eu" : {
@@ -3764,6 +5030,12 @@
             "value" : "SORTIDA"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SALIDA"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3781,6 +5053,12 @@
             "value" : "COMENÇADA"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "INICIADA"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3794,6 +5072,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Temporada %@"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Temporada %@"
@@ -3817,6 +5101,12 @@
             "value" : "Temporada acabada"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Temporada acabada"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3833,6 +5123,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resultats de la temporada"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultados de la temporada"
           }
         },
         "eu" : {
@@ -3852,6 +5148,12 @@
             "value" : "Mostra-ho tot"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver todo"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3867,6 +5169,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mostra-ho tot: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver todo: %@"
           }
         },
         "eu" : {
@@ -3917,6 +5225,24 @@
             }
           }
         },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Ver %lld cumpleaños"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Ver los %lld cumpleaños"
+                }
+              }
+            }
+          }
+        },
         "eu" : {
           "variations" : {
             "plural" : {
@@ -3947,6 +5273,12 @@
             "value" : "Sèrie"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serie"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3963,6 +5295,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Configuració"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes"
           }
         },
         "eu" : {
@@ -3982,6 +5320,12 @@
             "value" : "Mostra els resultats"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar resultados"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3997,6 +5341,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Situació"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Situación"
           }
         },
         "eu" : {
@@ -4017,6 +5367,12 @@
             "value" : "Omet"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saltar"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4035,6 +5391,12 @@
             "value" : "Omet la introducció"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saltar la introducción"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4050,6 +5412,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Alguna cosa ha fallat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algo ha ido mal"
           }
         },
         "eu" : {
@@ -4070,6 +5438,12 @@
             "value" : "Especialitats"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Especialidades"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4085,6 +5459,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Espòiler desactivat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spoiler desactivado"
           }
         },
         "eu" : {
@@ -4104,6 +5484,12 @@
             "value" : "Espòiler activat"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spoiler activado"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4116,6 +5502,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etapa"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Etapa"
@@ -4138,6 +5530,12 @@
             "value" : "Etapa %@"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etapa %@"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4153,6 +5551,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resultat de l’etapa"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultado de la etapa"
           }
         },
         "eu" : {
@@ -4173,6 +5577,12 @@
             "value" : "Classificació"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clasificación"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4189,6 +5599,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Classificacions"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clasificaciones"
           }
         },
         "eu" : {
@@ -4208,6 +5624,12 @@
             "value" : "Sortida"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salida"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4223,6 +5645,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hora de sortida"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hora de salida"
           }
         },
         "eu" : {
@@ -4243,6 +5671,12 @@
             "value" : "Predeterminat del sistema"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Predeterminado del sistema"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4258,6 +5692,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "AVUI"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HOY"
           }
         },
         "eu" : {
@@ -4278,6 +5718,12 @@
             "value" : "FITXATGE"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FICHAJE"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4294,6 +5740,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Televisió i directe"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Televisión y directo"
           }
         },
         "eu" : {
@@ -4314,6 +5766,12 @@
             "value" : "Equip"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Equipo"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4332,6 +5790,12 @@
             "value" : "Equips"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Equipos"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4345,6 +5809,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El Paddock"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "El Paddock"
@@ -4367,6 +5837,12 @@
             "value" : "El pelotó descansa"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El pelotón descansa"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4383,6 +5859,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La premsa"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La prensa"
           }
         },
         "eu" : {
@@ -4403,6 +5885,12 @@
             "value" : "Aquesta classificació encara no està disponible. Potser aquesta temporada encara no ha començat, o la connexió ha fallat."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta clasificación todavía no está disponible. Puede que aún no haya empezado esta temporada o que la conexión haya fallado."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4419,6 +5907,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Temps"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiempo"
           }
         },
         "eu" : {
@@ -4439,6 +5933,12 @@
             "value" : "Avui"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoy"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4457,6 +5957,12 @@
             "value" : "Curses d’avui"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carreras de hoy"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4472,6 +5978,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Curses d’avui"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carreras de hoy"
           }
         },
         "eu" : {
@@ -4492,6 +6004,12 @@
             "value" : "Demà"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mañana"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4508,6 +6026,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Millors resultats"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mejores resultados"
           }
         },
         "eu" : {
@@ -4528,6 +6052,12 @@
             "value" : "Fitxatge"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fichaje"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4544,6 +6074,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fitxatges"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fichajes"
           }
         },
         "eu" : {
@@ -4564,6 +6100,12 @@
             "value" : "Fitxatges, canvis de programa de les curses, aniversaris i la millor premsa del ciclisme."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fichajes, cambios de programa de las carreras, cumpleaños y la mejor prensa del ciclismo."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4579,6 +6121,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Torna-ho a provar"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inténtalo de nuevo"
           }
         },
         "eu" : {
@@ -4598,6 +6146,12 @@
             "value" : "Desactiva la música"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactiva la música"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4610,6 +6164,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activa la música"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Activa la música"
@@ -4633,6 +6193,12 @@
             "value" : "Classe 1 de l’UCI"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clase 1 de la UCI"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4649,6 +6215,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Classe 2 de l’UCI"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clase 2 de la UCI"
           }
         },
         "eu" : {
@@ -4669,6 +6241,12 @@
             "value" : "Classe 3 de l’UCI"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clase 3 de la UCI"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4685,6 +6263,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Campionats del món UCI"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campeonatos del Mundo UCI"
           }
         },
         "eu" : {
@@ -4705,6 +6289,12 @@
             "value" : "Copa del Món UCI"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copa del Mundo UCI"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4721,6 +6311,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "En manteniment"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En mantenimiento"
           }
         },
         "eu" : {
@@ -4741,6 +6337,12 @@
             "value" : "En manteniment. Cycling Tribune s’està actualitzant. Torna-ho a provar d’aquí a uns minuts."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En mantenimiento. Cycling Tribune se está actualizando. Inténtalo de nuevo dentro de unos minutos."
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4759,6 +6361,12 @@
             "value" : "Pròximament"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Próximamente"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4774,6 +6382,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Desnivell"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desnivel"
           }
         },
         "eu" : {
@@ -4794,6 +6408,12 @@
             "value" : "Victòria"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Victoria"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4811,6 +6431,12 @@
             "value" : "Mostra els resultats complets"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver resultados completos"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4826,6 +6452,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "DONES"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MUJERES"
           }
         },
         "eu" : {
@@ -4846,6 +6478,12 @@
             "value" : "Torna-la a veure"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vuelve a verla"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4861,6 +6499,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No hem trobat dades de cap cursa ara mateix. Torna-ho a provar en un moment."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ahora mismo no hemos encontrado datos de ninguna carrera. Inténtalo de nuevo en un momento."
           }
         },
         "eu" : {
@@ -4881,6 +6525,12 @@
             "value" : "Et tornem a donar la benvinguda a Cycling Tribune"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te damos de nuevo la bienvenida a Cycling Tribune"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4899,6 +6549,12 @@
             "value" : "Et donem la benvinguda a Cycling Tribune"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te damos la bienvenida a Cycling Tribune"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4914,6 +6570,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "On veure-ho"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dónde verlo"
           }
         },
         "eu" : {
@@ -4934,6 +6596,12 @@
             "value" : "Guanyador"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ganador"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4952,6 +6620,12 @@
             "value" : "Copa del Món"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copa del Mundo"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4967,6 +6641,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "LA TEVA CURSA"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TU CARRERA"
           }
         },
         "eu" : {
@@ -4987,6 +6667,12 @@
             "value" : "Ahir"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ayer"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5002,6 +6688,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "per hora d’arribada"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "por hora de llegada"
           }
         },
         "eu" : {
@@ -5021,6 +6713,12 @@
             "value" : "port"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "subida"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5038,6 +6736,12 @@
             "value" : "arribada prevista a les %@"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "llegada prevista: %@"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5050,6 +6754,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "acabada"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "acabada"
@@ -5073,6 +6783,12 @@
             "value" : "resultats complets"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "resultados completos"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5088,6 +6804,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "d’aquí a %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dentro de %@"
           }
         },
         "eu" : {
@@ -5107,6 +6829,12 @@
             "value" : "més tard avui"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "más tarde hoy"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5122,6 +6850,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "en directe ara"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "en directo ahora"
           }
         },
         "eu" : {
@@ -5141,6 +6875,12 @@
             "value" : "més informació"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "más información"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5158,6 +6898,12 @@
             "value" : "cap"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ninguno"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5170,6 +6916,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "m.t."
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "m.t."
@@ -5192,6 +6944,12 @@
             "value" : "esprint"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sprint"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5207,6 +6965,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ha començat a les %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "hora de salida: %@"
           }
         },
         "eu" : {
@@ -5227,6 +6991,12 @@
             "value" : "compleix"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "cumple"
+          }
+        },
         "eu" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5243,6 +7013,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "© 2026 Ciscu Bates. Tots els drets reservats."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "© 2026 Ciscu Bates. Todos los derechos reservados."
           }
         },
         "eu" : {

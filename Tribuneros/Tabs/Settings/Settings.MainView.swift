@@ -86,7 +86,7 @@ extension Settings {
                     showsLanguages = false
                     action(.didSelectLanguage(code))
                 }
-                .presentationDetents([.height(400)])
+                .presentationDetents([.height(460)])
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(24)
                 .presentationBackground(Color.tribuneru(.vaporCardSurface))

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Checks the Catalan and Basque localizations. Exits 1 on any error.
+"""Checks the Catalan, Basque and Castellano localizations. Exits 1 on any error.
 
     python3 scripts/l10n/check_localization.py                 # full check (CI)
     python3 scripts/l10n/check_localization.py --paths Tribuneros/Tabs/CXRaces --no-catalog
 
 Checks:
- 1. every fragment entry has a non-empty value per target language (plurals: en, ca and eu, with `other`);
+ 1. every fragment entry has a non-empty value per target language (plurals: en, ca, eu and es, with `other`);
  2. format specifiers match between the English key/forms and the translated values;
  3. translated values that equal the English one are listed in allowlist.json (`same`);
  4. translations use the typographic apostrophe (’) and keeps ALL-CAPS keys in caps;

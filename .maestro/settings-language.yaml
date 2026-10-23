@@ -1,6 +1,6 @@
 # Language switch from the Language sheet (Debug build, mocked launch, English simulator): picking Català rebuilds the
-# tabs in Catalan without a restart (back on the Settings root), Euskara does the same in Basque,
-# and English switches back.
+# tabs in Catalan without a restart (back on the Settings root), Euskara and Castellano do the same
+# in Basque and Spanish, and English switches back.
 appId: com.pskmoons.Tribuneros
 tags:
   - mock
@@ -44,6 +44,20 @@ tags:
     id: "settings.language"
 - assertVisible:
     id: "settings.language.eu"
+    selected: true
+- tapOn:
+    id: "settings.language.es"
+- extendedWaitUntil:
+    visible: "Ajustes"
+    timeout: 5000
+- assertVisible: "Carretera"
+- assertVisible: "Zona CX"
+- assertVisible: "Presentación"
+- tapOn:
+    id: "settings.language"
+- assertVisible: "Pronto habrá más idiomas."
+- assertVisible:
+    id: "settings.language.es"
     selected: true
 - tapOn:
     id: "settings.language.en"

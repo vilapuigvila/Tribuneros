@@ -8,7 +8,7 @@ FRAGMENTS = ROOT / "scripts/l10n/fragments"
 CATALOG = ROOT / "Tribuneros/Localizable.xcstrings"
 ALLOWLIST = ROOT / "scripts/l10n/allowlist.json"
 SOURCE_LANGUAGE = "en"
-TARGET_LANGUAGES = ["ca", "eu"]
+TARGET_LANGUAGES = ["ca", "eu", "es"]
 PLURAL_CATEGORIES = {"zero", "one", "two", "few", "many", "other"}
 
 
