@@ -20,6 +20,7 @@ platform :ios do
 
   desc "Bump the build past App Store Connect's latest, commit it, archive and upload to TestFlight"
   lane :beta do
+    ensure_git_branch(branch: "^development$")
     ensure_git_status_clean
     api_key = asc_api_key
 

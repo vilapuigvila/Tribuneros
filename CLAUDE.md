@@ -30,7 +30,7 @@ scraped server-side by a Firebase Cloud Function and read from Firestore (see "D
 ### Release (fastlane)
 
 Run from the repo root with `LC_ALL=en_US.UTF-8` (fastlane 2.2x via `Gemfile`, `bundle install` once):
-- `bundle exec fastlane beta`: needs a clean tree; sets the app target's build number to the higher of App Store
+- `bundle exec fastlane beta`: needs the `development` branch (`ensure_git_branch`) and a clean tree; sets the app target's build number to the higher of App Store
   Connect's latest and the project's, plus one, commits "Bump build number to N" (not pushed), archives Release into
   `build/` and uploads to TestFlight without waiting for processing. Only when the user asks for an upload.
 - `bundle exec fastlane tests` (unit tests minus the two live-network ones, `TEST_DEVICE` to change the simulator) and
