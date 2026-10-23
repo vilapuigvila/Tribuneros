@@ -37,8 +37,7 @@ platform :ios do
       configuration: "Release",
       export_method: "app-store",
       output_directory: "build",
-      xcargs: auth_xcargs,
-      export_xcargs: auth_xcargs
+      xcargs: auth_xcargs # gym also passes xcargs to -exportArchive, so no export_xcargs (it would duplicate them)
     )
     upload_to_testflight(
       api_key: api_key,
