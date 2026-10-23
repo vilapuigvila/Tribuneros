@@ -31,6 +31,14 @@ Run the unit tests (skips the two live-network tests)
 
 Bump the build past App Store Connect's latest, commit it, archive and upload to TestFlight
 
+### ios beta_external
+
+```sh
+[bundle exec] fastlane ios beta_external
+```
+
+Like beta, then send it to the External-alfys testers with a What to Test you type first
+
 ### ios latest_build
 
 ```sh
