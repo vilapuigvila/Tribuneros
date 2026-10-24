@@ -44,6 +44,31 @@ extension CXRaces {
         race.categories.prefix(2)
     }
 
+    static func revealKey(of race: DTO.CX24Homepage.Race) -> String {
+        race.raceURL?.absoluteString ?? race.title
+    }
+
+    /// Hide results on: every race starts hidden. Off: every race starts shown. `flipped` holds the races held this launch.
+    static func resultVisibility(
+        of race: DTO.CX24Homepage.Race,
+        flipped: Set<String>,
+        hidesResults: Bool = UserSettings.hidesResults ?? true
+    ) -> HomeRaces.ResultVisibility {
+        hidesResults != flipped.contains(revealKey(of: race)) ? .hidden : .shown
+    }
+
+    static func flip(
+        _ race: DTO.CX24Homepage.Race,
+        in flipped: inout Set<String>
+    ) {
+        let key = revealKey(of: race)
+        if flipped.contains(key) {
+            flipped.remove(key)
+        } else {
+            flipped.insert(key)
+        }
+    }
+
     /// The tab index for `title`, the first tab when absent or unknown.
     static func categoryIndex(
         _ title: String?,
