@@ -186,6 +186,44 @@ extension CXRaces.SeriesLens {
     }
 }
 
+// MARK: - Next to start -
+extension CXRaces.SeriesLens {
+
+    struct Upcoming: Equatable {
+        let event: DTO.CXCalendarEvent
+        /// Whole days from today, 0 on the day itself.
+        let days: Int
+    }
+
+    /// Races inside this many days feature in the dock.
+    static let featuredWindowDays = 7
+
+    /// The soonest non-cancelled race of any series, if it is today or within the window.
+    static func upcoming(
+        in calendarEvents: [DTO.CXCalendarEvent],
+        now: Date = Date()
+    ) -> Upcoming? {
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: now)
+        let next = calendarEvents
+            .filter { !$0.isCancelled }
+            .compactMap { event in event.eventDate.map { (event, $0) } }
+            .filter { $0.1 >= startOfToday }
+            .min { $0.1 < $1.1 }
+        guard let next else { return nil }
+        let days = calendar.dateComponents(
+            [.day],
+            from: startOfToday,
+            to: calendar.startOfDay(for: next.1)
+        ).day ?? 0
+        guard days <= featuredWindowDays else { return nil }
+        return Upcoming(
+            event: next.0,
+            days: days
+        )
+    }
+}
+
 // MARK: - Latest result -
 extension CXRaces.SeriesLens {
 

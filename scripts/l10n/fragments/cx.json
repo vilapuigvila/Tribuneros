@@ -285,6 +285,24 @@
     "es": "Élite masculina",
     "comment": "Men's elite category label (hardcoded in CX detail screens)"
   },
+  "NEXT TO START": {
+    "ca": "PROPERA SORTIDA",
+    "eu": "HURRENGO IRTEERA",
+    "es": "PRÓXIMA SALIDA",
+    "comment": "CX Zone featured card tag: the race that starts soonest"
+  },
+  "Show the next race": {
+    "ca": "Mostra la propera cursa",
+    "eu": "Erakutsi hurrengo lasterketa",
+    "es": "Mostrar la próxima carrera",
+    "comment": "Accessibility label of the peeking next-race card"
+  },
+  "Show the latest result": {
+    "ca": "Mostra l’últim resultat",
+    "eu": "Erakutsi azken emaitza",
+    "es": "Mostrar el último resultado",
+    "comment": "Accessibility label of the peeking latest-result card"
+  },
   "NEXT ROUND": {
     "ca": "PROPERA CURSA",
     "eu": "HURRENGO PROBA",

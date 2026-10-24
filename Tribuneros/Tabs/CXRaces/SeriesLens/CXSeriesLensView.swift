@@ -88,30 +88,58 @@ extension CXRaces {
                         EmptyCalendarCard()
                     }
                     Color.clear
-                        .frame(height: safeAreaInsets.bottom * 3 + 96)
+                        .frame(height: safeAreaInsets.bottom * 3 + 96 + 52)
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
             }
             .background(Color.tribuneru(.mudPageBackground))
             .overlay {
-                if let latest = SeriesLens.latestRace(in: representable.races) {
-                    VStack(spacing: 0) {
-                        Spacer(minLength: 0)
-                        LatestResultCard(
-                            race: latest,
-                            winner: SeriesLens.winner(of: latest),
-                            otherCount: SeriesLens.otherLatestResultCount(in: representable.races),
-                            isShown: isLatestResultShown,
-                            toggle: { flipsLatestResult.toggle() },
-                            openAll: { action(.didTapOnLatestResults) }
-                        )
+                VStack(spacing: 0) {
+                    Spacer(minLength: 0)
+                    dock
                         .padding(.horizontal, 12)
                         .padding(.bottom, safeAreaInsets.bottom + tabBarHeight + 8)
-                    }
-                    .ignoresSafeArea(edges: .bottom)
                 }
+                .ignoresSafeArea(edges: .bottom)
             }
+        }
+
+        private var upcoming: SeriesLens.Upcoming? {
+            SeriesLens.upcoming(in: representable.calendarEvents)
+        }
+
+        private var latestResultCard: LatestResultCard? {
+            guard let latest = SeriesLens.latestRace(in: representable.races) else { return nil }
+            return LatestResultCard(
+                race: latest,
+                winner: SeriesLens.winner(of: latest),
+                otherCount: SeriesLens.otherLatestResultCount(in: representable.races),
+                isShown: isLatestResultShown,
+                toggle: { flipsLatestResult.toggle() },
+                openAll: { action(.didTapOnLatestResults) }
+            )
+        }
+
+        @ViewBuilder
+        private var dock: some View {
+            if let latestResultCard, let upcoming {
+                CXFeaturedDock(
+                    result: { latestResultCard },
+                    race: { nextRaceCard(upcoming) }
+                )
+            } else if let latestResultCard {
+                latestResultCard
+            } else if let upcoming {
+                nextRaceCard(upcoming)
+            }
+        }
+
+        private func nextRaceCard(_ upcoming: SeriesLens.Upcoming) -> CXNextRaceCard {
+            CXNextRaceCard(
+                upcoming: upcoming,
+                open: { action(.didTapOnCalendarEvent(upcoming.event)) }
+            )
         }
 
         private var header: some View {
@@ -742,7 +770,7 @@ private struct RoundsLeftSection: View {
 
 /// The latest result floating over the bottom of the page. Its painting hides the winner until held,
 /// and a tap opens every latest result.
-private struct LatestResultCard: View {
+struct LatestResultCard: View {
     let race: DTO.CX24Homepage.Race
     let winner: DTO.CX24Homepage.Podium?
     let otherCount: Int
@@ -753,52 +781,39 @@ private struct LatestResultCard: View {
     @State private var longPressCompleted = false
 
     var body: some View {
-        HStack(spacing: 12) {
-            thumbnail
-            VStack(alignment: .leading, spacing: 3) {
-                TribuneruText(
-                    content: L10n.tr("LATEST RESULT"),
-                    style: .vaporTagSmall,
-                    color: .tribuneru(.mudPageBackground),
-                    lineLimit: 1
-                )
-                TribuneruText(
-                    content: race.title,
-                    style: .vaporResultTitle,
-                    color: .tribuneru(.mudPageBackground),
-                    lineLimit: 1
-                )
-                subtitle
+        VStack(spacing: 0) {
+            CXDockStrip(
+                tag: L10n.tr("LATEST RESULT"),
+                trailing: otherCount > 0 ? L10n.tr("+%lld", otherCount) : nil
+            )
+            HStack(spacing: 12) {
+                thumbnail
+                VStack(alignment: .leading, spacing: 3) {
+                    TribuneruText(
+                        content: race.title,
+                        style: .vaporResultTitle,
+                        color: .tribuneru(.mudPageBackground),
+                        lineLimit: 1
+                    )
+                    subtitle
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityElement(children: .combine)
+                .accessibilityAddTraits(.isButton)
+                .accessibilityAction(.default) {
+                    openList()
+                }
+                .accessibilityAction(named: isShown ? L10n.tr("Hide results") : L10n.tr("Show results"), toggle)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .accessibilityElement(children: .combine)
-            .accessibilityAddTraits(.isButton)
-            .accessibilityAction(.default) {
-                openList()
-            }
-            .accessibilityAction(named: isShown ? L10n.tr("Hide results") : L10n.tr("Show results"), toggle)
-            if otherCount > 0 {
-                TribuneruText(
-                    content: L10n.tr("+%lld", otherCount),
-                    style: .vaporSeeAll,
-                    color: .tribuneru(.mudPageBackground),
-                    lineLimit: 1
-                )
-                .padding(.horizontal, 10)
-                .frame(height: 32)
-                .background(
-                    Capsule().fill(Color.tribuneru(.mudPageBackground).opacity(0.18))
-                )
-            }
+            .padding(.leading, 10)
+            .padding(.trailing, 14)
+            .frame(maxHeight: .infinity)
         }
-        .padding(.leading, 10)
-        .padding(.trailing, 14)
-        .frame(height: 72)
+        .frame(height: cxDockCardHeight)
         .background(
             RoundedRectangle(cornerRadius: 22)
                 .fill(Color.tribuneru(.mudAccent))
         )
-        .opacity(0.8)
         .contentShape(RoundedRectangle(cornerRadius: 22))
         .onTapGesture(perform: handleTap)
         .onLongPressGesture(

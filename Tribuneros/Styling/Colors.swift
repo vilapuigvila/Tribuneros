@@ -103,6 +103,8 @@ extension Color {
             Color(hex: 0xE5766B)
         case .mudLive:
             Color(hex: 0x9CC27A)
+        case .mudFrost:
+            Color(hex: 0x8FB7CF)
         case .cxArtRider:
             Color(hex: 0x120E0C)
         case .cxArtBlue:
@@ -332,6 +334,7 @@ extension Color {
         case mudGround
         case mudNegative
         case mudLive
+        case mudFrost
         // MARK: - CX series paintings (CX Zone next-round hero) -
         case cxArtRider
         case cxArtBlue

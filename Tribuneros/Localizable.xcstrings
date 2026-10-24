@@ -3104,6 +3104,30 @@
         }
       }
     },
+    "NEXT TO START" : {
+      "comment" : "CX Zone featured card tag: the race that starts soonest",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PROPERA SORTIDA"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PRÓXIMA SALIDA"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HURRENGO IRTEERA"
+          }
+        }
+      }
+    },
     "NO RACES" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5330,6 +5354,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Erakutsi emaitzak"
+          }
+        }
+      }
+    },
+    "Show the latest result" : {
+      "comment" : "Accessibility label of the peeking latest-result card",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra l’últim resultat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar el último resultado"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erakutsi azken emaitza"
+          }
+        }
+      }
+    },
+    "Show the next race" : {
+      "comment" : "Accessibility label of the peeking next-race card",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra la propera cursa"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar la próxima carrera"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erakutsi hurrengo lasterketa"
           }
         }
       }

@@ -85,6 +85,36 @@ final class CXSeriesLensTests: XCTestCase {
         ]
     }
 
+    // MARK: - Next to start -
+
+    func testUpcomingPicksTheSoonestRaceOfAnySeriesAndSkipsCancelledOnes() {
+        let upcoming = CXRaces.SeriesLens.upcoming(
+            in: worldCupEvents,
+            now: now
+        )
+
+        XCTAssertEqual(upcoming?.event.race, "World Cup Tabor")
+        XCTAssertEqual(upcoming?.days, 3)
+    }
+
+    func testUpcomingIsNilWhenTheNextRaceIsBeyondTheWindow() {
+        let events = [
+            event(daysFromNow: -2, race: "Past"),
+            event(daysFromNow: CXRaces.SeriesLens.featuredWindowDays + 1, race: "Far")
+        ]
+
+        XCTAssertNil(CXRaces.SeriesLens.upcoming(in: events, now: now))
+    }
+
+    func testUpcomingCountsARaceToday() {
+        let upcoming = CXRaces.SeriesLens.upcoming(
+            in: [event(daysFromNow: 0, race: "Today Cross")],
+            now: now
+        )
+
+        XCTAssertEqual(upcoming?.days, 0)
+    }
+
     // MARK: - Rounds -
 
     func testRoundsAreOrderedByDateAndSkipCancelledOnes() {
