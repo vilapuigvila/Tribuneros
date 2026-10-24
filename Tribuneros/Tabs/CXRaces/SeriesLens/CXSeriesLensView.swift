@@ -27,18 +27,13 @@ extension CXRaces {
         @Environment(\.safeAreaInsets) private var safeAreaInsets
         @Environment(\.tabBarHeight) private var tabBarHeight
         @Binding var selectedSeries: RaceSeries?
-        @State private var flipsLatestResult = false
+        @Binding var flippedRaces: Set<String>
 
         let representable: Representable
         let action: (CXRaces.Action) -> Void
 
         private var availableSeries: [RaceSeries] {
             SeriesLens.availableSeries(in: representable.calendarEvents)
-        }
-
-        /// Hide results on: every result is hidden until held. Off: each starts shown, a hold hides it.
-        private var isLatestResultShown: Bool {
-            (UserSettings.hidesResults ?? true) ? flipsLatestResult : !flipsLatestResult
         }
 
         private var series: RaceSeries? {
@@ -102,8 +97,8 @@ extension CXRaces {
                             race: latest,
                             winner: SeriesLens.winner(of: latest),
                             otherCount: SeriesLens.otherLatestResultCount(in: representable.races),
-                            isShown: isLatestResultShown,
-                            toggle: { flipsLatestResult.toggle() },
+                            isShown: CXRaces.resultVisibility(of: latest, flipped: flippedRaces) == .shown,
+                            toggle: { CXRaces.flip(latest, in: &flippedRaces) },
                             openAll: { action(.didTapOnLatestResults) }
                         )
                         .padding(.horizontal, 12)

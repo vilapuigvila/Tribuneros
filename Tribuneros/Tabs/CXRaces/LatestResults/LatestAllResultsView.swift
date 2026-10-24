@@ -9,6 +9,8 @@ import SwiftUI
 
 struct LatestAllResultsView: View {
     let races: DTO.CX24Homepage
+    /// Races flipped from the default this launch (revealed while results are hidden, hidden otherwise), shared with the CX Zone card.
+    @Binding var flippedRaces: Set<String>
     /// A category block opens the race on that category; the rest of a race card opens it via `action`.
     var openCategory: (DTO.CX24Homepage.Race, String) -> Void = { _, _ in }
     let action: (DTO.CX24Homepage.Race) -> Void
@@ -24,12 +26,20 @@ struct LatestAllResultsView: View {
                                 let race = section.races[raceIndex]
                                 RaceRowView(
                                     race: race,
+                                    visibility: CXRaces.resultVisibility(
+                                        of: race,
+                                        flipped: flippedRaces
+                                    ),
                                     openCategory: openCategory
                                 )
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    action(race)
-                                }
+                                .resultGestures(
+                                    CXRaces.resultVisibility(
+                                        of: race,
+                                        flipped: flippedRaces
+                                    ),
+                                    open: { action(race) },
+                                    toggle: { CXRaces.flip(race, in: &flippedRaces) }
+                                )
                             }
                         }
                     }
@@ -45,6 +55,7 @@ struct LatestAllResultsView: View {
 
 private struct RaceRowView: View {
     let race: DTO.CX24Homepage.Race
+    let visibility: HomeRaces.ResultVisibility
     let openCategory: (DTO.CX24Homepage.Race, String) -> Void
 
     var body: some View {
@@ -91,26 +102,67 @@ private struct RaceRowView: View {
                 Spacer(minLength: 0)
             }
 
+            let shownRace = visibility == .shown ? race : race.hiddenStandIn
             VStack(spacing: 12) {
-                ForEach(CXRaces.cardCategories(of: race).indices, id: \.self) { idx in
-                    let category = race.categories[idx]
-                    // A button wins over the card's own tap gesture.
+                ForEach(CXRaces.cardCategories(of: shownRace).indices, id: \.self) { idx in
+                    let category = shownRace.categories[idx]
+                    // A button wins over the card's own tap gesture, so it only takes touches while shown.
                     Button {
                         openCategory(race, category.title)
                     } label: {
-                        CategoryResultsView(category: category)
-                            .contentShape(Rectangle())
+                        CategoryResultsView(
+                            category: category,
+                            isHidden: visibility != .shown,
+                            reservesPhoto: race.categories[idx].winnerImageURL != nil
+                        )
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
+                    .allowsHitTesting(visibility == .shown)
                 }
             }
+            .spoilerCrossfade(visibility)
             .padding(.bottom, 6)
         }
     }
 }
 
+extension DTO.CX24Homepage.Race {
+    /// Built from stand-in values, so no real podium or photo reaches the view tree.
+    fileprivate var hiddenStandIn: Self {
+        let podium = (1...3).map {
+            DTO.CX24Homepage.Podium(
+                position: $0,
+                rider: "Rider name",
+                riderURL: nil,
+                country: "",
+                countryFlagURL: nil,
+                time: "0:00:00"
+            )
+        }
+        return Self(
+            title: title,
+            country: country,
+            countryFlagURL: countryFlagURL,
+            date: date,
+            location: location,
+            raceURL: nil,
+            categories: categories.map {
+                .init(
+                    title: $0.title,
+                    categoryURL: nil,
+                    winnerImageURL: nil,
+                    podium: podium
+                )
+            }
+        )
+    }
+}
+
 private struct CategoryResultsView: View {
     let category: DTO.CX24Homepage.Category
+    let isHidden: Bool
+    var reservesPhoto = false
 
     var body: some View {
         let podiums = Array(category.podium.prefix(3))
@@ -122,10 +174,11 @@ private struct CategoryResultsView: View {
             )
 
             HStack(alignment: .center, spacing: 12) {
-                if let imageURL = category.winnerImageURL {
+                if category.winnerImageURL != nil || reservesPhoto {
                     WinnerAvatar(
-                        imageURL: imageURL,
-                        name: category.podium.first?.rider
+                        imageURL: category.winnerImageURL,
+                        name: isHidden ? nil : category.podium.first?.rider,
+                        isHidden: isHidden
                     )
                 }
 
@@ -139,6 +192,8 @@ private struct CategoryResultsView: View {
                         }
                     }
                 }
+                .redacted(reason: isHidden ? .placeholder : [])
+                .accessibilityHidden(isHidden)
             }
         }
     }
@@ -146,12 +201,34 @@ private struct CategoryResultsView: View {
 
 /// 56pt winner photo; the Leaders-style initials disc shows while loading and when the photo fails.
 private struct WinnerAvatar: View {
-    let imageURL: URL
+    let imageURL: URL?
     let name: String?
+    let isHidden: Bool
 
     var body: some View {
         ZStack {
             initialsDisc
+            if !isHidden {
+                photo
+            }
+            RaceArtView(art: .spoiler)
+                .opacity(isHidden ? 1 : 0)
+                .animation(
+                    isHidden ? nil : .easeInOut(duration: SpoilerHold.revealDuration),
+                    value: isHidden
+                )
+                .accessibilityElement()
+                .accessibilityLabel(L10n.tr("Result hidden"))
+                .accessibilityHidden(!isHidden)
+                .accessibilityIdentifier("cx.latestList.spoiler")
+        }
+        .frame(width: 56, height: 56)
+        .clipShape(Circle())
+        .overlay(Circle().strokeBorder(Color.tribuneru(.mudAccent), lineWidth: 2))
+    }
+
+    private var photo: some View {
+        ZStack {
             CachedImageView(
                 imageUrl: imageURL,
                 cornerRadius: 0,
@@ -159,9 +236,6 @@ private struct WinnerAvatar: View {
                 fallback: AnyView(initialsDisc)
             )
         }
-        .frame(width: 56, height: 56)
-        .clipShape(Circle())
-        .overlay(Circle().strokeBorder(Color.tribuneru(.mudAccent), lineWidth: 2))
     }
 
     private var initialsDisc: some View {
@@ -220,8 +294,10 @@ private struct PodiumRow: View {
 
 #Preview("Latest all results") {
     NavigationStack {
-        LatestAllResultsView(races: CXRaces.Representable.mock.races) { _ in
-            
+        LatestAllResultsView(
+            races: CXRaces.Representable.mock.races,
+            flippedRaces: .constant([])
+        ) { _ in
         }
         .navigationTitle("Latest results")
     }

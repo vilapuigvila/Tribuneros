@@ -10,11 +10,13 @@ import SwiftUI
 struct CXRacesRacesView: View {
     @ObservedObject var viewModel: CXRaces.ViewModel<CXRaces.InteractorImpl>
     @State private var lensSeries: CXRaces.RaceSeries?
+    @State private var flippedRaces: Set<String> = []
 
     var body: some View {
         CXRaces.MainView(
             state: viewModel.stateView,
-            selectedSeries: $lensSeries
+            selectedSeries: $lensSeries,
+            flippedRaces: $flippedRaces
         ) {
             switch $0 {
             case .didAppeared:
@@ -73,6 +75,7 @@ struct CXRacesRacesView: View {
             case .cxZone(.latestResults):
                 LatestAllResultsView(
                     races: viewModel.stateView.result.races,
+                    flippedRaces: $flippedRaces,
                     openCategory: { race, category in
                         viewModel.action(.didTapOnRaceDetail(race, category: category))
                     }

@@ -1,5 +1,5 @@
 # CX Zone latest result card (floats over the bottom of the page): hidden until its painting is held, the
-# winner shows, then a tap on the card opens every latest result. Mock data only (mockScenario live).
+# winner shows, then a tap on the card opens every latest result, where only revealed races show their podium. Mock data only (mockScenario live).
 appId: com.pskmoons.Tribuneros
 tags:
   - mock
@@ -30,12 +30,56 @@ tags:
     delay: 1
 - assertVisible: "Hold the card to see the winner"
 
-# Tap the card: every latest result
+# Tap the card while hidden: the list opens with the latest race still hidden
 - tapOn: "Superprestige Gavere \\(C1\\)"
 - extendedWaitUntil:
     visible: "Latest Cyclocross Results"
     timeout: 45000
+- assertVisible:
+    id: "cx.latestList.spoiler"
+- assertNotVisible: "MOCK Rider One.*"
+- assertNotVisible: "MOCK Woman One.*"
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- assertVisible: "LATEST RESULT"
+
+# Reveal on the card, open the list: only that race shows its podium
+- longPressOn:
+    text: "Superprestige Gavere \\(C1\\)"
+    retryTapIfNoChange: false
+    delay: 1
+- assertVisible: "MOCK Rider One.*58:12"
+- tapOn: "Superprestige Gavere \\(C1\\)"
+- extendedWaitUntil:
+    visible: "Latest Cyclocross Results"
+    timeout: 45000
+- assertVisible: "MOCK Rider One.*"
 
 # The mock winner photo fails to load: the winner's initials disc stands in
 - assertVisible: "OM"
 - takeScreenshot: cx-latest-results-initials
+
+# The other race is still hidden
+- assertVisible:
+    id: "cx.latestList.spoiler"
+
+# A tap on the hidden card does not open it
+- tapOn: "Exact Cross Mol \\(C2\\)"
+- assertVisible: "Latest Cyclocross Results"
+- assertNotVisible: "MEN ELITE"
+
+# Hold the hidden card: it shows. A second hold hides it again
+- longPressOn:
+    id: "cx.latestList.spoiler"
+    retryTapIfNoChange: false
+    delay: 1
+- assertNotVisible:
+    id: "cx.latestList.spoiler"
+- assertVisible: "MOCK Rider One.*"
+- longPressOn:
+    text: "Exact Cross Mol \\(C2\\)"
+    retryTapIfNoChange: false
+    delay: 1
+- assertVisible:
+    id: "cx.latestList.spoiler"
