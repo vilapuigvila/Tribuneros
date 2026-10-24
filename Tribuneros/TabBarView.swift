@@ -9,7 +9,7 @@ import SwiftUI
 import UIKit
 
 enum Tab {
-    case home, paddock, cxZone, settings
+    case home, paddock, cxZone, tifosi, settings
 
     /// CX Zone from 19 October through 31 January (inclusive), Today Races otherwise.
     static func launchTab(
@@ -61,12 +61,14 @@ struct TabBarView: View {
     @StateObject private var homeRouter: Router
     @StateObject private var cxRouter: Router
     @StateObject private var paddockRouter: Router
+    @StateObject private var tifosiRouter: Router
     @StateObject private var settingsRouter: Router
 
     // StateObject, not let: `LocalizedRoot` re-inits this view on every tab change, and fresh view models would never load.
     @StateObject private var homeRacesViewModel: HomeRacesViewModel<HomeRacesInteractorImpl>
     @StateObject private var cxRacesViewModel: CXRaces.ViewModel<CXRaces.InteractorImpl>
     @StateObject private var paddockViewModel: Paddock.ViewModel<Paddock.InteractorImpl>
+    @StateObject private var tifosiViewModel: Tifosi.ViewModel<Tifosi.InteractorImpl>
     @StateObject private var settingsViewModel: Settings.ViewModel<Settings.InteractorImpl>
 
     init(selectedTab: Binding<Tab>) {
@@ -74,10 +76,12 @@ struct TabBarView: View {
         let homeRouter = Router()
         let cxRouter = Router()
         let paddockRouter = Router()
+        let tifosiRouter = Router()
         let settingsRouter = Router()
         _homeRouter = StateObject(wrappedValue: homeRouter)
         _cxRouter = StateObject(wrappedValue: cxRouter)
         _paddockRouter = StateObject(wrappedValue: paddockRouter)
+        _tifosiRouter = StateObject(wrappedValue: tifosiRouter)
         _settingsRouter = StateObject(wrappedValue: settingsRouter)
         _homeRacesViewModel = StateObject(
             wrappedValue: HomeRacesViewModel(
@@ -95,6 +99,12 @@ struct TabBarView: View {
             wrappedValue: Paddock.ViewModel(
                 router: paddockRouter,
                 interactor: Paddock.InteractorImpl()
+            )
+        )
+        _tifosiViewModel = StateObject(
+            wrappedValue: Tifosi.ViewModel(
+                router: tifosiRouter,
+                interactor: Tifosi.InteractorImpl()
             )
         )
         _settingsViewModel = StateObject(
@@ -129,6 +139,13 @@ struct TabBarView: View {
             }
             .webPage($paddockRouter.webPage)
             .tag(Tab.paddock)
+
+            // Tifosi -
+
+            NavigationStack(path: $tifosiRouter.navPath) {
+                TifosiView(viewModel: tifosiViewModel)
+            }
+            .tag(Tab.tifosi)
 
             // Settings -
 
@@ -179,6 +196,8 @@ struct TabBarView: View {
             paddockRouter.popToRoot()
         case .cxZone:
             cxRouter.popToRoot()
+        case .tifosi:
+            tifosiRouter.popToRoot()
         case .settings:
             settingsRouter.popToRoot()
         }
@@ -235,6 +254,17 @@ private struct CustomTabBar: View {
                     isSelected: selectedTab == .paddock
                 ) {
                     onTabTap(.paddock)
+                }
+
+                Spacer(minLength: 0)
+
+                TabBarButton(
+                    title: L10n.tr("Tifosi"),
+                    imageName: "TabTifosi",
+                    selectedColor: .tifosiAccent,
+                    isSelected: selectedTab == .tifosi
+                ) {
+                    onTabTap(.tifosi)
                 }
 
                 Spacer(minLength: 0)

@@ -243,6 +243,31 @@ extension Color {
             Color(hex: 0xF2D04B)
         case .kitConfettiPink:
             Color(hex: 0xF9A8D4)
+        // MARK: - Tifosi (Maglia rosa) -
+        case .tifosiPageBackground:
+            Color(hex: 0x0D090C)
+        case .tifosiPanel:
+            Color(hex: 0x180E15)
+        case .tifosiCard:
+            Color(hex: 0x24171F)
+        case .tifosiTag:
+            Color(hex: 0x3D2636)
+        case .tifosiTagText:
+            Color(hex: 0xF3D9EA)
+        case .tifosiTextPrimary:
+            Color(hex: 0xF6ECF2)
+        case .tifosiTextSecondary:
+            Color(hex: 0xB39CAA)
+        case .tifosiTextMuted:
+            Color(hex: 0xD6C0CD)
+        case .tifosiAccent:
+            Color(hex: 0xF9A8D4)
+        case .tifosiOnAccent:
+            Color(hex: 0x2B0A1C)
+        case .tifosiLine:
+            Color(hex: 0x2E1D28)
+        case .tifosiBroomStrip:
+            Color(hex: 0x150C12)
         case .championBlue:
             Color(hex: 0x2563EB)
         case .championRed:
@@ -406,6 +431,19 @@ extension Color {
         case kitSkyBottom
         case kitConfettiYellow
         case kitConfettiPink
+        // MARK: - Tifosi -
+        case tifosiPageBackground
+        case tifosiPanel
+        case tifosiCard
+        case tifosiTag
+        case tifosiTagText
+        case tifosiTextPrimary
+        case tifosiTextSecondary
+        case tifosiTextMuted
+        case tifosiAccent
+        case tifosiOnAccent
+        case tifosiLine
+        case tifosiBroomStrip
         /// The world champion jersey's bands, as drawn in the spoiler paintings.
         case championBlue
         case championRed
