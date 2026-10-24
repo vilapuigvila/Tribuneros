@@ -141,6 +141,30 @@
         }
       }
     },
+    "%@ likes" : {
+      "comment" : "Like count of a post",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ m’agrada"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ me gusta"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ gogoko"
+          }
+        }
+      }
+    },
     "%@ m" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -184,6 +208,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ puntu"
+          }
+        }
+      }
+    },
+    "%@ shares" : {
+      "comment" : "Share count of a post",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ comparticions"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ veces compartido"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ partekatze"
+          }
+        }
+      }
+    },
+    "%@ · the crowd is loud" : {
+      "comment" : "LIVE banner title, race name first",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · l’afició s’escalfa"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · la afición está encendida"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · jendetza sutan dago"
           }
         }
       }
@@ -362,6 +434,30 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "%lld km to go · %lld posts in the last %lld min" : {
+      "comment" : "LIVE banner subtitle",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falten %1$lld km · %2$lld publicacions en els últims %3$lld min"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Faltan %1$lld km · %2$lld publicaciones en los últimos %3$lld min"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld km falta dira · %2$lld mezu azken %3$lld minutuetan"
           }
         }
       }
@@ -994,6 +1090,54 @@
         }
       }
     },
+    "Bluesky" : {
+      "comment" : "Filter chip, social network name",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bluesky"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bluesky"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bluesky"
+          }
+        }
+      }
+    },
+    "Broom wagon sweeps posts older than 24 h" : {
+      "comment" : "Footer strip",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El cotxe escombra recull les publicacions de més de 24 h"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El coche escoba barre las publicaciones de más de 24 h"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erritxoak 24 ordu baino zaharragoak diren mezuak biltzen ditu"
+          }
+        }
+      }
+    },
     "Browse past seasons" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1157,6 +1301,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Txapelketak"
+          }
+        }
+      }
+    },
+    "Channels" : {
+      "comment" : "Round button in the header",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Canals"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Canales"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanalak"
           }
         }
       }
@@ -1818,6 +1986,30 @@
         }
       }
     },
+    "Everything" : {
+      "comment" : "Filter chip: all channels",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tot"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dena"
+          }
+        }
+      }
+    },
     "FINISHED" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1981,6 +2173,30 @@
         }
       }
     },
+    "HEAD OF THE RACE" : {
+      "comment" : "Panel title over the most shared post",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CAP DE CURSA"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CABEZA DE CARRERA"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LASTERKETAREN BURUA"
+          }
+        }
+      }
+    },
     "Hide results" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2124,6 +2340,30 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "Instagram" : {
+      "comment" : "Filter chip, social network name",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instagram"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instagram"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instagram"
           }
         }
       }
@@ -3649,6 +3889,30 @@
         }
       }
     },
+    "Nobody is chasing on this channel." : {
+      "comment" : "Empty filter result",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ningú persegueix en aquest canal."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nadie persigue en este canal."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inor ez da ari jarraitzen kanal honetan."
+          }
+        }
+      }
+    },
     "Not in the TV listings" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3976,6 +4240,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "PCS sailkapena"
+          }
+        }
+      }
+    },
+    "POST" : {
+      "comment" : "Kind tag on a social post",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PUBLICACIÓ"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PUBLICACIÓN"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MEZUA"
           }
         }
       }
@@ -4335,6 +4623,30 @@
         }
       }
     },
+    "RADIO" : {
+      "comment" : "Kind tag on a race radio message",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RÀDIO"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RADIO"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IRRATIA"
+          }
+        }
+      }
+    },
     "Race Preview" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4565,6 +4877,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lasterketak"
+          }
+        }
+      }
+    },
+    "Radio" : {
+      "comment" : "Filter chip",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ràdio"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Radio"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Irratia"
           }
         }
       }
@@ -5732,6 +6068,30 @@
         }
       }
     },
+    "TV" : {
+      "comment" : "Filter chip and kind tag",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TV"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TV"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TB"
+          }
+        }
+      }
+    },
     "TV Info & Livestream" : {
       "comment" : "Race detail panel header listing the broadcasters",
       "extractionState" : "manual",
@@ -5752,6 +6112,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Telebista eta zuzenekoa"
+          }
+        }
+      }
+    },
+    "TV, radio and social" : {
+      "comment" : "Date line under the title when no channel is selected",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TV, ràdio i xarxes"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TV, radio y redes"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TB, irratia eta sareak"
           }
         }
       }
@@ -5828,6 +6212,30 @@
         }
       }
     },
+    "The chase" : {
+      "comment" : "Section title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El grup perseguidor"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El grupo perseguidor"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jarraitzaileak"
+          }
+        }
+      }
+    },
     "The peloton is resting" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5895,6 +6303,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sailkapen hau ez dago erabilgarri oraindik. Agian denboraldi honetan ez da hasi, edo konexioak huts egin du."
+          }
+        }
+      }
+    },
+    "Tifosi" : {
+      "comment" : "Tab and screen name",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tifosi"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tifosi"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tifosi"
           }
         }
       }
@@ -6634,6 +7066,30 @@
         }
       }
     },
+    "X" : {
+      "comment" : "Filter chip, social network name",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "X"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "X"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "X"
+          }
+        }
+      }
+    },
     "YOUR RACE" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6797,6 +7253,30 @@
         }
       }
     },
+    "gap = how stale it is" : {
+      "comment" : "Section hint: the gap is the age of the post",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "diferència = com de vell és"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "diferencia = cuán antiguo es"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tartea = zenbat denbora duen"
+          }
+        }
+      }
+    },
     "in %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6885,6 +7365,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "informazio gehiago"
+          }
+        }
+      }
+    },
+    "most shared · %@" : {
+      "comment" : "Age of the most shared post",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "més compartit · %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "más compartido · %@"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "gehien partekatua · %@"
           }
         }
       }
@@ -7001,6 +7505,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "urteak"
+          }
+        }
+      }
+    },
+    "via %@" : {
+      "comment" : "Source of a post",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "via %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "vía %@"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ bidez"
           }
         }
       }

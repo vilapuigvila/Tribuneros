@@ -1,0 +1,134 @@
+{
+  "Tifosi": {
+    "ca": "Tifosi",
+    "eu": "Tifosi",
+    "es": "Tifosi",
+    "comment": "Tab and screen name"
+  },
+  "Channels": {
+    "ca": "Canals",
+    "eu": "Kanalak",
+    "es": "Canales",
+    "comment": "Round button in the header"
+  },
+  "Everything": {
+    "ca": "Tot",
+    "eu": "Dena",
+    "es": "Todo",
+    "comment": "Filter chip: all channels"
+  },
+  "TV": {
+    "ca": "TV",
+    "eu": "TB",
+    "es": "TV",
+    "comment": "Filter chip and kind tag"
+  },
+  "Radio": {
+    "ca": "Ràdio",
+    "eu": "Irratia",
+    "es": "Radio",
+    "comment": "Filter chip"
+  },
+  "X": {
+    "ca": "X",
+    "eu": "X",
+    "es": "X",
+    "comment": "Filter chip, social network name"
+  },
+  "Bluesky": {
+    "ca": "Bluesky",
+    "eu": "Bluesky",
+    "es": "Bluesky",
+    "comment": "Filter chip, social network name"
+  },
+  "Instagram": {
+    "ca": "Instagram",
+    "eu": "Instagram",
+    "es": "Instagram",
+    "comment": "Filter chip, social network name"
+  },
+  "TV, radio and social": {
+    "ca": "TV, ràdio i xarxes",
+    "eu": "TB, irratia eta sareak",
+    "es": "TV, radio y redes",
+    "comment": "Date line under the title when no channel is selected"
+  },
+  "POST": {
+    "ca": "PUBLICACIÓ",
+    "eu": "MEZUA",
+    "es": "PUBLICACIÓN",
+    "comment": "Kind tag on a social post"
+  },
+  "RADIO": {
+    "ca": "RÀDIO",
+    "eu": "IRRATIA",
+    "es": "RADIO",
+    "comment": "Kind tag on a race radio message"
+  },
+  "%@ · the crowd is loud": {
+    "ca": "%@ · l’afició s’escalfa",
+    "eu": "%@ · jendetza sutan dago",
+    "es": "%@ · la afición está encendida",
+    "comment": "LIVE banner title, race name first"
+  },
+  "%lld km to go · %lld posts in the last %lld min": {
+    "ca": "Falten %1$lld km · %2$lld publicacions en els últims %3$lld min",
+    "eu": "%1$lld km falta dira · %2$lld mezu azken %3$lld minutuetan",
+    "es": "Faltan %1$lld km · %2$lld publicaciones en los últimos %3$lld min",
+    "comment": "LIVE banner subtitle"
+  },
+  "HEAD OF THE RACE": {
+    "ca": "CAP DE CURSA",
+    "eu": "LASTERKETAREN BURUA",
+    "es": "CABEZA DE CARRERA",
+    "comment": "Panel title over the most shared post"
+  },
+  "most shared · %@": {
+    "ca": "més compartit · %@",
+    "eu": "gehien partekatua · %@",
+    "es": "más compartido · %@",
+    "comment": "Age of the most shared post"
+  },
+  "via %@": {
+    "ca": "via %@",
+    "eu": "%@ bidez",
+    "es": "vía %@",
+    "comment": "Source of a post"
+  },
+  "%@ shares": {
+    "ca": "%@ comparticions",
+    "eu": "%@ partekatze",
+    "es": "%@ veces compartido",
+    "comment": "Share count of a post"
+  },
+  "%@ likes": {
+    "ca": "%@ m’agrada",
+    "eu": "%@ gogoko",
+    "es": "%@ me gusta",
+    "comment": "Like count of a post"
+  },
+  "The chase": {
+    "ca": "El grup perseguidor",
+    "eu": "Jarraitzaileak",
+    "es": "El grupo perseguidor",
+    "comment": "Section title"
+  },
+  "gap = how stale it is": {
+    "ca": "diferència = com de vell és",
+    "eu": "tartea = zenbat denbora duen",
+    "es": "diferencia = cuán antiguo es",
+    "comment": "Section hint: the gap is the age of the post"
+  },
+  "Nobody is chasing on this channel.": {
+    "ca": "Ningú persegueix en aquest canal.",
+    "eu": "Inor ez da ari jarraitzen kanal honetan.",
+    "es": "Nadie persigue en este canal.",
+    "comment": "Empty filter result"
+  },
+  "Broom wagon sweeps posts older than 24 h": {
+    "ca": "El cotxe escombra recull les publicacions de més de 24 h",
+    "eu": "Erritxoak 24 ordu baino zaharragoak diren mezuak biltzen ditu",
+    "es": "El coche escoba barre las publicaciones de más de 24 h",
+    "comment": "Footer strip"
+  }
+}
