@@ -225,7 +225,7 @@ extension Service {
     /// The first text the marker holds on its own: "Passo di Valcava" of "Passo di Valcava<br />…".
     private static func liveMarkerName(_ marker: Element) -> String {
         let elements = (try? marker.select("*").array()) ?? []
-        let names = elements.map { liveCollapsed((try? $0.ownText()) ?? "") }
+        let names = elements.map { liveCollapsed(( $0.ownText())) }
         return names.first(where: { !$0.isEmpty }) ?? ""
     }
 
@@ -260,7 +260,7 @@ extension Service {
         let time = try? item.select(".time").first()
         return DTO.LivePage.Group(
             name: name,
-            gap: liveCollapsed(time.flatMap { try? $0.ownText() } ?? ""),
+            gap: liveCollapsed(time.flatMap { $0.ownText() } ?? ""),
             gapSeconds: Int(liveAttribute(time, "data-sec")),
             badge: badge,
             isPeloton: liveAttribute(item, "data-peloton") == "1",

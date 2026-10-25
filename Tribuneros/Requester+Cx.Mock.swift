@@ -242,7 +242,8 @@ enum CxMock {
             id: Int,
             daysFromNow: Int,
             winner: Int? = nil,
-            country: String = "Belgium"
+            country: String = "Belgium",
+            videoURL: URL? = nil
         ) -> DTO.CXCalendarEvent {
             let rider = winner.map { riders[$0] }
             return .init(
@@ -256,7 +257,7 @@ enum CxMock {
                 raceSlug: path.split(separator: "/").last.map(String.init),
                 raceURL: url(path),
                 resultsURL: url("race/\(id)/"),
-                videoURL: nil,
+                videoURL: videoURL,
                 websiteURL: nil,
                 raceCountry: country,
                 winnerURL: winner.flatMap(riderURL),
@@ -282,7 +283,7 @@ enum CxMock {
             event("Exact Cross Essen", raceClass: "C2", path: "race/exact-cross-essen/", id: 18002, daysFromNow: 14),
             event("X2O Badkamers Trofee Baal", raceClass: "C2", path: "race/x2o-trofee-baal/", id: 18003, daysFromNow: 21),
             event("World Cup Koksijde", raceClass: "CDM", path: koksijdePath, id: 18004, daysFromNow: 30),
-            event("World Cup Zonhoven", raceClass: "CDM", path: "race/world-cup-zonhoven/", id: 18005, daysFromNow: -20, winner: 2),
+            event("World Cup Zonhoven", raceClass: "CDM", path: "race/world-cup-zonhoven/", id: 18005, daysFromNow: -20, winner: 2, videoURL: url("race/18005/#video")),
             event("World Cup Namur", raceClass: "CDM", path: "race/world-cup-namur/", id: 18006, daysFromNow: 45),
             event("World Cup Hoogerheide", raceClass: "CDM", path: "race/world-cup-hoogerheide/", id: 18007, daysFromNow: 60),
             event("Superprestige Niel", raceClass: "C1", path: "race/superprestige-niel/", id: 18008, daysFromNow: 7),
@@ -429,6 +430,6 @@ enum CxMock {
         )
     }
 
-    static let videoURL = URL(string: "https://www.example.com/mock-race-video")
+    static let videoURL = URL(string: "https://www.youtube.com/watch?v=EShExWlESGs")
 }
 #endif

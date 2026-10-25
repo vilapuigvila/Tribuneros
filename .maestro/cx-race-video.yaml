@@ -1,0 +1,30 @@
+# CX calendar race detail of a finished race: the "Race video" panel. Under a mock scenario the
+# YouTube web view is replaced by a stand-in, so the flow stays offline.
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- tapOn: "CX Zone"
+- extendedWaitUntil:
+    visible: "NEXT ROUND"
+    timeout: 45000
+- scrollUntilVisible:
+    element: "Calendar"
+- tapOn: "Calendar"
+- assertVisible: "All races"
+- tapOn: "ALL,? ?\\d+"
+- tapOn: "Race, country, winner..."
+- inputText: "zonhoven"
+- tapOn: "\\d\\d-\\d\\d-\\d{4}, .*Zonhoven.*"
+- extendedWaitUntil:
+    visible: "Winner"
+    timeout: 45000
+- scrollUntilVisible:
+    element:
+      id: "event-video-player"
+    timeout: 45000
+- assertVisible: "Race video"

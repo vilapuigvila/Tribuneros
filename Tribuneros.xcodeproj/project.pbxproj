@@ -665,15 +665,15 @@
 			package = A10770022F0000000000AA02 /* XCRemoteSwiftPackageReference "lottie-spm" */;
 			productName = Lottie;
 		};
-		ED11B09019D9765149A6B76E /* FirebaseFirestore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 500388202E740ED40041E747 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFirestore;
-		};
 		A10770062F0000000000AA06 /* YouTubePlayerKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A10770052F0000000000AA05 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */;
 			productName = YouTubePlayerKit;
+		};
+		ED11B09019D9765149A6B76E /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 500388202E740ED40041E747 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

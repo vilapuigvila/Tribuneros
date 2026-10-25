@@ -101,6 +101,13 @@ struct CXEventDetailView: View {
                     }
                 }
 
+                if let videoID = inlineVideoID {
+                    CXInlineVideoPanel(
+                        videoID: videoID,
+                        openURL: openURL
+                    )
+                }
+
                 if !links.isEmpty {
                     linksPanel
                 }
@@ -458,9 +465,13 @@ struct CXEventDetailView: View {
         }
     }
 
+    private var inlineVideoID: String? {
+        detail.videoURL.flatMap(CXInlineVideoPanel.youTubeID(from:))
+    }
+
     private var links: [DetailLink] {
         var links: [DetailLink] = []
-        if let videoURL = detail.videoURL {
+        if let videoURL = detail.videoURL, inlineVideoID == nil {
             links.append(
                 .init(
                     title: L10n.tr("Race video"),

@@ -4491,6 +4491,30 @@
         }
       }
     },
+    "Open in YouTube" : {
+      "comment" : "Fallback button when the inline race video can't play",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obre a YouTube"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir en YouTube"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ireki YouTuben"
+          }
+        }
+      }
+    },
     "Open on ProCyclingStats" : {
       "extractionState" : "manual",
       "localizations" : {

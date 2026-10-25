@@ -632,5 +632,11 @@
     "eu": "emaitza guztiak",
     "es": "resultados completos",
     "comment": "Race detail link to the full results page"
+  },
+  "Open in YouTube": {
+    "ca": "Obre a YouTube",
+    "eu": "Ireki YouTuben",
+    "es": "Abrir en YouTube",
+    "comment": "Fallback button when the inline race video can't play"
   }
 }
