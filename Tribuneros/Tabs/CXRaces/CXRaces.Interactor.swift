@@ -17,6 +17,7 @@ extension CXRaces {
         let standings: DTO.CXStandings
         let loading: Bool
         let error: EquatableError?
+        var schedules: SeriesLens.Schedules = [:]
         
         static var empty: Domain {
             .init(races: .init(sections: []), calendar: [], standings: .init(items: []), loading: false, error: nil)
@@ -58,7 +59,8 @@ extension CXRaces {
                     calendar: current.calendar,
                     standings: current.standings,
                     loading: true,
-                    error: nil
+                    error: nil,
+                    schedules: current.schedules
                 )
             )
             
@@ -78,7 +80,22 @@ extension CXRaces {
                             calendar: calendarResult,
                             standings: standingsResult,
                             loading: false,
-                            error: nil
+                            error: nil,
+                            schedules: current.schedules
+                        )
+                    )
+
+                    let schedules = await Self.todaySchedules(in: calendarResult)
+                    try Task.checkCancellation()
+                    guard !schedules.isEmpty else { return }
+                    self.subject.send(
+                        .init(
+                            races: racesResult,
+                            calendar: calendarResult,
+                            standings: standingsResult,
+                            loading: false,
+                            error: nil,
+                            schedules: schedules
                         )
                     )
                 } catch {
@@ -90,10 +107,32 @@ extension CXRaces {
                             calendar: current.calendar,
                             standings: current.standings,
                             loading: false,
-                            error: error.toEquatableError()
+                            error: error.toEquatableError(),
+                            schedules: current.schedules
                         )
                     )
                 }
+            }
+        }
+
+        /// Only today's non-cancelled races need a start time; a failed fetch just means no entry.
+        static func todaySchedules(
+            in calendar: [DTO.CXCalendarEvent],
+            now: Date = Date()
+        ) async -> SeriesLens.Schedules {
+            let today = calendar
+                .filter { !$0.isCancelled && $0.raceURL != nil }
+                .filter { event in event.eventDate.map { Calendar.current.isDate($0, inSameDayAs: now) } ?? false }
+            return await withTaskGroup(of: (URL, [DTO.CXRacePage.ScheduledStart]).self) { group in
+                for event in today {
+                    guard let url = event.raceURL else { continue }
+                    group.addTask { (url, await Service.getCxRaceSchedule(event)) }
+                }
+                var schedules: SeriesLens.Schedules = [:]
+                for await (url, schedule) in group where !schedule.isEmpty {
+                    schedules[url] = schedule
+                }
+                return schedules
             }
         }
     }

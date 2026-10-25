@@ -541,25 +541,34 @@ extension DTO {
             let url: URL?
         }
 
+        struct ScheduledStart: Equatable, Sendable, Hashable, Decodable {
+            /// Venue-local "HH:mm".
+            let time: String
+            let category: String
+        }
+
         let title: String
         let summary: String
         let pastWinners: [PastWinner]
         let tvChannels: [TVChannel]
+        let schedule: [ScheduledStart]
 
         init(
             title: String,
             summary: String,
             pastWinners: [PastWinner],
-            tvChannels: [TVChannel] = []
+            tvChannels: [TVChannel] = [],
+            schedule: [ScheduledStart] = []
         ) {
             self.title = title
             self.summary = summary
             self.pastWinners = pastWinners
             self.tvChannels = tvChannels
+            self.schedule = schedule
         }
 
         private enum CodingKeys: String, CodingKey {
-            case title, summary, pastWinners, tvChannels
+            case title, summary, pastWinners, tvChannels, schedule
         }
 
         init(from decoder: Decoder) throws {
@@ -568,6 +577,7 @@ extension DTO {
             summary = try container.decode(String.self, forKey: .summary)
             pastWinners = try container.decode([PastWinner].self, forKey: .pastWinners)
             tvChannels = try container.decodeIfPresent([TVChannel].self, forKey: .tvChannels) ?? []
+            schedule = try container.decodeIfPresent([ScheduledStart].self, forKey: .schedule) ?? []
         }
     }
 

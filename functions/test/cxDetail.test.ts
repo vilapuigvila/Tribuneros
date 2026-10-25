@@ -175,3 +175,11 @@ test("standing page URL: rebuilt from the ~ id", () => {
   assert.equal(standingPageURL("uciranking~2025-2026~ME"), "https://cyclocross24.com/uciranking/2025-2026/ME/");
   assert.equal(standingPageURL("standings~superprestige"), "https://cyclocross24.com/standings/superprestige/");
 });
+
+test("race page: the schedule lists venue-local starts, Men Elite last", () => {
+  const schedule = parseRacePage(fixture("race-dendermonde.html")).schedule;
+
+  assert.equal(schedule.length, 4);
+  assert.deepEqual(schedule[0], {time: "11:00", category: "Women Junior"});
+  assert.deepEqual(schedule[3], {time: "15:00", category: "Men Elite"});
+});

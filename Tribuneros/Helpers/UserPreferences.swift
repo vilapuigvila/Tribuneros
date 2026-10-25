@@ -15,6 +15,7 @@ enum UserPreferencesKey: String, CaseIterable {
     case spoilerHintShownCount
     case liveHintFirstShown
     case liveHintShownCount
+    case dockHintShownCount
     case onboardingFirstShown
     case onboardingShownCount
     case onboardingMusicMuted
@@ -146,6 +147,9 @@ struct UserSettings {
 
     @UserDefault(UserPreferencesKey.liveHintShownCount.rawValue, defaultValue: 0)
     static var liveHintShownCount: Int?
+
+    @UserDefault(UserPreferencesKey.dockHintShownCount.rawValue, defaultValue: 0)
+    static var dockHintShownCount: Int?
 
     @UserDefault(UserPreferencesKey.onboardingFirstShown.rawValue, defaultValue: nil)
     static var onboardingFirstShown: Date?

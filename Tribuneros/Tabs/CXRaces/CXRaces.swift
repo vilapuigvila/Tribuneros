@@ -103,6 +103,7 @@ extension CXRaces {
         let calendarEvents: [DTO.CXCalendarEvent]
         let races: DTO.CX24Homepage
         let standings: DTO.CXStandings
+        var schedules: SeriesLens.Schedules = [:]
         
         func nextThreeEvents() -> [DTO.CXCalendarEvent] {
             let calendar = Calendar.current

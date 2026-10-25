@@ -18,7 +18,9 @@ final class CXSeriesLensTests: XCTestCase {
         race: String,
         raceClass: String = "C1",
         winner: String = "",
-        isCancelled: Bool = false
+        isCancelled: Bool = false,
+        country: String = "Belgium",
+        raceURL: URL? = nil
     ) -> DTO.CXCalendarEvent {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd-MM-yyyy"
@@ -37,11 +39,11 @@ final class CXSeriesLensTests: XCTestCase {
             isCancelled: isCancelled,
             raceID: nil,
             raceSlug: nil,
-            raceURL: nil,
+            raceURL: raceURL,
             resultsURL: nil,
             videoURL: nil,
             websiteURL: nil,
-            raceCountry: "Belgium",
+            raceCountry: country,
             winnerURL: nil,
             winnerCountry: nil,
             winnerFlagURL: nil
@@ -85,6 +87,13 @@ final class CXSeriesLensTests: XCTestCase {
         ]
     }
 
+    // MARK: - Dock hint -
+
+    func testDockHintShowsOnAFreshInstallAndNeverAgain() {
+        XCTAssertTrue(CXRaces.DockHint.shouldShow(count: 0))
+        XCTAssertFalse(CXRaces.DockHint.shouldShow(count: 1))
+    }
+
     // MARK: - Next to start -
 
     func testUpcomingPicksTheSoonestRaceOfAnySeriesAndSkipsCancelledOnes() {
@@ -109,10 +118,127 @@ final class CXSeriesLensTests: XCTestCase {
     func testUpcomingCountsARaceToday() {
         let upcoming = CXRaces.SeriesLens.upcoming(
             in: [event(daysFromNow: 0, race: "Today Cross")],
-            now: now
+            now: Calendar.current.startOfDay(for: now)
         )
 
         XCTAssertEqual(upcoming?.days, 0)
+    }
+
+    // MARK: - Next to start: finished races -
+
+    private func raceToday(
+        _ race: String,
+        winner: String = "",
+        country: String = "Belgium",
+        raceURL: URL? = nil
+    ) -> DTO.CXCalendarEvent {
+        event(
+            daysFromNow: 0,
+            race: race,
+            winner: winner,
+            country: country,
+            raceURL: raceURL
+        )
+    }
+
+    private func menEliteStart(
+        of event: DTO.CXCalendarEvent,
+        schedule: [DTO.CXRacePage.ScheduledStart]? = nil
+    ) -> Date {
+        CXRaces.SeriesLens.menEliteStart(of: event, schedule: schedule)!
+    }
+
+    func testARaceTodayBeforeItsMenEliteEndIsStillAnnounced() {
+        let today = raceToday("Today Cross")
+        let start = menEliteStart(of: today)
+
+        let during = CXRaces.SeriesLens.upcoming(
+            in: [today],
+            now: start.addingTimeInterval(59 * 60)
+        )
+        let before = CXRaces.SeriesLens.upcoming(
+            in: [today],
+            now: start.addingTimeInterval(-3 * 3600)
+        )
+
+        XCTAssertEqual(during?.event.race, "Today Cross")
+        XCTAssertEqual(before?.event.race, "Today Cross")
+    }
+
+    func testARaceTodayPastStartPlusSixtyMinutesIsSkipped() {
+        let today = raceToday("Today Cross")
+        let later = event(daysFromNow: 2, race: "Later Cross")
+        let start = menEliteStart(of: today)
+        let after = start.addingTimeInterval(60 * 60)
+
+        XCTAssertEqual(
+            CXRaces.SeriesLens.upcoming(in: [today, later], now: after)?.event.race,
+            "Later Cross"
+        )
+        XCTAssertNil(CXRaces.SeriesLens.upcoming(in: [today], now: after))
+    }
+
+    func testARaceTodayWithAWinnerIsSkipped() {
+        let today = raceToday("Today Cross", winner: "Winner")
+        let start = menEliteStart(of: today)
+
+        XCTAssertNil(
+            CXRaces.SeriesLens.upcoming(
+                in: [today],
+                now: start.addingTimeInterval(-3600)
+            )
+        )
+    }
+
+    func testWithoutAScheduleMenEliteStartsAtThreeInTheAfternoonVenueTime() {
+        let today = raceToday("Today Cross")
+        var brussels = Calendar(identifier: .gregorian)
+        brussels.timeZone = TimeZone(identifier: "Europe/Brussels")!
+
+        let parts = brussels.dateComponents([.hour, .minute], from: menEliteStart(of: today))
+
+        XCTAssertEqual(parts.hour, 15)
+        XCTAssertEqual(parts.minute, 0)
+    }
+
+    func testTheScheduleOverridesTheFallbackStart() {
+        let url = URL(string: "https://cyclocross24.com/race/early/")!
+        let today = raceToday("Early Cross", raceURL: url)
+        let schedule: [DTO.CXRacePage.ScheduledStart] = [
+            .init(time: "11:00", category: "Women Junior"),
+            .init(time: "13:00", category: "Men Elite")
+        ]
+        let elite = menEliteStart(of: today, schedule: schedule)
+
+        XCTAssertNil(
+            CXRaces.SeriesLens.upcoming(
+                in: [today],
+                schedules: [url: schedule],
+                now: elite.addingTimeInterval(61 * 60)
+            )
+        )
+        XCTAssertEqual(
+            CXRaces.SeriesLens.upcoming(
+                in: [today],
+                now: elite.addingTimeInterval(61 * 60)
+            )?.event.race,
+            "Early Cross"
+        )
+    }
+
+    func testTheVenueTimeZoneDecidesWhenMenEliteEnds() {
+        let belgian = raceToday("Belgian Cross")
+        let british = raceToday("British Cross", country: "Great Britain")
+        // 15:30 in London: Brussels' 15:00 slot ended an hour ago, London's 15:00 slot is still running.
+        let now = menEliteStart(of: british).addingTimeInterval(30 * 60)
+
+        XCTAssertEqual(CXRaces.SeriesLens.venueTimeZone(country: "Great Britain").identifier, "Europe/London")
+        XCTAssertEqual(CXRaces.SeriesLens.venueTimeZone(country: "Ireland").identifier, "Europe/London")
+        XCTAssertEqual(CXRaces.SeriesLens.venueTimeZone(country: "United States").identifier, "America/New_York")
+        XCTAssertEqual(CXRaces.SeriesLens.venueTimeZone(country: "Canada").identifier, "America/Toronto")
+        XCTAssertEqual(CXRaces.SeriesLens.venueTimeZone(country: "France").identifier, "Europe/Brussels")
+        XCTAssertEqual(CXRaces.SeriesLens.upcoming(in: [belgian], now: now)?.event.race, nil)
+        XCTAssertEqual(CXRaces.SeriesLens.upcoming(in: [british], now: now)?.event.race, "British Cross")
     }
 
     // MARK: - Rounds -

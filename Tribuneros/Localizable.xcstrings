@@ -1892,6 +1892,30 @@
         }
       }
     },
+    "Drag the card up to switch" : {
+      "comment" : "CX Zone dock hint, shown once on a fresh install",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrossega la targeta cap amunt per canviar"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrastra la tarjeta hacia arriba para cambiar"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrastatu txartela gora aldatzeko"
+          }
+        }
+      }
+    },
     "Dropped" : {
       "comment" : "Paddock program change: race dropped",
       "extractionState" : "manual",

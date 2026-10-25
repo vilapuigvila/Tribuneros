@@ -349,6 +349,11 @@ enum CxMock {
                 .init(name: "Sporza", logoURL: nil, url: url("tv/sporza")), // l10n:ignore
                 .init(name: "Eurosport*", logoURL: nil, url: url("tv/eurosport")), // l10n:ignore
                 .init(name: "HBO Max", logoURL: nil, url: url("tv/hbomax")) // l10n:ignore
+            ],
+            schedule: [
+                .init(time: "11:00", category: "Women Junior"), // l10n:ignore
+                .init(time: "13:45", category: "Women Elite"), // l10n:ignore
+                .init(time: "15:00", category: "Men Elite") // l10n:ignore
             ]
         )
     }

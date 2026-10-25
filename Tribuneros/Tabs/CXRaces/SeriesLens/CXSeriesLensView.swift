@@ -100,8 +100,12 @@ extension CXRaces {
             }
         }
 
-        private var upcoming: SeriesLens.Upcoming? {
-            SeriesLens.upcoming(in: representable.calendarEvents)
+        private func upcoming(at now: Date) -> SeriesLens.Upcoming? {
+            SeriesLens.upcoming(
+                in: representable.calendarEvents,
+                schedules: representable.schedules,
+                now: now
+            )
         }
 
         private var latestResultCard: LatestResultCard? {
@@ -116,8 +120,14 @@ extension CXRaces {
             )
         }
 
-        @ViewBuilder
         private var dock: some View {
+            TimelineView(.everyMinute) { context in
+                dock(upcoming: upcoming(at: context.date))
+            }
+        }
+
+        @ViewBuilder
+        private func dock(upcoming: SeriesLens.Upcoming?) -> some View {
             if let latestResultCard, let upcoming {
                 CXFeaturedDock(
                     result: { latestResultCard },
@@ -852,10 +862,10 @@ struct LatestResultCard: View {
                     value: isShown
                 )
         }
-        .frame(width: 52, height: 52)
-        .clipShape(RoundedRectangle(cornerRadius: 15))
+        .frame(width: 44, height: 44)
+        .clipShape(RoundedRectangle(cornerRadius: 13))
         .overlay(
-            RoundedRectangle(cornerRadius: 15)
+            RoundedRectangle(cornerRadius: 13)
                 .strokeBorder(Color.tribuneru(.mudPageBackground), lineWidth: 2)
         )
         .accessibilityElement()

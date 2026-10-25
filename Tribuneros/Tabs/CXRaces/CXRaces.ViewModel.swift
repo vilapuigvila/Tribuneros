@@ -104,7 +104,7 @@ extension CXRaces {
             } else if domain.races.sections.isEmpty {
                 return .error(.unknown)
             }
-            return .loaded(.init(calendarEvents: domain.calendar, races: domain.races, standings: domain.standings))
+            return .loaded(.init(calendarEvents: domain.calendar, races: domain.races, standings: domain.standings, schedules: domain.schedules))
         }
     }
 }

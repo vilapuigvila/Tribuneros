@@ -303,6 +303,12 @@
     "es": "Mostrar el último resultado",
     "comment": "Accessibility label of the peeking latest-result card"
   },
+  "Drag the card up to switch": {
+    "ca": "Arrossega la targeta cap amunt per canviar",
+    "eu": "Arrastatu txartela gora aldatzeko",
+    "es": "Arrastra la tarjeta hacia arriba para cambiar",
+    "comment": "CX Zone dock hint, shown once on a fresh install"
+  },
   "NEXT ROUND": {
     "ca": "PROPERA CURSA",
     "eu": "HURRENGO PROBA",

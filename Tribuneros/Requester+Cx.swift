@@ -332,6 +332,15 @@ extension Service {
         return await .init(page: page, results: results, videoURL: video)
     }
 
+    /// The race page's schedule, through the same cache as the event detail; empty when unavailable.
+    static func getCxRaceSchedule(_ event: DTO.CXCalendarEvent) async -> [DTO.CXRacePage.ScheduledStart] {
+        await getCxDetail(
+            .race,
+            url: event.raceURL,
+            as: DTO.CXRacePage.self
+        )?.schedule ?? []
+    }
+
     private static func fetchCxEventResults(_ url: URL?) async -> [DTO.CX24Homepage.CategoryResult] {
         await getCxDetail(
             .results,

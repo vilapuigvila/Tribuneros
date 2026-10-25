@@ -140,6 +140,7 @@ struct Service {
                 return nil
             }
             let raceClass = (try? cells[2].text()) ?? ""
+            if isCyclocross(raceClass: raceClass, hasRoute: true) { return nil }
             let raceCountryCode = spanFlagCode(in: cells[1])
             let flagCode = spanFlagCode(in: cells[3])
             return DTO.TodayResult(
@@ -284,6 +285,19 @@ struct Service {
         )
     }
 
+    private static let cyclocrossClasses: Set<String> = ["C1", "C2", "C3", "CJ", "CU", "CDM", "CM"]
+
+    /// The class is the trailing "(…)" of the title; "CC" is also a road class, so it counts only with no route.
+    static func isCyclocross(title: String, details: String) -> Bool {
+        guard title.hasSuffix(")"), let open = title.lastIndex(of: "(") else { return false }
+        let raceClass = String(title[title.index(after: open)..<title.index(before: title.endIndex)])
+        return isCyclocross(raceClass: raceClass, hasRoute: !details.trimmingCharacters(in: .whitespaces).isEmpty)
+    }
+
+    static func isCyclocross(raceClass: String, hasRoute: Bool) -> Bool {
+        cyclocrossClasses.contains(raceClass) || (raceClass == "CC" && !hasRoute)
+    }
+
     static func parseResultsToday(from document: Document) -> [DTO.TodayResult] {
         var results = [DTO.TodayResult]()
         let baseUrl = "https://www.procyclingstats.com/"
@@ -300,6 +314,7 @@ struct Service {
                     try element.hasAttr("style") && element.attr("style").contains("calc(100% - 95px)")
                 }.first
                 let header = try parseRaceHeader(detailsDiv)
+                if isCyclocross(title: header.title, details: header.details) { continue }
                 let raceFullText = try detailsDiv?.text() ?? ""
 
                 // 2. Extract winner image URL from the first <div class="winner-img">
@@ -412,6 +427,7 @@ struct Service {
                
                /// Volta Ciclista a Catalunya (2.UWT)
                let header = try parseRaceHeader(detailsDiv)
+               if isCyclocross(title: header.title, details: header.details) { continue }
 
 //               let raceDetails = try detailsDiv?.text()
                

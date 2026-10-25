@@ -198,9 +198,19 @@ extension CXRaces.SeriesLens {
     /// Races inside this many days feature in the dock.
     static let featuredWindowDays = 7
 
-    /// The soonest non-cancelled race of any series, if it is today or within the window.
+    /// Men Elite lasts about an hour; the race counts as over this long after its start.
+    static let menEliteDuration: TimeInterval = 60 * 60
+
+    /// The usual Men Elite slot, assumed when the race page has no schedule.
+    static let fallbackMenEliteStart = "15:00"
+
+    /// Race schedules by the event's race page URL.
+    typealias Schedules = [URL: [DTO.CXRacePage.ScheduledStart]]
+
+    /// The soonest non-cancelled race of any series that is not over yet, if it is today or within the window.
     static func upcoming(
         in calendarEvents: [DTO.CXCalendarEvent],
+        schedules: Schedules = [:],
         now: Date = Date()
     ) -> Upcoming? {
         let calendar = Calendar.current
@@ -209,6 +219,10 @@ extension CXRaces.SeriesLens {
             .filter { !$0.isCancelled }
             .compactMap { event in event.eventDate.map { (event, $0) } }
             .filter { $0.1 >= startOfToday }
+            .filter { event, date in
+                guard date < calendar.date(byAdding: .day, value: 1, to: startOfToday)! else { return true }
+                return !isMenEliteOver(event, schedule: event.raceURL.flatMap { schedules[$0] }, now: now)
+            }
             .min { $0.1 < $1.1 }
         guard let next else { return nil }
         let days = calendar.dateComponents(
@@ -221,6 +235,46 @@ extension CXRaces.SeriesLens {
             event: next.0,
             days: days
         )
+    }
+
+    /// A race day is over once the calendar lists a winner or Men Elite started more than an hour ago.
+    static func isMenEliteOver(
+        _ event: DTO.CXCalendarEvent,
+        schedule: [DTO.CXRacePage.ScheduledStart]?,
+        now: Date
+    ) -> Bool {
+        if !event.winnerName.isEmpty { return true }
+        guard let start = menEliteStart(of: event, schedule: schedule) else { return false }
+        return now >= start.addingTimeInterval(menEliteDuration)
+    }
+
+    /// The Men Elite start in the venue's time zone: its schedule row, else the last row, else 15:00.
+    static func menEliteStart(
+        of event: DTO.CXCalendarEvent,
+        schedule: [DTO.CXRacePage.ScheduledStart]?
+    ) -> Date? {
+        guard let eventDate = event.eventDate else { return nil }
+        let row = schedule?.first { $0.category.caseInsensitiveCompare("Men Elite") == .orderedSame }
+            ?? schedule?.last
+        let parts = (row?.time ?? fallbackMenEliteStart).split(separator: ":").compactMap { Int($0) }
+        guard parts.count == 2 else { return nil }
+        var venueCalendar = Calendar(identifier: .gregorian)
+        venueCalendar.timeZone = venueTimeZone(country: event.raceCountry)
+        var components = Calendar.current.dateComponents([.year, .month, .day], from: eventDate)
+        components.hour = parts[0]
+        components.minute = parts[1]
+        return venueCalendar.date(from: components)
+    }
+
+    /// Exact US zones aren't worth more than one.
+    static func venueTimeZone(country: String?) -> TimeZone {
+        let identifier = switch country?.lowercased() {
+        case "great britain", "ireland": "Europe/London"
+        case "united states": "America/New_York"
+        case "canada": "America/Toronto"
+        default: "Europe/Brussels"
+        }
+        return TimeZone(identifier: identifier) ?? .current
     }
 }
 

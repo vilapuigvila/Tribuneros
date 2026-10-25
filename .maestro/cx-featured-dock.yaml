@@ -1,5 +1,5 @@
-# CX Zone dock: the latest result sits in front with the next race peeking behind it. The cards trade
-# places by themselves (twice), and a tap on the peeking card does the same. Mock data only (mockScenario live).
+# CX Zone dock: the latest result sits in front with the next race peeking behind it. A swipe up on the
+# front card trades them. Mock data only (mockScenario live).
 appId: com.pskmoons.Tribuneros
 tags:
   - mock
@@ -8,33 +8,22 @@ tags:
     clearState: true
     arguments:
       mockScenario: live
-      dockAutoSwap: "1"
 - tapOn: "CX Zone"
 - extendedWaitUntil:
     visible: "NEXT ROUND"
     timeout: 45000
 - assertVisible: "LATEST RESULT"
-- assertVisible: "Show the next race"
 
-# First automatic swap: the next race comes to the front
-- extendedWaitUntil:
-    visible: "NEXT TO START"
-    timeout: 10000
-- assertVisible: "Show the latest result"
-- assertNotVisible: "Show the next race"
+# No autoplay here (it needs dockAutoSwap): the result is in front. Maestro sees the text of the card
+# behind too, so the order is read from what a tap opens.
+- swipe:
+    start: 50%, 84%
+    end: 50%, 64%
+- waitForAnimationToEnd:
+    timeout: 3000
 
-# Second automatic swap: back to the result
-- extendedWaitUntil:
-    visible: "Show the next race"
-    timeout: 10000
-
-# Autoplay is over: a tap on the peeking card swaps once more and nothing moves afterwards
-- tapOn: "Show the next race"
-- extendedWaitUntil:
-    visible: "Show the latest result"
-    timeout: 5000
-- tapOn: "Show the latest result"
-- extendedWaitUntil:
-    visible: "Show the next race"
-    timeout: 5000
+# The next race is in front now: a tap opens its detail, not the latest results list
+- tapOn:
+    point: 50%, 84%
+- assertNotVisible: "Latest Cyclocross Results"
 - takeScreenshot: cx-featured-dock

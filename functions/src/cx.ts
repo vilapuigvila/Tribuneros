@@ -526,6 +526,12 @@ export interface RacePage {
   summary: string;
   pastWinners: RacePastWinner[];
   tvChannels: TVChannel[];
+  schedule: ScheduledStart[];
+}
+
+export interface ScheduledStart {
+  time: string;
+  category: string;
 }
 
 export interface RiderFact {
@@ -623,7 +629,22 @@ export function parseRacePage($: CheerioAPI): RacePage {
     summary: clean($("meta[name=description]").first().attr("content")),
     pastWinners: pastWinners.sort((lhs, rhs) => Number(rhs.year) - Number(lhs.year)),
     tvChannels: parseTVChannels($),
+    schedule: parseSchedule($),
   };
+}
+
+// The Schedule block lists each category's venue-local start; rows without a valid HH:MM time are skipped.
+function parseSchedule($: CheerioAPI): ScheduledStart[] {
+  return $("div.ri_row_sch")
+    .map((_, row): ScheduledStart | null => {
+      const $row = $(row);
+      const time = clean($row.find("div.riLocalTime span.racetime").first().text());
+      const category = clean($row.find("div.ri_sch_category").first().text());
+      if (!/^\d{1,2}:\d{2}$/.test(time) || !category) return null;
+      return {time, category};
+    })
+    .get()
+    .filter((start): start is ScheduledStart => start !== null);
 }
 
 // Season tables come newest first, so the first rows are the most recent results.
