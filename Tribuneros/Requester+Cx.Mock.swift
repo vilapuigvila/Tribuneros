@@ -359,7 +359,26 @@ enum CxMock {
         )
     }
 
-    /// Every results page is the same Men Elite top ten, led by the first rider.
+    private static let extraNames = ["Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen"]
+
+    /// Rows 11 to 15 of a results page; `prefix` is "Rider" or "Woman".
+    private static func extraResults(prefix: String) -> [DTO.CX24Homepage.CategoryResult] {
+        extraNames.enumerated().map { offset, name in
+            let index = 10 + offset
+            return .init(
+                position: "\(index + 1)",
+                rider: "MOCK \(prefix) \(name)",
+                age: "\(24 + index)",
+                team: riders[offset].team,
+                time: "+1:\(10 + offset)",
+                countryFlagURL: nil,
+                raceVideosURL: nil,
+                riderURL: url("rider/mock-\(prefix.lowercased())-\(name.lowercased())/")
+            )
+        }
+    }
+
+    /// Every results page is the same Men Elite top ten plus five more rows, led by the first rider.
     static let results: [DTO.CX24Homepage.CategoryResult] = riders.enumerated().map { index, rider in
         .init(
             position: "\(index + 1)",
@@ -371,9 +390,9 @@ enum CxMock {
             raceVideosURL: nil,
             riderURL: riderURL(index)
         )
-    }
+    } + extraResults(prefix: "Rider")
 
-    /// The Women Elite top ten the mock results ids in `womenResultIDs` serve.
+    /// The Women Elite rows the mock results ids in `womenResultIDs` serve.
     static let womenResults: [DTO.CX24Homepage.CategoryResult] = womenRiders.enumerated().map { index, rider in
         .init(
             position: "\(index + 1)",
@@ -385,7 +404,7 @@ enum CxMock {
             raceVideosURL: nil,
             riderURL: url("rider/\(rider.slug)/")
         )
-    }
+    } + extraResults(prefix: "Woman")
 
     /// What `getCxDetail` serves per kind; the caller casts it to the type it asked for.
     static func detail(

@@ -1,0 +1,61 @@
+# Tifosi tab, TV chip: the Course du Jour deck from the mocked schedule (the race on air in front,
+# the arrow brings the next one forward) and the day strip (tomorrow's races as tickets, back to today).
+appId: com.pskmoons.Tribuneros
+tags:
+  - tifosi
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- extendedWaitUntil:
+    visible:
+      id: "home.today.hero"
+    timeout: 20000
+- tapOn: "Tifosi"
+- extendedWaitUntil:
+    visible:
+      id: "tifosi.chip.tv"
+    timeout: 10000
+- assertNotVisible: "Everything"
+- tapOn:
+    id: "tifosi.chip.tv"
+- extendedWaitUntil:
+    visible:
+      id: "tifosi.tv.race.CRO Race — Stage 1"
+    timeout: 10000
+- assertVisible:
+    id: "tifosi.tv.day.0"
+- assertVisible: "ON AIR"
+- assertVisible:
+    id: "tifosi.tv.channel.Sporza / VRT"
+- tapOn:
+    id: "tifosi.tv.deck.next"
+- extendedWaitUntil:
+    visible:
+      id: "tifosi.tv.race.GP de Montréal"
+    timeout: 5000
+- assertVisible: "NEXT"
+- assertVisible:
+    id: "tifosi.tv.channel.FloBikes"
+- tapOn:
+    id: "tifosi.tv.day.1"
+- extendedWaitUntil:
+    visible:
+      id: "tifosi.tv.dayTitle"
+    timeout: 10000
+- assertVisible:
+    id: "tifosi.tv.race.Coppa Bernocchi"
+- assertVisible:
+    id: "tifosi.tv.channel.RAI Sport"
+- assertNotVisible:
+    id: "tifosi.tv.deck.next"
+- tapOn:
+    id: "tifosi.tv.day.0"
+- extendedWaitUntil:
+    visible:
+      id: "tifosi.tv.deck.next"
+    timeout: 5000
+- assertNotVisible:
+    id: "tifosi.tv.dayTitle"

@@ -5,6 +5,7 @@
 
 import AVFoundation
 import SwiftUI
+import UIKit
 import YouTubePlayerKit
 
 /// The race video played inside the screen (YouTube's iframe player in a web view, via YouTubePlayerKit).
@@ -78,6 +79,11 @@ struct CXInlineVideoPanel: View {
                     parameters: .init(
                         autoPlay: false,
                         showFullscreenButton: true
+                    ),
+                    configuration: .init(
+                        fullscreenMode: .system,
+                        // Without inline playback, tapping play opens the system full-screen player.
+                        allowsInlineMediaPlayback: false
                     )
                 )
             )
@@ -101,12 +107,37 @@ struct CXInlineVideoPanel: View {
             )
             .clipShape(RoundedRectangle(cornerRadius: 14))
             .accessibilityIdentifier("event-video-player")
+            .task {
+                for await state in player.statePublisher.values {
+                    guard case .ready = state else { continue }
+                    try? await player.mute()
+                    break
+                }
+            }
+            .task {
+                for await state in player.fullscreenStatePublisher.values {
+                    Self.rotate(toLandscape: state.isFullscreen)
+                }
+            }
+            .onDisappear {
+                Self.rotate(toLandscape: false)
+            }
             .onAppear {
                 try? AVAudioSession.sharedInstance().setCategory(
                     .playback,
                     mode: .moviePlayback
                 )
             }
+        }
+
+        /// Lets the video's full screen turn landscape and returns the app to portrait when it ends.
+        private static func rotate(toLandscape isLandscape: Bool) {
+            guard let scene = UIApplication.keyWindow?.windowScene else { return }
+            scene.requestGeometryUpdate(
+                .iOS(
+                    interfaceOrientations: isLandscape ? .landscape : .portrait
+                )
+            )
         }
 
         private var fallback: some View {

@@ -56,8 +56,13 @@ extension Service {
 
     /// What the schedule lists for `key` on its day, sharing the cached page with the screen.
     static func getCourseDuJourCoverage(for key: HomeRaces.WhereToWatch.RaceKey) async -> HomeRaces.WhereToWatch.Coverage? {
+        await getCourseDuJourListing(for: key)?.coverage
+    }
+
+    /// Like `getCourseDuJourCoverage`, plus the matched race's id for the TV guide.
+    static func getCourseDuJourListing(for key: HomeRaces.WhereToWatch.RaceKey) async -> HomeRaces.WhereToWatch.Listing? {
         guard let page = await getCourseDuJourPage(date: key.date) else { return nil }
-        return HomeRaces.WhereToWatch.coverage(
+        return HomeRaces.WhereToWatch.listing(
             for: key,
             in: page
         )

@@ -5,7 +5,7 @@
 //  Pins coursedujour.com's markup (coursedujour_today.html: the site's today, rows with the
 //  calendar-subscription channels; coursedujour_day.html: a busy later day, rows with the
 //  per-channel list) so a redesign fails loudly instead of showing an empty schedule. Also covers
-//  the screen's interactor and view model. Re-capture the fixtures with URLSession when the site changes.
+//  matching the opened race and its coverage. Re-capture the fixtures with URLSession when the site changes.
 //
 
 import XCTest
@@ -254,6 +254,22 @@ final class CourseDuJourTests: XCTestCase {
         XCTAssertEqual(WhereToWatch.Coverage.channels(["A", "B", "C", "D", "E"]).summary, "A · B · C +2")
     }
 
+    func testListingExposesTheMatchedRaceIDAndDay() throws {
+        let today = try page("coursedujour_today")
+        let langkawi = key("Le Tour de Langkawi", stage: "5", date: "2026-10-01")
+
+        let listing = WhereToWatch.listing(for: langkawi, in: today)
+        XCTAssertEqual(listing.coverage, .channels(["Eurosport / HBO Max", "FloBikes"]))
+        XCTAssertEqual(listing.raceID, WhereToWatch.match(langkawi, in: today)?.id)
+        XCTAssertNotNil(listing.raceID)
+        XCTAssertEqual(listing.day, "2026-10-01")
+
+        let missing = WhereToWatch.listing(for: key("Il Lombardia", date: "2026-10-01"), in: today)
+        XCTAssertEqual(missing.coverage, .notListed)
+        XCTAssertNil(missing.raceID)
+        XCTAssertEqual(missing.day, "2026-10-01")
+    }
+
     func testKeyFromATodayRacesRowUsesTheScheduleDay() {
         var parts = DateComponents()
         parts.timeZone = TimeZone(identifier: "UTC")
@@ -281,182 +297,6 @@ final class CourseDuJourTests: XCTestCase {
         XCTAssertEqual(key.stage, "1")
         XCTAssertEqual(key.raceClass, "2.1")
         XCTAssertEqual(key.date, "2026-10-02")
-        XCTAssertEqual(key.title, "CRO Race · Stage 1")
-    }
-
-    // MARK: - Interactor and view model -
-
-    private func sample(
-        date: String,
-        heading: String = "Heading"
-    ) -> DTO.CourseDuJourPage {
-        DTO.CourseDuJourPage(
-            date: date,
-            heading: heading,
-            updatedAt: nil,
-            days: [
-                DTO.CourseDuJourPage.Day(date: "2026-09-30", offset: -1, raceCount: 1),
-                DTO.CourseDuJourPage.Day(date: "2026-10-01", offset: 0, raceCount: 2),
-                DTO.CourseDuJourPage.Day(date: "2026-10-02", offset: 1, raceCount: 1)
-            ],
-            sections: [
-                DTO.CourseDuJourPage.Section(
-                    discipline: "Road",
-                    caption: "1 race with live coverage",
-                    races: [
-                        DTO.CourseDuJourPage.Race(
-                            name: "Tour de Langkawi",
-                            stage: "Stage 5",
-                            category: "2.Pro (Men)",
-                            location: "Tapah, Malaysia",
-                            start: Date(timeIntervalSince1970: 1_790_820_660),
-                            end: Date(timeIntervalSince1970: 1_790_832_900),
-                            broadcasters: [
-                                DTO.CourseDuJourPage.Broadcaster(
-                                    name: "FloBikes",
-                                    regions: "CA, US",
-                                    url: nil,
-                                    start: nil,
-                                    end: nil
-                                )
-                            ]
-                        )
-                    ]
-                )
-            ]
-        )
-    }
-
-    @MainActor
-    func testOpeningLoadSelectsThePageDateAndKeepsTheStrip() async {
-        let interactor = WhereToWatch.InteractorImpl(key: nil) { date in
-            self.sample(date: date ?? "2026-10-01")
-        }
-
-        interactor.useCase(.load)
-        await Task.yield()
-        try? await Task.sleep(nanoseconds: 50_000_000)
-
-        XCTAssertEqual(interactor.domain.selected, "2026-10-01")
-        XCTAssertEqual(interactor.domain.days.count, 3)
-        guard case .loaded(let page) = interactor.domain.current else {
-            return XCTFail("Expected the opening page to be loaded")
-        }
-        XCTAssertEqual(page.date, "2026-10-01")
-    }
-
-    @MainActor
-    func testSelectingADayLoadsItOnceAndFailureCanRetry() async {
-        var requested: [String?] = []
-        var fail = true
-        let interactor = WhereToWatch.InteractorImpl(key: nil) { date in
-            requested.append(date)
-            if date == "2026-10-02", fail { return nil }
-            return self.sample(date: date ?? "2026-10-01")
-        }
-        interactor.useCase(.load)
-        try? await Task.sleep(nanoseconds: 50_000_000)
-
-        interactor.useCase(.select("2026-10-02"))
-        try? await Task.sleep(nanoseconds: 50_000_000)
-        XCTAssertEqual(interactor.domain.current, .failed)
-
-        fail = false
-        interactor.useCase(.retry)
-        try? await Task.sleep(nanoseconds: 50_000_000)
-        guard case .loaded = interactor.domain.current else {
-            return XCTFail("Expected the retry to load the day")
-        }
-
-        interactor.useCase(.select("2026-10-01"))
-        interactor.useCase(.select("2026-10-02"))
-        try? await Task.sleep(nanoseconds: 50_000_000)
-        XCTAssertEqual(requested, [nil, "2026-10-02", "2026-10-02"])
-    }
-
-    func testViewModelMapsStripTimesAndHighlight() throws {
-        var domain = WhereToWatch.Domain(key: key("Tour de Langkawi", stage: "5", date: "2026-10-01"))
-        domain.selected = "2026-10-01"
-        domain.days = sample(date: "2026-10-01").days
-        domain.loads["2026-10-01"] = .loaded(sample(date: "2026-10-01"))
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(identifier: "UTC")!
-        let during = Date(timeIntervalSince1970: 1_790_825_000)
-
-        let state = WhereToWatch.ViewModel<WhereToWatch.InteractorImpl>.mapToViewState(
-            domain: domain,
-            now: during,
-            calendar: calendar
-        )
-
-        XCTAssertEqual(state.days.map(\.id), ["2026-10-01", "2026-10-02"])
-        XCTAssertEqual(state.days.map(\.count), ["2 races", "1 race"])
-        XCTAssertEqual(state.days.map(\.isSelected), [true, false])
-        guard case .loaded(let heading, _, let featured, let sections) = state.content else {
-            return XCTFail("Expected loaded content")
-        }
-        XCTAssertEqual(heading, "Heading")
-        guard case .race(let pinned) = featured else {
-            return XCTFail("Expected the opened race pinned")
-        }
-        XCTAssertEqual(pinned.title, "Tour de Langkawi — Stage 5")
-        XCTAssertEqual(pinned.meta, "2.Pro (Men)  ·  Tapah, Malaysia")
-        XCTAssertTrue(pinned.isLive)
-        XCTAssertFalse(pinned.isFinished)
-        XCTAssertTrue(pinned.isHighlighted)
-        XCTAssertEqual(pinned.channels.map(\.name), ["FloBikes"])
-        XCTAssertTrue(pinned.accessibilityLabel.contains("live now"))
-        XCTAssertEqual(sections.map(\.title), ["Road"])
-        XCTAssertTrue(try XCTUnwrap(sections.first).races.isEmpty)
-    }
-
-    @MainActor
-    func testOpeningWithAKeyLoadsTheRaceDayFirst() async {
-        var requested: [String?] = []
-        let interactor = WhereToWatch.InteractorImpl(key: key("Tour de Langkawi", stage: "5", date: "2026-10-02")) { date in
-            requested.append(date)
-            return self.sample(date: date ?? "2026-10-01")
-        }
-
-        interactor.useCase(.load)
-        XCTAssertEqual(interactor.domain.selected, "2026-10-02")
-        try? await Task.sleep(nanoseconds: 50_000_000)
-
-        XCTAssertEqual(requested, ["2026-10-02"])
-        XCTAssertEqual(interactor.domain.days.count, 3)
-        guard case .loaded(let page) = interactor.domain.current else {
-            return XCTFail("Expected the race day to be loaded")
-        }
-        XCTAssertEqual(page.date, "2026-10-02")
-    }
-
-    func testViewModelSaysWhenTheRaceIsNotListedAndOnlyOnItsDay() {
-        var domain = WhereToWatch.Domain(key: key("Coppa Bernocchi", date: "2026-10-01"))
-        domain.selected = "2026-10-01"
-        domain.loads["2026-10-01"] = .loaded(sample(date: "2026-10-01"))
-        domain.loads["2026-10-02"] = .loaded(sample(date: "2026-10-02"))
-
-        let raceDay = WhereToWatch.ViewModel<WhereToWatch.InteractorImpl>.mapToViewState(domain: domain)
-        guard case .loaded(_, _, let featured, let sections) = raceDay.content else {
-            return XCTFail("Expected loaded content")
-        }
-        XCTAssertEqual(featured, .notListed("Coppa Bernocchi isn't in this day's TV listings."))
-        XCTAssertFalse(sections.flatMap(\.races).contains(where: \.isHighlighted))
-
-        domain.selected = "2026-10-02"
-        let otherDay = WhereToWatch.ViewModel<WhereToWatch.InteractorImpl>.mapToViewState(domain: domain)
-        guard case .loaded(_, _, let otherFeatured, _) = otherDay.content else {
-            return XCTFail("Expected loaded content")
-        }
-        XCTAssertNil(otherFeatured)
-    }
-
-    func testViewModelShowsLoadingUntilThePageIsIn() {
-        let state = WhereToWatch.ViewModel<WhereToWatch.InteractorImpl>.mapToViewState(
-            domain: WhereToWatch.Domain(key: nil)
-        )
-        XCTAssertEqual(state.content, .loading)
-        XCTAssertTrue(state.days.isEmpty)
     }
 
     func testCacheLastsUntilOneMinutePastMidnight() {

@@ -23,11 +23,6 @@ extension HomeRaces.WhereToWatch {
         let category: String
         /// The race day on the schedule's calendar (Central European time), "yyyy-MM-dd".
         let date: String
-
-        /// "Le Tour de Langkawi · Stage 5"
-        var title: String {
-            stage.map { "\(name) · \(HomeRaces.Stage.label($0))" } ?? name
-        }
     }
 
     /// What the schedule says about the opened race, for the Race info button.
@@ -108,6 +103,29 @@ extension HomeRaces.WhereToWatch {
         var seen = Set<String>()
         let names = race.broadcasters.map(\.name).filter { seen.insert($0).inserted }
         return names.isEmpty ? .noBroadcast : .channels(names.map { Coverage.Channel(name: $0) })
+    }
+
+    /// The coverage plus the matched row's id and the day to open on the TV guide.
+    struct Listing: Equatable, Sendable {
+        let coverage: Coverage
+        /// The `DTO.CourseDuJourPage.Race.id` of the matched row; nil when the schedule doesn't list the race.
+        let raceID: String?
+        /// "yyyy-MM-dd", the race's day on the schedule.
+        let day: String
+    }
+
+    static func listing(
+        for key: RaceKey,
+        in page: DTO.CourseDuJourPage
+    ) -> Listing {
+        Listing(
+            coverage: coverage(
+                for: key,
+                in: page
+            ),
+            raceID: match(key, in: page)?.id,
+            day: key.date
+        )
     }
 
     /// nil rules the row out; otherwise higher is closer.

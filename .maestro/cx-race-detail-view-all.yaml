@@ -1,0 +1,54 @@
+# CX race detail: each category shows 10 rows and a "View all" expander; the inline race video player sits just below.
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- tapOn: "CX Zone"
+- extendedWaitUntil:
+    visible: "NEXT ROUND"
+    timeout: 45000
+- tapOn: "Superprestige"
+- scrollUntilVisible:
+    element: "Results"
+- tapOn: "Results"
+- assertVisible: "Latest Cyclocross Results"
+# Results start hidden: hold the race card to reveal it, then open it
+- longPressOn:
+    text: "Superprestige Gavere \\(C1\\)"
+    retryTapIfNoChange: false
+    delay: 1
+- tapOn: "Superprestige Gavere \\(C1\\)"
+- extendedWaitUntil:
+    visible: "MEN ELITE"
+    timeout: 45000
+- tapOn: "MEN ELITE"
+- extendedWaitUntil:
+    visible: "MOCK Rider Four.*"
+    timeout: 45000
+- scrollUntilVisible:
+    element:
+      id: "race-detail-view-all"
+- assertVisible: "10.*MOCK Rider Ten.*"
+- assertNotVisible: "11.*MOCK Rider Eleven.*"
+- scrollUntilVisible:
+    element:
+      id: "event-video-player"
+- assertNotVisible: "Race videos"
+- scrollUntilVisible:
+    direction: UP
+    element:
+      id: "race-detail-view-all"
+- tapOn:
+    id: "race-detail-view-all"
+- assertNotVisible:
+    id: "race-detail-view-all"
+- scrollUntilVisible:
+    element: "11.*MOCK Rider Eleven.*"
+- assertVisible: "11.*MOCK Rider Eleven.*"
+- scrollUntilVisible:
+    element: "15.*MOCK Rider Fifteen.*"
+- assertVisible: "15.*MOCK Rider Fifteen.*"

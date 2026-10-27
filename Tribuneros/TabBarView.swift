@@ -58,6 +58,8 @@ struct TabBarView: View {
     /// The bar hides while typing; as a bottom inset it would otherwise ride up on the keyboard.
     @State private var isKeyboardVisible = false
     @State private var tabBarHeight: CGFloat = 0
+    @State private var slideOffset: CGFloat = 0
+    @State private var isSliding = false
     @StateObject private var homeRouter: Router
     @StateObject private var cxRouter: Router
     @StateObject private var paddockRouter: Router
@@ -156,6 +158,7 @@ struct TabBarView: View {
             .tag(Tab.settings)
         }
         .toolbar(.hidden, for: .tabBar)
+        .offset(x: slideOffset)
         .safeAreaInset(edge: .bottom) {
             if !isKeyboardVisible {
                 CustomTabBar(
@@ -166,11 +169,83 @@ struct TabBarView: View {
             }
         }
         .environment(\.tabBarHeight, tabBarHeight)
+        .environment(\.featureRaceOnTV) { raceID, day in
+            tifosiViewModel.action(.didFeatureRace(raceID: raceID, day: day))
+            slideToTifosi()
+        }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
             isKeyboardVisible = true
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
             isKeyboardVisible = false
+        }
+    }
+
+    /// A hidden-bar `TabView` doesn't animate selection, so a snapshot of the old screen slides out as the new one slides in.
+    private func slideToTifosi() {
+        guard selectedTab != .tifosi else { return }
+        guard !isSliding,
+              let window = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .flatMap(\.windows)
+                .first(where: \.isKeyWindow)
+        else {
+            selectedTab = .tifosi
+            return
+        }
+        let width = window.bounds.width
+        let barHeight = tabBarHeight + window.safeAreaInsets.bottom
+        let area = CGRect(
+            x: 0,
+            y: 0,
+            width: width,
+            height: window.bounds.height - barHeight
+        )
+        guard let snapshot = window.resizableSnapshotView(
+            from: area,
+            afterScreenUpdates: false,
+            withCapInsets: .zero
+        ) else {
+            selectedTab = .tifosi
+            return
+        }
+        let reduceMotion = UIAccessibility.isReduceMotionEnabled
+        let blocker = UIView(frame: window.bounds)
+        blocker.backgroundColor = .clear
+        blocker.addSubview(snapshot)
+        window.addSubview(blocker)
+        isSliding = true
+
+        var instant = Transaction()
+        instant.disablesAnimations = true
+        withTransaction(instant) {
+            selectedTab = .tifosi
+            slideOffset = reduceMotion ? 0 : width
+        }
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(50))
+            let duration = reduceMotion ? 0.25 : 0.4
+            if !reduceMotion {
+                withAnimation(.easeInOut(duration: duration)) {
+                    slideOffset = 0
+                }
+            }
+            UIView.animate(
+                withDuration: duration,
+                delay: 0,
+                options: .curveEaseInOut,
+                animations: {
+                    if reduceMotion {
+                        snapshot.alpha = 0
+                    } else {
+                        snapshot.frame.origin.x = -width
+                    }
+                },
+                completion: { _ in
+                    blocker.removeFromSuperview()
+                    isSliding = false
+                }
+            )
         }
     }
 

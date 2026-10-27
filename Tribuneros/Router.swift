@@ -52,8 +52,6 @@ final class Router: ObservableObject {
         /// A rider's whole current-season table.
         case paddockSeasonResults(Paddock.SeasonResultsContext)
         case settingsAcknowledgements
-        /// The native schedule behind "Where to watch", opened on the race's day with the race pinned.
-        case whereToWatch(HomeRaces.WhereToWatch.RaceKey?)
         case web(URL)
         /// A news page: like `web`, but opens in Safari Reader when the page supports it.
         case article(URL)

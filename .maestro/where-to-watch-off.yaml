@@ -1,4 +1,4 @@
-# "Where to watch" with the flag off keeps opening the coursedujour.com web page.
+# "Where to watch" with the flag off: Race info has no card at all (the coursedujour.com link is gone).
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -20,15 +20,10 @@ tags:
 - tapOn:
     id: "todayRaces.row.3"
     text: ".*GP de Montréal.*"
+# Wait for the race info screen itself before checking the card is absent.
 - extendedWaitUntil:
-    visible:
-      id: "raceInfo.whereToWatch"
+    visible: "Race info"
     timeout: 10000
-- assertVisible: "CRO Race — Stage 1"
-- tapOn:
-    id: "raceInfo.whereToWatch"
-- extendedWaitUntil:
-    visible: ".*coursedujour.*"
-    timeout: 15000
 - assertNotVisible:
-    id: "whereToWatch.day.0"
+    id: "raceInfo.whereToWatch"
+- assertNotVisible: ".*Where to watch.*"

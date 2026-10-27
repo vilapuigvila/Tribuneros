@@ -37,15 +37,16 @@ struct NextToFinishRaceDetail: View {
     @State private var isLoadingImages = true
     @State private var errorMessage: String?
     @State private var flashMessage: String?
-    @State private var webPage: WebPage?
-    @State private var coverage: HomeRaces.WhereToWatch.Coverage?
+    @State private var listing: HomeRaces.WhereToWatch.Listing?
     @State private var isCoverageLoaded = false
+
+    @Environment(\.featureRaceOnTV) private var featureRaceOnTV
+
+    private var coverage: HomeRaces.WhereToWatch.Coverage? { listing?.coverage }
 
     private static var loadFailureMessage: String {
         L10n.tr("Couldn’t load the race info. Check your connection and try again.")
     }
-
-    private static let whereToWatchURL = URL(string: "https://coursedujour.com/")!
 
     var body: some View {
         ScrollView {
@@ -110,12 +111,11 @@ struct NextToFinishRaceDetail: View {
         }
         .task {
             guard Service.isCourseDuJourNativeEnabled, let watchKey else { return }
-            coverage = await Service.getCourseDuJourCoverage(for: watchKey)
+            listing = await Service.getCourseDuJourListing(for: watchKey)
             isCoverageLoaded = true
         }
         .errorFlash(message: $flashMessage)
         .sheet(isPresented: $showZoom) { zoomSheet }
-        .webPage($webPage)
     }
 
     // MARK: - Info -
@@ -151,43 +151,46 @@ struct NextToFinishRaceDetail: View {
                     }
                 }
 
-                watchButton
+                watchCard
             }
         }
     }
 
+    /// Opens the race in the Tifosi TV guide once coverage has loaded. Hidden when the flag is off, there is no key, or no coverage came back.
     @ViewBuilder
-    private var watchButton: some View {
-        if Service.isCourseDuJourNativeEnabled {
-            NavigationLink(value: Router.Destination.whereToWatch(watchKey)) {
-                watchLabel(
-                    trailingIcon: "chevron.right",
-                    coverage: coverage,
-                    isLoading: watchKey != nil && !isCoverageLoaded
-                )
+    private var watchCard: some View {
+        if Service.isCourseDuJourNativeEnabled, watchKey != nil, (!isCoverageLoaded || coverage != nil) {
+            if let listing {
+                Button {
+                    featureRaceOnTV(
+                        listing.raceID,
+                        listing.day
+                    )
+                } label: {
+                    watchCardBody
+                }
+                .buttonStyle(.plain)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(watchAccessibilityLabel)
+                .accessibilityAddTraits(.isButton)
+                .accessibilityHint(L10n.tr("Opens this race in the TV guide"))
+                .accessibilityIdentifier("raceInfo.whereToWatch")
+            } else {
+                watchCardBody
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(watchAccessibilityLabel)
+                    .accessibilityIdentifier("raceInfo.whereToWatch")
             }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier("raceInfo.whereToWatch")
-        } else {
-            Button {
-                webPage = WebPage(url: Self.whereToWatchURL)
-            } label: {
-                watchLabel(
-                    trailingIcon: "arrow.up.right",
-                    coverage: nil,
-                    isLoading: false
-                )
-            }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier("raceInfo.whereToWatch")
         }
     }
 
-    private func watchLabel(
-        trailingIcon: String,
-        coverage: HomeRaces.WhereToWatch.Coverage?,
-        isLoading: Bool
-    ) -> some View {
+    private var watchAccessibilityLabel: String {
+        [L10n.tr("Where to watch"), isCoverageLoaded ? coverage?.summary : nil]
+            .compactMap { $0 }
+            .joined(separator: ". ")
+    }
+
+    private var watchCardBody: some View {
         VaporCard {
             HStack(spacing: 10) {
                 Image(systemName: "tv")
@@ -200,11 +203,16 @@ struct NextToFinishRaceDetail: View {
                     color: .tribuneru(.vaporAccent)
                 )
                 Spacer(minLength: 0)
-                Image(systemName: trailingIcon)
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(.tribuneru(.vaporTextSecondary))
+                if listing != nil {
+                    TribuneruText(
+                        content: L10n.tr("View on Tifosi"),
+                        style: .vaporMeta,
+                        color: .tribuneru(.vaporAccent),
+                        lineLimit: 1
+                    )
+                }
             }
-            if isLoading {
+            if !isCoverageLoaded {
                 WatchTiles(tiles: WatchTiles.placeholders)
                     .redacted(reason: .placeholder)
                     .shimmering()
@@ -222,12 +230,6 @@ struct NextToFinishRaceDetail: View {
                 }
             }
         }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(
-            [L10n.tr("Where to watch"), isLoading ? nil : coverage?.summary]
-                .compactMap { $0 }
-                .joined(separator: ". ")
-        )
     }
 
     private var unavailablePanel: some View {
@@ -241,7 +243,7 @@ struct NextToFinishRaceDetail: View {
                         lineLimit: 4
                     )
                 }
-                watchButton
+                watchCard
             }
         }
     }

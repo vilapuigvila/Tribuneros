@@ -1,6 +1,6 @@
-# "Where to watch" for a race the schedule doesn't list: the button says so, and the schedule
-# opens with a notice instead of a pin. Mock data: in mockScenario "later" the hero is Chrono des
-# Nations, which the mock schedule leaves out.
+# "Where to watch" for a race the schedule doesn't list: the card on Race info says so, and tapping
+# it stays on Race info. Mock data: in mockScenario "later" the hero is Chrono des Nations, which the
+# mock schedule leaves out.
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -26,18 +26,11 @@ tags:
       id: "raceInfo.whereToWatch"
       text: ".*Where to watch.*Not in the TV listings.*"
     timeout: 10000
+
+# Tapping the card does nothing: still on Race info, no schedule screen
 - tapOn:
     id: "raceInfo.whereToWatch"
-
-- extendedWaitUntil:
-    visible:
-      id: "whereToWatch.notListed"
-    timeout: 10000
 - assertVisible:
-    id: "whereToWatch.notListed"
-    text: ".*Chrono des Nations isn't in this day's TV listings\\..*"
+    id: "raceInfo.whereToWatch"
 - assertNotVisible:
-    id: "whereToWatch.featured"
-- assertNotVisible: "YOUR RACE"
-- assertVisible:
-    id: "whereToWatch.race.CRO Race — Stage 1"
+    id: "whereToWatch.day.0"

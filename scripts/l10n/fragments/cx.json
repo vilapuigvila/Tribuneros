@@ -339,12 +339,6 @@
     "es": "No quedan más carreras de esta serie esta temporada.",
     "comment": "Hero subtitle when the series has no rounds left"
   },
-  "No race videos available": {
-    "ca": "Sense vídeos de la cursa",
-    "eu": "Ez dago lasterketaren bideorik",
-    "es": "Sin vídeos de la carrera",
-    "comment": "Floating button when the race has no video"
-  },
   "No races in this series.": {
     "ca": "No hi ha curses en aquesta sèrie.",
     "eu": "Ez dago lasterketarik serie honetan.",
@@ -434,18 +428,6 @@
     "eu": "Lasterketaren bideoa",
     "es": "Vídeo de la carrera",
     "comment": "Race detail link"
-  },
-  "Race videos": {
-    "ca": "Vídeos de la cursa",
-    "eu": "Lasterketaren bideoak",
-    "es": "Vídeos de la carrera",
-    "comment": "Floating button for the race videos"
-  },
-  "Race videos unavailable": {
-    "ca": "Vídeos no disponibles",
-    "eu": "Bideoak ez daude erabilgarri",
-    "es": "Vídeos no disponibles",
-    "comment": "Floating button when the results failed to load"
   },
   "Race, country, winner...": {
     "ca": "Cursa, país, guanyador...",
@@ -638,5 +620,11 @@
     "eu": "Ireki YouTuben",
     "es": "Abrir en YouTube",
     "comment": "Fallback button when the inline race video can't play"
+  },
+  "View all": {
+    "ca": "Mostra-ho tot",
+    "eu": "Ikusi guztia",
+    "es": "Ver todo",
+    "comment": "Race detail link that expands a category to every result"
   }
 }

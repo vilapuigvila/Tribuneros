@@ -1,5 +1,6 @@
-# "Where to watch" with Remote Config flag ct_coursedujour_native on (Debug build only: the
+# "Where to watch" on Race info with Remote Config flag ct_coursedujour_native on (Debug build only: the
 # ctCoursedujourNative launch argument forces the flag; mockScenario serves the fixed mock schedule).
+# The card is read-only: it shows the race's channels, and tapping it stays on Race info.
 appId: com.pskmoons.Tribuneros
 tags:
   - home
@@ -24,54 +25,14 @@ tags:
 - extendedWaitUntil:
     visible:
       id: "raceInfo.whereToWatch"
+      text: ".*Where to watch.*FloBikes.*"
     timeout: 10000
 - assertVisible: "CRO Race — Stage 1"
+
+# Tapping the card does nothing: still on Race info, no schedule screen
 - tapOn:
     id: "raceInfo.whereToWatch"
-
-# Today: day strip, discipline sections, races with their channels
-- extendedWaitUntil:
-    visible:
-      id: "whereToWatch.day.0"
-    timeout: 10000
 - assertVisible:
-    id: "whereToWatch.day.0"
-    text: "TODAY.*3 races"
-- assertVisible:
-    id: "whereToWatch.section.Road"
-- assertVisible:
-    id: "whereToWatch.featured"
-    text: "GP de Montréal, 1.UWT \\(Men\\)  ·  Montréal, Canada, .*"
-- assertVisible:
-    id: "whereToWatch.channel.Sporza / VRT"
-- assertVisible:
-    id: "whereToWatch.race.CRO Race — Stage 1"
-- assertVisible:
-    id: "whereToWatch.channel.FloBikes"
-- scrollUntilVisible:
-    element: "No broadcast listed yet"
-- assertVisible:
-    id: "whereToWatch.section.Gravel"
-
-# Another day
-- scrollUntilVisible:
-    element:
-      id: "whereToWatch.day.1"
-    direction: UP
-- tapOn:
-    id: "whereToWatch.day.1"
-- extendedWaitUntil:
-    visible:
-      id: "whereToWatch.race.Coppa Bernocchi"
-    timeout: 10000
-- assertVisible:
-    id: "whereToWatch.channel.RAI Sport"
+    id: "raceInfo.whereToWatch"
 - assertNotVisible:
-    id: "whereToWatch.race.CRO Race — Stage 1"
-
-# Back to the race info
-- swipe:
-    start: 1%, 50%
-    end: 70%, 50%
-- assertVisible:
-    id: "raceInfo.whereToWatch"
+    id: "whereToWatch.day.0"

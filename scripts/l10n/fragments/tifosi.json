@@ -11,12 +11,6 @@
     "es": "Canales",
     "comment": "Round button in the header"
   },
-  "Everything": {
-    "ca": "Tot",
-    "eu": "Dena",
-    "es": "Todo",
-    "comment": "Filter chip: all channels"
-  },
   "TV": {
     "ca": "TV",
     "eu": "TB",
@@ -46,12 +40,6 @@
     "eu": "Instagram",
     "es": "Instagram",
     "comment": "Filter chip, social network name"
-  },
-  "TV, radio and social": {
-    "ca": "TV, ràdio i xarxes",
-    "eu": "TB, irratia eta sareak",
-    "es": "TV, radio y redes",
-    "comment": "Date line under the title when no channel is selected"
   },
   "POST": {
     "ca": "PUBLICACIÓ",
@@ -130,5 +118,152 @@
     "eu": "Erritxoak 24 ordu baino zaharragoak diren mezuak biltzen ditu",
     "es": "El coche escoba barre las publicaciones de más de 24 h",
     "comment": "Footer strip"
+  },
+  "In your country": {
+    "ca": "Al teu país",
+    "eu": "Zure herrialdean",
+    "es": "En tu país",
+    "comment": "Tag on channels that cover the device region"
+  },
+  "No channel listed yet": {
+    "ca": "Encara no hi ha cap canal",
+    "eu": "Oraindik ez dago kanalik",
+    "es": "Aún no hay ningún canal",
+    "comment": "Race without broadcasters"
+  },
+  "Loading the TV guide": {
+    "ca": "Carregant la guia de TV",
+    "eu": "Telebista gida kargatzen",
+    "es": "Cargando la guía de TV",
+    "comment": "Accessibility label while loading"
+  },
+  "Couldn’t load today’s TV guide.": {
+    "ca": "No s’ha pogut carregar la guia de TV d’avui.",
+    "eu": "Ezin izan da gaurko telebista gida kargatu.",
+    "es": "No se ha podido cargar la guía de TV de hoy.",
+    "comment": "TV guide error"
+  },
+  "Try again": {
+    "ca": "Torna-ho a provar",
+    "eu": "Saiatu berriro",
+    "es": "Inténtalo de nuevo",
+    "comment": "Retry button"
+  },
+  "No broadcasts listed for today.": {
+    "ca": "Avui no hi ha cap retransmissió.",
+    "eu": "Gaur ez dago emankizunik.",
+    "es": "Hoy no hay retransmisiones.",
+    "comment": "TV guide empty state"
+  },
+  "Couldn’t load this day’s TV guide.": {
+    "ca": "No s’ha pogut carregar la guia de TV d’aquest dia.",
+    "eu": "Ezin izan da egun honetako telebista gida kargatu.",
+    "es": "No se ha podido cargar la guía de TV de este día.",
+    "comment": "TV guide error for a day other than today"
+  },
+  "%lld races on TV": {
+    "plural": {
+      "en": {
+        "one": "%lld race on TV",
+        "other": "%lld races on TV"
+      },
+      "ca": {
+        "one": "%lld cursa a la TV",
+        "other": "%lld curses a la TV"
+      },
+      "eu": {
+        "one": "Lasterketa %lld telebistan",
+        "other": "%lld lasterketa telebistan"
+      },
+      "es": {
+        "one": "%lld carrera en TV",
+        "other": "%lld carreras en TV"
+      }
+    },
+    "comment": "Accessibility label part for a day tab in the TV guide strip"
+  },
+  "%lld of %lld": {
+    "ca": "%1$lld de %2$lld",
+    "eu": "%1$lld / %2$lld",
+    "es": "%1$lld de %2$lld",
+    "comment": "Position of the front card in the TV deck, e.g. 1 of 3"
+  },
+  "Next race": {
+    "ca": "Següent cursa",
+    "eu": "Hurrengo lasterketa",
+    "es": "Siguiente carrera",
+    "comment": "Button and accessibility action that brings the next TV deck card forward"
+  },
+  "Most relevant first · drag the card up for the next": {
+    "ca": "Primer, la més rellevant · arrossega la targeta amunt per veure la següent",
+    "eu": "Garrantzitsuena lehenik · arrastatu txartela gora hurrengoa ikusteko",
+    "es": "Primero, la más relevante · arrastra la tarjeta hacia arriba para ver la siguiente",
+    "comment": "Hint under the TV deck"
+  },
+  "ON AIR": {
+    "ca": "EN DIRECTE",
+    "eu": "ZUZENEAN",
+    "es": "EN DIRECTO",
+    "comment": "Tag on a TV deck card for a race being broadcast now"
+  },
+  "NEXT": {
+    "ca": "SEGÜENT",
+    "eu": "HURRENGOA",
+    "es": "SIGUIENTE",
+    "comment": "Tag on the TV deck card for the next race to start"
+  },
+  "LATER": {
+    "ca": "MÉS TARD",
+    "eu": "GERORAGO",
+    "es": "MÁS TARDE",
+    "comment": "Tag on a TV deck card for a race later today"
+  },
+  "ENDED": {
+    "ca": "ACABADA",
+    "eu": "AMAITUTA",
+    "es": "TERMINADA",
+    "comment": "Tag on a TV deck card for a race that has finished"
+  },
+  "LEFT": {
+    "ca": "RESTANTS",
+    "eu": "FALTAN",
+    "es": "RESTANTES",
+    "comment": "Caption under the time left of a race on air, e.g. 15m LEFT"
+  },
+  "TO THE START · %@": {
+    "ca": "PER A LA SORTIDA · %@",
+    "eu": "IRTEERARAKO · %@",
+    "es": "PARA LA SALIDA · %@",
+    "comment": "Caption under a countdown, with the start time, e.g. TO THE START · 15:00"
+  },
+  "No races on TV": {
+    "ca": "Cap cursa a la TV",
+    "eu": "Ez dago lasterketarik telebistan",
+    "es": "Ninguna carrera en TV",
+    "comment": "TV guide, a day with no broadcasts"
+  },
+  "A rare day off. Go ride your own bike.": {
+    "ca": "Un dia lliure, cosa rara. Surt a rodar amb la teva bici.",
+    "eu": "Atseden egun arraroa. Atera zure bizikletarekin.",
+    "es": "Un raro día libre. Sal a rodar con tu bici.",
+    "comment": "TV guide, a day with no broadcasts, joke subline"
+  },
+  "Opens this race in the TV guide": {
+    "ca": "Obre aquesta cursa a la guia de TV",
+    "eu": "Lasterketa hau telebista-gidan irekitzen du",
+    "es": "Abre esta carrera en la guía de TV",
+    "comment": "Accessibility hint of the Where to watch card on Race info"
+  },
+  "View on Tifosi": {
+    "ca": "Veure a Tifosi",
+    "eu": "Ikusi Tifosin",
+    "es": "Ver en Tifosi",
+    "comment": "Small link label on the Where to watch card on Race info; Tifosi is the tab name"
+  },
+  "Featured": {
+    "ca": "Destacada",
+    "eu": "Nabarmendua",
+    "es": "Destacada",
+    "comment": "Accessibility value of the TV guide race opened from Race info"
   }
 }

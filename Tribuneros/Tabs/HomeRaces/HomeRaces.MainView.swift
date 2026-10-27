@@ -59,11 +59,6 @@ struct HomeRacesView: View {
                     context: context,
                     router: viewModel.router
                 )
-            case .whereToWatch(let raceKey):
-                WhereToWatchView(
-                    raceKey: raceKey,
-                    router: viewModel.router
-                )
             case .historyResults:
                 HistoryResultsListView(races: sections.historyResults) {
                     viewModel.action($0)

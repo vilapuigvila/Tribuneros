@@ -1,18 +1,8 @@
 {
-  "%1$@ %2$@, %3$@": {
-    "ca": "%1$@ %2$@, %3$@",
-    "eu": "%1$@ %2$@, %3$@",
-    "es": "%1$@ %2$@, %3$@"
-  },
   "%1$@ · updated %2$@": {
     "ca": "%1$@ · actualitzat %2$@",
     "eu": "%1$@ · eguneratua: %2$@",
     "es": "%1$@ · actualizado %2$@"
-  },
-  "%@ isn't in this day's TV listings.": {
-    "ca": "%@ no és a la graella de TV d’aquest dia.",
-    "eu": "%@ ez dago egun honetako telebista-programazioan.",
-    "es": "%@ no figura en la programación de TV de este día."
   },
   "%@ left": {
     "ca": "%@ restants",
@@ -114,11 +104,6 @@
     "eu": "Ezin izan da lasterketaren aurrebista kargatu.",
     "es": "No se ha podido cargar la previa de la carrera."
   },
-  "Couldn't load the schedule.": {
-    "ca": "No s’ha pogut carregar el calendari.",
-    "eu": "Ezin izan da egitaraua kargatu.",
-    "es": "No se ha podido cargar el calendario."
-  },
   "Couldn't refresh": {
     "ca": "No s’ha pogut actualitzar",
     "eu": "Ezin izan da eguneratu",
@@ -133,11 +118,6 @@
     "ca": "No s’han pogut carregar les curses. Comprova la connexió i torna-ho a provar.",
     "eu": "Ezin izan dira lasterketak kargatu. Egiaztatu konexioa eta saiatu berriro.",
     "es": "No se han podido cargar las carreras. Comprueba la conexión e inténtalo de nuevo."
-  },
-  "Coverage updated %@": {
-    "ca": "Cobertura actualitzada %@",
-    "eu": "Estaldura eguneratua: %@",
-    "es": "Cobertura actualizada %@"
   },
   "Date": {
     "ca": "Data",
@@ -237,11 +217,6 @@
     "es": "Actualizaciones en directo en pausa",
     "comment": "VoiceOver label of the live race polling dot once polling has stopped"
   },
-  "Loading": {
-    "ca": "S’està carregant",
-    "eu": "Kargatzen",
-    "es": "Cargando"
-  },
   "Loading results": {
     "ca": "S’estan carregant els resultats",
     "eu": "Emaitzak kargatzen",
@@ -279,11 +254,6 @@
     "es": "Cargando los resultados",
     "comment": "Race results placeholder accessibility label"
   },
-  "Loading the schedule": {
-    "ca": "S’està carregant el calendari",
-    "eu": "Egitaraua kargatzen",
-    "es": "Cargando el calendario"
-  },
   "Local circuit": {
     "ca": "Circuit local",
     "eu": "Tokiko zirkuitua",
@@ -303,11 +273,6 @@
     "ca": "CAP CURSA",
     "eu": "EZ DAGO LASTERKETARIK",
     "es": "SIN CARRERAS"
-  },
-  "No broadcast listed yet": {
-    "ca": "Encara no hi ha cap retransmissió",
-    "eu": "Oraindik ez dago emisiorik zerrendan",
-    "es": "Todavía no hay retransmisión"
   },
   "No info available": {
     "ca": "Sense informació",
@@ -577,11 +542,6 @@
     "eu": "Non ikusi",
     "es": "Dónde verlo"
   },
-  "YOUR RACE": {
-    "ca": "LA TEVA CURSA",
-    "eu": "ZURE LASTERKETA",
-    "es": "TU CARRERA"
-  },
   "by finish time": {
     "ca": "per hora d’arribada",
     "eu": "helmugako orduaren arabera",
@@ -596,11 +556,6 @@
     "ca": "arribada prevista a les %@",
     "eu": "helmuga aurreikusia: %@",
     "es": "llegada prevista: %@"
-  },
-  "finished": {
-    "ca": "acabada",
-    "eu": "amaituta",
-    "es": "acabada"
   },
   "in %@": {
     "ca": "d’aquí a %@",

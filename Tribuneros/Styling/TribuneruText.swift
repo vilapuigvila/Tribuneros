@@ -68,7 +68,7 @@ struct TribuneruText: View {
             "SpaceGrotesk-SemiBold"
         case .vaporRowMeta, .vaporBannerSubtitle:
             "SpaceGrotesk-Regular"
-        case .vaporPill, .vaporStatTime, .vaporRowTime, .vaporResultTime:
+        case .vaporPill, .vaporStatTime, .vaporRowTime, .vaporResultTime, .tifosiDeckCountdown:
             "SpaceMono-Bold"
         }
     }
@@ -115,6 +115,7 @@ struct TribuneruText: View {
         case .vaporBannerTitle: 18
         case .vaporBannerSubtitle: 13
         case .vaporAwaitingLabel: 13
+        case .tifosiDeckCountdown: 46
         }
     }
     private var weight: Font.Weight {
@@ -132,7 +133,8 @@ struct TribuneruText: View {
         case .vaporScreenTitle, .vaporSectionTitle, .vaporSpoilerChip,
              .vaporFeedTag, .vaporChangeSign, .vaporAge,
              .vaporHeading, .vaporHeroTitle, .vaporTag, .vaporTagSmall, .vaporPill, .vaporStatTime,
-             .vaporRowTime, .vaporResultTitle, .vaporResultTime, .vaporBannerTitle, .vaporSeeAll:
+             .vaporRowTime, .vaporResultTitle, .vaporResultTime, .vaporBannerTitle, .vaporSeeAll,
+             .tifosiDeckCountdown:
             .bold
         case .vaporRaceNameNext, .vaporRaceNameResult, .vaporWinnerName, .vaporTabLabel, .vaporPressName,
              .vaporLink, .vaporRowTitle, .vaporRowCountdown:
@@ -162,6 +164,7 @@ struct TribuneruText: View {
         case .vaporTag: 0.9
         case .vaporTagSmall: 0.7
         case .vaporAwaitingLabel: 1.2
+        case .tifosiDeckCountdown: -1.4
         default: 0
         }
     }
@@ -171,7 +174,7 @@ struct TribuneruText: View {
         switch style {
         case .vaporFinishTime, .vaporETALine,
              .vaporMonoMeta, .vaporAge, .vaporPill, .vaporStatTime, .vaporRowTime, .vaporResultTime,
-             .vaporRowCountdown:
+             .vaporRowCountdown, .tifosiDeckCountdown:
             true
         default:
             false
@@ -232,6 +235,9 @@ extension TribuneruText {
         case vaporBannerSubtitle
         case vaporSeeAll
         case vaporAwaitingLabel
+
+        // MARK: - Tifosi -
+        case tifosiDeckCountdown
     }
 }
 

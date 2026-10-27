@@ -15,6 +15,9 @@ struct TifosiView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle(L10n.tr("Tifosi"))
         .toolbar(.hidden, for: .navigationBar)
+        .onAppear {
+            viewModel.action(.didAppear)
+        }
     }
 }
 
@@ -32,12 +35,21 @@ extension Tifosi {
                     Header(dateLine: state.dateLine)
                         .padding(.top, 16)
                     ChipsRow(chips: state.chips) { action(.didSelectChannel($0)) }
-                    LiveBanner(race: state.race)
-                    if let leader = state.leader {
-                        LeaderPanel(post: leader)
+                    if state.showsTVGuide {
+                        TVGuideView(
+                            screen: state.tv,
+                            onTapChannel: { action(.didTapTVChannel($0)) },
+                            onSelectDay: { action(.didSelectTVDay($0)) },
+                            onRetry: { action(.didRetryTV) }
+                        )
+                    } else {
+                        LiveBanner(race: state.race)
+                        if let leader = state.leader {
+                            LeaderPanel(post: leader)
+                        }
+                        ChaseSection(posts: state.chase)
+                        BroomStrip()
                     }
-                    ChaseSection(posts: state.chase)
-                    BroomStrip()
                     Color.clear
                         .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)
                 }
@@ -133,6 +145,8 @@ extension Tifosi {
                             .contentShape(Capsule())
                         }
                         .buttonStyle(.plain)
+                        .disabled(!chip.isEnabled)
+                        .opacity(chip.isEnabled ? 1 : 0.4)
                         .accessibilityAddTraits(chip.isSelected ? .isSelected : [])
                         .accessibilityIdentifier("tifosi.chip.\(chip.channel.rawValue)")
                     }

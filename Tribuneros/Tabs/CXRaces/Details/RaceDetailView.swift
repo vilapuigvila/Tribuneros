@@ -12,6 +12,7 @@ struct RaceDetailView: View {
     let race: DTO.CX24Homepage.Race
     @State private var categoryResults: [String: [DTO.CX24Homepage.CategoryResult]] = [:]
     @State private var selectedCategory: Int = 0
+    @State private var expandedCategories: Set<String> = []
     @State private var isLoading: Bool = true
     @State private var errorMessage: String?
     /// A results row opens the rider screen.
@@ -61,7 +62,12 @@ struct RaceDetailView: View {
                     resultsList()
                 }
 
-                raceVideosRow
+                if !isLoading, let videoID = inlineVideoID {
+                    CXInlineVideoPanel(
+                        videoID: videoID,
+                        openURL: openVideo
+                    )
+                }
             }
             .padding()
             .padding(.bottom, 40)
@@ -149,12 +155,18 @@ struct RaceDetailView: View {
         }
     }
 
+    private static let collapsedRowCount = 10
+
     /// The selected category's loaded results, or `placeholders` drawn in their place.
     private func resultsList(_ placeholders: [DTO.CX24Homepage.CategoryResult]? = nil) -> some View {
         MudCardBox {
             if selectedCategory < race.categories.count {
                 let category = race.categories[selectedCategory]
-                let results = placeholders ?? categoryResults[category.title] ?? []
+                let allResults = placeholders ?? categoryResults[category.title] ?? []
+                let canExpand = placeholders == nil
+                    && allResults.count > Self.collapsedRowCount
+                    && !expandedCategories.contains(category.title)
+                let results = canExpand ? Array(allResults.prefix(Self.collapsedRowCount)) : allResults
 
                 if results.isEmpty {
                     TribuneruText(
@@ -185,6 +197,16 @@ struct RaceDetailView: View {
                         if index < results.count - 1 {
                             MudDivider()
                         }
+                    }
+
+                    if canExpand {
+                        Button {
+                            expandedCategories.insert(category.title)
+                        } label: {
+                            MudMoreLink(title: L10n.tr("View all"))
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("race-detail-view-all")
                     }
                 }
             }
@@ -225,85 +247,12 @@ struct RaceDetailView: View {
         .padding(.bottom, 4)
     }
 
-    private var raceVideosURL: URL? {
-        for results in categoryResults.values {
-            if let url = results.first?.raceVideosURL {
-                return url
-            }
-        }
-        return nil
-    }
-
-    private var raceVideosButtonState: (title: String, systemImage: String, url: URL?) {
-        if isLoading {
-            return (
-                title: L10n.tr("Race videos"),
-                systemImage: "play.rectangle.fill",
-                url: nil
-            )
-        }
-        
-        if errorMessage != nil {
-            return (
-                title: L10n.tr("Race videos unavailable"),
-                systemImage: "video.slash",
-                url: nil
-            )
-        }
-        
-        if let videosURL = raceVideosURL {
-            return (
-                title: L10n.tr("Race videos"),
-                systemImage: "play.rectangle.fill",
-                url: videosURL
-            )
-        }
-        
-        return (
-            title: L10n.tr("No race videos available"),
-            systemImage: "video.slash",
-            url: nil
-        )
-    }
-    
-    private var raceVideosRow: some View {
-        let buttonState = raceVideosButtonState
-        let isEnabled = buttonState.url != nil
-
-        return Button {
-            guard let url = buttonState.url else { return }
-            openVideo(url)
-        } label: {
-            MudCardBox {
-                HStack(spacing: 10) {
-                    Image(systemName: buttonState.systemImage)
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.tribuneru(isEnabled ? .mudAccent : .mudTextMuted))
-                        .frame(width: 20)
-
-                    TribuneruText(
-                        content: buttonState.title,
-                        style: .vaporRaceNameNext,
-                        color: .tribuneru(isEnabled ? .mudTextPrimary : .mudTextSecondary),
-                        lineLimit: 1
-                    )
-
-                    Spacer(minLength: 0)
-
-                    if isEnabled {
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundColor(.tribuneru(.mudTextSecondary))
-                    }
-                }
-                .padding(.vertical, 12)
-                .contentShape(Rectangle())
-            }
-        }
-        .buttonStyle(.plain)
-        .disabled(!isEnabled)
-        .redacted(reason: isLoading ? .placeholder : [])
-        .shimmering(isLoading)
+    private var inlineVideoID: String? {
+        categoryResults.values
+            .lazy
+            .compactMap { $0.first?.raceVideosURL }
+            .compactMap(CXInlineVideoPanel.youTubeID(from:))
+            .first
     }
 }
 
