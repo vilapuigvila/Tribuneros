@@ -34,7 +34,14 @@ extension Tifosi {
             case .didSelectChannel(let channel):
                 interactor.useCase(.selectChannel(channel))
             case .didTapTVChannel(let url):
-                router.openInSystem(url)
+                if let id = CXInlineVideoPanel.youTubeID(from: url) {
+                    router.videoPlayback = VideoPlayback(
+                        videoID: id,
+                        url: url
+                    )
+                } else {
+                    router.openInSystem(url)
+                }
             case .didRetryTV:
                 interactor.useCase(.retryTV)
             case .didSelectTVDay(let date):

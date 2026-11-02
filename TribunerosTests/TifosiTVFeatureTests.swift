@@ -165,4 +165,41 @@ final class TifosiTVFeatureTests: XCTestCase {
         XCTAssertEqual(guide().deck(now: now, featured: nil).map(\.id), plain)
         XCTAssertEqual(guide().deck(now: now, featured: "zzz").map(\.id), plain)
     }
+
+    func testTVChannelTapPlaysYouTubeVideosInAppAndOpensOtherLinksInSystem() {
+        let router = Router()
+        var opened: [URL] = []
+        router.openExternally = { opened.append($0) }
+        let viewModel = Tifosi.ViewModel(
+            router: router,
+            interactor: interactor()
+        )
+        let video = URL(string: "https://www.youtube.com/live/abc123XYZ?feature=share")!
+        let channel = URL(string: "https://www.youtube.com/@GCNRacing")!
+        let site = URL(string: "https://www.eurosport.com/cycling")!
+
+        viewModel.action(.didTapTVChannel(video))
+        XCTAssertEqual(router.videoPlayback?.videoID, "abc123XYZ")
+        XCTAssertTrue(opened.isEmpty)
+
+        router.videoPlayback = nil
+        viewModel.action(.didTapTVChannel(channel))
+        viewModel.action(.didTapTVChannel(site))
+        XCTAssertNil(router.videoPlayback)
+        XCTAssertEqual(opened, [channel, site])
+    }
+
+    func testYouTubeIDReadsEveryVideoLinkShape() {
+        func id(_ string: String) -> String? {
+            CXInlineVideoPanel.youTubeID(from: URL(string: string)!)
+        }
+        XCTAssertEqual(id("https://www.youtube.com/watch?v=a1"), "a1")
+        XCTAssertEqual(id("https://youtu.be/a2"), "a2")
+        XCTAssertEqual(id("https://www.youtube.com/live/a3"), "a3")
+        XCTAssertEqual(id("https://www.youtube.com/embed/a4"), "a4")
+        XCTAssertEqual(id("https://m.youtube.com/shorts/a5"), "a5")
+        XCTAssertNil(id("https://www.youtube.com/@name"))
+        XCTAssertNil(id("https://www.youtube.com/channel/UC123"))
+        XCTAssertNil(id("https://www.youtube.com/c/name"))
+    }
 }

@@ -265,5 +265,11 @@
     "eu": "Nabarmendua",
     "es": "Destacada",
     "comment": "Accessibility value of the TV guide race opened from Race info"
+  },
+  "Close video": {
+    "ca": "Tanca el vídeo",
+    "eu": "Itxi bideoa",
+    "es": "Cerrar el vídeo",
+    "comment": "Accessibility label of the close button on the full-screen YouTube player"
   }
 }

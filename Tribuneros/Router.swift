@@ -60,6 +60,8 @@ final class Router: ObservableObject {
     @Published var navPath = NavigationPath()
     /// The web page shown full screen over this tab (see `View.webPage(_:)`).
     @Published var webPage: WebPage?
+    /// The YouTube video played full screen over this tab (see `View.videoPlayback(_:openURL:)`).
+    @Published var videoPlayback: VideoPlayback?
     /// Hands a link to the system (Safari, or the app that claims it, e.g. YouTube); swapped in tests.
     var openExternally: (URL) -> Void = { url in
         Task { @MainActor in

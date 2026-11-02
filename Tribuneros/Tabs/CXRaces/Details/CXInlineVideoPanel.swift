@@ -167,13 +167,17 @@ struct CXInlineVideoPanel: View {
 }
 
 extension CXInlineVideoPanel {
-    /// The id of a `youtube.com/watch?v=` or `youtu.be/` link; nil for any other URL.
+    /// The id of a `youtube.com` `watch?v=`, `/live/`, `/embed/` or `/shorts/` link or a `youtu.be/` link; nil for any other URL.
     static func youTubeID(from url: URL) -> String? {
         guard let host = url.host?.lowercased() else { return nil }
         if host == "youtu.be" {
             return url.pathComponents.dropFirst().first
         }
         guard host == "youtube.com" || host.hasSuffix(".youtube.com") else { return nil }
+        let parts = url.pathComponents.dropFirst()
+        if let kind = parts.first, ["live", "embed", "shorts"].contains(kind) {
+            return parts.dropFirst().first
+        }
         return URLComponents(
             url: url,
             resolvingAgainstBaseURL: false

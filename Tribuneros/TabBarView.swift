@@ -147,6 +147,10 @@ struct TabBarView: View {
             NavigationStack(path: $tifosiRouter.navPath) {
                 TifosiView(viewModel: tifosiViewModel)
             }
+            .videoPlayback(
+                $tifosiRouter.videoPlayback,
+                openURL: { tifosiRouter.openInSystem($0) }
+            )
             .tag(Tab.tifosi)
 
             // Settings -
