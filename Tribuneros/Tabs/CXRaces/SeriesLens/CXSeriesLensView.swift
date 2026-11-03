@@ -38,7 +38,8 @@ extension CXRaces {
 
         private var series: RaceSeries? {
             guard let selectedSeries, availableSeries.contains(selectedSeries) else {
-                return availableSeries.first
+                // Entering the tab starts on World Cup when it has rounds this season.
+                return availableSeries.contains(.worldCup) ? .worldCup : availableSeries.first
             }
             return selectedSeries
         }
@@ -179,43 +180,65 @@ extension CXRaces {
             .padding(.top, 16)
         }
 
+        private func chipButton(
+            title: String,
+            isSelected: Bool,
+            identifier: String,
+            onTap: @escaping () -> Void
+        ) -> some View {
+            Button {
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                onTap()
+            } label: {
+                TribuneruText(
+                    content: title,
+                    style: .vaporLink,
+                    color: .tribuneru(isSelected ? .mudAccent : .mudTextMuted),
+                    lineLimit: 1
+                )
+                .padding(.horizontal, 16)
+                .frame(minHeight: 40)
+                .background(
+                    Capsule().fill(
+                        isSelected
+                            ? Color.tribuneru(.mudAccent).opacity(0.14)
+                            : Color.tribuneru(.mudCardSurface)
+                    )
+                )
+                .overlay(
+                    Capsule().strokeBorder(
+                        isSelected
+                            ? Color.tribuneru(.mudAccent).opacity(0.4)
+                            : Color.tribuneru(.mudTextPrimary).opacity(0.08),
+                        lineWidth: 1
+                    )
+                )
+            }
+            .buttonStyle(.plain)
+            .accessibilityAddTraits(isSelected ? .isSelected : [])
+            .accessibilityIdentifier(identifier)
+        }
+
         private var chips: some View {
             ScrollViewReader { proxy in
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
+                        // "All" is an action, not a series: it opens the full race list and is never selected.
+                        chipButton(
+                            title: L10n.tr("All"),
+                            isSelected: false,
+                            identifier: "cx.series.all"
+                        ) {
+                            action(.didTapOnNextRaces(series: nil))
+                        }
                         ForEach(availableSeries) { chip in
-                            let isSelected = chip == series
-                            Button {
-                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            chipButton(
+                                title: chip.title,
+                                isSelected: chip == series,
+                                identifier: "cx.series.\(chip.rawValue)"
+                            ) {
                                 selectedSeries = chip
-                            } label: {
-                                TribuneruText(
-                                    content: chip.title,
-                                    style: .vaporLink,
-                                    color: .tribuneru(isSelected ? .mudAccent : .mudTextMuted),
-                                    lineLimit: 1
-                                )
-                                .padding(.horizontal, 16)
-                                .frame(minHeight: 40)
-                                .background(
-                                    Capsule().fill(
-                                        isSelected
-                                            ? Color.tribuneru(.mudAccent).opacity(0.14)
-                                            : Color.tribuneru(.mudCardSurface)
-                                    )
-                                )
-                                .overlay(
-                                    Capsule().strokeBorder(
-                                        isSelected
-                                            ? Color.tribuneru(.mudAccent).opacity(0.4)
-                                            : Color.tribuneru(.mudTextPrimary).opacity(0.08),
-                                        lineWidth: 1
-                                    )
-                                )
                             }
-                            .buttonStyle(.plain)
-                            .accessibilityAddTraits(isSelected ? .isSelected : [])
-                            .accessibilityIdentifier("cx.series.\(chip.rawValue)")
                             .id(chip.id)
                         }
                     }

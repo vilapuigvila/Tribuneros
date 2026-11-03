@@ -303,7 +303,7 @@ what the standings document holds: the top five of each category.
 
 **The CX Zone screen** (`CXRaces.SeriesLensView`, `Tabs/CXRaces/SeriesLens/`) is the "Mud" look (`mud*` tokens in
 `Color.Palette`; Vapor type styles): a header with the season ("2026–27", from July), series chips
-(`CXRaces.RaceSeries` with at least one non-cancelled round this season; the first is selected), then for the selected
+(an "All" action chip first, never selected, that opens the all-races list; then `CXRaces.RaceSeries` with at least one non-cancelled round this season; World Cup is selected by default, else the first), then for the selected
 series, all from `CXRaces.SeriesLens`: the next round as a hero over the series' painting (`CXSeriesArt(series:)`, one `Canvas` per series in `SeriesLens/CX*Art.swift` with `cx*` colors; `.exactCross` keeps `CXMudArt`, `.others` gets the beer tent) plus a rounds-raced bar; **Leaders**
 (first two categories of the standings item whose title names the series, with the points gap to second when both are
 plain numbers; no item, no section); **Last round** (the latest past round, with the Men Elite top 3 when the homepage
