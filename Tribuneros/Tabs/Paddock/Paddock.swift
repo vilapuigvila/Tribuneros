@@ -21,6 +21,9 @@ extension Paddock {
         case didTapOnRider(RiderContext)
         /// The rider screen's "Season results" link.
         case didTapOnSeasonResults(SeasonResultsContext)
+        /// The directory section's "See all races" / "See all teams" push the whole list.
+        case didTapOnAllRaces
+        case didTapOnAllTeams
     }
 
     enum Filter: CaseIterable, Sendable {
@@ -69,6 +72,9 @@ extension Paddock {
         var birthdays: [BirthdaysCard.Entry] = []
         var transferCount = 0
         var programCount = 0
+        /// The Races | Teams section above Moves.
+        var races: Listing<RaceItem> = .loading
+        var teams: Listing<TeamItem> = .loading
 
         /// The birthday card shows at most this many rows; a sheet lists them all.
         static let birthdaysPreviewLimit = 3

@@ -175,4 +175,47 @@ enum PaddockMock {
         )
     }
 }
+
+extension PaddockMock {
+
+    /// Six races from the first of the current year, so the preview shows three and "See all" the rest.
+    static func races(now: Date = Date()) -> [DTO.PCSRace] {
+        let year = Calendar.current.component(.year, from: now)
+        let rows: [(String, String, String, String, String)] = [
+            ("tour-down-under", "Tour Down Under", "\(year + 1)-01-20", "2.UWT", "au"),
+            ("great-ocean-road-race", "Cadel Evans Great Ocean Road Race", "\(year + 1)-02-01", "1.UWT", "au"),
+            ("vuelta-a-murcia", "Vuelta a Murcia", "\(year + 1)-02-04", "1.1", "es"),
+            ("etoile-de-besseges", "Etoile de Bessèges", "\(year + 1)-02-04", "2.1", "fr"),
+            ("uae-tour", "UAE Tour", "\(year + 1)-02-16", "2.UWT", "ae"),
+            ("omloop-het-nieuwsblad", "Omloop Het Nieuwsblad", "\(year + 1)-02-28", "1.UWT", "be")
+        ]
+        return rows.map { slug, name, date, raceClass, country in
+            DTO.PCSRace(
+                path: "race/\(slug)/\(year + 1)",
+                name: name,
+                dateText: date,
+                raceClass: raceClass,
+                countryCode: country
+            )
+        }
+    }
+
+    static func teams() -> [DTO.PCSTeam] {
+        let rows: [(String, String, String, String)] = [
+            ("uae-team-emirates-xrg", "UAE Team Emirates - XRG", "WorldTour", "ae"),
+            ("visma-lease-a-bike", "Visma | Lease a Bike", "WorldTour", "nl"),
+            ("soudal-quick-step", "Soudal Quick-Step", "WorldTour", "be"),
+            ("tudor-pro-cycling-team", "Tudor Pro Cycling Team", "ProTeams", "ch"),
+            ("team-flanders-baloise", "Team Flanders - Baloise", "ProTeams", "be")
+        ]
+        return rows.map { slug, name, division, country in
+            DTO.PCSTeam(
+                path: "team/\(slug)-2026",
+                name: name,
+                division: division,
+                countryCode: country
+            )
+        }
+    }
+}
 #endif

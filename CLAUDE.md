@@ -207,10 +207,9 @@ browser User-Agent, so `CachedImageView` adds both for PCS URLs (`Service.addPCS
 **The Paddock screen** (`Paddock.MainView`, `Paddock.Subviews.swift`) is the "Kit" look (`kit*` tokens in
 `Color.Palette`; Vapor type styles), navigation bar hidden like Today Races: a header (megaphone, "Paddock", the date),
 the press sites as 92pt circles (`PressStrip`, monogram from `PressItem.monogram`; three in view and the edge of a
-fourth; each opens the Press screen, except web-only hosts, which open the site in the in-app reader), a "Birthdays today" card (rows open the rider screen) over `PaddockBirthdayArt` (`ViewState.birthdays`, every birthday event; hidden
-when none), then **Moves**: a Transfers | Programs segmented control (`Paddock.Segment`, stored as `Domain.filter`,
+fourth; each opens the Press screen, except web-only hosts, which open the site in the in-app reader), then the **Races | Teams** directory (`Paddock.DirectorySection`, `Paddock.Directory.swift`: a segmented control, view-local, over three rows and a "See all races" / "See all teams" button that pushes `paddockRaces` / `paddockTeams`, the whole list from the same data, rows not tappable; `Service.getPCSRaces()` / `getPCSTeams()` in `Service+PaddockDirectory.swift` scrape PCS `races.php` and `teams.php` on the device with a 48 h cache, `[]` on a markup change, `nil` when the fetch fails; the preview shows the next three races by date; `PaddockDirectoryTests` uses synthetic HTML until real captures are saved), then **Moves**: a Transfers | Programs segmented control (`Paddock.Segment`, stored as `Domain.filter`,
 default `.transfers`; `.all` / `.birthdays` still exist for the feed mapping and fall back to Transfers) with counts
-(`ViewState.transferCount` / `programCount`) over a timeline of that kind's cards, grouped by day on a time rail.
+(`ViewState.transferCount` / `programCount`) over a timeline of that kind's cards, grouped by day on a time rail. The last section is the "Birthdays today" card (rows open the rider screen) over `PaddockBirthdayArt` (`ViewState.birthdays`, every birthday event; hidden when none), after Moves.
 
 **The Paddock press list comes from Firebase Remote Config**, key `press_urls`: a JSON array whose
 entries are either a URL string or a `{"Name": "url"}` object (the console currently uses the

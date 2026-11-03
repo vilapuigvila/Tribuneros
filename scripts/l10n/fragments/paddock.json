@@ -381,5 +381,89 @@
     "eu": "Ezin izan dira webgune honetako titularrak kargatu.",
     "es": "No se han podido cargar los titulares de esta web.",
     "comment": "Press screen failed state"
+  },
+  "See all races": {
+    "ca": "Veure totes les curses",
+    "eu": "Ikusi lasterketa guztiak",
+    "es": "Ver todas las carreras",
+    "comment": "Paddock Races section button"
+  },
+  "See all teams": {
+    "ca": "Veure tots els equips",
+    "eu": "Ikusi talde guztiak",
+    "es": "Ver todos los equipos",
+    "comment": "Paddock Teams section button"
+  },
+  "Loading the teams": {
+    "ca": "Carregant els equips",
+    "eu": "Taldeak kargatzen",
+    "es": "Cargando los equipos",
+    "comment": "Accessibility label while loading"
+  },
+  "Couldn't load the races from ProCyclingStats.": {
+    "ca": "No s’han pogut carregar les curses de ProCyclingStats.",
+    "eu": "Ezin izan dira ProCyclingStats-eko lasterketak kargatu.",
+    "es": "No se han podido cargar las carreras de ProCyclingStats.",
+    "comment": "Paddock Races error"
+  },
+  "Couldn't load the teams from ProCyclingStats.": {
+    "ca": "No s’han pogut carregar els equips de ProCyclingStats.",
+    "eu": "Ezin izan dira ProCyclingStats-eko taldeak kargatu.",
+    "es": "No se han podido cargar los equipos de ProCyclingStats.",
+    "comment": "Paddock Teams error"
+  },
+  "No races right now.": {
+    "ca": "Cap cursa ara mateix.",
+    "eu": "Ez dago lasterketarik oraingoz.",
+    "es": "Ninguna carrera por ahora.",
+    "comment": "Paddock Races empty"
+  },
+  "No teams right now.": {
+    "ca": "Cap equip ara mateix.",
+    "eu": "Ez dago talderik oraingoz.",
+    "es": "Ningún equipo por ahora.",
+    "comment": "Paddock Teams empty"
+  },
+  "%lld RACES": {
+    "plural": {
+      "en": {
+        "one": "%lld RACE",
+        "other": "%lld RACES"
+      },
+      "ca": {
+        "one": "%lld CURSA",
+        "other": "%lld CURSES"
+      },
+      "eu": {
+        "one": "LASTERKETA %lld",
+        "other": "%lld LASTERKETA"
+      },
+      "es": {
+        "one": "%lld CARRERA",
+        "other": "%lld CARRERAS"
+      }
+    },
+    "comment": "Paddock races list subtitle"
+  },
+  "%lld TEAMS": {
+    "plural": {
+      "en": {
+        "one": "%lld TEAM",
+        "other": "%lld TEAMS"
+      },
+      "ca": {
+        "one": "%lld EQUIP",
+        "other": "%lld EQUIPS"
+      },
+      "eu": {
+        "one": "TALDE %lld",
+        "other": "%lld TALDE"
+      },
+      "es": {
+        "one": "%lld EQUIPO",
+        "other": "%lld EQUIPOS"
+      }
+    },
+    "comment": "Paddock teams list subtitle"
   }
 }

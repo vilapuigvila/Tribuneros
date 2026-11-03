@@ -52,6 +52,10 @@ extension Paddock {
                 router.routeTo(.paddockRider(context))
             case .didTapOnSeasonResults(let context):
                 router.routeTo(.paddockSeasonResults(context))
+            case .didTapOnAllRaces:
+                router.routeTo(.paddockRaces)
+            case .didTapOnAllTeams:
+                router.routeTo(.paddockTeams)
             }
         }
 
@@ -81,8 +85,25 @@ extension Paddock {
                     }
                 },
                 transferCount: kinds.filter { Paddock.Filter.transfers.includes($0) }.count,
-                programCount: kinds.filter { Paddock.Filter.programs.includes($0) }.count
+                programCount: kinds.filter { Paddock.Filter.programs.includes($0) }.count,
+                races: listing(
+                    domain.races,
+                    failed: domain.racesFailed
+                ) { Paddock.raceItem(from: $0, now: now, calendar: calendar) },
+                teams: listing(
+                    domain.teams,
+                    failed: domain.teamsFailed
+                ) { Paddock.teamItem(from: $0) }
             )
+        }
+
+        private static func listing<Row, Item: Equatable & Sendable>(
+            _ rows: [Row]?,
+            failed: Bool,
+            map: (Row) -> Item
+        ) -> Paddock.Listing<Item> {
+            guard let rows else { return .loading }
+            return failed ? .failed : .loaded(rows.map(map))
         }
 
         private static func mapFeed(

@@ -51,6 +51,9 @@ final class Router: ObservableObject {
         case paddockPress(Paddock.PressItem)
         /// A rider's whole current-season table.
         case paddockSeasonResults(Paddock.SeasonResultsContext)
+        /// PCS's whole race calendar / team list, pushed from Paddock's Races | Teams section.
+        case paddockRaces
+        case paddockTeams
         case settingsAcknowledgements
         case web(URL)
         /// A news page: like `web`, but opens in Safari Reader when the page supports it.

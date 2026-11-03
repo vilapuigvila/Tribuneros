@@ -183,7 +183,7 @@ struct Service {
         return "race/\(slug)/\(year)/stage-\(number)"
     }
 
-    private static func spanFlagCode(in cell: Element) -> String? {
+    static func spanFlagCode(in cell: Element) -> String? {
         (try? cell.select("span.flag").first()?.className())?
             .split(separator: " ")
             .map(String.init)

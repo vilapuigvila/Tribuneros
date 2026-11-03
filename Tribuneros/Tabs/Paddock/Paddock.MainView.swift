@@ -27,6 +27,10 @@ struct PaddockView: View {
                 )
             case .paddockSeasonResults(let context):
                 Paddock.SeasonResultsView(context: context)
+            case .paddockRaces:
+                Paddock.RacesListView(races: viewModel.stateView.races)
+            case .paddockTeams:
+                Paddock.TeamsListView(teams: viewModel.stateView.teams)
             default:
                 EmptyView()
             }
@@ -67,6 +71,18 @@ extension Paddock {
                         EmptyView()
                     }
 
+                    DirectorySection(
+                        races: state.races,
+                        teams: state.teams,
+                        action: action
+                    )
+
+                    MovesSection(
+                        state: state,
+                        action: action
+                    )
+
+                    // Last section: Birthdays today closes the screen.
                     if !state.birthdays.isEmpty {
                         BirthdaysSection(
                             entries: state.previewBirthdays,
@@ -75,11 +91,6 @@ extension Paddock {
                             action(.didTapOnRider(.birthday(entry)))
                         }
                     }
-
-                    MovesSection(
-                        state: state,
-                        action: action
-                    )
 
                     Color.clear
                         .frame(height: safeAreaInsets.bottom * 2 + safeAreaInsets.bottom)

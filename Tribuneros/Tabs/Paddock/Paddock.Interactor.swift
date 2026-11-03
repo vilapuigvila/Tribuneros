@@ -30,6 +30,11 @@ extension Paddock {
         var lastUpdated: Date?
         var loading: Bool
         var error: EquatableError?
+        /// `nil` while loading; `[]` with `*Failed` when the PCS page couldn't be read.
+        var races: [DTO.PCSRace]? = nil
+        var teams: [DTO.PCSTeam]? = nil
+        var racesFailed = false
+        var teamsFailed = false
 
         static let empty = Domain(
             press: nil,
@@ -61,12 +66,16 @@ extension Paddock {
 
         private var pressTask: Task<Void, Never>?
         private var feedTask: Task<Void, Never>?
+        private var racesTask: Task<Void, Never>?
+        private var teamsTask: Task<Void, Never>?
 
         func useCase(_ useCase: UseCase) {
             switch useCase {
             case .request:
                 requestPress()
                 requestFeed()
+                requestRaces()
+                requestTeams()
             case .selectFilter(let filter):
                 mutate { $0.filter = filter }
             }
@@ -82,6 +91,31 @@ extension Paddock {
                 let links = await Service.getPressLinks()
                 self?.mutate { $0.press = links }
                 self?.pressTask = nil
+            }
+        }
+
+        // Both pages are cached for 48 h by `Service`, so a re-request after a failure is cheap.
+        private func requestRaces() {
+            guard racesTask == nil, domain.races == nil || domain.racesFailed else { return }
+            racesTask = Task { @MainActor [weak self] in
+                let races = await Service.getPCSRaces()
+                self?.mutate {
+                    $0.races = races ?? []
+                    $0.racesFailed = races == nil
+                }
+                self?.racesTask = nil
+            }
+        }
+
+        private func requestTeams() {
+            guard teamsTask == nil, domain.teams == nil || domain.teamsFailed else { return }
+            teamsTask = Task { @MainActor [weak self] in
+                let teams = await Service.getPCSTeams()
+                self?.mutate {
+                    $0.teams = teams ?? []
+                    $0.teamsFailed = teams == nil
+                }
+                self?.teamsTask = nil
             }
         }
 
