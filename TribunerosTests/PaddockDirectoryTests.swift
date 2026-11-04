@@ -467,6 +467,17 @@ final class PaddockDirectoryTests: XCTestCase {
         XCTAssertEqual(paths, ["team/mock-2027", "team/mock-2026"])
     }
 
+    func testTeamRiderInitialsAreSurnameAndGivenNameLetters() {
+        func item(_ name: String) -> Paddock.TeamRiderItem {
+            Paddock.TeamRiderItem(path: "rider/x", name: name, countryCode: "", rank: nil, points: nil, photoURL: nil)
+        }
+        XCTAssertEqual(item("DEL GROSSO Tibor").initials, "DT")
+        XCTAssertEqual(item("GARCÍA CORTINA Iván").initials, "GI")
+        XCTAssertEqual(item("UHLIG Henri").initials, "UH")
+        XCTAssertEqual(item("Pogačar").initials, "PO")
+        XCTAssertEqual(item("").initials, "")
+    }
+
     func testTeamRiderOpensTheRiderScreenOnItsPCSPage() {
         let item = Paddock.TeamRiderItem(
             path: "rider/jasper-philipsen",

@@ -22,6 +22,17 @@ extension Paddock {
         let points: Int?
         let photoURL: URL?
 
+        /// "DEL GROSSO Tibor" → "DT": the first letter of the surname and of the given name, the avatar's
+        /// stand-in when PCS has no photo. A single word gives its first two letters.
+        var initials: String {
+            let words = name.split { !$0.isLetter }.map(String.init)
+            guard let first = words.first, let last = words.last else { return "" }
+            let letters = words.count > 1
+                ? String(first.prefix(1)) + String(last.prefix(1))
+                : String(first.prefix(2))
+            return letters.uppercased()
+        }
+
         /// What the rider screen opens on: the name, flag and the rider's PCS page.
         var asRider: Rider {
             Rider(
@@ -309,7 +320,15 @@ extension Paddock {
             HStack(spacing: 12) {
                 CachedImageView(
                     imageUrl: rider.photoURL,
-                    cornerRadius: 20
+                    cornerRadius: 20,
+                    fallback: AnyView(
+                        TribuneruText(
+                            content: rider.initials,
+                            style: .vaporMonoMeta,
+                            color: .tribuneru(.kitAvatarText),
+                            lineLimit: 1
+                        )
+                    )
                 )
                 .frame(width: 40, height: 40)
                 .background(Circle().fill(Color.tribuneru(.kitAvatar)))
