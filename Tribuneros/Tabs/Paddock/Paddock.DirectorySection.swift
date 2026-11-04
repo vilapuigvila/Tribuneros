@@ -21,7 +21,12 @@ extension Paddock {
 
         var body: some View {
             VStack(alignment: .leading, spacing: 14) {
-                DirectoryControl(selected: $selected)
+                DirectoryControl(
+                    options: Directory.allCases,
+                    title: \.title,
+                    identifier: { "paddock.directory.\($0 == .races ? "races" : "teams")" },
+                    selected: $selected
+                )
                 VStack(spacing: 0) {
                     switch selected {
                     case .races:
@@ -148,19 +153,22 @@ extension Paddock {
         }
     }
 
-    private struct DirectoryControl: View {
-        @Binding var selected: Directory
+    private struct DirectoryControl<Option: Hashable>: View {
+        let options: [Option]
+        let title: (Option) -> String
+        let identifier: (Option) -> String
+        @Binding var selected: Option
 
         var body: some View {
             HStack(spacing: 4) {
-                ForEach(Directory.allCases, id: \.self) { directory in
+                ForEach(options, id: \.self) { directory in
                     let isSelected = directory == selected
                     Button {
                         UISelectionFeedbackGenerator().selectionChanged()
                         selected = directory
                     } label: {
                         TribuneruText(
-                            content: directory.title,
+                            content: title(directory),
                             style: .vaporLink,
                             color: .tribuneru(isSelected ? .kitTextPrimary : .kitTextSecondary),
                             lineLimit: 1
@@ -174,7 +182,7 @@ extension Paddock {
                     }
                     .buttonStyle(.plain)
                     .accessibilityAddTraits(isSelected ? .isSelected : [])
-                    .accessibilityIdentifier("paddock.directory.\(directory == .races ? "races" : "teams")")
+                    .accessibilityIdentifier(identifier(directory))
                 }
             }
             .padding(4)
@@ -248,6 +256,7 @@ extension Paddock {
 
     struct TeamRows: View {
         let teams: [TeamItem]
+        var showsDivision = true
 
         var body: some View {
             VStack(spacing: 0) {
@@ -255,7 +264,7 @@ extension Paddock {
                     if index > 0 {
                         RiderDivider(look: .kit)
                     }
-                    TeamRowView(team: team)
+                    TeamRowView(team: team, showsDivision: showsDivision)
                 }
             }
             .padding(.horizontal, 16)
@@ -264,6 +273,7 @@ extension Paddock {
 
     struct TeamRowView: View {
         let team: TeamItem
+        var showsDivision = true
 
         var body: some View {
             HStack(spacing: 12) {
@@ -282,7 +292,7 @@ extension Paddock {
                     lineLimit: 2
                 )
                 Spacer(minLength: 8)
-                if !team.division.isEmpty {
+                if showsDivision, !team.division.isEmpty {
                     TribuneruText(
                         content: team.division,
                         style: .vaporMonoMeta,
@@ -499,15 +509,22 @@ extension Paddock {
     struct TeamsListView: View {
         let teams: Listing<TeamItem>
 
+        private var countLabel: String {
+            let count = L10n.tr("%lld TEAMS", teams.items.count)
+            guard let season = Paddock.teamsSeason(teams.items) else { return count }
+            return "\(count) · \(L10n.tr("%lld SEASON", season))"
+        }
+
         var body: some View {
             DirectoryListScreen(
                 title: L10n.tr("Teams"),
-                countLabel: L10n.tr("%lld TEAMS", teams.items.count),
-                loading: teams == .loading
+                countLabel: countLabel,
+                loading: teams == .loading,
+                wrapsInCard: teams == .loading
             ) {
                 EmptyView()
             } rows: {
-                TeamRows(teams: teams.items)
+                TeamSections(groups: Paddock.teamGroups(teams.items))
             } placeholders: {
                 TeamRows(teams: TeamItem.placeholders)
             }
@@ -515,10 +532,47 @@ extension Paddock {
         }
     }
 
+    /// A segmented control over the divisions ("UCI WorldTeams" | "UCI ProTeams") and the selected one's card.
+    struct TeamSections: View {
+        let groups: [TeamGroup]
+
+        /// View-local, like the directory section's control; nil means the first division.
+        @State private var selectedID: String?
+
+        private var selected: TeamGroup? {
+            groups.first { $0.id == selectedID } ?? groups.first
+        }
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 14) {
+                if groups.count > 1 {
+                    DirectoryControl(
+                        options: groups.map(\.id),
+                        title: { id in
+                            groups.first { $0.id == id }.map(\.title) ?? id
+                        },
+                        identifier: { "paddock.teamsList.\($0)" },
+                        selected: Binding(
+                            get: { selected?.id ?? "" },
+                            set: { selectedID = $0 }
+                        )
+                    )
+                }
+                if let group = selected {
+                    TeamRows(teams: group.teams, showsDivision: group.division.isEmpty)
+                        .kitCard()
+                        .accessibilityLabel(group.title)
+                }
+            }
+        }
+    }
+
     private struct DirectoryListScreen<Accessory: View, Rows: View, Placeholders: View>: View {
         let title: String
         let countLabel: String
         let loading: Bool
+        /// The sections of the teams list draw their own cards.
+        var wrapsInCard = true
         /// Sits between the title and the card (the races list's Men | Women switch).
         @ViewBuilder let accessory: () -> Accessory
         @ViewBuilder let rows: () -> Rows
@@ -555,7 +609,7 @@ extension Paddock {
                             rows()
                         }
                     }
-                    .kitCard()
+                    .kitCard(isOn: wrapsInCard)
                 }
                 .padding()
                 .padding(.bottom, 40)
@@ -565,5 +619,12 @@ extension Paddock {
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
         }
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func kitCard(isOn: Bool) -> some View {
+        if isOn { kitCard() } else { self }
     }
 }

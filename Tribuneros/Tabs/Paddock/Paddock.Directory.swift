@@ -113,6 +113,34 @@ extension Paddock {
         }
     }
 
+    /// The teams of one division ("UCI WorldTeams", "UCI ProTeams"), in page order, for the full list's sections.
+    struct TeamGroup: Identifiable, Equatable, Sendable {
+        var id: String { division }
+        /// PCS's heading; "" for teams the page listed under no heading.
+        let division: String
+        let teams: [TeamItem]
+
+        /// The segment's title: PCS's heading, or "Teams" for the unheaded group.
+        var title: String { division.isEmpty ? L10n.tr("Teams") : division }
+    }
+
+    /// Splits the teams by division, keeping the order of first appearance and each division's own order.
+    static func teamGroups(_ teams: [TeamItem]) -> [TeamGroup] {
+        var order: [String] = []
+        var byDivision: [String: [TeamItem]] = [:]
+        for team in teams {
+            if byDivision[team.division] == nil { order.append(team.division) }
+            byDivision[team.division, default: []].append(team)
+        }
+        return order.map { TeamGroup(division: $0, teams: byDivision[$0] ?? []) }
+    }
+
+    /// The season the list is for: the year most team paths end in ("team/lidl-trek-2026"), nil when none do.
+    static func teamsSeason(_ teams: [TeamItem]) -> Int? {
+        let counts = teams.compactMap { pathYear($0.path) }.reduce(into: [Int: Int]()) { $0[$1, default: 0] += 1 }
+        return counts.max { ($0.value, $1.key) < ($1.value, $0.key) }?.key
+    }
+
     /// Rows the section shows before "See all".
     static let directoryPreviewLimit = 3
 
