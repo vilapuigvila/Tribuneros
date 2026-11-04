@@ -50,6 +50,40 @@ extension Paddock {
         return ranked + items.filter { $0.rank == nil }
     }
 
+    /// "team/lidl-trek-2027" → "team/lidl-trek-2026"; nil when the path doesn't end in a year.
+    static func previousSeasonPath(_ path: String) -> String? {
+        guard let year = pathYear(path),
+              path.hasSuffix("-\(year)")
+        else {
+            return nil
+        }
+        return String(path.dropLast(4)) + String(year - 1)
+    }
+
+    /// PCS publishes no rider photos for a new season's page until the season starts: riders without
+    /// one take the photo from the previous season's page (same rider path). Others are left as they are.
+    static func fillingPhotos(
+        _ riders: [TeamRiderItem],
+        from previous: DTO.PCSTeamPage?
+    ) -> [TeamRiderItem] {
+        guard let previous else { return riders }
+        let photos = Dictionary(
+            previous.riders.compactMap { rider in rider.photoURL.map { (rider.path, $0) } },
+            uniquingKeysWith: { first, _ in first }
+        )
+        return riders.map { rider in
+            guard rider.photoURL == nil, let photo = photos[rider.path] else { return rider }
+            return TeamRiderItem(
+                path: rider.path,
+                name: rider.name,
+                countryCode: rider.countryCode,
+                rank: rider.rank,
+                points: rider.points,
+                photoURL: photo
+            )
+        }
+    }
+
     /// Loads the roster once per screen; "Try again" restarts a failed load.
     @MainActor
     final class TeamDetailModel: ObservableObject {
@@ -75,7 +109,15 @@ extension Paddock {
                 let page = await fetch(team.path)
                 guard let self else { return }
                 if let page {
-                    self.riders = .loaded(Paddock.teamRiders(from: page))
+                    var riders = Paddock.teamRiders(from: page)
+                    if riders.contains(where: { $0.photoURL == nil }),
+                       let previousPath = Paddock.previousSeasonPath(team.path) {
+                        riders = Paddock.fillingPhotos(
+                            riders,
+                            from: await fetch(previousPath)
+                        )
+                    }
+                    self.riders = .loaded(riders)
                 } else {
                     self.riders = .failed
                 }

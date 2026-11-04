@@ -416,7 +416,7 @@ final class PaddockDirectoryTests: XCTestCase {
         XCTAssertEqual(model.riders.items.map(\.name), ["LEADER Mock", "SPRINTER Mock"])
         model.load()
         try? await Task.sleep(nanoseconds: 50_000_000)
-        XCTAssertEqual(paths, ["team/mock-2027"])
+        XCTAssertEqual(paths, ["team/mock-2027", "team/mock-2026"])
     }
 
     @MainActor
@@ -431,6 +431,40 @@ final class PaddockDirectoryTests: XCTestCase {
         model.load()
         try? await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertFalse(model.riders.items.isEmpty)
+    }
+
+    func testPreviousSeasonPath() {
+        XCTAssertEqual(Paddock.previousSeasonPath("team/lidl-trek-2027"), "team/lidl-trek-2026")
+        XCTAssertNil(Paddock.previousSeasonPath("team/lidl-trek"))
+    }
+
+    func testSparseTeamPageGetsItsPhotosFromThePreviousSeason() throws {
+        let current = Service.parsePCSTeamPage(try fixture("pcs_team"))
+        let previous = Service.parsePCSTeamPage(try fixture("pcs_team_2026"))
+        let riders = Paddock.teamRiders(from: current)
+        XCTAssertTrue(riders.allSatisfy { $0.photoURL == nil })
+
+        let filled = Paddock.fillingPhotos(riders, from: previous)
+        XCTAssertEqual(
+            filled.first { $0.path == "rider/jasper-philipsen" }?.photoURL,
+            URL(string: "https://www.procyclingstats.com/images/riders/iq/em/jasper-philipsen-2026.jpg")
+        )
+        XCTAssertEqual(filled.map(\.path), riders.map(\.path))
+        XCTAssertEqual(Paddock.fillingPhotos(riders, from: nil), riders)
+    }
+
+    @MainActor
+    func testTeamDetailModelAsksThePreviousSeasonOnlyForMissingPhotos() async {
+        var paths: [String] = []
+        let team = Paddock.TeamItem(path: "team/mock-2027", name: "Mock", division: "", countryCode: "")
+        let model = Paddock.TeamDetailModel(team: team, fetch: {
+            paths.append($0)
+            return PaddockMock.teamPage(path: $0)
+        })
+        model.load()
+        try? await Task.sleep(nanoseconds: 100_000_000)
+        // The mock's sprinter has no photo, so the 2026 page is asked too.
+        XCTAssertEqual(paths, ["team/mock-2027", "team/mock-2026"])
     }
 
     func testTappingATeamPushesItsScreen() {
