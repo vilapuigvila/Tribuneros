@@ -467,6 +467,24 @@ final class PaddockDirectoryTests: XCTestCase {
         XCTAssertEqual(paths, ["team/mock-2027", "team/mock-2026"])
     }
 
+    func testTeamRiderOpensTheRiderScreenOnItsPCSPage() {
+        let item = Paddock.TeamRiderItem(
+            path: "rider/jasper-philipsen",
+            name: "PHILIPSEN Jasper",
+            countryCode: "be",
+            rank: 6,
+            points: 1985,
+            photoURL: nil
+        )
+        let context = Paddock.RiderContext.teamRider(item.asRider)
+        XCTAssertEqual(context.rider.name, "PHILIPSEN Jasper")
+        XCTAssertEqual(context.rider.url, URL(string: "https://www.procyclingstats.com/rider/jasper-philipsen"))
+
+        let router = Router()
+        router.routeTo(.paddockRider(context))
+        XCTAssertEqual(router.lastPushed, .paddockRider(context))
+    }
+
     func testTappingATeamPushesItsScreen() {
         let team = Paddock.TeamItem(path: "team/mock-2027", name: "Mock", division: "", countryCode: "")
         let router = Router()

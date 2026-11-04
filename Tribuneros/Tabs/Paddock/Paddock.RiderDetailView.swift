@@ -50,6 +50,8 @@ extension Paddock {
                         ProgramPanel(card: card)
                     case .birthday(let entry):
                         BirthdayPanel(entry: entry)
+                    case .teamRider:
+                        EmptyView()
                     }
 
                     if isLoading {
@@ -113,6 +115,7 @@ extension Paddock {
             case .transfer: L10n.tr("Transfer")
             case .program: L10n.tr("Program update")
             case .birthday: L10n.tr("Birthday")
+            case .teamRider: L10n.tr("Rider")
             }
         }
 

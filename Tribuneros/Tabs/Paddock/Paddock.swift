@@ -248,12 +248,15 @@ extension Paddock {
         case transfer(TransferCard)
         case program(ProgramCard)
         case birthday(BirthdaysCard.Entry)
+        /// A row of a team's roster: no card of its own, just the rider's PCS page.
+        case teamRider(Rider)
 
         var rider: Rider {
             switch self {
             case .transfer(let card): card.rider
             case .program(let card): card.rider
             case .birthday(let entry): entry.rider
+            case .teamRider(let rider): rider
             }
         }
     }

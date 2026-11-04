@@ -34,7 +34,9 @@ struct PaddockView: View {
                     viewModel.action(.didTapOnTeam($0))
                 }
             case .paddockTeam(let team):
-                Paddock.TeamDetailView(team: team)
+                Paddock.TeamDetailView(team: team) {
+                    viewModel.action(.didTapOnRider($0))
+                }
             default:
                 EmptyView()
             }

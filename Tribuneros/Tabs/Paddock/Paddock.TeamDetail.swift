@@ -22,6 +22,15 @@ extension Paddock {
         let points: Int?
         let photoURL: URL?
 
+        /// What the rider screen opens on: the name, flag and the rider's PCS page.
+        var asRider: Rider {
+            Rider(
+                name: name,
+                countryCode: countryCode,
+                url: Service.pcsAbsoluteURL(path)
+            )
+        }
+
         static let placeholders: [TeamRiderItem] = (1...6).map { index in
             TeamRiderItem(
                 path: "placeholder-\(index)",
@@ -129,7 +138,13 @@ extension Paddock {
     struct TeamDetailView: View {
         @StateObject private var model: TeamDetailModel
 
-        init(team: TeamItem) {
+        let openRider: (RiderContext) -> Void
+
+        init(
+            team: TeamItem,
+            openRider: @escaping (RiderContext) -> Void
+        ) {
+            self.openRider = openRider
             _model = StateObject(wrappedValue: TeamDetailModel(team: team))
         }
 
@@ -156,7 +171,10 @@ extension Paddock {
                             if riders.isEmpty {
                                 message(L10n.tr("No riders listed."), retry: false)
                             } else {
-                                TeamRiderRows(riders: riders)
+                                TeamRiderRows(
+                                    riders: riders,
+                                    onTap: { openRider(.teamRider($0.asRider)) }
+                                )
                             }
                         }
                     }
@@ -249,6 +267,8 @@ extension Paddock {
 
     struct TeamRiderRows: View {
         let riders: [TeamRiderItem]
+        /// nil leaves the rows inert (the redacted placeholders).
+        var onTap: ((TeamRiderItem) -> Void)?
 
         var body: some View {
             VStack(spacing: 0) {
@@ -256,7 +276,18 @@ extension Paddock {
                     if index > 0 {
                         RiderDivider(look: .kit)
                     }
-                    TeamRiderRowView(rider: rider)
+                    if let onTap {
+                        Button {
+                            onTap(rider)
+                        } label: {
+                            TeamRiderRowView(rider: rider)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("paddock.teamRider.\(rider.path)")
+                    } else {
+                        TeamRiderRowView(rider: rider)
+                    }
                 }
             }
             .padding(.horizontal, 16)
