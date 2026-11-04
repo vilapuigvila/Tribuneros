@@ -65,18 +65,24 @@ extension Service {
         #endif
         guard path.hasPrefix("team/"),
               !path.contains(".."),
-              let document = await directoryDocument(baseStringURL + path)
+              let document = await directoryDocument(
+                  baseStringURL + path,
+                  ttl: 60 * 60 * 12
+              )
         else {
             return nil
         }
         return parsePCSTeamPage(document)
     }
 
-    private static func directoryDocument(_ url: String) async -> Document? {
+    private static func directoryDocument(
+        _ url: String,
+        ttl: TimeInterval = 60 * 60 * 48
+    ) async -> Document? {
         do {
             let (data, _) = try await Requester
                 .makeRequest(url)
-                .ttl(60 * 60 * 48)
+                .ttl(ttl)
                 .cacheControlBehavior(.ignoreServer)
                 .send()
             guard let html = String(data: data, encoding: .utf8) else { return nil }
@@ -132,18 +138,221 @@ extension Service {
         return spanFlagCode(in: parent)
     }
 
-    /// The `ul.list` after the "Related teams" `h4`: each `li` holds a team link "Name (CLASS)" and a `div.fs12` relation.
+    /// Header, KPIs, info, links, roster, victories, results, staff and related teams; every part is empty when its markup is missing.
     static func parsePCSTeamPage(_ document: Document) -> DTO.PCSTeamPage {
-        guard let heading = try? document.select("h4").array().first(where: {
-                  ((try? $0.text()) ?? "").trimmingCharacters(in: .whitespaces) == "Related teams"
-              }),
+        let (name, classCode) = teamHeader(document)
+        return DTO.PCSTeamPage(
+            name: name,
+            classCode: classCode,
+            season: teamSeason(document),
+            kpis: teamKPIs(document),
+            info: teamInfo(document),
+            links: teamLinks(document),
+            riders: teamRiders(document),
+            victories: teamVictories(document),
+            topResults: teamTopResults(document),
+            staff: teamStaff(document),
+            relatedTeams: teamRelated(document)
+        )
+    }
+
+    private static func cleanText(_ element: Element?) -> String {
+        let text = (try? element?.text()) ?? ""
+        return text.split(whereSeparator: \.isWhitespace).joined(separator: " ")
+    }
+
+    private static func intValue(_ text: String) -> Int? {
+        Int(text.trimmingCharacters(in: .whitespaces))
+    }
+
+    private static func heading(_ document: Document, _ title: String) -> Element? {
+        (try? document.select("h4").array())?.first { cleanText($0) == title }
+    }
+
+    private static func teamTableRows(after title: String, in document: Document) -> [[Element]] {
+        guard let table = try? heading(document, title)?.nextElementSibling(),
+              table.tagName() == "table",
+              let rows = try? table.select("tbody > tr").array()
+        else {
+            return []
+        }
+        return rows.compactMap { try? $0.select("td").array() }
+    }
+
+    private static func teamHeader(_ document: Document) -> (String, String) {
+        guard let h1 = try? document.select("h1").first() else { return ("", "") }
+        let code = cleanText(try? h1.select("span").first()).trimmingCharacters(in: CharacterSet(charactersIn: "()"))
+        let full = cleanText(h1)
+        let name = code.isEmpty ? full : String(full.dropLast(code.count + 2)).trimmingCharacters(in: .whitespaces)
+        return (name, code)
+    }
+
+    private static func teamSeason(_ document: Document) -> Int? {
+        let text = cleanText(try? document.select(".subtitle h2").first())
+        return intValue(String(text.prefix(4)))
+    }
+
+    private static func teamKPIs(_ document: Document) -> DTO.PCSTeamKPIs {
+        var kpis = DTO.PCSTeamKPIs()
+        for item in (try? document.select("ul.teamkpi li").array()) ?? [] {
+            let value = intValue(cleanText(try? item.select("div.value").first()))
+            switch cleanText(try? item.select("div.title").first()) {
+            case "Victories": kpis.victories = value
+            case "Points": kpis.points = value
+            case "PCS#": kpis.pcsRank = value
+            case "UCI#": kpis.uciRank = value
+            case "Incoming": kpis.incoming = value
+            case "Outgoing": kpis.outgoing = value
+            default: break
+            }
+        }
+        return kpis
+    }
+
+    private static func teamInfo(_ document: Document) -> DTO.PCSTeamInfo {
+        var info = DTO.PCSTeamInfo()
+        guard let list = try? heading(document, "Info")?.nextElementSibling(),
+              let items = try? list.select("li").array()
+        else {
+            return info
+        }
+        for item in items {
+            let label = cleanText(try? item.select("div.title").first()).trimmingCharacters(in: CharacterSet(charactersIn: ": "))
+            guard let value = try? item.select("div.value").first() else { continue }
+            let text = cleanText(value)
+            let nonEmpty = (text.isEmpty || text == "-") ? nil : text
+            switch label {
+            case "Team status": info.status = nonEmpty
+            case "Abbreviation": info.abbreviation = nonEmpty
+            case "License country": info.licenseCountry = nonEmpty
+            case "Bike": info.bike = nonEmpty
+            case "Jersey":
+                if let src = try? value.select("img").first()?.attr("src"), !src.isEmpty {
+                    info.jerseyURL = pcsAbsoluteURL(src)
+                }
+            default: break
+            }
+        }
+        return info
+    }
+
+    private static func teamLinks(_ document: Document) -> [DTO.PCSTeamLink] {
+        guard let list = try? heading(document, "Info")?.parent()?.nextElementSibling(),
+              let anchors = try? list.select("a[target=_blank]").array()
+        else {
+            return []
+        }
+        return anchors.compactMap { anchor in
+            guard let href = try? anchor.attr("href"),
+                  let url = URL(string: href),
+                  url.scheme?.hasPrefix("http") == true
+            else {
+                return nil
+            }
+            let kind = cleanText(anchor)
+            return kind.isEmpty ? nil : DTO.PCSTeamLink(kind: kind, url: url)
+        }
+    }
+
+    private static func teamRiders(_ document: Document) -> [DTO.PCSTeamRider] {
+        var photos: [String: URL] = [:]
+        for item in (try? document.select("ul.photos li").array()) ?? [] {
+            if let href = try? item.select("a[href^=rider/]").first()?.attr("href"),
+               let src = try? item.select("img").first()?.attr("src"),
+               !src.isEmpty {
+                photos[href] = pcsAbsoluteURL(src)
+            }
+        }
+        let tables = (try? document.select("table.teamlist").array()) ?? []
+        guard let table = tables.first(where: { cleanText(try? $0.select("th").last()) == "points" }),
+              let rows = try? table.select("tbody > tr").array()
+        else {
+            return []
+        }
+        return rows.compactMap { row in
+            guard let cells = try? row.select("td").array(), cells.count >= 4,
+                  let link = try? cells[1].select("a[href^=rider/]").first(),
+                  let href = try? link.attr("href")
+            else {
+                return nil
+            }
+            return DTO.PCSTeamRider(
+                path: href,
+                name: cleanText(link),
+                countryCode: spanFlagCode(in: cells[1]) ?? "",
+                rank: intValue(cleanText(cells[2])),
+                points: intValue(cleanText(cells[3])),
+                photoURL: photos[href]
+            )
+        }
+    }
+
+    private static func teamVictories(_ document: Document) -> [DTO.PCSTeamVictory] {
+        teamTableRows(after: "Last victories", in: document).compactMap { cells in
+            guard cells.count >= 4,
+                  let race = try? cells[1].select("a[href^=race/]").first(),
+                  let rider = try? cells[3].select("a[href^=rider/]").first()
+            else {
+                return nil
+            }
+            return DTO.PCSTeamVictory(
+                racePath: (try? race.attr("href")) ?? "",
+                raceName: cleanText(race),
+                raceClass: cleanText(cells[2]),
+                countryCode: spanFlagCode(in: cells[1]) ?? "",
+                riderPath: (try? rider.attr("href")) ?? "",
+                riderName: cleanText(rider)
+            )
+        }
+    }
+
+    private static func teamTopResults(_ document: Document) -> [DTO.PCSTeamResult] {
+        teamTableRows(after: "Top results", in: document).compactMap { cells in
+            guard cells.count >= 5,
+                  let race = try? cells[1].select("a[href^=race/]").first(),
+                  let rider = try? cells[3].select("a[href^=rider/]").first()
+            else {
+                return nil
+            }
+            return DTO.PCSTeamResult(
+                position: intValue(cleanText(cells[0])),
+                racePath: (try? race.attr("href")) ?? "",
+                raceName: cleanText(race),
+                raceClass: cleanText(cells[2]),
+                countryCode: spanFlagCode(in: cells[1]) ?? "",
+                riderPath: (try? rider.attr("href")) ?? "",
+                riderName: cleanText(rider),
+                points: intValue(cleanText(cells[4]))
+            )
+        }
+    }
+
+    private static func teamStaff(_ document: Document) -> [DTO.PCSTeamStaff] {
+        teamTableRows(after: "Staff", in: document).compactMap { cells in
+            guard cells.count >= 2,
+                  let link = try? cells[0].select("a[href^=staff/]").first()
+            else {
+                return nil
+            }
+            return DTO.PCSTeamStaff(
+                path: (try? link.attr("href")) ?? "",
+                name: cleanText(link),
+                function: cleanText(cells[1]),
+                countryCode: spanFlagCode(in: cells[0]) ?? ""
+            )
+        }
+    }
+
+    /// The `ul.list` after the "Related teams" `h4`: each `li` holds a team link "Name (CLASS)" and a `div.fs12` relation.
+    private static func teamRelated(_ document: Document) -> [DTO.PCSRelatedTeam] {
+        guard let heading = heading(document, "Related teams"),
               let list = try? heading.nextElementSibling(),
               list.tagName() == "ul",
               let items = try? list.select("li").array()
         else {
-            return DTO.PCSTeamPage(relatedTeams: [])
+            return []
         }
-        let related = items.compactMap { item -> DTO.PCSRelatedTeam? in
+        return items.compactMap { item -> DTO.PCSRelatedTeam? in
             guard let link = try? item.select("a[href^=team/]").first(),
                   let href = try? link.attr("href"),
                   let text = try? link.text().trimmingCharacters(in: .whitespaces),
@@ -159,7 +368,6 @@ extension Service {
                 relation: ((try? item.select("div.fs12").first()?.text()) ?? "").trimmingCharacters(in: .whitespaces)
             )
         }
-        return DTO.PCSTeamPage(relatedTeams: related)
     }
 
     /// "Fenix-Premier Tech (WTW)" → ("Fenix-Premier Tech", "WTW").

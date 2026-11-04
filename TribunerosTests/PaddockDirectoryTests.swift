@@ -124,6 +124,118 @@ final class PaddockDirectoryTests: XCTestCase {
         XCTAssertTrue(Service.parsePCSTeamPage(try SwiftSoup.parse("<html><body></body></html>")).relatedTeams.isEmpty)
     }
 
+    func testRealFullTeamPageParsesEverySection() throws {
+        let page = Service.parsePCSTeamPage(try fixture("pcs_team_2026"))
+        XCTAssertEqual(page.name, "Alpecin - Premier Tech")
+        XCTAssertEqual(page.classCode, "WT")
+        XCTAssertEqual(page.season, 2026)
+        XCTAssertEqual(
+            page.kpis,
+            DTO.PCSTeamKPIs(
+                victories: 21,
+                points: 6223,
+                pcsRank: 11,
+                uciRank: 11,
+                incoming: 12,
+                outgoing: 11
+            )
+        )
+        XCTAssertEqual(
+            page.info,
+            DTO.PCSTeamInfo(
+                status: "WT",
+                abbreviation: "APT",
+                licenseCountry: "Belgium",
+                bike: "Canyon",
+                jerseyURL: URL(string: "https://www.procyclingstats.com/images/shirts/bx/eb/alpecin-premier-tech-2026.png")
+            )
+        )
+        XCTAssertEqual(page.links.map(\.kind), ["FACEBOOK", "SITE", "TWITTER", "INSTAGRAM"])
+        XCTAssertEqual(page.links.first?.url, URL(string: "https://www.facebook.com/alpecinpremiertech"))
+        XCTAssertEqual(page.riders.count, 30)
+        XCTAssertEqual(
+            page.riders.first,
+            DTO.PCSTeamRider(
+                path: "rider/jasper-philipsen",
+                name: "PHILIPSEN Jasper",
+                countryCode: "be",
+                rank: 6,
+                points: 1985,
+                photoURL: URL(string: "https://www.procyclingstats.com/images/riders/iq/em/jasper-philipsen-2026.jpg")
+            )
+        )
+        XCTAssertEqual(
+            page.victories.first,
+            DTO.PCSTeamVictory(
+                racePath: "race/tour-de-luxembourg-2026-stage-5",
+                raceName: "Skoda Tour de Luxembourg | Stage 5",
+                raceClass: "2.Pro",
+                countryCode: "lu",
+                riderPath: "rider/mathieu-van-der-poel",
+                riderName: "VAN DER POEL Mathieu"
+            )
+        )
+        XCTAssertEqual(
+            page.topResults.first,
+            DTO.PCSTeamResult(
+                position: 1,
+                racePath: "race/renewi-tour-2026-gc",
+                raceName: "Renewi Tour | General classification",
+                raceClass: "2.UWT",
+                countryCode: "be",
+                riderPath: "rider/jasper-philipsen",
+                riderName: "PHILIPSEN Jasper",
+                points: 250
+            )
+        )
+        XCTAssertEqual(
+            page.staff.first,
+            DTO.PCSTeamStaff(
+                path: "staff/philip-roodhooft",
+                name: "Philip Roodhooft",
+                function: "General manager",
+                countryCode: "be"
+            )
+        )
+        XCTAssertEqual(page.relatedTeams.count, 3)
+    }
+
+    func testRealSparseTeamPageHasNilKPIsAndNoLists() throws {
+        let page = Service.parsePCSTeamPage(try fixture("pcs_team"))
+        XCTAssertEqual(page.name, "Alpecin - Premier Tech")
+        XCTAssertEqual(page.classCode, "WT")
+        XCTAssertEqual(page.season, 2027)
+        XCTAssertEqual(page.kpis.victories, 0)
+        XCTAssertNil(page.kpis.points)
+        XCTAssertNil(page.kpis.pcsRank)
+        XCTAssertNil(page.kpis.uciRank)
+        XCTAssertEqual(page.kpis.incoming, 5)
+        XCTAssertEqual(page.kpis.outgoing, 7)
+        XCTAssertNil(page.info.jerseyURL)
+        XCTAssertTrue(page.victories.isEmpty)
+        XCTAssertTrue(page.topResults.isEmpty)
+        XCTAssertTrue(page.staff.isEmpty)
+    }
+
+    func testEmptyDocumentGivesAnEmptyTeamPage() throws {
+        let page = Service.parsePCSTeamPage(try SwiftSoup.parse("<html><body></body></html>"))
+        XCTAssertEqual(page, DTO.PCSTeamPage(relatedTeams: []))
+    }
+
+    func testMockTeamPageFillsEverySection() {
+        let page = PaddockMock.teamPage(path: "team/uae-team-emirates-xrg-2027")
+        XCTAssertFalse(page.name.isEmpty)
+        XCTAssertNotNil(page.season)
+        XCTAssertNotNil(page.kpis.points)
+        XCTAssertNotNil(page.info.jerseyURL)
+        XCTAssertFalse(page.links.isEmpty)
+        XCTAssertFalse(page.riders.isEmpty)
+        XCTAssertFalse(page.victories.isEmpty)
+        XCTAssertFalse(page.topResults.isEmpty)
+        XCTAssertFalse(page.staff.isEmpty)
+        XCTAssertFalse(page.relatedTeams.isEmpty)
+    }
+
     func testMockTeamPageHasAWomensTeam() {
         let page = PaddockMock.teamPage(path: "team/uae-team-emirates-xrg-2027")
         XCTAssertEqual(page.womensTeam?.classCode, "WTW")

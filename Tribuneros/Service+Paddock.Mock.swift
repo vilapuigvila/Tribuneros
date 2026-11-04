@@ -226,6 +226,82 @@ extension PaddockMock {
     static func teamPage(path: String) -> DTO.PCSTeamPage {
         let slug = path.replacingOccurrences(of: "team/", with: "")
         return DTO.PCSTeamPage(
+            name: "Mock Team",
+            classCode: "WT",
+            season: 2027,
+            kpis: DTO.PCSTeamKPIs(
+                victories: 21,
+                points: 6223,
+                pcsRank: 11,
+                uciRank: 12,
+                incoming: 12,
+                outgoing: 11
+            ),
+            info: DTO.PCSTeamInfo(
+                status: "WT",
+                abbreviation: "MCK",
+                licenseCountry: "Belgium",
+                bike: "Mock Bikes",
+                jerseyURL: Service.pcsAbsoluteURL("images/shirts/mock-\(slug).png")
+            ),
+            links: [
+                DTO.PCSTeamLink(
+                    kind: "SITE",
+                    url: URL(string: "https://example.com/\(slug)")!
+                ),
+                DTO.PCSTeamLink(
+                    kind: "INSTAGRAM",
+                    url: URL(string: "https://www.instagram.com/\(slug)")!
+                )
+            ],
+            riders: [
+                DTO.PCSTeamRider(
+                    path: "rider/mock-leader",
+                    name: "LEADER Mock",
+                    countryCode: "be",
+                    rank: 6,
+                    points: 1985,
+                    photoURL: Service.pcsAbsoluteURL("images/riders/mock-leader.jpg")
+                ),
+                DTO.PCSTeamRider(
+                    path: "rider/mock-sprinter",
+                    name: "SPRINTER Mock",
+                    countryCode: "nl",
+                    rank: 10,
+                    points: 1494,
+                    photoURL: nil
+                )
+            ],
+            victories: [
+                DTO.PCSTeamVictory(
+                    racePath: "race/mock-tour-2027-stage-1",
+                    raceName: "Mock Tour | Stage 1",
+                    raceClass: "2.UWT",
+                    countryCode: "be",
+                    riderPath: "rider/mock-leader",
+                    riderName: "LEADER Mock"
+                )
+            ],
+            topResults: [
+                DTO.PCSTeamResult(
+                    position: 1,
+                    racePath: "race/mock-classic-2027-result",
+                    raceName: "Mock Classic",
+                    raceClass: "1.UWT",
+                    countryCode: "be",
+                    riderPath: "rider/mock-sprinter",
+                    riderName: "SPRINTER Mock",
+                    points: 225
+                )
+            ],
+            staff: [
+                DTO.PCSTeamStaff(
+                    path: "staff/mock-manager",
+                    name: "Mock Manager",
+                    function: "General manager",
+                    countryCode: "be"
+                )
+            ],
             relatedTeams: [
                 DTO.PCSRelatedTeam(
                     path: "team/\(slug)-women",

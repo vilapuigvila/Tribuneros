@@ -318,11 +318,79 @@ extension DTO {
 
     /// What a PCS team page (`team/<slug>-<year>`) adds to its `teams.php` row.
     struct PCSTeamPage: Equatable, Sendable {
+        var name: String = ""
+        var classCode: String = ""
+        var season: Int?
+        var kpis = PCSTeamKPIs()
+        var info = PCSTeamInfo()
+        var links: [PCSTeamLink] = []
+        var riders: [PCSTeamRider] = []
+        var victories: [PCSTeamVictory] = []
+        var topResults: [PCSTeamResult] = []
+        var staff: [PCSTeamStaff] = []
         let relatedTeams: [PCSRelatedTeam]
 
         var womensTeam: PCSRelatedTeam? {
             relatedTeams.first { $0.relation == "women's team" }
         }
+    }
+
+    struct PCSTeamKPIs: Equatable, Sendable {
+        var victories: Int?
+        var points: Int?
+        var pcsRank: Int?
+        var uciRank: Int?
+        var incoming: Int?
+        var outgoing: Int?
+    }
+
+    struct PCSTeamInfo: Equatable, Sendable {
+        var status: String?
+        var abbreviation: String?
+        var licenseCountry: String?
+        var bike: String?
+        var jerseyURL: URL?
+    }
+
+    struct PCSTeamLink: Equatable, Sendable {
+        let kind: String
+        let url: URL
+    }
+
+    struct PCSTeamRider: Equatable, Sendable {
+        let path: String
+        let name: String
+        let countryCode: String
+        let rank: Int?
+        let points: Int?
+        let photoURL: URL?
+    }
+
+    struct PCSTeamVictory: Equatable, Sendable {
+        let racePath: String
+        let raceName: String
+        let raceClass: String
+        let countryCode: String
+        let riderPath: String
+        let riderName: String
+    }
+
+    struct PCSTeamResult: Equatable, Sendable {
+        let position: Int?
+        let racePath: String
+        let raceName: String
+        let raceClass: String
+        let countryCode: String
+        let riderPath: String
+        let riderName: String
+        let points: Int?
+    }
+
+    struct PCSTeamStaff: Equatable, Sendable {
+        let path: String
+        let name: String
+        let function: String
+        let countryCode: String
     }
 
     struct PressLink: Equatable, Sendable {
