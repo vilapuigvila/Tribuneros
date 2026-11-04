@@ -1,0 +1,40 @@
+# Paddock's Races | Teams directory on Debug mock data (mock scenario live): no network.
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- tapOn: "Paddock"
+- scrollUntilVisible:
+    element:
+      id: "paddock.directory"
+    timeout: 45000
+- scrollUntilVisible:
+    element: "Santos Tour Down Under"
+- assertVisible: "UAE Tour"
+- assertNotVisible: "Paris-Nice"
+- tapOn: "Teams"
+- assertVisible: "UAE Team Emirates - XRG"
+- assertNotVisible: "Santos Tour Down Under"
+- tapOn: "Races"
+- assertVisible: "Santos Tour Down Under"
+- tapOn: "See all races"
+- assertVisible: "6 RACES"
+- scrollUntilVisible:
+    element: "Paris-Nice"
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- scrollUntilVisible:
+    element: "Teams"
+    direction: UP
+- tapOn: "Teams"
+- scrollUntilVisible:
+    element: "See all teams"
+- tapOn: "See all teams"
+- assertVisible: "5 TEAMS"
+- scrollUntilVisible:
+    element: "Team Flanders - Baloise"

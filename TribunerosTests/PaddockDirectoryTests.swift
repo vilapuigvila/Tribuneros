@@ -2,9 +2,8 @@
 //  PaddockDirectoryTests.swift
 //  TribunerosTests
 //
-//  Paddock's Races | Teams section. The HTML below is synthetic, shaped like PCS's `races.php`
-//  (the same table as the saved "latest results" page) and `teams.php` (headings, then team
-//  links): replace it with real captures (taken with `URLSession`, not curl) when possible.
+//  Paddock's Races | Teams section, parsed from real `races.php` / `teams.php` pages saved with
+//  `URLSession` (`pcs_races.html`, `pcs_teams.html`); re-capture them when PCS changes its markup.
 //
 
 import XCTest
@@ -13,23 +12,10 @@ import SwiftSoup
 
 final class PaddockDirectoryTests: XCTestCase {
 
-    private let racesHTML = """
-    <table class="basic"><tbody>
-    <tr><td>2027-01-20</td><td><span class="flag au"></span> <a href="race/tour-down-under/2027/stage-1">Tour Down Under | Stage 1</a></td><td>2.UWT</td></tr>
-    <tr><td>2027-01-21</td><td><span class="flag au"></span> <a href="race/tour-down-under/2027/stage-2">Tour Down Under | Stage 2</a></td><td>2.UWT</td></tr>
-    <tr><td>2027-02-04</td><td><span class="flag es"></span> <a href="race/vuelta-a-murcia/2027/result">Vuelta a Murcia</a></td><td>1.1</td></tr>
-    <tr><td>no link</td><td>nothing</td></tr>
-    </tbody></table>
-    """
-
-    private let teamsHTML = """
-    <h3>WorldTour</h3>
-    <ul><li><span class="flag ae"></span> <a href="team/uae-team-emirates-xrg-2026">UAE Team Emirates - XRG</a></li>
-    <li><a href="team/visma-lease-a-bike-2026">Visma | Lease a Bike</a></li></ul>
-    <h3>ProTeams</h3>
-    <ul><li><a href="team/tudor-pro-cycling-team-2026">Tudor Pro Cycling Team</a></li>
-    <li><a href="team/tudor-pro-cycling-team-2026">Tudor Pro Cycling Team</a></li></ul>
-    """
+    private func fixture(_ name: String) throws -> Document {
+        let url = try XCTUnwrap(Bundle(for: type(of: self)).url(forResource: name, withExtension: "html"))
+        return try SwiftSoup.parse(String(contentsOf: url, encoding: .utf8))
+    }
 
     private func calendar() -> Calendar {
         var calendar = Calendar(identifier: .gregorian)
@@ -43,24 +29,40 @@ final class PaddockDirectoryTests: XCTestCase {
 
     // MARK: - Parsing
 
-    func testRacesParseRowsAndKeepOneRowPerRace() throws {
-        let races = Service.parsePCSRaces(try SwiftSoup.parse(racesHTML))
-        XCTAssertEqual(races.map(\.name), ["Tour Down Under | Stage 1", "Vuelta a Murcia"])
-        XCTAssertEqual(races[0].path, "race/tour-down-under/2027")
-        XCTAssertEqual(races[0].raceClass, "2.UWT")
-        XCTAssertEqual(races[0].countryCode, "au")
-        XCTAssertEqual(races[1].dateText, "2027-02-04")
+    func testRealRacesPageParsesTheFullList() throws {
+        let races = Service.parsePCSRaces(try fixture("pcs_races"))
+        XCTAssertEqual(races.count, 36)
+        XCTAssertEqual(
+            races[0],
+            DTO.PCSRace(
+                path: "race/tour-down-under-2027",
+                name: "Santos Tour Down Under",
+                dateText: "19.01 - 24.01",
+                raceClass: "2.UWT",
+                countryCode: "au"
+            )
+        )
+        XCTAssertEqual(races[1].path, "race/great-ocean-road-race-2027")
+        XCTAssertEqual(races[1].dateText, "31.01")
+        XCTAssertEqual(races.last?.name, "Tour of Guangxi")
+        XCTAssertTrue(races.allSatisfy { !$0.name.isEmpty && !$0.raceClass.isEmpty && !$0.countryCode.isEmpty })
+        XCTAssertTrue(races.allSatisfy { $0.path.hasPrefix("race/") && !$0.path.hasSuffix("-gc") && !$0.path.hasSuffix("-result") })
+        XCTAssertEqual(Set(races.map(\.path)).count, races.count)
     }
 
-    func testTeamsTakeTheDivisionFromTheHeadingAndSkipDuplicates() throws {
-        let teams = Service.parsePCSTeams(try SwiftSoup.parse(teamsHTML))
-        XCTAssertEqual(
-            teams.map(\.name),
-            ["UAE Team Emirates - XRG", "Visma | Lease a Bike", "Tudor Pro Cycling Team"]
-        )
-        XCTAssertEqual(teams.map(\.division), ["WorldTour", "WorldTour", "ProTeams"])
-        XCTAssertEqual(teams[0].countryCode, "ae")
-        XCTAssertEqual(teams[1].countryCode, "")
+    func testRealTeamsPageParsesBothDivisionsWithoutMenuLinks() throws {
+        let teams = Service.parsePCSTeams(try fixture("pcs_teams"))
+        let world = teams.filter { $0.division == "UCI WorldTeams" }
+        let pro = teams.filter { $0.division == "UCI ProTeams" }
+        XCTAssertEqual(world.count, 18)
+        XCTAssertEqual(pro.count, 14)
+        XCTAssertEqual(teams.count, 32)
+        XCTAssertEqual(world.first?.name, "Alpecin - Premier Tech")
+        XCTAssertEqual(world.first?.path, "team/alpecin-premier-tech-2027")
+        XCTAssertEqual(world.first?.countryCode, "be")
+        XCTAssertEqual(pro.first?.name, "Bardiani CSF 7 Saber")
+        XCTAssertEqual(pro.first?.countryCode, "it")
+        XCTAssertTrue(teams.allSatisfy { $0.path.hasSuffix("-2027") && !$0.countryCode.isEmpty })
     }
 
     func testEmptyPagesParseToNothing() throws {
@@ -77,7 +79,24 @@ final class PaddockDirectoryTests: XCTestCase {
         XCTAssertEqual(Paddock.raceStart(from: "2027-01-20", now: now, calendar: calendar), day(2027, 1, 20))
         XCTAssertEqual(Paddock.raceStart(from: "20.01", now: now, calendar: calendar), day(2027, 1, 20))
         XCTAssertEqual(Paddock.raceStart(from: "20.01 - 25.01", now: now, calendar: calendar), day(2027, 1, 20))
+        XCTAssertEqual(
+            Paddock.raceStart(from: "19.01 - 24.01", now: day(2026, 11, 3), calendar: calendar, year: 2027),
+            day(2027, 1, 19)
+        )
+        XCTAssertEqual(Paddock.pathYear("race/tour-down-under-2027"), 2027)
+        XCTAssertNil(Paddock.pathYear("race/gp-quebec"))
         XCTAssertNil(Paddock.raceStart(from: "soon", now: now, calendar: calendar))
+    }
+
+    func testRealRacesPreviewIsTheNextSeasonsFirstThreeInNovember() throws {
+        let items = Service.parsePCSRaces(try fixture("pcs_races")).map {
+            Paddock.raceItem(from: $0, now: day(2026, 11, 3), calendar: calendar())
+        }
+        XCTAssertTrue(items.allSatisfy { $0.startDate != nil })
+        XCTAssertEqual(
+            Paddock.previewRaces(items, now: day(2026, 11, 3), calendar: calendar()).map(\.name),
+            ["Santos Tour Down Under", "Mapei Cadel Evans Great Ocean Road Race ME", "UAE Tour"]
+        )
     }
 
     func testPreviewShowsTheNextThreeRacesAndFallsBackToTheFirstThree() {
@@ -117,7 +136,7 @@ final class PaddockDirectoryTests: XCTestCase {
 
         domain.races = []
         domain.racesFailed = true
-        domain.teams = [DTO.PCSTeam(path: "team/a", name: "A Team", division: "WorldTour", countryCode: "")]
+        domain.teams = [DTO.PCSTeam(path: "team/a", name: "A Team", division: "UCI WorldTeams", countryCode: "")]
         state = Paddock.ViewModel<Paddock.InteractorImpl>.mapToViewState(from: domain, now: Date())
         XCTAssertEqual(state.races, .failed)
         XCTAssertEqual(state.teams.items.map(\.name), ["A Team"])

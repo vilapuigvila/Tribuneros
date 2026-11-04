@@ -116,7 +116,8 @@ extension Paddock {
         let start = raceStart(
             from: race.dateText,
             now: now,
-            calendar: calendar
+            calendar: calendar,
+            year: pathYear(race.path)
         )
         return RaceItem(
             path: race.path,
@@ -137,12 +138,13 @@ extension Paddock {
         )
     }
 
-    /// PCS prints "2027-01-19" or "19.01" (the latter without a year, the current one); a range
+    /// PCS prints "19.01" (no year: the one in the race path, else the current one) or "2027-01-19"; a range
     /// ("19.01 - 24.01") starts on its first date.
     static func raceStart(
         from text: String,
         now: Date,
-        calendar: Calendar
+        calendar: Calendar,
+        year: Int? = nil
     ) -> Date? {
         let first = text
             .split(whereSeparator: { $0 == "-" && text.contains(" - ") || $0 == "–" })
@@ -156,9 +158,15 @@ extension Paddock {
         let parts = first.split(whereSeparator: { $0 == "." || $0 == "/" }).compactMap { Int($0) }
         guard parts.count == 2 else { return nil }
         var components = calendar.dateComponents([.year], from: now)
+        components.year = year ?? components.year
         components.day = parts[0]
         components.month = parts[1]
         return calendar.date(from: components)
+    }
+
+    /// The calendar lists next season's races from the autumn, so the year comes from the slug, not the clock.
+    static func pathYear(_ path: String) -> Int? {
+        path.split(separator: "-").last.flatMap { Int($0) }.flatMap { (1900...2100).contains($0) ? $0 : nil }
     }
 
     private static func parse(

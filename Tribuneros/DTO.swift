@@ -293,9 +293,9 @@ extension DTO {
     /// A row of PCS's `races.php` calendar: the start date text as PCS prints it, the race link,
     /// its flag and UCI class.
     struct PCSRace: Equatable, Sendable, Hashable {
-        let path: String          // "race/tour-down-under/2027/gc"
+        let path: String          // "race/tour-down-under-2027"
         let name: String
-        let dateText: String      // "2027-01-19" or "19.01"
+        let dateText: String      // "19.01 - 24.01" or "31.01"
         let raceClass: String     // "2.UWT"
         let countryCode: String
     }
@@ -304,7 +304,7 @@ extension DTO {
     struct PCSTeam: Equatable, Sendable, Hashable {
         let path: String          // "team/uae-team-emirates-xrg-2026"
         let name: String
-        let division: String      // "WorldTour", "" when the page gave none
+        let division: String      // "UCI WorldTeams", "" when the page gave none
         let countryCode: String
     }
 

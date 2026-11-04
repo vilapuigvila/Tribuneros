@@ -59,14 +59,13 @@ extension Service {
         }
     }
 
-    /// Rows are date, race (flag + link) and UCI class, like the "latest results" table on the
-    /// same page. A race listed once per stage keeps its first row.
+    /// Rows are date, start date, race (flag + link), winner and UCI class. A race listed twice keeps its first row.
     static func parsePCSRaces(_ document: Document) -> [DTO.PCSRace] {
         guard let rows = try? document.select("table.basic > tbody > tr").array() else { return [] }
         var seen = Set<String>()
         return rows.compactMap { row -> DTO.PCSRace? in
-            guard let cells = try? row.select("td").array(), cells.count >= 2,
-                  let link = try? cells[1].select("a[href^=race/]").first(),
+            guard let cells = try? row.select("td").array(), cells.count >= 5,
+                  let link = try? cells[2].select("a[href^=race/]").first(),
                   let href = try? link.attr("href"),
                   let name = try? link.text().trimmingCharacters(in: .whitespaces),
                   !name.isEmpty
@@ -79,37 +78,39 @@ extension Service {
                 path: path,
                 name: name,
                 dateText: ((try? cells[0].text()) ?? "").trimmingCharacters(in: .whitespaces),
-                raceClass: cells.count > 2 ? ((try? cells[2].text()) ?? "") : "",
-                countryCode: spanFlagCode(in: cells[1]) ?? ""
+                raceClass: ((try? cells[4].text()) ?? "").trimmingCharacters(in: .whitespaces),
+                countryCode: spanFlagCode(in: cells[2]) ?? ""
             )
         }
     }
 
-    /// "race/tour-down-under/2027/stage-1" and ".../gc" are the same race: keep "race/<slug>/<year>".
+    /// "race/tour-down-under-2027-gc" and "...-result" name the same race: keep "race/<slug>-<year>".
     private static func racePath(_ href: String) -> String {
-        let parts = href.split(separator: "/").map(String.init)
-        guard parts.count > 3, parts[0] == "race", Int(parts[2]) != nil else { return href }
-        return parts.prefix(3).joined(separator: "/")
+        for suffix in ["-gc", "-result"] where href.hasSuffix(suffix) {
+            return String(href.dropLast(suffix.count))
+        }
+        return href
     }
 
-    /// The flag sits in the link's own list item or cell; a wider parent would give every team the first flag.
+    /// The flag sits in a `<div>` around the link; only the link's own parent is searched, so a wider one can't lend a flag.
     private static func flagCode(besideTeamLink link: Element) -> String? {
         guard let parent = link.parent(),
-              ["li", "td"].contains(parent.tagName())
+              ["li", "td", "div"].contains(parent.tagName())
         else {
             return nil
         }
         return spanFlagCode(in: parent)
     }
 
-    /// Walks headings and team links in page order: a heading names the division of the links after it.
+    /// Walks `h4` headings and the team links of the page's `ul.list` lists in page order (the menu's links are
+    /// in a plain `ul`): a heading names the division of the links after it.
     static func parsePCSTeams(_ document: Document) -> [DTO.PCSTeam] {
-        guard let elements = try? document.select("h2, h3, h4, a[href^=team/]").array() else { return [] }
+        guard let elements = try? document.select("h4, ul.list li a[href^=team/]").array() else { return [] }
         var division = ""
         var seen = Set<String>()
         var teams: [DTO.PCSTeam] = []
         for element in elements {
-            if element.tagName().hasPrefix("h") {
+            if element.tagName() == "h4" {
                 division = ((try? element.text()) ?? "").trimmingCharacters(in: .whitespaces)
                 continue
             }

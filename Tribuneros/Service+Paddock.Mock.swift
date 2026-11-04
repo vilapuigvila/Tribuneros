@@ -178,20 +178,20 @@ enum PaddockMock {
 
 extension PaddockMock {
 
-    /// Six races from the first of the current year, so the preview shows three and "See all" the rest.
+    /// Six races shaped like races.php (next season, "dd.MM" dates, "-gc" / "-result" paths), so the preview shows three and "See all" the rest.
     static func races(now: Date = Date()) -> [DTO.PCSRace] {
-        let year = Calendar.current.component(.year, from: now)
+        let year = Calendar.current.component(.year, from: now) + 1
         let rows: [(String, String, String, String, String)] = [
-            ("tour-down-under", "Tour Down Under", "\(year + 1)-01-20", "2.UWT", "au"),
-            ("great-ocean-road-race", "Cadel Evans Great Ocean Road Race", "\(year + 1)-02-01", "1.UWT", "au"),
-            ("vuelta-a-murcia", "Vuelta a Murcia", "\(year + 1)-02-04", "1.1", "es"),
-            ("etoile-de-besseges", "Etoile de Bessèges", "\(year + 1)-02-04", "2.1", "fr"),
-            ("uae-tour", "UAE Tour", "\(year + 1)-02-16", "2.UWT", "ae"),
-            ("omloop-het-nieuwsblad", "Omloop Het Nieuwsblad", "\(year + 1)-02-28", "1.UWT", "be")
+            ("tour-down-under", "Santos Tour Down Under", "19.01 - 24.01", "2.UWT", "au"),
+            ("great-ocean-road-race", "Mapei Cadel Evans Great Ocean Road Race ME", "31.01", "1.UWT", "au"),
+            ("uae-tour", "UAE Tour", "15.02 - 21.02", "2.UWT", "ae"),
+            ("omloop-het-nieuwsblad", "Omloop Nieuwsblad ME", "27.02", "1.UWT", "be"),
+            ("strade-bianche", "Strade Bianche", "06.03", "1.UWT", "it"),
+            ("paris-nice", "Paris-Nice", "07.03 - 14.03", "2.UWT", "fr")
         ]
         return rows.map { slug, name, date, raceClass, country in
             DTO.PCSRace(
-                path: "race/\(slug)/\(year + 1)",
+                path: "race/\(slug)-\(year)",
                 name: name,
                 dateText: date,
                 raceClass: raceClass,
@@ -202,15 +202,15 @@ extension PaddockMock {
 
     static func teams() -> [DTO.PCSTeam] {
         let rows: [(String, String, String, String)] = [
-            ("uae-team-emirates-xrg", "UAE Team Emirates - XRG", "WorldTour", "ae"),
-            ("visma-lease-a-bike", "Visma | Lease a Bike", "WorldTour", "nl"),
-            ("soudal-quick-step", "Soudal Quick-Step", "WorldTour", "be"),
-            ("tudor-pro-cycling-team", "Tudor Pro Cycling Team", "ProTeams", "ch"),
-            ("team-flanders-baloise", "Team Flanders - Baloise", "ProTeams", "be")
+            ("uae-team-emirates-xrg", "UAE Team Emirates - XRG", "UCI WorldTeams", "ae"),
+            ("visma-lease-a-bike", "Visma | Lease a Bike", "UCI WorldTeams", "nl"),
+            ("soudal-quick-step", "Soudal Quick-Step", "UCI WorldTeams", "be"),
+            ("tudor-pro-cycling-team", "Tudor Pro Cycling Team", "UCI ProTeams", "ch"),
+            ("team-flanders-baloise", "Team Flanders - Baloise", "UCI ProTeams", "be")
         ]
         return rows.map { slug, name, division, country in
             DTO.PCSTeam(
-                path: "team/\(slug)-2026",
+                path: "team/\(slug)-2027",
                 name: name,
                 division: division,
                 countryCode: country
