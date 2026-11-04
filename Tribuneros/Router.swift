@@ -54,6 +54,8 @@ final class Router: ObservableObject {
         /// PCS's whole race calendar / team list, pushed from Paddock's Races | Teams section.
         case paddockRaces
         case paddockTeams
+        /// A team's native screen (its roster), pushed from a Teams row.
+        case paddockTeam(Paddock.TeamItem)
         case settingsAcknowledgements
         case web(URL)
         /// A news page: like `web`, but opens in Safari Reader when the page supports it.

@@ -4,7 +4,7 @@
 //
 //  The Races | Teams section (Kit look): a segmented control over at most three rows and a
 //  "See all" button that pushes the whole PCS list (routes `paddockRaces` / `paddockTeams`).
-//  Rows aren't tappable: there is no native race or team screen yet and no Paddock tap opens a web view.
+//  Race rows aren't tappable (no native race screen yet); team rows open the team screen.
 //
 
 import SwiftUI
@@ -84,7 +84,10 @@ extension Paddock {
                 if all.isEmpty {
                     failure(L10n.tr("No teams right now."), retry: false)
                 } else {
-                    TeamRows(teams: Array(all.prefix(Paddock.directoryPreviewLimit)))
+                    TeamRows(
+                        teams: Array(all.prefix(Paddock.directoryPreviewLimit)),
+                        onTap: { action(.didTapOnTeam($0)) }
+                    )
                     seeAll(Directory.teams.seeAllTitle, id: "paddock.directory.seeAllTeams") {
                         action(.didTapOnAllTeams)
                     }
@@ -257,6 +260,8 @@ extension Paddock {
     struct TeamRows: View {
         let teams: [TeamItem]
         var showsDivision = true
+        /// nil leaves the rows inert (the redacted placeholders).
+        var onTap: ((TeamItem) -> Void)?
 
         var body: some View {
             VStack(spacing: 0) {
@@ -264,7 +269,18 @@ extension Paddock {
                     if index > 0 {
                         RiderDivider(look: .kit)
                     }
-                    TeamRowView(team: team, showsDivision: showsDivision)
+                    if let onTap {
+                        Button {
+                            onTap(team)
+                        } label: {
+                            TeamRowView(team: team, showsDivision: showsDivision)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("paddock.team.\(team.path)")
+                    } else {
+                        TeamRowView(team: team, showsDivision: showsDivision)
+                    }
                 }
             }
             .padding(.horizontal, 16)
@@ -508,6 +524,7 @@ extension Paddock {
 
     struct TeamsListView: View {
         let teams: Listing<TeamItem>
+        let onTapTeam: (TeamItem) -> Void
 
         private var countLabel: String {
             let count = L10n.tr("%lld TEAMS", teams.items.count)
@@ -524,7 +541,10 @@ extension Paddock {
             ) {
                 EmptyView()
             } rows: {
-                TeamSections(groups: Paddock.teamGroups(teams.items))
+                TeamSections(
+                    groups: Paddock.teamGroups(teams.items),
+                    onTap: onTapTeam
+                )
             } placeholders: {
                 TeamRows(teams: TeamItem.placeholders)
             }
@@ -535,6 +555,7 @@ extension Paddock {
     /// A segmented control over the divisions ("UCI WorldTeams" | "UCI ProTeams") and the selected one's card.
     struct TeamSections: View {
         let groups: [TeamGroup]
+        let onTap: (TeamItem) -> Void
 
         /// View-local, like the directory section's control; nil means the first division.
         @State private var selectedID: String?
@@ -559,7 +580,11 @@ extension Paddock {
                     )
                 }
                 if let group = selected {
-                    TeamRows(teams: group.teams, showsDivision: group.division.isEmpty)
+                    TeamRows(
+                        teams: group.teams,
+                        showsDivision: group.division.isEmpty,
+                        onTap: onTap
+                    )
                         .kitCard()
                         .accessibilityLabel(group.title)
                 }

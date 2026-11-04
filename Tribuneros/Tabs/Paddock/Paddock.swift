@@ -24,6 +24,8 @@ extension Paddock {
         /// The directory section's "See all races" / "See all teams" push the whole list.
         case didTapOnAllRaces
         case didTapOnAllTeams
+        /// A Teams row opens the native team screen.
+        case didTapOnTeam(TeamItem)
     }
 
     enum Filter: CaseIterable, Sendable {

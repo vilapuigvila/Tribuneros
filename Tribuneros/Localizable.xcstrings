@@ -393,6 +393,84 @@
         }
       }
     },
+    "%lld RIDERS" : {
+      "comment" : "Paddock team screen subtitle",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld CICLISTA"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld CICLISTES"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld RIDER"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld RIDERS"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld CICLISTA"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld CICLISTAS"
+                }
+              }
+            }
+          }
+        },
+        "eu" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "TXIRRINDULARI %lld"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld TXIRRINDULARI"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld SEASON" : {
       "comment" : "Paddock teams list subtitle: the season the teams are listed for, e.g. SEASON 2026",
       "extractionState" : "manual",
@@ -1820,6 +1898,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ezin izan dira ProCyclingStats-eko lasterketak kargatu."
+          }
+        }
+      }
+    },
+    "Couldn't load the team from ProCyclingStats." : {
+      "comment" : "Paddock team screen error",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No s’ha pogut carregar l’equip de ProCyclingStats."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo cargar el equipo de ProCyclingStats."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezin izan da taldea ProCyclingStats-etik kargatu."
           }
         }
       }
@@ -3485,6 +3587,30 @@
         }
       }
     },
+    "Loading the riders" : {
+      "comment" : "Paddock team screen placeholder accessibility label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carregant els ciclistes"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando los ciclistas"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Txirrindulariak kargatzen"
+          }
+        }
+      }
+    },
     "Loading the teams" : {
       "comment" : "Accessibility label while loading",
       "extractionState" : "manual",
@@ -4438,6 +4564,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Oraindik ez dago txirrindularirik sailkapen honetan."
+          }
+        }
+      }
+    },
+    "No riders listed." : {
+      "comment" : "Paddock team screen empty",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cap ciclista a la llista."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ningún ciclista en la lista."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ez dago txirrindularirik zerrendan."
           }
         }
       }

@@ -384,6 +384,63 @@ final class PaddockDirectoryTests: XCTestCase {
         XCTAssertEqual(model.women.items.count, PaddockMock.womenRaces().count)
     }
 
+    func testTeamRidersFromTheRealPageKeepAllRidersRankedFirst() throws {
+        let page = Service.parsePCSTeamPage(try fixture("pcs_team_2026"))
+        let riders = Paddock.teamRiders(from: page)
+        XCTAssertEqual(riders.count, page.riders.count)
+        XCTAssertEqual(Set(riders.map(\.path)), Set(page.riders.map(\.path)))
+        let ranks = riders.compactMap(\.rank)
+        XCTAssertEqual(ranks, ranks.sorted())
+        // Riders without a rank come after every ranked one.
+        let firstUnranked = riders.firstIndex { $0.rank == nil } ?? riders.count
+        XCTAssertTrue(riders[firstUnranked...].allSatisfy { $0.rank == nil })
+        XCTAssertEqual(riders.first?.name, "PHILIPSEN Jasper")
+    }
+
+    func testTeamRidersOfAnEmptyPageIsEmpty() {
+        XCTAssertTrue(Paddock.teamRiders(from: DTO.PCSTeamPage(relatedTeams: [])).isEmpty)
+    }
+
+    @MainActor
+    func testTeamDetailModelLoadsTheRosterOnce() async {
+        var paths: [String] = []
+        let team = Paddock.TeamItem(path: "team/mock-2027", name: "Mock", division: "", countryCode: "")
+        let model = Paddock.TeamDetailModel(team: team, fetch: {
+            paths.append($0)
+            return PaddockMock.teamPage(path: $0)
+        })
+        XCTAssertEqual(model.riders, .loading)
+
+        model.load()
+        try? await Task.sleep(nanoseconds: 100_000_000)
+        XCTAssertEqual(model.riders.items.map(\.name), ["LEADER Mock", "SPRINTER Mock"])
+        model.load()
+        try? await Task.sleep(nanoseconds: 50_000_000)
+        XCTAssertEqual(paths, ["team/mock-2027"])
+    }
+
+    @MainActor
+    func testTeamDetailModelFailureCanBeRetried() async {
+        var results: [DTO.PCSTeamPage?] = [nil, PaddockMock.teamPage(path: "team/mock-2027")]
+        let team = Paddock.TeamItem(path: "team/mock-2027", name: "Mock", division: "", countryCode: "")
+        let model = Paddock.TeamDetailModel(team: team, fetch: { _ in results.removeFirst() })
+        model.load()
+        try? await Task.sleep(nanoseconds: 100_000_000)
+        XCTAssertEqual(model.riders, .failed)
+
+        model.load()
+        try? await Task.sleep(nanoseconds: 100_000_000)
+        XCTAssertFalse(model.riders.items.isEmpty)
+    }
+
+    func testTappingATeamPushesItsScreen() {
+        let team = Paddock.TeamItem(path: "team/mock-2027", name: "Mock", division: "", countryCode: "")
+        let router = Router()
+        router.routeTo(.paddockTeam(team))
+        XCTAssertEqual(router.lastPushed, .paddockTeam(team))
+        XCTAssertEqual(router.navPath.count, 1)
+    }
+
     func testTeamGroupsSplitByDivisionKeepingOrder() throws {
         let items = Service.parsePCSTeams(try fixture("pcs_teams")).map(Paddock.teamItem(from:))
         let groups = Paddock.teamGroups(items)

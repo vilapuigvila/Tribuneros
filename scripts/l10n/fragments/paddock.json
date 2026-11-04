@@ -483,5 +483,44 @@
     "eu": "%lld DENBORALDIA",
     "es": "TEMPORADA %lld",
     "comment": "Paddock teams list subtitle: the season the teams are listed for, e.g. SEASON 2026"
+  },
+  "Loading the riders": {
+    "ca": "Carregant els ciclistes",
+    "eu": "Txirrindulariak kargatzen",
+    "es": "Cargando los ciclistas",
+    "comment": "Paddock team screen placeholder accessibility label"
+  },
+  "Couldn't load the team from ProCyclingStats.": {
+    "ca": "No s’ha pogut carregar l’equip de ProCyclingStats.",
+    "eu": "Ezin izan da taldea ProCyclingStats-etik kargatu.",
+    "es": "No se pudo cargar el equipo de ProCyclingStats.",
+    "comment": "Paddock team screen error"
+  },
+  "No riders listed.": {
+    "ca": "Cap ciclista a la llista.",
+    "eu": "Ez dago txirrindularirik zerrendan.",
+    "es": "Ningún ciclista en la lista.",
+    "comment": "Paddock team screen empty"
+  },
+  "%lld RIDERS": {
+    "plural": {
+      "en": {
+        "one": "%lld RIDER",
+        "other": "%lld RIDERS"
+      },
+      "ca": {
+        "one": "%lld CICLISTA",
+        "other": "%lld CICLISTES"
+      },
+      "eu": {
+        "one": "TXIRRINDULARI %lld",
+        "other": "%lld TXIRRINDULARI"
+      },
+      "es": {
+        "one": "%lld CICLISTA",
+        "other": "%lld CICLISTAS"
+      }
+    },
+    "comment": "Paddock team screen subtitle"
   }
 }

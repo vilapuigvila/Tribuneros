@@ -56,6 +56,8 @@ extension Paddock {
                 router.routeTo(.paddockRaces)
             case .didTapOnAllTeams:
                 router.routeTo(.paddockTeams)
+            case .didTapOnTeam(let team):
+                router.routeTo(.paddockTeam(team))
             }
         }
 
