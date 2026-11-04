@@ -6423,7 +6423,7 @@
       }
     },
     "See all %lld programs" : {
-      "comment" : "Button under the first four program changes; opens a sheet with every one",
+      "comment" : "Button under the first three program changes; opens a sheet with every one",
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
@@ -6501,7 +6501,7 @@
       }
     },
     "See all %lld transfers" : {
-      "comment" : "Button under the first four transfers; opens a sheet with every transfer",
+      "comment" : "Button under the first three transfers; opens a sheet with every transfer",
       "extractionState" : "manual",
       "localizations" : {
         "ca" : {
