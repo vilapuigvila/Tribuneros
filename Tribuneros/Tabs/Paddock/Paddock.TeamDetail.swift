@@ -320,7 +320,8 @@ extension Paddock {
             HStack(spacing: 12) {
                 CachedImageView(
                     imageUrl: rider.photoURL,
-                    cornerRadius: 20,
+                    cornerRadius: 0,
+                    presentation: .racePhoto,
                     fallback: AnyView(
                         TribuneruText(
                             content: rider.initials,
