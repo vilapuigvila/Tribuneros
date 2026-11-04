@@ -150,6 +150,8 @@ final class PaddockDirectoryTests: XCTestCase {
         )
         XCTAssertEqual(Paddock.pathYear("race/tour-down-under-2027"), 2027)
         XCTAssertNil(Paddock.pathYear("race/gp-quebec"))
+        XCTAssertEqual(Paddock.pathYear("race/tour-de-france-femmes-20271"), 2027)
+        XCTAssertEqual(Paddock.pathYear("race/tour-de-france-femmes-20272"), 2027)
         XCTAssertNil(Paddock.raceStart(from: "soon", now: now, calendar: calendar))
     }
 
@@ -268,6 +270,8 @@ final class PaddockDirectoryTests: XCTestCase {
         model.loadWomen()
         try? await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertEqual(model.women.items.count, PaddockMock.womenRaces().count)
+    }
+
     func testTeamGroupsSplitByDivisionKeepingOrder() throws {
         let items = Service.parsePCSTeams(try fixture("pcs_teams")).map(Paddock.teamItem(from:))
         let groups = Paddock.teamGroups(items)

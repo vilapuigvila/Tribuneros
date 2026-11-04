@@ -262,8 +262,15 @@ extension Paddock {
     }
 
     /// The calendar lists next season's races from the autumn, so the year comes from the slug, not the clock.
+    /// PCS sometimes adds a digit to the year ("tour-de-france-femmes-20271"): the first four digits are the year.
     static func pathYear(_ path: String) -> Int? {
-        path.split(separator: "-").last.flatMap { Int($0) }.flatMap { (1900...2100).contains($0) ? $0 : nil }
+        guard let last = path.split(separator: "-").last,
+              last.count == 4 || last.count == 5,
+              last.allSatisfy(\.isNumber)
+        else {
+            return nil
+        }
+        return Int(last.prefix(4)).flatMap { (1900...2100).contains($0) ? $0 : nil }
     }
 
     private static func parse(
