@@ -465,5 +465,47 @@
       }
     },
     "comment": "Paddock teams list subtitle"
+  },
+  "See all %lld transfers": {
+    "plural": {
+      "en": {
+        "one": "See all %lld transfer",
+        "other": "See all %lld transfers"
+      },
+      "ca": {
+        "one": "Veure %lld fitxatge",
+        "other": "Veure els %lld fitxatges"
+      },
+      "eu": {
+        "one": "Ikusi transferentzia (%lld)",
+        "other": "Ikusi transferentzia guztiak (%lld)"
+      },
+      "es": {
+        "one": "Ver %lld fichaje",
+        "other": "Ver los %lld fichajes"
+      }
+    },
+    "comment": "Button under the first four transfers; opens a sheet with every transfer"
+  },
+  "See all %lld programs": {
+    "plural": {
+      "en": {
+        "one": "See all %lld program change",
+        "other": "See all %lld program changes"
+      },
+      "ca": {
+        "one": "Veure %lld canvi de programa",
+        "other": "Veure els %lld canvis de programa"
+      },
+      "eu": {
+        "one": "Ikusi programa-aldaketa (%lld)",
+        "other": "Ikusi programa-aldaketa guztiak (%lld)"
+      },
+      "es": {
+        "one": "Ver %lld cambio de programa",
+        "other": "Ver los %lld cambios de programa"
+      }
+    },
+    "comment": "Button under the first four program changes; opens a sheet with every one"
   }
 }
