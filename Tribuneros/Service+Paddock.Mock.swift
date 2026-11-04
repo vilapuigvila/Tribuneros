@@ -200,6 +200,49 @@ extension PaddockMock {
         }
     }
 
+    /// Six Women's WorldTour races shaped like races.php?circuit=24.
+    static func womenRaces(now: Date = Date()) -> [DTO.PCSRace] {
+        let year = Calendar.current.component(.year, from: now) + 1
+        let rows: [(String, String, String, String, String)] = [
+            ("santos-women-s-tour", "Santos Women's Tour Down Under", "22.01 - 24.01", "2.WWT", "au"),
+            ("cadel-evans-great-ocean-we", "Mapei Cadel Evans Great Ocean Road Race WE", "30.01", "1.WWT", "au"),
+            ("uae-tour-women", "UAE Tour Women", "03.02 - 06.02", "2.WWT", "ae"),
+            ("omloop-het-nieuwsblad-we", "Omloop Nieuwsblad WE", "27.02", "1.WWT", "be"),
+            ("strade-bianche-donne", "Strade Bianche Donne", "06.03", "1.WWT", "it"),
+            ("trofeo-alfredo-binda", "Trofeo Alfredo Binda - Comune di Cittiglio", "14.03", "1.WWT", "it")
+        ]
+        return rows.map { slug, name, date, raceClass, country in
+            DTO.PCSRace(
+                path: "race/\(slug)-\(year)",
+                name: name,
+                dateText: date,
+                raceClass: raceClass,
+                countryCode: country
+            )
+        }
+    }
+
+    /// Every mock team gets a women's and a devo team, named after its own slug.
+    static func teamPage(path: String) -> DTO.PCSTeamPage {
+        let slug = path.replacingOccurrences(of: "team/", with: "")
+        return DTO.PCSTeamPage(
+            relatedTeams: [
+                DTO.PCSRelatedTeam(
+                    path: "team/\(slug)-women",
+                    name: "Mock Women Team",
+                    classCode: "WTW",
+                    relation: "women's team"
+                ),
+                DTO.PCSRelatedTeam(
+                    path: "team/\(slug)-development",
+                    name: "Mock Development Team",
+                    classCode: "CT",
+                    relation: "devo"
+                )
+            ]
+        )
+    }
+
     static func teams() -> [DTO.PCSTeam] {
         let rows: [(String, String, String, String)] = [
             ("uae-team-emirates-xrg", "UAE Team Emirates - XRG", "UCI WorldTeams", "ae"),

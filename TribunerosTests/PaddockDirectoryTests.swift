@@ -65,6 +65,71 @@ final class PaddockDirectoryTests: XCTestCase {
         XCTAssertTrue(teams.allSatisfy { $0.path.hasSuffix("-2027") && !$0.countryCode.isEmpty })
     }
 
+    func testRealWomenRacesPageParsesTheWomensWorldTour() throws {
+        let races = Service.parsePCSRaces(try fixture("pcs_races_women"))
+        XCTAssertEqual(races.count, 22)
+        XCTAssertEqual(
+            races[0],
+            DTO.PCSRace(
+                path: "race/santos-women-s-tour-2027",
+                name: "Santos Women's Tour Down Under",
+                dateText: "22.01 - 24.01",
+                raceClass: "2.WWT",
+                countryCode: "au"
+            )
+        )
+        XCTAssertEqual(races[1].path, "race/cadel-evans-great-ocean-we-2027")
+        XCTAssertEqual(races[1].dateText, "30.01")
+        XCTAssertEqual(races.last?.name, "Tour de France Femmes avec Zwift")
+        XCTAssertTrue(races.allSatisfy { $0.raceClass.hasSuffix(".WWT") && !$0.name.isEmpty && !$0.countryCode.isEmpty })
+        XCTAssertTrue(races.allSatisfy { $0.path.hasPrefix("race/") && !$0.path.hasSuffix("-gc") && !$0.path.hasSuffix("-result") })
+        XCTAssertEqual(Set(races.map(\.path)).count, races.count)
+    }
+
+    func testRealTeamPageFindsItsWomensTeam() throws {
+        let page = Service.parsePCSTeamPage(try fixture("pcs_team"))
+        XCTAssertEqual(
+            page.womensTeam,
+            DTO.PCSRelatedTeam(
+                path: "team/fenix-premier-tech-2027",
+                name: "Fenix-Premier Tech",
+                classCode: "WTW",
+                relation: "women's team"
+            )
+        )
+        XCTAssertEqual(
+            page.relatedTeams.last,
+            DTO.PCSRelatedTeam(
+                path: "team/alpecin-premier-tech-development-team-2027",
+                name: "Alpecin-Premier Tech Development Team",
+                classCode: "CT",
+                relation: "devo"
+            )
+        )
+        XCTAssertEqual(page.relatedTeams.count, 2)
+    }
+
+    func testRealTeamPageWithOnlyAClubHasNoWomensTeam() throws {
+        let page = Service.parsePCSTeamPage(try fixture("pcs_team_club"))
+        XCTAssertEqual(page.relatedTeams.map(\.path), ["team/caja-rural-alea-2027"])
+        XCTAssertEqual(page.relatedTeams.first?.classCode, "CLUB")
+        XCTAssertEqual(page.relatedTeams.first?.relation, "other")
+        XCTAssertNil(page.womensTeam)
+    }
+
+    func testRealTeamPageWithoutRelatedTeamsParsesToNothing() throws {
+        let page = Service.parsePCSTeamPage(try fixture("pcs_team_no_related"))
+        XCTAssertTrue(page.relatedTeams.isEmpty)
+        XCTAssertNil(page.womensTeam)
+        XCTAssertTrue(Service.parsePCSTeamPage(try SwiftSoup.parse("<html><body></body></html>")).relatedTeams.isEmpty)
+    }
+
+    func testMockTeamPageHasAWomensTeam() {
+        let page = PaddockMock.teamPage(path: "team/uae-team-emirates-xrg-2027")
+        XCTAssertEqual(page.womensTeam?.classCode, "WTW")
+        XCTAssertEqual(page.relatedTeams.count, 2)
+    }
+
     func testEmptyPagesParseToNothing() throws {
         let document = try SwiftSoup.parse("<html><body></body></html>")
         XCTAssertTrue(Service.parsePCSRaces(document).isEmpty)
@@ -145,5 +210,12 @@ final class PaddockDirectoryTests: XCTestCase {
     func testMockScenarioServesTheDirectory() {
         XCTAssertGreaterThan(PaddockMock.races().count, Paddock.directoryPreviewLimit)
         XCTAssertGreaterThan(PaddockMock.teams().count, Paddock.directoryPreviewLimit)
+    }
+
+    func testMockScenarioServesWomensWorldTourRaces() {
+        let races = PaddockMock.womenRaces()
+        XCTAssertGreaterThan(races.count, Paddock.directoryPreviewLimit)
+        XCTAssertTrue(races.allSatisfy { $0.raceClass.hasSuffix(".WWT") })
+        XCTAssertEqual(Set(races.map(\.path)).count, races.count)
     }
 }

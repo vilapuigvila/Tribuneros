@@ -14,6 +14,7 @@ import Alfy
 extension Service {
 
     private static let racesCalendarURL = baseStringURL + "races.php"
+    private static let womenRacesCalendarURL = baseStringURL + "races.php?circuit=24"
     private static let teamsURL = baseStringURL + "teams.php"
 
     /// `nil` when the page can't be fetched; `[]` when it loaded but nothing parsed.
@@ -29,6 +30,19 @@ extension Service {
         return races
     }
 
+    /// UCI Women's WorldTour (circuit 24), same markup as the men's list. `nil` when the page can't be fetched; `[]` when nothing parsed.
+    static func getPCSWomenRaces() async -> [DTO.PCSRace]? {
+        #if DEBUG
+        if HomeRaces.MockScenario.current != nil {
+            return PaddockMock.womenRaces()
+        }
+        #endif
+        guard let document = await directoryDocument(womenRacesCalendarURL) else { return nil }
+        let races = parsePCSRaces(document)
+        nonFatalCrashlytics(!races.isEmpty, "PCS races.php?circuit=24: no race rows parsed")
+        return races
+    }
+
     /// `nil` when the page can't be fetched; `[]` when it loaded but nothing parsed.
     static func getPCSTeams() async -> [DTO.PCSTeam]? {
         #if DEBUG
@@ -40,6 +54,22 @@ extension Service {
         let teams = parsePCSTeams(document)
         nonFatalCrashlytics(!teams.isEmpty, "PCS teams.php: no team links parsed")
         return teams
+    }
+
+    /// One team's page, on demand. `nil` when the page can't be fetched or `path` isn't a `team/…` path.
+    static func getPCSTeamPage(path: String) async -> DTO.PCSTeamPage? {
+        #if DEBUG
+        if HomeRaces.MockScenario.current != nil {
+            return PaddockMock.teamPage(path: path)
+        }
+        #endif
+        guard path.hasPrefix("team/"),
+              !path.contains(".."),
+              let document = await directoryDocument(baseStringURL + path)
+        else {
+            return nil
+        }
+        return parsePCSTeamPage(document)
     }
 
     private static func directoryDocument(_ url: String) async -> Document? {
@@ -100,6 +130,44 @@ extension Service {
             return nil
         }
         return spanFlagCode(in: parent)
+    }
+
+    /// The `ul.list` after the "Related teams" `h4`: each `li` holds a team link "Name (CLASS)" and a `div.fs12` relation.
+    static func parsePCSTeamPage(_ document: Document) -> DTO.PCSTeamPage {
+        guard let heading = try? document.select("h4").array().first(where: {
+                  ((try? $0.text()) ?? "").trimmingCharacters(in: .whitespaces) == "Related teams"
+              }),
+              let list = try? heading.nextElementSibling(),
+              list.tagName() == "ul",
+              let items = try? list.select("li").array()
+        else {
+            return DTO.PCSTeamPage(relatedTeams: [])
+        }
+        let related = items.compactMap { item -> DTO.PCSRelatedTeam? in
+            guard let link = try? item.select("a[href^=team/]").first(),
+                  let href = try? link.attr("href"),
+                  let text = try? link.text().trimmingCharacters(in: .whitespaces),
+                  !text.isEmpty
+            else {
+                return nil
+            }
+            let (name, classCode) = splitClassSuffix(text)
+            return DTO.PCSRelatedTeam(
+                path: href,
+                name: name,
+                classCode: classCode,
+                relation: ((try? item.select("div.fs12").first()?.text()) ?? "").trimmingCharacters(in: .whitespaces)
+            )
+        }
+        return DTO.PCSTeamPage(relatedTeams: related)
+    }
+
+    /// "Fenix-Premier Tech (WTW)" → ("Fenix-Premier Tech", "WTW").
+    private static func splitClassSuffix(_ text: String) -> (String, String) {
+        guard text.hasSuffix(")"), let open = text.lastIndex(of: "(") else { return (text, "") }
+        let code = text[text.index(after: open)..<text.index(before: text.endIndex)]
+        let name = text[..<open].trimmingCharacters(in: .whitespaces)
+        return name.isEmpty ? (text, "") : (name, String(code))
     }
 
     /// Walks `h4` headings and the team links of the page's `ul.list` lists in page order (the menu's links are

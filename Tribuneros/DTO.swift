@@ -308,6 +308,23 @@ extension DTO {
         let countryCode: String
     }
 
+    /// A "Related teams" entry of a PCS team page.
+    struct PCSRelatedTeam: Equatable, Sendable, Hashable {
+        let path: String          // "team/fenix-premier-tech-2027"
+        let name: String          // "Fenix-Premier Tech"
+        let classCode: String     // "WTW", "" when absent
+        let relation: String      // "women's team", "devo", "other", as PCS prints it
+    }
+
+    /// What a PCS team page (`team/<slug>-<year>`) adds to its `teams.php` row.
+    struct PCSTeamPage: Equatable, Sendable {
+        let relatedTeams: [PCSRelatedTeam]
+
+        var womensTeam: PCSRelatedTeam? {
+            relatedTeams.first { $0.relation == "women's team" }
+        }
+    }
+
     struct PressLink: Equatable, Sendable {
         let name: String?
         let url: URL
