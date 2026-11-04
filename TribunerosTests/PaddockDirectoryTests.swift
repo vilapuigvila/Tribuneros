@@ -186,6 +186,90 @@ final class PaddockDirectoryTests: XCTestCase {
         )
     }
 
+    // MARK: - Races list (end date, season, Men | Women)
+
+    func testRaceEndReadsTheSecondDateOfARange() {
+        let now = day(2026, 11, 3)
+        let calendar = calendar()
+        XCTAssertEqual(Paddock.raceEnd(from: "19.01 - 24.01", now: now, calendar: calendar, year: 2027), day(2027, 1, 24))
+        XCTAssertNil(Paddock.raceEnd(from: "31.01", now: now, calendar: calendar, year: 2027))
+        XCTAssertNil(Paddock.raceEnd(from: "2027-01-20", now: now, calendar: calendar))
+        XCTAssertNil(Paddock.raceEnd(from: "soon - later", now: now, calendar: calendar))
+        // A range over New Year ends in the following year.
+        XCTAssertEqual(Paddock.raceEnd(from: "28.12 - 03.01", now: now, calendar: calendar, year: 2027), day(2028, 1, 3))
+    }
+
+    func testRaceItemCarriesEndDateAndSeason() {
+        let calendar = calendar()
+        let stage = Paddock.raceItem(
+            from: DTO.PCSRace(path: "race/tour-down-under-2027", name: "TDU", dateText: "19.01 - 24.01", raceClass: "2.UWT", countryCode: "au"),
+            now: day(2026, 11, 3),
+            calendar: calendar
+        )
+        XCTAssertEqual(stage.startDate, day(2027, 1, 19))
+        XCTAssertEqual(stage.endDate, day(2027, 1, 24))
+        XCTAssertNotNil(stage.endLabel)
+        XCTAssertEqual(stage.season, 2027)
+
+        let oneDay = Paddock.raceItem(
+            from: DTO.PCSRace(path: "race/gp-quebec", name: "GP", dateText: "2027-09-10", raceClass: "1.UWT", countryCode: "ca"),
+            now: day(2026, 11, 3),
+            calendar: calendar
+        )
+        XCTAssertNil(oneDay.endDate)
+        XCTAssertNil(oneDay.endLabel)
+        XCTAssertEqual(oneDay.season, 2027, "no year in the path: the start date's year")
+    }
+
+    func testRealRacesPagesGiveEndDatesOnlyToStageRaces() throws {
+        let calendar = calendar()
+        for name in ["pcs_races", "pcs_races_women"] {
+            let items = Service.parsePCSRaces(try fixture(name)).map {
+                Paddock.raceItem(from: $0, now: day(2026, 11, 3), calendar: calendar)
+            }
+            XCTAssertTrue(items.allSatisfy { $0.season == 2027 }, name)
+            XCTAssertTrue(items.allSatisfy { $0.endDate == nil || $0.endDate! >= $0.startDate! }, name)
+            XCTAssertTrue(items.contains { $0.endDate != nil }, name)
+            XCTAssertTrue(items.contains { $0.endDate == nil }, name)
+        }
+    }
+
+    @MainActor
+    func testRacesListLoadsWomenOnlyWhenSelectedAndOnlyOnce() async {
+        var calls = 0
+        let model = Paddock.RacesListModel(fetchWomen: {
+            calls += 1
+            return PaddockMock.womenRaces()
+        })
+        XCTAssertEqual(model.circuit, .men)
+        XCTAssertEqual(model.women, .loading)
+        XCTAssertEqual(calls, 0)
+
+        model.select(.women)
+        try? await Task.sleep(nanoseconds: 100_000_000)
+        XCTAssertEqual(model.circuit, .women)
+        XCTAssertEqual(model.women.items.count, PaddockMock.womenRaces().count)
+        XCTAssertEqual(calls, 1)
+
+        model.select(.men)
+        model.select(.women)
+        try? await Task.sleep(nanoseconds: 50_000_000)
+        XCTAssertEqual(calls, 1)
+    }
+
+    @MainActor
+    func testRacesListWomenFailureCanBeRetried() async {
+        var results: [[DTO.PCSRace]?] = [nil, PaddockMock.womenRaces()]
+        let model = Paddock.RacesListModel(fetchWomen: { results.removeFirst() })
+        model.select(.women)
+        try? await Task.sleep(nanoseconds: 100_000_000)
+        XCTAssertEqual(model.women, .failed)
+
+        model.loadWomen()
+        try? await Task.sleep(nanoseconds: 100_000_000)
+        XCTAssertEqual(model.women.items.count, PaddockMock.womenRaces().count)
+    }
+
     func testTeamMonogramUsesTheFirstTwoWords() {
         let team = Paddock.TeamItem(path: "team/x", name: "UAE Team Emirates - XRG", division: "", countryCode: "")
         XCTAssertEqual(team.monogram, "UT")

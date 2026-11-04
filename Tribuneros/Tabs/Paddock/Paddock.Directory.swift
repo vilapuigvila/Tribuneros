@@ -30,6 +30,19 @@ extension Paddock {
         }
     }
 
+    /// The pushed races list's switch: PCS's men's calendar or its Women's WorldTour (`races.php?circuit=24`).
+    enum RaceCircuit: CaseIterable, Hashable, Sendable {
+        case men
+        case women
+
+        var title: String {
+            switch self {
+            case .men: L10n.tr("Men")
+            case .women: L10n.tr("Women")
+            }
+        }
+    }
+
     /// One side's rows while they load, once loaded, or when the page couldn't be read.
     enum Listing<Item: Equatable & Sendable>: Equatable {
         case loading
@@ -51,6 +64,11 @@ extension Paddock {
         let raceClass: String
         let countryCode: String
         let startDate: Date?
+        /// Last day of a stage race ("24 Jan"); nil for a one-day race or when PCS gave no range.
+        var endDate: Date? = nil
+        var endLabel: String? = nil
+        /// The edition's year, from the path ("race/tour-down-under-2027"), else from the start date.
+        var season: Int? = nil
 
         static let placeholders: [RaceItem] = (1...3).map { index in
             RaceItem(
@@ -59,7 +77,10 @@ extension Paddock {
                 dateLabel: "00 Jan", // l10n:ignore: redacted stand-in
                 raceClass: "2.UWT", // l10n:ignore: redacted stand-in
                 countryCode: "",
-                startDate: nil
+                startDate: nil,
+                endDate: nil,
+                endLabel: "00 Jan", // l10n:ignore: redacted stand-in
+                season: 2027
             )
         }
     }
@@ -113,19 +134,30 @@ extension Paddock {
         now: Date = Date(),
         calendar: Calendar = .current
     ) -> RaceItem {
+        let year = pathYear(race.path)
         let start = raceStart(
             from: race.dateText,
             now: now,
             calendar: calendar,
-            year: pathYear(race.path)
+            year: year
         )
+        let end = raceEnd(
+            from: race.dateText,
+            now: now,
+            calendar: calendar,
+            year: year
+        )
+        let formatter = L10n.dateFormatter(template: "d MMM")
         return RaceItem(
             path: race.path,
             name: race.name,
-            dateLabel: start.map { L10n.dateFormatter(template: "d MMM").string(from: $0) } ?? race.dateText,
+            dateLabel: start.map { formatter.string(from: $0) } ?? race.dateText,
             raceClass: race.raceClass,
             countryCode: race.countryCode,
-            startDate: start
+            startDate: start,
+            endDate: end,
+            endLabel: end.map { formatter.string(from: $0) },
+            season: year ?? start.map { calendar.component(.year, from: $0) }
         )
     }
 
@@ -146,16 +178,53 @@ extension Paddock {
         calendar: Calendar,
         year: Int? = nil
     ) -> Date? {
-        let first = text
-            .split(whereSeparator: { $0 == "-" && text.contains(" - ") || $0 == "–" })
-            .first
-            .map { $0.trimmingCharacters(in: .whitespaces) } ?? text
+        guard let first = dateParts(text).first else { return nil }
+        return day(first, now: now, calendar: calendar, year: year)
+    }
+
+    /// The last day of a range ("19.01 - 24.01" → 24 Jan); nil for a single date. A range that runs past
+    /// New Year ("28.12 - 03.01") ends in the following year.
+    static func raceEnd(
+        from text: String,
+        now: Date,
+        calendar: Calendar,
+        year: Int? = nil
+    ) -> Date? {
+        let parts = dateParts(text)
+        guard parts.count == 2,
+              let start = day(parts[0], now: now, calendar: calendar, year: year),
+              let end = day(parts[1], now: now, calendar: calendar, year: year)
+        else {
+            return nil
+        }
+        if end < start {
+            return calendar.date(byAdding: .year, value: 1, to: end)
+        }
+        return end
+    }
+
+    /// "19.01 - 24.01" → ["19.01", "24.01"]; a hyphen only splits when spaced, so "2027-01-19" stays whole.
+    private static func dateParts(_ text: String) -> [String] {
+        let spaced = text.contains(" - ")
+        let parts = text
+            .split(whereSeparator: { $0 == "-" && spaced || $0 == "–" })
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+        return parts.isEmpty ? [text] : parts
+    }
+
+    private static func day(
+        _ text: String,
+        now: Date,
+        calendar: Calendar,
+        year: Int?
+    ) -> Date? {
         for format in ["yyyy-MM-dd", "dd.MM.yyyy", "dd/MM/yyyy"] {
-            if let date = parse(first, format: format, calendar: calendar) {
+            if let date = parse(text, format: format, calendar: calendar) {
                 return date
             }
         }
-        let parts = first.split(whereSeparator: { $0 == "." || $0 == "/" }).compactMap { Int($0) }
+        let parts = text.split(whereSeparator: { $0 == "." || $0 == "/" }).compactMap { Int($0) }
         guard parts.count == 2 else { return nil }
         var components = calendar.dateComponents([.year], from: now)
         components.year = year ?? components.year
@@ -180,5 +249,54 @@ extension Paddock {
         formatter.timeZone = calendar.timeZone
         formatter.dateFormat = format
         return formatter.date(from: text)
+    }
+}
+
+// MARK: - Pushed races list -
+
+extension Paddock {
+
+    /// State of the pushed races list: which circuit is selected and the women's calendar, which is only fetched
+    /// the first time "Women" is picked (the men's rows come from the Paddock screen's own state).
+    @MainActor
+    final class RacesListModel: ObservableObject {
+        @Published var circuit: RaceCircuit = .men
+        @Published private(set) var women: Listing<RaceItem> = .loading
+
+        private let fetchWomen: () async -> [DTO.PCSRace]?
+        private var task: Task<Void, Never>?
+
+        init(fetchWomen: @escaping () async -> [DTO.PCSRace]? = { await Service.getPCSWomenRaces() }) {
+            self.fetchWomen = fetchWomen
+        }
+
+        func select(_ circuit: RaceCircuit) {
+            self.circuit = circuit
+            if circuit == .women {
+                loadWomen()
+            }
+        }
+
+        /// Starts the women's fetch unless it is running or already loaded; a failed one is tried again.
+        func loadWomen(
+            now: Date = Date(),
+            calendar: Calendar = .current
+        ) {
+            guard task == nil else { return }
+            if case .loaded = women { return }
+            if case .failed = women { women = .loading }
+            task = Task { [weak self, fetchWomen] in
+                let races = await fetchWomen()
+                guard let self else { return }
+                if let races {
+                    self.women = Listing<RaceItem>.loaded(
+                        races.map { Paddock.raceItem(from: $0, now: now, calendar: calendar) }
+                    )
+                } else {
+                    self.women = Listing<RaceItem>.failed
+                }
+                self.task = nil
+            }
+        }
     }
 }

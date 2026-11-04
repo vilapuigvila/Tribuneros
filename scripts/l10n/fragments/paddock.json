@@ -334,6 +334,18 @@
     "es": "Programa",
     "comment": "Rider screen section: upcoming races"
   },
+  "Men": {
+    "ca": "Homes",
+    "eu": "Gizonezkoak",
+    "es": "Hombres",
+    "comment": "Paddock Races list switch: men's calendar"
+  },
+  "Women": {
+    "ca": "Dones",
+    "eu": "Emakumezkoak",
+    "es": "Mujeres",
+    "comment": "Paddock Races list switch: women's calendar"
+  },
   "Teams": {
     "ca": "Equips",
     "eu": "Taldeak",

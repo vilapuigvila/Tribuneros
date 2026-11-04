@@ -3656,6 +3656,30 @@
         }
       }
     },
+    "Men" : {
+      "comment" : "Paddock Races list switch: men's calendar",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Homes"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hombres"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gizonezkoak"
+          }
+        }
+      }
+    },
     "Men Elite" : {
       "comment" : "Men's elite category label (hardcoded in CX detail screens)",
       "extractionState" : "manual",
@@ -7807,6 +7831,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Irabazlea"
+          }
+        }
+      }
+    },
+    "Women" : {
+      "comment" : "Paddock Races list switch: women's calendar",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dones"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mujeres"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emakumezkoak"
           }
         }
       }
