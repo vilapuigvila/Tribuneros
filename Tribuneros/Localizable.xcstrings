@@ -393,6 +393,30 @@
         }
       }
     },
+    "%lld SEASON" : {
+      "comment" : "Paddock teams list subtitle: the season the teams are listed for, e.g. SEASON 2026",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TEMPORADA %lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TEMPORADA %lld"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld DENBORALDIA"
+          }
+        }
+      }
+    },
     "%lld TEAMS" : {
       "comment" : "Paddock teams list subtitle",
       "extractionState" : "manual",

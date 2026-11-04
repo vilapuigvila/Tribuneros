@@ -186,6 +186,32 @@ final class PaddockDirectoryTests: XCTestCase {
         )
     }
 
+    func testTeamGroupsSplitByDivisionKeepingOrder() throws {
+        let items = Service.parsePCSTeams(try fixture("pcs_teams")).map(Paddock.teamItem(from:))
+        let groups = Paddock.teamGroups(items)
+        XCTAssertEqual(groups.map(\.division), ["UCI WorldTeams", "UCI ProTeams"])
+        XCTAssertEqual(groups.map(\.teams.count), [18, 14])
+        XCTAssertEqual(groups.first?.teams.first?.name, "Alpecin - Premier Tech")
+        XCTAssertEqual(groups.flatMap(\.teams), items)
+    }
+
+    func testTeamGroupsKeepUnheadedTeamsInTheirOwnGroup() {
+        let item = Paddock.TeamItem(path: "team/x-2026", name: "X", division: "", countryCode: "")
+        XCTAssertEqual(Paddock.teamGroups([item]), [Paddock.TeamGroup(division: "", teams: [item])])
+        XCTAssertTrue(Paddock.teamGroups([]).isEmpty)
+    }
+
+    func testTeamsSeasonIsTheMostCommonPathYear() throws {
+        let items = Service.parsePCSTeams(try fixture("pcs_teams")).map(Paddock.teamItem(from:))
+        XCTAssertEqual(Paddock.teamsSeason(items), Paddock.pathYear(items[0].path))
+        XCTAssertNotNil(Paddock.teamsSeason(items))
+        let mixed = ["team/a-2026", "team/b-2027", "team/c-2027", "team/d"].map {
+            Paddock.TeamItem(path: $0, name: "T", division: "", countryCode: "")
+        }
+        XCTAssertEqual(Paddock.teamsSeason(mixed), 2027)
+        XCTAssertNil(Paddock.teamsSeason([]))
+    }
+
     func testTeamMonogramUsesTheFirstTwoWords() {
         let team = Paddock.TeamItem(path: "team/x", name: "UAE Team Emirates - XRG", division: "", countryCode: "")
         XCTAssertEqual(team.monogram, "UT")

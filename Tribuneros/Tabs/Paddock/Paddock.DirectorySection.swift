@@ -248,6 +248,7 @@ extension Paddock {
 
     struct TeamRows: View {
         let teams: [TeamItem]
+        var showsDivision = true
 
         var body: some View {
             VStack(spacing: 0) {
@@ -255,7 +256,7 @@ extension Paddock {
                     if index > 0 {
                         RiderDivider(look: .kit)
                     }
-                    TeamRowView(team: team)
+                    TeamRowView(team: team, showsDivision: showsDivision)
                 }
             }
             .padding(.horizontal, 16)
@@ -264,6 +265,7 @@ extension Paddock {
 
     struct TeamRowView: View {
         let team: TeamItem
+        var showsDivision = true
 
         var body: some View {
             HStack(spacing: 12) {
@@ -282,7 +284,7 @@ extension Paddock {
                     lineLimit: 2
                 )
                 Spacer(minLength: 8)
-                if !team.division.isEmpty {
+                if showsDivision, !team.division.isEmpty {
                     TribuneruText(
                         content: team.division,
                         style: .vaporMonoMeta,
@@ -321,13 +323,20 @@ extension Paddock {
     struct TeamsListView: View {
         let teams: Listing<TeamItem>
 
+        private var countLabel: String {
+            let count = L10n.tr("%lld TEAMS", teams.items.count)
+            guard let season = Paddock.teamsSeason(teams.items) else { return count }
+            return "\(count) · \(L10n.tr("%lld SEASON", season))"
+        }
+
         var body: some View {
             DirectoryListScreen(
                 title: L10n.tr("Teams"),
-                countLabel: L10n.tr("%lld TEAMS", teams.items.count),
-                loading: teams == .loading
+                countLabel: countLabel,
+                loading: teams == .loading,
+                wrapsInCard: teams == .loading
             ) {
-                TeamRows(teams: teams.items)
+                TeamSections(groups: Paddock.teamGroups(teams.items))
             } placeholders: {
                 TeamRows(teams: TeamItem.placeholders)
             }
@@ -335,10 +344,47 @@ extension Paddock {
         }
     }
 
+    /// One card per division, each under its own heading and count, like the web's two blocks.
+    struct TeamSections: View {
+        let groups: [TeamGroup]
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 20) {
+                ForEach(groups) { group in
+                    VStack(alignment: .leading, spacing: 8) {
+                        if !group.division.isEmpty {
+                            HStack {
+                                TribuneruText(
+                                    content: group.division,
+                                    style: .vaporRowTitle,
+                                    color: .tribuneru(.kitTextPrimary),
+                                    lineLimit: 1
+                                )
+                                Spacer(minLength: 8)
+                                TribuneruText(
+                                    content: L10n.tr("%lld TEAMS", group.teams.count),
+                                    style: .vaporMonoMeta,
+                                    color: .tribuneru(.kitTextSecondary),
+                                    lineLimit: 1
+                                )
+                            }
+                            .accessibilityElement(children: .combine)
+                            .accessibilityAddTraits(.isHeader)
+                        }
+                        TeamRows(teams: group.teams, showsDivision: group.division.isEmpty)
+                            .kitCard()
+                    }
+                }
+            }
+        }
+    }
+
     private struct DirectoryListScreen<Rows: View, Placeholders: View>: View {
         let title: String
         let countLabel: String
         let loading: Bool
+        /// The sections of the teams list draw their own cards.
+        var wrapsInCard = true
         @ViewBuilder let rows: () -> Rows
         @ViewBuilder let placeholders: () -> Placeholders
 
@@ -372,7 +418,7 @@ extension Paddock {
                             rows()
                         }
                     }
-                    .kitCard()
+                    .kitCard(isOn: wrapsInCard)
                 }
                 .padding()
                 .padding(.bottom, 40)
@@ -382,5 +428,12 @@ extension Paddock {
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
         }
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func kitCard(isOn: Bool) -> some View {
+        if isOn { kitCard() } else { self }
     }
 }
