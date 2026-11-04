@@ -311,6 +311,9 @@ extension Paddock {
         let state: ViewState
         let action: (Action) -> Void
 
+        @State private var showsMore = false
+        @State private var pendingAction: Action?
+
         var body: some View {
             KitSection(title: L10n.tr("Moves")) {
                 EmptyView()
@@ -366,12 +369,113 @@ extension Paddock {
                             : L10n.tr("No program changes right now.")
                     )
                 } else {
-                    Timeline(
-                        sections: sections,
-                        action: action
-                    )
+                    let total = Self.cardCount(sections)
+                    VStack(alignment: .leading, spacing: 0) {
+                        Timeline(
+                            sections: Self.limited(sections, to: Self.previewLimit),
+                            action: action
+                        )
+                        if total > Self.previewLimit {
+                            moreButton(total: total)
+                        }
+                    }
+                    // Push only once the sheet is gone, so the rider screen lands on the Paddock stack.
+                    .sheet(
+                        isPresented: $showsMore,
+                        onDismiss: {
+                            guard let pending = pendingAction else { return }
+                            pendingAction = nil
+                            action(pending)
+                        }
+                    ) {
+                        moreSheet(sections: sections)
+                            .presentationDetents([.medium, .large])
+                            .presentationDragIndicator(.visible)
+                            .presentationCornerRadius(24)
+                            .presentationBackground(Color.tribuneru(.kitPageBackground))
+                            .preferredColorScheme(.dark)
+                    }
                 }
             }
+        }
+
+        /// The feed shows at most this many cards; a sheet lists them all.
+        static let previewLimit = 4
+
+        static func cardCount(_ sections: [Section]) -> Int {
+            sections.reduce(0) { total, section in
+                total + section.cards.filter(isFeedCard).count
+            }
+        }
+
+        /// The first `limit` transfer/program cards, keeping day headers only for days that still have cards.
+        static func limited(_ sections: [Section], to limit: Int) -> [Section] {
+            var remaining = limit
+            var result: [Section] = []
+            for section in sections where remaining > 0 {
+                let cards = Array(section.cards.filter(isFeedCard).prefix(remaining))
+                guard !cards.isEmpty else { continue }
+                remaining -= cards.count
+                result.append(Section(title: section.title, cards: cards))
+            }
+            return result
+        }
+
+        private static func isFeedCard(_ card: Card) -> Bool {
+            if case .birthdays = card { return false }
+            return true
+        }
+
+        private func moreButton(total: Int) -> some View {
+            Button {
+                showsMore = true
+            } label: {
+                HStack(spacing: 6) {
+                    TribuneruText(
+                        content: state.segment == .transfers
+                            ? L10n.tr("See all %lld transfers", total)
+                            : L10n.tr("See all %lld programs", total),
+                        style: .vaporSeeAll,
+                        color: .tribuneru(.kitAccent),
+                        lineLimit: 1
+                    )
+                    Spacer(minLength: 8)
+                    Image(systemName: "chevron.up")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.tribuneru(.kitAccent))
+                        .accessibilityHidden(true)
+                }
+                .padding(.horizontal, 16)
+                .frame(minHeight: 48)
+                .kitCard(cornerRadius: 18)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("paddock.moves.more")
+        }
+
+        private func moreSheet(sections: [Section]) -> some View {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 8) {
+                    TribuneruText(
+                        content: state.segment.title,
+                        style: .vaporHeading,
+                        color: .tribuneru(.kitTextPrimary),
+                        lineLimit: 1
+                    )
+                    .padding(.top, 20)
+                    Timeline(
+                        sections: sections,
+                        action: { tapped in
+                            pendingAction = tapped
+                            showsMore = false
+                        }
+                    )
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 24)
+            }
+            .accessibilityIdentifier("paddock.moves.sheet")
         }
 
         private func message(_ text: String) -> some View {
