@@ -400,7 +400,7 @@ extension Paddock {
         }
 
         /// The feed shows at most this many cards; a sheet lists them all.
-        static let previewLimit = 4
+        static let previewLimit = 3
 
         static func cardCount(_ sections: [Section]) -> Int {
             sections.reduce(0) { total, section in
