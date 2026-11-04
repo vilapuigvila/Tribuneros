@@ -21,7 +21,12 @@ extension Paddock {
 
         var body: some View {
             VStack(alignment: .leading, spacing: 14) {
-                DirectoryControl(selected: $selected)
+                DirectoryControl(
+                    options: Directory.allCases,
+                    title: \.title,
+                    identifier: { "paddock.directory.\($0 == .races ? "races" : "teams")" },
+                    selected: $selected
+                )
                 VStack(spacing: 0) {
                     switch selected {
                     case .races:
@@ -148,19 +153,22 @@ extension Paddock {
         }
     }
 
-    private struct DirectoryControl: View {
-        @Binding var selected: Directory
+    private struct DirectoryControl<Option: Hashable>: View {
+        let options: [Option]
+        let title: (Option) -> String
+        let identifier: (Option) -> String
+        @Binding var selected: Option
 
         var body: some View {
             HStack(spacing: 4) {
-                ForEach(Directory.allCases, id: \.self) { directory in
+                ForEach(options, id: \.self) { directory in
                     let isSelected = directory == selected
                     Button {
                         UISelectionFeedbackGenerator().selectionChanged()
                         selected = directory
                     } label: {
                         TribuneruText(
-                            content: directory.title,
+                            content: title(directory),
                             style: .vaporLink,
                             color: .tribuneru(isSelected ? .kitTextPrimary : .kitTextSecondary),
                             lineLimit: 1
@@ -174,7 +182,7 @@ extension Paddock {
                     }
                     .buttonStyle(.plain)
                     .accessibilityAddTraits(isSelected ? .isSelected : [])
-                    .accessibilityIdentifier("paddock.directory.\(directory == .races ? "races" : "teams")")
+                    .accessibilityIdentifier(identifier(directory))
                 }
             }
             .padding(4)
@@ -344,36 +352,36 @@ extension Paddock {
         }
     }
 
-    /// One card per division, each under its own heading and count, like the web's two blocks.
+    /// A segmented control over the divisions ("UCI WorldTeams" | "UCI ProTeams") and the selected one's card.
     struct TeamSections: View {
         let groups: [TeamGroup]
 
+        /// View-local, like the directory section's control; nil means the first division.
+        @State private var selectedID: String?
+
+        private var selected: TeamGroup? {
+            groups.first { $0.id == selectedID } ?? groups.first
+        }
+
         var body: some View {
-            VStack(alignment: .leading, spacing: 20) {
-                ForEach(groups) { group in
-                    VStack(alignment: .leading, spacing: 8) {
-                        if !group.division.isEmpty {
-                            HStack {
-                                TribuneruText(
-                                    content: group.division,
-                                    style: .vaporRowTitle,
-                                    color: .tribuneru(.kitTextPrimary),
-                                    lineLimit: 1
-                                )
-                                Spacer(minLength: 8)
-                                TribuneruText(
-                                    content: L10n.tr("%lld TEAMS", group.teams.count),
-                                    style: .vaporMonoMeta,
-                                    color: .tribuneru(.kitTextSecondary),
-                                    lineLimit: 1
-                                )
-                            }
-                            .accessibilityElement(children: .combine)
-                            .accessibilityAddTraits(.isHeader)
-                        }
-                        TeamRows(teams: group.teams, showsDivision: group.division.isEmpty)
-                            .kitCard()
-                    }
+            VStack(alignment: .leading, spacing: 14) {
+                if groups.count > 1 {
+                    DirectoryControl(
+                        options: groups.map(\.id),
+                        title: { id in
+                            groups.first { $0.id == id }.map(\.title) ?? id
+                        },
+                        identifier: { "paddock.teamsList.\($0)" },
+                        selected: Binding(
+                            get: { selected?.id ?? "" },
+                            set: { selectedID = $0 }
+                        )
+                    )
+                }
+                if let group = selected {
+                    TeamRows(teams: group.teams, showsDivision: group.division.isEmpty)
+                        .kitCard()
+                        .accessibilityLabel(group.title)
                 }
             }
         }

@@ -98,6 +98,9 @@ extension Paddock {
         /// PCS's heading; "" for teams the page listed under no heading.
         let division: String
         let teams: [TeamItem]
+
+        /// The segment's title: PCS's heading, or "Teams" for the unheaded group.
+        var title: String { division.isEmpty ? L10n.tr("Teams") : division }
     }
 
     /// Splits the teams by division, keeping the order of first appearance and each division's own order.
