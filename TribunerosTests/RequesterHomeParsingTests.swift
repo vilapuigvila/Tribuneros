@@ -30,6 +30,21 @@ final class RequesterHomeParsingTests: XCTestCase {
 
     // MARK: - Previews
 
+    func testPreviewsDropCyclocrossRaces() throws {
+        let html = """
+        <h4>Previews</h4><ul class="hp3-previews">
+        <li><div class="days">8h</div><div class="name"><a href="race/telenet-superprestige/2026/result/live">Telenet Superprestige - De Noordzee Cross</a></div></li>
+        <li><div class="days">9h</div><div class="name"><a href="race/gran-piemonte/2026/result/live">Gran Piemonte</a></div></li>
+        </ul>
+        """
+        let previews = Service.parsePreviews(from: try SwiftSoup.parse(html))
+
+        XCTAssertEqual(previews.map(\.name), ["Gran Piemonte"])
+        XCTAssertTrue(Service.isCyclocrossPreview(name: "Exact Cross Mol", href: "race/x/2026/result/live"))
+        XCTAssertTrue(Service.isCyclocrossPreview(name: "UCI CX World Cup - Tabor", href: "race/y"))
+        XCTAssertFalse(Service.isCyclocrossPreview(name: "Tour de Langkawi - S6", href: "race/tour-de-langkawi/2026/stage-6/live"))
+    }
+
     func testPreviewsParseRealMarkup() throws {
         let document = try loadFixtureDocument()
         let previews = Service.parsePreviews(from: document)

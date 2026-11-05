@@ -15,7 +15,21 @@ extension Service {
     private static let previewFactColumnLimit = 4
     private static let previewFactLimit = 8
 
-    /// Anchors on the "Previews" `h4`; `[]` when the section is missing or empty.
+    /// Name or path fragments of cyclocross races: the homepage Previews list carries no race
+    /// class (unlike "Next to finish"), so cyclocross is recognised by the series it names.
+    private static let cyclocrossPreviewMarkers = [
+        "superprestige", "x2o", "trofee", "exact cross", "exactcross",
+        "cyclocross", "cyclo-cross", "cyclo cross", "veldrit"
+    ]
+
+    /// True for a cyclocross race, which belongs to the CX Zone tab and never to Road previews.
+    static func isCyclocrossPreview(name: String, href: String) -> Bool {
+        let text = "\(name) \(href)".lowercased()
+        return cyclocrossPreviewMarkers.contains { text.contains($0) }
+            || text.split(whereSeparator: { !$0.isLetter }).contains("cx")
+    }
+
+    /// Anchors on the "Previews" `h4`; road races only, `[]` when the section is missing or empty.
     static func parsePreviews(from document: Document) -> [DTO.Preview] {
         guard let heading = try? document.select("h4:contains(Previews)").first(),
               let list = try? heading.nextElementSibling(),
@@ -29,7 +43,8 @@ extension Service {
                   let href = try? link.attr("href"),
                   let name = try? link.text(),
                   !name.isEmpty,
-                  !href.isEmpty
+                  !href.isEmpty,
+                  !isCyclocrossPreview(name: name, href: href)
             else {
                 return nil
             }
