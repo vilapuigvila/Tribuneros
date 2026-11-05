@@ -257,14 +257,15 @@ extension Paddock {
 
         private var moreSheet: some View {
             ScrollView {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 0) {
                     TribuneruText(
                         content: L10n.tr("Birthdays today"),
                         style: .vaporHeading,
                         color: .tribuneru(.kitTextPrimary),
                         lineLimit: 1
                     )
-                    .padding(.top, 20)
+                    .padding(.top, 40)
+                    .padding(.bottom, 24)
                     VStack(spacing: 0) {
                         rows(all, idPrefix: "paddock.birthday.sheet") { entry in
                             pendingEntry = entry
