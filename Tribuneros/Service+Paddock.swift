@@ -17,11 +17,12 @@ extension Service {
             return PaddockMock.paddock()
         }
         #endif
-        async let pageTransfers = getPCSTransfers()
+        async let pageRows = getPCSTransferRows()
         let document = try await getHomepageDocument()
-        let transfers = await pageTransfers ?? parseTransfers(document)
+        let rows = await pageRows
         return DTO.Paddock(
-            transfers: transfers,
+            transfers: rows == nil ? parseTransfers(document) : [],
+            transferRows: rows ?? [],
             programUpdates: parseProgramUpdates(document),
             birthdays: parseBirthdays(document)
         )

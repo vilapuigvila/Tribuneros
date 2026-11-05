@@ -9,9 +9,11 @@ tags:
     arguments:
       mockScenario: live
 - tapOn: "Paddock"
-- extendedWaitUntil:
-    visible: "Birthdays today"
+- scrollUntilVisible:
+    element: "Birthdays today"
     timeout: 45000
+- scroll
+- scroll
 - extendedWaitUntil:
     notVisible: "Loading the paddock"
     timeout: 45000

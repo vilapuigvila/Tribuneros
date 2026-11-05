@@ -9,9 +9,11 @@ tags:
     arguments:
       mockScenario: live
 - tapOn: "Paddock"
-- extendedWaitUntil:
-    visible: "Birthdays today"
+- scrollUntilVisible:
+    element: "Birthdays today"
     timeout: 45000
+- scroll
+- scroll
 - extendedWaitUntil:
     notVisible: "Loading the paddock"
     timeout: 45000
@@ -29,9 +31,8 @@ tags:
     end: 70%, 50%
 - assertVisible: "Birthdays today"
 - scrollUntilVisible:
-    element: "Moves"
-- scrollUntilVisible:
     element: "TRANSFER,.*"
+    direction: UP
 - assertVisible: ".*Visma Lease a Bike → Ineos Grenadiers.*"
 - tapOn: "TRANSFER,.*"
 - assertVisible: "Transfer"
@@ -51,7 +52,11 @@ tags:
       id: "paddock.moves.more"
 - tapOn:
     id: "paddock.moves.more"
-- assertVisible: "MOCK Transfer Five"
+- scrollUntilVisible:
+    element: "MOCK Transfer Five.*"
+- scrollUntilVisible:
+    element: "MOCK Transfer Two.*"
+    direction: UP
 - tapOn: "MOCK Transfer Two"
 - assertVisible: "LEAVES"
 - assertVisible: "Groupama - FDJ"

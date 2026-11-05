@@ -10,7 +10,7 @@ tags:
       mockScenario: live
 - tapOn: "Paddock"
 - extendedWaitUntil:
-    visible: "Birthdays today"
+    visible: "Cycling News"
     timeout: 45000
 # A press circle with headlines opens the headlines screen.
 - tapOn:
@@ -38,7 +38,7 @@ tags:
 - swipe:
     start: 1%, 50%
     end: 70%, 50%
-- assertVisible: "Birthdays today"
+- assertVisible: "Cycling News"
 # A site without a feed shows the empty state and "Open site".
 - tapOn:
     id: "paddock.press.joanseguidor.com"
@@ -66,7 +66,7 @@ tags:
 - tapOn:
     id: "Close"
 - extendedWaitUntil:
-    visible: "Birthdays today"
+    visible: "Cycling News"
     timeout: 20000
 # A Moves card opens the rider screen with the PCS sections.
 - scrollUntilVisible:

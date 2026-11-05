@@ -15,6 +15,7 @@ extension Paddock {
         case didAppear
         case didRequestRefresh
         case didSelectFilter(Filter)
+        case didReachTransfersEnd
         /// A press circle opens the site's native headlines screen.
         case didTapOnPress(PressItem)
         /// Transfer, program and birthday cards open the native rider screen.

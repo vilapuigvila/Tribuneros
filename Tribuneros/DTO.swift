@@ -286,6 +286,8 @@ extension DTO {
 extension DTO {
     struct Paddock: Equatable, Sendable {
         let transfers: [Transfer]
+        /// Raw PCS transfer rows, parsed on demand; when empty, `transfers` is the whole list.
+        var transferRows: [String] = []
         let programUpdates: [ProgramUpdate]
         let birthdays: [Birthday]
     }

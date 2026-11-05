@@ -379,7 +379,7 @@ extension Paddock {
                             : L10n.tr("No program changes right now.")
                     )
                 } else {
-                    let total = Self.cardCount(sections)
+                    let total = max(state.count(of: state.segment), Self.cardCount(sections))
                     VStack(alignment: .leading, spacing: 0) {
                         Timeline(
                             sections: Self.limited(sections, to: Self.previewLimit),
@@ -474,13 +474,20 @@ extension Paddock {
                         lineLimit: 1
                     )
                     .padding(.top, 20)
-                    Timeline(
-                        sections: sections,
-                        action: { tapped in
-                            pendingAction = tapped
-                            showsMore = false
+                    LazyVStack(alignment: .leading, spacing: 8) {
+                        Timeline(
+                            sections: sections,
+                            action: { tapped in
+                                pendingAction = tapped
+                                showsMore = false
+                            }
+                        )
+                        if state.segment == .transfers {
+                            Color.clear
+                                .frame(height: 1)
+                                .onAppear { action(.didReachTransfersEnd) }
                         }
-                    )
+                    }
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 24)

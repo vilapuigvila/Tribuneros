@@ -35,6 +35,9 @@ extension Paddock {
         var teams: [DTO.PCSTeam]? = nil
         var racesFailed = false
         var teamsFailed = false
+        /// Raw PCS transfer rows; `transferRowsShown` of them are parsed into `events`.
+        var transferRows: [String] = []
+        var transferRowsShown = 0
 
         static let empty = Domain(
             press: nil,
@@ -49,6 +52,7 @@ extension Paddock {
     enum UseCase: Sendable {
         case request
         case selectFilter(Filter)
+        case revealMoreTransfers
     }
 }
 
@@ -57,7 +61,15 @@ extension Paddock {
         typealias Domain = Paddock.Domain
         typealias UseCase = Paddock.UseCase
 
+        /// Transfers revealed per step of the Moves sheet.
+        static let transferPageSize = 25
+
         private let subject = CurrentValueSubject<Domain, Never>(.empty)
+        private let loadPaddock: () async throws -> DTO.Paddock
+
+        init(loadPaddock: @escaping () async throws -> DTO.Paddock = Service.getPaddock) {
+            self.loadPaddock = loadPaddock
+        }
 
         var publisher: AnyPublisher<Domain, Never> {
             subject.eraseToAnyPublisher()
@@ -78,6 +90,8 @@ extension Paddock {
                 requestTeams()
             case .selectFilter(let filter):
                 mutate { $0.filter = filter }
+            case .revealMoreTransfers:
+                revealMoreTransfers()
             }
         }
 
@@ -128,18 +142,22 @@ extension Paddock {
             feedTask = Task { @MainActor [weak self] in
                 defer { self?.feedTask = nil }
                 do {
-                    let paddock = try await Service.getPaddock()
+                    guard let loadPaddock = self?.loadPaddock else { return }
+                    let paddock = try await loadPaddock()
                     let now = Date()
                     let events = Self.events(
                         from: paddock,
                         fetchedAt: now
                     )
-                    nonFatalCrashlytics(!events.isEmpty, "PCS homepage: every Paddock section parsed empty")
+                    nonFatalCrashlytics(!events.isEmpty || !paddock.transferRows.isEmpty, "PCS homepage: every Paddock section parsed empty")
                     self?.mutate {
                         $0.events = events
+                        $0.transferRows = paddock.transferRows
+                        $0.transferRowsShown = 0
                         $0.lastUpdated = now
                         $0.loading = false
                     }
+                    self?.revealMoreTransfers()
                 } catch {
                     if !Service.isOffline(error) {
                         nonFatalCrashlytics(false, error.localizedDescription)
@@ -149,6 +167,20 @@ extension Paddock {
                         $0.error = error.toEquatableError()
                     }
                 }
+            }
+        }
+
+        private func revealMoreTransfers() {
+            let current = domain
+            guard current.transferRowsShown < current.transferRows.count else { return }
+            let end = min(current.transferRowsShown + Self.transferPageSize, current.transferRows.count)
+            let transfers = Service.parseTransferRows(
+                current.transferRows,
+                in: current.transferRowsShown..<end
+            )
+            mutate {
+                $0.events += transfers.map { .init(date: $0.date, kind: .transfer($0)) }
+                $0.transferRowsShown = end
             }
         }
 

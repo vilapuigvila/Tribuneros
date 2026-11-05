@@ -46,6 +46,8 @@ extension Paddock {
                 interactor.useCase(.request)
             case .didSelectFilter(let filter):
                 interactor.useCase(.selectFilter(filter))
+            case .didReachTransfersEnd:
+                interactor.useCase(.revealMoreTransfers)
             case .didTapOnPress(let item):
                 router.routeTo(item.opensInWebView ? .article(item.url) : .paddockPress(item))
             case .didTapOnRider(let context):
@@ -86,7 +88,9 @@ extension Paddock {
                         )
                     }
                 },
-                transferCount: kinds.filter { Paddock.Filter.transfers.includes($0) }.count,
+                transferCount: domain.transferRows.isEmpty
+                    ? kinds.filter { Paddock.Filter.transfers.includes($0) }.count
+                    : domain.transferRows.count,
                 programCount: kinds.filter { Paddock.Filter.programs.includes($0) }.count,
                 races: listing(
                     domain.races,
