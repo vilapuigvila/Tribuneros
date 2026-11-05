@@ -503,25 +503,25 @@ extension Tifosi {
         private var big: String {
             switch card.status {
             case .onAir: race.remaining(now: now) ?? race.startText
-            case .next, .later: race.countdown(now: now) ?? race.startText
-            case .ended: race.startText
+            case .next, .later, .ended: race.startText
             }
         }
 
-        /// The start time with its day when it is not today: "20:30", "TOMORROW 20:30", "SAT 7 NOV 20:30".
-        private var startLabel: String {
-            guard let start = race.start else { return race.startText }
+        /// The day of the start when it is not today: "TOMORROW", "SAT 7 NOV".
+        private var startDay: String? {
+            guard let start = race.start else { return nil }
             let calendar = Calendar.current
-            let day: String
             if calendar.isDate(start, inSameDayAs: now) {
-                return race.startText
-            } else if let tomorrow = calendar.date(byAdding: .day, value: 1, to: now),
-                      calendar.isDate(start, inSameDayAs: tomorrow) {
+                return nil
+            }
+            let day: String
+            if let tomorrow = calendar.date(byAdding: .day, value: 1, to: now),
+               calendar.isDate(start, inSameDayAs: tomorrow) {
                 day = L10n.tr("Tomorrow")
             } else {
                 day = L10n.dateFormatter(template: "EEE d MMM").string(from: start)
             }
-            return "\(day.uppercased(with: L10n.locale)) \(race.startText)"
+            return day.uppercased(with: L10n.locale)
         }
 
         private var caption: String? {
@@ -529,7 +529,12 @@ extension Tifosi {
             case .onAir:
                 race.remaining(now: now) == nil ? nil : L10n.tr("LEFT")
             case .next, .later:
-                race.countdown(now: now) == nil ? nil : L10n.tr("TO THE START · %@", startLabel)
+                race.countdown(now: now).map { countdown in
+                    L10n.tr(
+                        "TO THE START · %@",
+                        [countdown, startDay].compactMap { $0 }.joined(separator: " · ")
+                    )
+                }
             case .ended:
                 nil
             }
