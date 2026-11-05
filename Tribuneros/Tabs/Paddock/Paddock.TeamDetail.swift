@@ -321,7 +321,7 @@ extension Paddock {
                 CachedImageView(
                     imageUrl: rider.photoURL,
                     cornerRadius: 0,
-                    presentation: .racePhoto,
+                    presentation: .fitted,
                     fallback: AnyView(
                         TribuneruText(
                             content: rider.initials,
@@ -331,6 +331,8 @@ extension Paddock {
                         )
                     )
                 )
+                // Fitted, not filled: the portrait keeps its whole head inside the circle.
+                .scaleEffect(0.92)
                 .frame(width: 40, height: 40)
                 .background(Circle().fill(Color.tribuneru(.kitAvatar)))
                 .clipShape(Circle())
