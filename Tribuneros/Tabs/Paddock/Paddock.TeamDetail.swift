@@ -353,7 +353,8 @@ extension Paddock {
                     VaporFlagView(countryCode: rider.countryCode)
                 }
             }
-            .frame(minHeight: 56)
+            .padding(.vertical, 8)
+            .frame(minHeight: 80)
             .accessibilityElement(children: .combine)
         }
     }
