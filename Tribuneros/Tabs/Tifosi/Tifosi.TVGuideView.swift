@@ -508,12 +508,28 @@ extension Tifosi {
             }
         }
 
+        /// The start time with its day when it is not today: "20:30", "TOMORROW 20:30", "SAT 7 NOV 20:30".
+        private var startLabel: String {
+            guard let start = race.start else { return race.startText }
+            let calendar = Calendar.current
+            let day: String
+            if calendar.isDate(start, inSameDayAs: now) {
+                return race.startText
+            } else if let tomorrow = calendar.date(byAdding: .day, value: 1, to: now),
+                      calendar.isDate(start, inSameDayAs: tomorrow) {
+                day = L10n.tr("Tomorrow")
+            } else {
+                day = L10n.dateFormatter(template: "EEE d MMM").string(from: start)
+            }
+            return "\(day.uppercased(with: L10n.locale)) \(race.startText)"
+        }
+
         private var caption: String? {
             switch card.status {
             case .onAir:
                 race.remaining(now: now) == nil ? nil : L10n.tr("LEFT")
             case .next, .later:
-                race.countdown(now: now) == nil ? nil : L10n.tr("TO THE START · %@", race.startText)
+                race.countdown(now: now) == nil ? nil : L10n.tr("TO THE START · %@", startLabel)
             case .ended:
                 nil
             }
