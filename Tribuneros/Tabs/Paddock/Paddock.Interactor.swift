@@ -186,15 +186,9 @@ extension Paddock {
                 )
             }
             for transfer in paddock.transfers {
-                let date = Self.date(
-                    fromDayMonth: transfer.date,
-                    relativeTo: now,
-                    calendar: calendar
-                )
-                nonFatalCrashlytics(date != nil, "Unexpected PCS transfer date: \(transfer.date)")
                 events.append(
                     .init(
-                        date: date ?? .distantPast,
+                        date: transfer.date,
                         kind: .transfer(transfer)
                     )
                 )

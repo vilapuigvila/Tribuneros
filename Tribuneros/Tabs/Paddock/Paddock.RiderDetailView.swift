@@ -138,6 +138,30 @@ private extension Paddock {
                 title: L10n.tr("Transfer")
             ) {
                 VStack(alignment: .leading, spacing: 10) {
+                    if let fromTeam = card.fromTeam {
+                        RiderCardBox(
+                            look: .kit,
+                            spacing: 6
+                        ) {
+                            TribuneruText(
+                                content: L10n.tr("LEAVES"),
+                                style: .vaporGroupLabel,
+                                color: RiderLook.kit.secondary,
+                                lineLimit: 1
+                            )
+                            HStack(spacing: 8) {
+                                Image(systemName: "arrow.left")
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundColor(RiderLook.kit.accent)
+                                TribuneruText(
+                                    content: fromTeam,
+                                    style: .vaporRaceNameNext,
+                                    color: RiderLook.kit.primary,
+                                    lineLimit: 2
+                                )
+                            }
+                        }
+                    }
                     RiderCardBox(
                         look: .kit,
                         spacing: 6
@@ -165,6 +189,13 @@ private extension Paddock {
                         value: card.date,
                         look: .kit
                     )
+                    if let season = card.season {
+                        CXStatTile(
+                            label: L10n.tr("Season"),
+                            value: season,
+                            look: .kit
+                        )
+                    }
                 }
             }
         }

@@ -32,14 +32,38 @@ tags:
     element: "Moves"
 - scrollUntilVisible:
     element: "TRANSFER,.*"
+- assertVisible: ".*Visma Lease a Bike → Ineos Grenadiers.*"
 - tapOn: "TRANSFER,.*"
 - assertVisible: "Transfer"
+- assertVisible: "LEAVES"
+- assertVisible: "Visma Lease a Bike"
+- assertVisible: "JOINS"
+- assertVisible: "Ineos Grenadiers"
+- assertVisible: "Season"
 - extendedWaitUntil:
     visible: "Profile"
     timeout: 45000
 - swipe:
     start: 1%, 50%
     end: 70%, 50%
+- scrollUntilVisible:
+    element:
+      id: "paddock.moves.more"
+- tapOn:
+    id: "paddock.moves.more"
+- assertVisible: "MOCK Transfer Five"
+- tapOn: "MOCK Transfer Two"
+- assertVisible: "LEAVES"
+- assertVisible: "Groupama - FDJ"
+- assertVisible: "JOINS"
+- assertVisible: "Lidl - Trek"
+- extendedWaitUntil:
+    visible: "Profile"
+    timeout: 45000
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- assertVisible: "See all 5 transfers"
 - tapOn: "Programs.*"
 - scrollUntilVisible:
     element: "PROGRAM,.*"

@@ -246,7 +246,7 @@ final class RequesterHomeParsingTests: XCTestCase {
 
         XCTAssertFalse(transfers.isEmpty, "Expected at least one 'latest transfers' entry")
         for transfer in transfers {
-            XCTAssertNotNil(transfer.date.range(of: "^\\d{2}/\\d{2}$", options: .regularExpression), "Unexpected date: \(transfer.date)")
+            XCTAssertNil(transfer.fromTeam, "The homepage list has no from team")
             XCTAssertFalse(transfer.rider.name.isEmpty)
             XCTAssertTrue(matchesTwoLetterCode(transfer.rider.countryCode), "Unexpected flag: \(transfer.rider.countryCode)")
             XCTAssertTrue(transfer.rider.url?.absoluteString.hasPrefix("https://www.procyclingstats.com/rider/") == true)

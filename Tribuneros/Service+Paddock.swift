@@ -17,15 +17,21 @@ extension Service {
             return PaddockMock.paddock()
         }
         #endif
+        async let pageTransfers = getPCSTransfers()
         let document = try await getHomepageDocument()
+        let transfers = await pageTransfers ?? parseTransfers(document)
         return DTO.Paddock(
-            transfers: parseTransfers(document),
+            transfers: transfers,
             programUpdates: parseProgramUpdates(document),
             birthdays: parseBirthdays(document)
         )
     }
 
-    static func parseTransfers(_ document: Document) -> [DTO.Transfer] {
+    static func parseTransfers(
+        _ document: Document,
+        now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> [DTO.Transfer] {
         guard let heading = try? document.select("h4:contains(Latest transfers)").first(),
               let list = try? heading.nextElementSibling(),
               list.hasClass("hp-transfers"),
@@ -42,10 +48,21 @@ extension Service {
             else {
                 return nil
             }
+            let resolved = Paddock.InteractorImpl.date(
+                fromDayMonth: date,
+                relativeTo: now,
+                calendar: calendar
+            )
+            nonFatalCrashlytics(resolved != nil, "Unexpected PCS transfer date: \(date)")
+            guard let resolved else {
+                return nil
+            }
             return DTO.Transfer(
-                date: date,
+                date: resolved,
                 rider: rider,
-                teamName: team
+                fromTeam: nil,
+                teamName: team,
+                season: nil
             )
         }
     }
@@ -383,7 +400,7 @@ extension Service {
         return URL(string: baseStringURL + relative)
     }
 
-    private static func parseRiderLink(_ element: Element) -> DTO.RiderLink? {
+    static func parseRiderLink(_ element: Element) -> DTO.RiderLink? {
         guard let link = try? element.select("a[href^=rider/]").first(),
               let name = try? link.text(),
               !name.isEmpty

@@ -644,9 +644,9 @@ extension Paddock {
                     rider: card.rider
                 ) {
                     ChangeLine(
-                        sign: "→",
+                        sign: card.fromTeam == nil ? "→" : "",
                         signColor: .tribuneru(.kitAccent),
-                        text: card.teamName
+                        text: card.fromTeam.map { "\($0) → \(card.teamName)" } ?? card.teamName
                     )
                 }
             }

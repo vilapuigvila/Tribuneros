@@ -150,6 +150,7 @@ bot challenge: Node/curl requests get HTTP 403 with a "Just a moment..." page, w
   section hides when empty, so a markup change gives fewer sections, not a broken screen. The results preview shows
   ~10 rows and "Season results" (route `paddockSeasonResults(Paddock.SeasonResultsContext)`, Kit) lists the whole
   table from the same page with no extra request; result rows aren't tappable. No Paddock tap opens a web view.
+- **Transfers** come from PCS `teams/transfers` (`Service.getPCSTransfers()` / `parsePCSTransfers`, `Service+Transfers.swift`, 24 h TTL, ignoring server cache headers; fixture `TribunerosTests/pcs_transfers.html`, covered by `PaddockTransfersTests`), fetched in parallel with the homepage by `getPaddock()`: `table.basic` with "Rider", "From", "Goes to" headers, rows of date `yyyy-MM-dd`, rider, from team (empty link text gives `fromTeam == nil`), new team, season; all rows kept. A failed or empty fetch falls back to the homepage's "Latest transfers" (no from team, `dd/MM` resolved against now). `DTO.Transfer` carries `fromTeam`, a real `Date` and `season`; the card row reads "From → New team" and the rider screen's `TransferPanel` shows LEAVES (when known), JOINS, Announced and Season.
 - **Press screen** (`paddockPress(Paddock.PressItem)`, feature module `Paddock.PressPage`, Kit look, reuses
   `CXRaces.PageLoad`): `Service.getPressFeed(for:)` (`Service+Press.swift`) fetches the site's homepage and takes the
   first RSS/Atom `<link rel="alternate">` (`pressFeedURL(fromHomepage:siteURL:)`, comment feeds skipped), else tries

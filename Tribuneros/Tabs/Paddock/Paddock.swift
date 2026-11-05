@@ -271,7 +271,9 @@ extension Paddock {
         let id: String
         let date: String
         let rider: Rider
+        var fromTeam: String?
         let teamName: String
+        var season: String?
     }
 
     struct ProgramCard: Hashable {

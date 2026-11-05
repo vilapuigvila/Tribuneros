@@ -165,9 +165,11 @@ extension Paddock {
                 .transfer(
                     .init(
                         id: "transfer-\(index)",
-                        date: transfer.date,
+                        date: transferDayMonthFormatter.string(from: transfer.date),
                         rider: .init(transfer.rider),
-                        teamName: transfer.teamName
+                        fromTeam: transfer.fromTeam,
+                        teamName: transfer.teamName,
+                        season: transfer.season
                     )
                 )
             case .programUpdate(let update):
@@ -233,3 +235,10 @@ extension Paddock.PressItem {
         )
     }
 }
+
+private let transferDayMonthFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.dateFormat = "dd/MM"
+    return formatter
+}()

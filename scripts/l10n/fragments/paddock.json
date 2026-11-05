@@ -124,6 +124,18 @@
     "es": "FICHA POR",
     "comment": "Rider screen transfer label"
   },
+  "LEAVES": {
+    "ca": "MARXA DE",
+    "eu": "TALDE ZAHARRA",
+    "es": "SALE DE",
+    "comment": "Rider screen transfer label: the team the rider leaves"
+  },
+  "Season": {
+    "ca": "Temporada",
+    "eu": "Denboraldia",
+    "es": "Temporada",
+    "comment": "Rider screen transfer tile: the season the transfer is for"
+  },
   "Announced": {
     "ca": "Anunciat",
     "eu": "Iragarrita",

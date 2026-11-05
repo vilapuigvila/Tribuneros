@@ -3293,6 +3293,30 @@
         }
       }
     },
+    "LEAVES" : {
+      "comment" : "Rider screen transfer label: the team the rider leaves",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MARXA DE"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SALE DE"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TALDE ZAHARRA"
+          }
+        }
+      }
+    },
     "LEFT" : {
       "comment" : "Caption under the time left of a race on air, e.g. 15m LEFT",
       "extractionState" : "manual",
@@ -6450,6 +6474,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "d.b."
+          }
+        }
+      }
+    },
+    "Season" : {
+      "comment" : "Rider screen transfer tile: the season the transfer is for",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Temporada"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Temporada"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denboraldia"
           }
         }
       }

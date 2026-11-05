@@ -47,8 +47,8 @@ final class PaddockTests: XCTestCase {
     private var paddock: DTO.Paddock {
         DTO.Paddock(
             transfers: [
-                .init(date: "20/09", rider: rider, teamName: "Team A"),
-                .init(date: "17/09", rider: rider, teamName: "Team B")
+                .init(date: date(2026, 9, 20), rider: rider, fromTeam: "Team Z", teamName: "Team A", season: "2027"),
+                .init(date: date(2026, 9, 17), rider: rider, fromTeam: nil, teamName: "Team B", season: nil)
             ],
             programUpdates: [
                 .init(timeAgo: "15m", rider: rider, changes: [.init(isAdded: true, raceName: "Race A")]),
@@ -299,7 +299,9 @@ final class PaddockTests: XCTestCase {
             id: "t",
             date: "20/09",
             rider: .init(rider),
-            teamName: "Team A"
+            fromTeam: "Team Z",
+            teamName: "Team A",
+            season: "2027"
         )
 
         viewModel.action(.didTapOnRider(.transfer(card)))

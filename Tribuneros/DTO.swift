@@ -405,9 +405,11 @@ extension DTO {
     }
 
     struct Transfer: Equatable, Sendable {
-        let date: String          // "20/09", no year
+        let date: Date
         let rider: RiderLink
+        let fromTeam: String?
         let teamName: String
+        let season: String?
     }
 
     struct ProgramUpdate: Equatable, Sendable {

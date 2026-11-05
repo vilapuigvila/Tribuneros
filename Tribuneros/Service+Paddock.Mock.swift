@@ -21,11 +21,8 @@ enum PaddockMock {
         )
     }
 
-    /// One transfer (dated yesterday), one program update and five birthdays (three on the card, all five in the sheet).
+    /// Five transfers (the first dated yesterday, the first four with a from team), one program update and five birthdays (three on the card, all five in the sheet).
     static func paddock(now: Date = Date()) -> DTO.Paddock {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "dd/MM"
         let yesterday = Calendar.current.date(
             byAdding: .day,
             value: -1,
@@ -34,9 +31,39 @@ enum PaddockMock {
         return DTO.Paddock(
             transfers: [
                 DTO.Transfer(
-                    date: formatter.string(from: yesterday),
+                    date: yesterday,
                     rider: rider("MOCK Transfer Rider", slug: "mock-transfer-rider", country: "it"),
-                    teamName: "Ineos Grenadiers"
+                    fromTeam: "Visma Lease a Bike",
+                    teamName: "Ineos Grenadiers",
+                    season: "2027"
+                ),
+                DTO.Transfer(
+                    date: yesterday,
+                    rider: rider("MOCK Transfer Two", slug: "mock-transfer-two", country: "fr"),
+                    fromTeam: "Groupama - FDJ",
+                    teamName: "Lidl - Trek",
+                    season: "2027"
+                ),
+                DTO.Transfer(
+                    date: yesterday,
+                    rider: rider("MOCK Transfer Three", slug: "mock-transfer-three", country: "be"),
+                    fromTeam: "Soudal Quick-Step",
+                    teamName: "UAE Team Emirates",
+                    season: "2027"
+                ),
+                DTO.Transfer(
+                    date: yesterday,
+                    rider: rider("MOCK Transfer Four", slug: "mock-transfer-four", country: "es"),
+                    fromTeam: "Movistar Team",
+                    teamName: "Bahrain Victorious",
+                    season: "2027"
+                ),
+                DTO.Transfer(
+                    date: yesterday,
+                    rider: rider("MOCK Transfer Five", slug: "mock-transfer-five", country: "nl"),
+                    fromTeam: nil,
+                    teamName: "Team Picnic PostNL",
+                    season: "2027"
                 )
             ],
             programUpdates: [
