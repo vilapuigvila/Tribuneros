@@ -256,29 +256,39 @@ extension Paddock {
         }
 
         private var moreSheet: some View {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 8) {
-                    TribuneruText(
-                        content: L10n.tr("Birthdays today"),
-                        style: .vaporHeading,
-                        color: .tribuneru(.kitTextPrimary),
-                        lineLimit: 1
-                    )
-                    .padding(.top, 20)
-                    VStack(spacing: 0) {
-                        rows(all, idPrefix: "paddock.birthday.sheet") { entry in
-                            pendingEntry = entry
-                            showsMore = false
-                        }
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 4)
-                    .kitCard()
+            GeometryReader { proxy in
+                ScrollView {
+                    moreSheetContent
+                        .frame(minHeight: proxy.size.height)
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 24)
             }
             .accessibilityIdentifier("paddock.birthday.sheet")
+        }
+
+        // The title stays at the top and the list sits at the bottom, within thumb reach.
+        private var moreSheetContent: some View {
+            VStack(alignment: .leading, spacing: 0) {
+                TribuneruText(
+                    content: L10n.tr("Birthdays today"),
+                    style: .vaporHeading,
+                    color: .tribuneru(.kitTextPrimary),
+                    lineLimit: 1
+                )
+                .padding(.top, 40)
+                .padding(.bottom, 24)
+                Spacer(minLength: 0)
+                VStack(spacing: 0) {
+                    rows(all, idPrefix: "paddock.birthday.sheet") { entry in
+                        pendingEntry = entry
+                        showsMore = false
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 4)
+                .kitCard()
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 24)
         }
 
         private func row(_ entry: BirthdaysCard.Entry) -> some View {

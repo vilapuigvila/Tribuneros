@@ -77,7 +77,7 @@ extension Service {
 
     private static func directoryDocument(
         _ url: String,
-        ttl: TimeInterval = 60 * 60 * 48
+        ttl: TimeInterval = 60 * 60 * 48 // 2 days
     ) async -> Document? {
         do {
             let (data, _) = try await Requester

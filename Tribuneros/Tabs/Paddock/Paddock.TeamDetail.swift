@@ -318,19 +318,27 @@ extension Paddock {
 
         var body: some View {
             HStack(spacing: 12) {
-                CachedImageView(
-                    imageUrl: rider.photoURL,
-                    cornerRadius: 0,
-                    presentation: .racePhoto,
-                    fallback: AnyView(
-                        TribuneruText(
-                            content: rider.initials,
-                            style: .vaporMonoMeta,
-                            color: .tribuneru(.kitAvatarText),
-                            lineLimit: 1
-                        )
+                ZStack {
+                    TribuneruText(
+                        content: rider.initials,
+                        style: .vaporMonoMeta,
+                        color: .tribuneru(.kitAvatarText),
+                        lineLimit: 1
                     )
-                )
+                    // The portrait is taller than the circle: fill the width and anchor it to
+                    // the top so the head stays whole and only the body is cropped.
+                    Color.clear
+                        .overlay(alignment: .top) {
+                            CachedImageView(
+                                imageUrl: rider.photoURL,
+                                cornerRadius: 0,
+                                presentation: .racePhoto,
+                                fallback: AnyView(Color.clear)
+                            )
+                            .frame(width: 40)
+                            .fixedSize(horizontal: false, vertical: true)
+                        }
+                }
                 .frame(width: 40, height: 40)
                 .background(Circle().fill(Color.tribuneru(.kitAvatar)))
                 .clipShape(Circle())
@@ -353,7 +361,8 @@ extension Paddock {
                     VaporFlagView(countryCode: rider.countryCode)
                 }
             }
-            .frame(minHeight: 56)
+            .padding(.vertical, 8)
+            .frame(minHeight: 80)
             .accessibilityElement(children: .combine)
         }
     }
