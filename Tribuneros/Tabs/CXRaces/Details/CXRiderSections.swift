@@ -277,17 +277,24 @@ struct CXRiderAvatar: View {
     let look: RiderLook
 
     var body: some View {
-        Group {
+        ZStack {
+            Image(systemName: "person.fill")
+                .font(.system(size: 32, weight: .regular))
+                .foregroundColor(look.secondary)
             if let url {
-                CachedImageView(
-                    imageUrl: url,
-                    cornerRadius: 40
-                )
-                .scaledToFill()
-            } else {
-                Image(systemName: "person.fill")
-                    .font(.system(size: 32, weight: .regular))
-                    .foregroundColor(look.secondary)
+                // Portraits are taller than the circle: fill the width and anchor to the top so
+                // the head stays whole and only the body is cropped.
+                Color.clear
+                    .overlay(alignment: .top) {
+                        CachedImageView(
+                            imageUrl: url,
+                            cornerRadius: 0,
+                            presentation: .racePhoto,
+                            fallback: AnyView(Color.clear)
+                        )
+                        .frame(width: 80)
+                        .fixedSize(horizontal: false, vertical: true)
+                    }
             }
         }
         .frame(width: 80, height: 80)
