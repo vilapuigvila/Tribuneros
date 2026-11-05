@@ -43,6 +43,8 @@ struct NextToFinishRaceDetail: View {
     @Environment(\.featureRaceOnTV) private var featureRaceOnTV
 
     private var coverage: HomeRaces.WhereToWatch.Coverage? { listing?.coverage }
+    /// The TV guide has the race only when the schedule lists it; "Not in the TV listings" has nothing to open.
+    private var opensTifosi: Bool { listing != nil && coverage != .notListed }
 
     private static var loadFailureMessage: String {
         L10n.tr("Couldn’t load the race info. Check your connection and try again.")
@@ -160,7 +162,7 @@ struct NextToFinishRaceDetail: View {
     @ViewBuilder
     private var watchCard: some View {
         if Service.isCourseDuJourNativeEnabled, watchKey != nil, (!isCoverageLoaded || coverage != nil) {
-            if let listing {
+            if let listing, opensTifosi {
                 Button {
                     featureRaceOnTV(
                         listing.raceID,
@@ -203,7 +205,7 @@ struct NextToFinishRaceDetail: View {
                     color: .tribuneru(.vaporAccent)
                 )
                 Spacer(minLength: 0)
-                if listing != nil {
+                if opensTifosi {
                     TribuneruText(
                         content: L10n.tr("View on Tifosi"),
                         style: .vaporMeta,
