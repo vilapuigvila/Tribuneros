@@ -47,6 +47,14 @@ Like beta, then send it to the External-alfys testers with a What to Test you ty
 
 Print the latest build number on App Store Connect
 
+### ios new_version
+
+```sh
+[bundle exec] fastlane ios new_version
+```
+
+Create the App Store version (or reuse the editable one) and set its What's New: new_version version:1.1 whats_new:"..." [whats_new_ca:"..."]
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

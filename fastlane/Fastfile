@@ -4,6 +4,8 @@ PROJECT = "Tribuneros.xcodeproj"
 SCHEME = "Tribuneros"
 APP_TARGET = "Tribunerus"
 EXTERNAL_GROUP = "External-alfys"
+BUNDLE_ID = "com.pskmoons.Tribuneros"
+CATALAN_LOCALE = "ca"
 
 platform :ios do
   desc "Run the unit tests (skips the two live-network tests)"
@@ -49,6 +51,27 @@ platform :ios do
   lane :latest_build do
     UI.message("App Store Connect: #{latest_testflight_build_number(api_key: asc_api_key, initial_build_number: 0)}")
     UI.message("Project: #{app_build_number}")
+  end
+
+  desc "Create the App Store version (or reuse the editable one) and set its What's New: new_version version:1.1 whats_new:\"...\" [whats_new_ca:\"...\"]"
+  lane :new_version do |options|
+    version = options[:version].to_s.strip
+    whats_new = options[:whats_new].to_s.strip
+    whats_new_ca = options[:whats_new_ca].to_s.strip
+    UI.user_error!("Pass the version: new_version version:1.1 whats_new:\"...\"") if version.empty?
+    UI.user_error!("Version \"#{version}\" isn't like 1.1 or 1.1.2") unless version.match?(/\A\d+(\.\d+){1,2}\z/)
+    UI.user_error!("Pass the What's New text: whats_new:\"...\"") if whats_new.empty?
+    { "whats_new" => whats_new, "whats_new_ca" => whats_new_ca }.each do |key, text|
+      UI.user_error!("#{key} is #{text.length} characters; the limit is 4000.") if text.length > 4000
+    end
+
+    asc_api_key
+    app = Spaceship::ConnectAPI::App.find(BUNDLE_ID) || UI.user_error!("No app #{BUNDLE_ID} on App Store Connect")
+    texts = { app.primary_locale => whats_new }
+    texts[CATALAN_LOCALE] = whats_new_ca unless whats_new_ca.empty?
+    app_version = editable_app_version(app, version)
+    set_whats_new(app_version, texts, app.primary_locale)
+    UI.success("Version #{version} (#{app_version.id}) has What's New for #{texts.keys.join(", ")}; nothing else touched, not submitted")
   end
 end
 
@@ -106,6 +129,48 @@ def auth_xcargs
     "-authenticationKeyID #{ENV.fetch('ASC_KEY_ID')}",
     "-authenticationKeyIssuerID #{ENV.fetch('ASC_ISSUER_ID')}"
   ].join(" ")
+end
+
+# Reuses the prepare-for-submission iOS version when it has this number, else creates it. A different editable number
+# fails instead of being renamed (a rename would silently hijack a version someone is preparing); so does this number
+# existing in any other state (live, in review...), since it can't be edited or created again.
+def editable_app_version(app, version)
+  platform = Spaceship::ConnectAPI::Platform::IOS
+  states = Spaceship::ConnectAPI::AppStoreVersion::AppVersionState
+  versions = app.get_app_store_versions(
+    filter: { platform: platform },
+    includes: nil
+  )
+  same = versions.find { |v| v.version_string == version }
+  if same
+    UI.user_error!("Version #{version} already exists in state #{same.app_version_state}, not editable") unless same.app_version_state == states::PREPARE_FOR_SUBMISSION
+    UI.message("Reusing the editable version #{version}")
+    return same
+  end
+  other = versions.find { |v| v.app_version_state == states::PREPARE_FOR_SUBMISSION }
+  UI.user_error!("Editable version #{other.version_string} already exists; finish or delete it first (not renaming it to #{version})") if other
+
+  UI.message("Creating version #{version}")
+  Spaceship::ConnectAPI.post_app_store_version(
+    app_id: app.id,
+    attributes: { versionString: version, platform: platform }
+  ).to_models.first
+end
+
+# Only the primary locale is created when missing; another locale must already be on the version (adding a language
+# needs its description and keywords too), and that is checked before any text is written.
+def set_whats_new(app_version, texts, primary_locale)
+  localizations = app_version.get_app_store_version_localizations
+  missing = texts.keys.reject { |locale| locale == primary_locale || localizations.any? { |l| l.locale == locale } }
+  UI.user_error!("No #{missing.join(", ")} listing on this version; add the language in App Store Connect first") unless missing.empty?
+  texts.each do |locale, text|
+    localization = localizations.find { |l| l.locale == locale }
+    if localization
+      localization.update(attributes: { whatsNew: text })
+    else
+      app_version.create_app_store_version_localization(attributes: { locale: locale, whatsNew: text })
+    end
+  end
 end
 
 # The repo's number can lag App Store Connect, so take whichever is higher.
