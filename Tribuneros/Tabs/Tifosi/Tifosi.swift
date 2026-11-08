@@ -16,7 +16,7 @@ extension Tifosi {
 
         static var chips: [Channel] { [.tv, .radio, .x, .bluesky, .instagram] }
 
-        /// Only these chips have a content source yet; the rest are shown disabled.
+        /// Only these chips have a content source yet; the rest are hidden.
         var isAvailable: Bool { self == .tv }
 
         var title: String {

@@ -59,7 +59,7 @@ extension Tifosi {
             let date = L10n.dateFormatter(template: "EEEddMMM").string(from: domain.date)
             return Tifosi.ViewState(
                 dateLine: "\(date) · \(scope)",
-                chips: Tifosi.Channel.chips.map {
+                chips: Tifosi.Channel.chips.filter(\.isAvailable).map {
                     Tifosi.Representable.Chip(
                         channel: $0,
                         title: $0.title,
