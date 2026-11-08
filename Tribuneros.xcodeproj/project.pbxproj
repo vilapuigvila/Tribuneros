@@ -18,6 +18,7 @@
 		50F43D112DE89C5D006AE0A1 /* Alfy in Frameworks */ = {isa = PBXBuildFile; productRef = 50F43D102DE89C5D006AE0A1 /* Alfy */; };
 		A10770012F0000000000AA01 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = A10770032F0000000000AA03 /* Lottie */; };
 		A10770042F0000000000AA04 /* YouTubePlayerKit in Frameworks */ = {isa = PBXBuildFile; productRef = A10770062F0000000000AA06 /* YouTubePlayerKit */; };
+		A10770082F0000000000AA08 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = A10770072F0000000000AA07 /* FirebaseMessaging */; };
 		BAA4F0FFFAF548939DFADEBF /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C205F805B0E4AD58CAB2421 /* XCTest.framework */; };
 		FE1D638995513D8B7C5FAFDB /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 50788AC52DD1FDE40051A80F /* SwiftSoup */; };
 /* End PBXBuildFile section */
@@ -88,6 +89,7 @@
 				500388262E740ED40041E747 /* FirebaseRemoteConfig in Frameworks */,
 				4387FBD4CBAC2EA4F3C7EC9D /* FirebaseFirestore in Frameworks */,
 				500388242E740ED40041E747 /* FirebaseCrashlytics in Frameworks */,
+				A10770082F0000000000AA08 /* FirebaseMessaging in Frameworks */,
 				50F43D112DE89C5D006AE0A1 /* Alfy in Frameworks */,
 				50788AC62DD1FDE40051A80F /* SwiftSoup in Frameworks */,
 			);
@@ -154,6 +156,7 @@
 				500388232E740ED40041E747 /* FirebaseCrashlytics */,
 				500388252E740ED40041E747 /* FirebaseRemoteConfig */,
 				ED11B09019D9765149A6B76E /* FirebaseFirestore */,
+				A10770072F0000000000AA07 /* FirebaseMessaging */,
 			);
 			productName = Tribuneros;
 			productReference = 50B365772D6489EF000DA4AC /* Cycling Tribune.app */;
@@ -432,6 +435,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Tribuneros/Tribuneros.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 27;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -467,6 +471,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Tribuneros/Tribuneros.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 27;
 				DEVELOPMENT_ASSET_PATHS = "\"Tribuneros/Preview Content\"";
@@ -669,6 +674,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A10770052F0000000000AA05 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */;
 			productName = YouTubePlayerKit;
+		};
+		A10770072F0000000000AA07 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 500388202E740ED40041E747 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 		ED11B09019D9765149A6B76E /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;

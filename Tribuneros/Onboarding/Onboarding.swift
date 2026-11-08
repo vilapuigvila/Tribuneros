@@ -135,7 +135,8 @@ extension Onboarding {
         @Published private(set) var showing: Int?
         private let store: Store
         private let now: () -> Date
-        private var hasStarted = false
+        /// Set once `start` has decided whether to show, so later launch steps can wait on it.
+        @Published private(set) var hasStarted = false
 
         init(
             store: Store = .userSettings,
