@@ -88,3 +88,8 @@ specs/
 # fastlane local config and bundler
 fastlane/.env
 vendor/bundle
+
+# Push sender
+scripts/push/.env
+functions/.secret.local
+.secret.local

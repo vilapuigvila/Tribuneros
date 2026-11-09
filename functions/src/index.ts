@@ -6,6 +6,7 @@ import {FieldValue, getFirestore, type Firestore} from "firebase-admin/firestore
 import {loadHomepageDocument, parseHomepage, scrapeCalendar, scrapeStandings} from "./cx";
 
 export {cxDetail} from "./cxDetail";
+export {sendPush} from "./push";
 
 initializeApp();
 

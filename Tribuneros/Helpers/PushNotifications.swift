@@ -88,6 +88,24 @@ extension PushNotifications: MessagingDelegate {
         didReceiveRegistrationToken fcmToken: String?
     ) {
         AppLogger.network.log("FCM token: \(fcmToken ?? "nil")")
+        guard fcmToken != nil else { return }
+        PushNotifications.subscribeToAllTopic()
+    }
+}
+
+extension PushNotifications {
+    nonisolated static func subscribeToAllTopic() {
+        Messaging.messaging().subscribe(toTopic: "all") { error in
+            if let error {
+                nonFatalCrashlytics(
+                    false,
+                    "FCM topic subscribe failed: \(error.localizedDescription)"
+                )
+                AppLogger.network.error("FCM topic subscribe failed: \(error.localizedDescription)")
+            } else {
+                AppLogger.network.log("Subscribed to topic all")
+            }
+        }
     }
 }
 
@@ -98,6 +116,15 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     ) -> Bool {
         PushNotifications.shared.start(application: application)
         return true
+    }
+
+    func application(
+        _ application: UIApplication,
+        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+    ) {
+        let hex = deviceToken.map { String(format: "%02x", $0) }.joined()
+        AppLogger.network.log("APNs token: \(hex)")
+        Messaging.messaging().apnsToken = deviceToken
     }
 
     func application(

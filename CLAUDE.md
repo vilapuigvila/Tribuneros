@@ -81,6 +81,7 @@ root with Node 22 on PATH — the Homebrew `node@22` install is first on PATH in
 - Deploy: `firebase deploy --only functions,firestore:rules` — the user deploys; it changes the
   live project and isn't something to run on your own.
 - Logs: `firebase functions:log --only scrapeCx`
+- **Owner push sender** (`functions/src/push.ts`, `sendPush`, v2 `onRequest`): POST JSON `{title, body, target: {topic: "all"} | {token}, data?}` with `Authorization: Bearer <key>`; the key is the Secret Manager secret `PUSH_ADMIN_KEY` (constant-time compare; 401 otherwise, 400 invalid body, 502 when FCM rejects, 200 `{id}`). `buildPushMessage` validates and builds it (tested in `functions/test/push.test.ts`). Every install subscribes to the FCM topic `all` once it has an FCM token (`PushNotifications.subscribeToAllTopic`). Send with `scripts/push/send.sh "Title" "Body" [--token <t>] [--data k=v …]` (`PUSH_URL` / `PUSH_ADMIN_KEY` from the environment or the gitignored `scripts/push/.env`). Locally, the emulator reads the key from the gitignored `functions/.secret.local`. The user sets the secret and deploys (`firebase functions:secrets:set PUSH_ADMIN_KEY`, `firebase deploy --only functions:sendPush`).
 
 ## Architecture
 
