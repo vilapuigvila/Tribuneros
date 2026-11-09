@@ -55,6 +55,20 @@ struct OnboardingHost<Content: View>: View {
                 )
             }
         }
+        .task(id: PushPromptTrigger(
+            isLaunchSplashFinished: isLaunchSplashFinished && presenter.hasStarted,
+            isOnboardingShowing: presenter.showing != nil
+        )) {
+            await PushNotifications.shared.requestPermissionIfNeeded(
+                isLaunchSplashFinished: isLaunchSplashFinished && presenter.hasStarted,
+                isOnboardingShowing: presenter.showing != nil
+            )
+        }
+    }
+
+    private struct PushPromptTrigger: Equatable {
+        let isLaunchSplashFinished: Bool
+        let isOnboardingShowing: Bool
     }
 
     private func replay() {
