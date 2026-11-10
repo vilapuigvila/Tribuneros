@@ -21,21 +21,31 @@ platform :ios do
     )
   end
 
-  desc "Bump the build past App Store Connect's latest, commit it, archive and upload to TestFlight"
+  desc "Optionally ask a new version (empty skips), bump the build past App Store Connect's latest, commit, archive and upload to TestFlight"
   lane :beta do
     ensure_release_ready
+    version = ask_optional_version # asked before archiving, so nothing waits on the keyboard later
+    if version
+      set_app_version(version)
+      git_commit(path: "#{PROJECT}/project.pbxproj", message: "Bump version to #{version}")
+    end
     api_key, build = bump_and_archive
     upload_to_testflight(
       api_key: api_key,
       skip_waiting_for_build_processing: true
     )
-    UI.success("Uploaded build #{build}; the bump commit is local, push it yourself")
+    UI.success("Uploaded #{version || app_version_number} (#{build}); the bump commits are local, push them yourself")
   end
 
-  desc "Like beta, then send it to the External-alfys testers with a What to Test you type first"
+  desc "Like beta (optional new version, empty skips), then send it to the External-alfys testers with a What to Test you type first"
   lane :beta_external do
     ensure_release_ready
+    version = ask_optional_version # asked before archiving, so nothing waits on the keyboard later
     whats_new = ask_whats_new
+    if version
+      set_app_version(version)
+      git_commit(path: "#{PROJECT}/project.pbxproj", message: "Bump version to #{version}")
+    end
     api_key, build = bump_and_archive
     upload_to_testflight(
       api_key: api_key,
@@ -44,7 +54,7 @@ platform :ios do
       groups: [EXTERNAL_GROUP],
       notify_external_testers: true
     )
-    UI.success("Build #{build} sent to #{EXTERNAL_GROUP} (Beta App Review first if Apple asks); push the bump commit yourself")
+    UI.success("#{version || app_version_number} (#{build}) sent to #{EXTERNAL_GROUP} (Beta App Review first if Apple asks); the bump commits are local, push them yourself")
   end
 
   desc "Print the latest build number on App Store Connect"
@@ -53,25 +63,48 @@ platform :ios do
     UI.message("Project: #{app_build_number}")
   end
 
-  desc "Create the App Store version (or reuse the editable one) and set its What's New: new_version version:1.1 whats_new:\"...\" [whats_new_ca:\"...\"]"
+  desc "From a clean development branch: ask the new version and its What's New (English, Catalan), archive the .ipa with that version, and upload binary and texts to App Store Connect: new_version version:1.1 whats_new:\"...\" whats_new_ca:\"...\""
   lane :new_version do |options|
+    ensure_release_ready # before asking anything: wrong branch or a dirty tree stops here
     version = options[:version].to_s.strip
     whats_new = options[:whats_new].to_s.strip
     whats_new_ca = options[:whats_new_ca].to_s.strip
-    UI.user_error!("Pass the version: new_version version:1.1 whats_new:\"...\"") if version.empty?
+
+    # 1-3: everything is asked up front (a value passed as an option skips its question), so nothing waits later
+    version = ask_version if version.empty?
+    whats_new = ask_text("What's New (English)") if whats_new.empty?
+    whats_new_ca = ask_text("What's New (Catalan)") if whats_new_ca.empty?
     UI.user_error!("Version \"#{version}\" isn't like 1.1 or 1.1.2") unless version.match?(/\A\d+(\.\d+){1,2}\z/)
-    UI.user_error!("Pass the What's New text: whats_new:\"...\"") if whats_new.empty?
     { "whats_new" => whats_new, "whats_new_ca" => whats_new_ca }.each do |key, text|
+      UI.user_error!("#{key} is empty") if text.empty?
       UI.user_error!("#{key} is #{text.length} characters; the limit is 4000.") if text.length > 4000
     end
 
-    asc_api_key
+    # Checked before archiving, so a failure here costs nothing: the version must be creatable or the editable one.
+    api_key = asc_api_key
     app = Spaceship::ConnectAPI::App.find(BUNDLE_ID) || UI.user_error!("No app #{BUNDLE_ID} on App Store Connect")
-    texts = { app.primary_locale => whats_new }
-    texts[CATALAN_LOCALE] = whats_new_ca unless whats_new_ca.empty?
+    check_version_available(app, version)
+
+    # 4: archive with the new version; the build number is bumped only if the project's isn't already past App Store Connect
+    set_app_version(version)
+    git_commit(path: "#{PROJECT}/project.pbxproj", message: "Bump version to #{version}")
+    _, build, ipa = bump_and_archive(only_if_needed: true)
+
+    # 5: version, texts and binary to App Store Connect (not submitted for review)
+    texts = { app.primary_locale => whats_new, CATALAN_LOCALE => whats_new_ca }
     app_version = editable_app_version(app, version)
     set_whats_new(app_version, texts, app.primary_locale)
-    UI.success("Version #{version} (#{app_version.id}) has What's New for #{texts.keys.join(", ")}; nothing else touched, not submitted")
+    upload_to_app_store(
+      api_key: api_key,
+      ipa: ipa,
+      app_version: version,
+      skip_metadata: true,
+      skip_screenshots: true,
+      force: true,
+      submit_for_review: false,
+      run_precheck_before_submit: false
+    )
+    UI.success("Version #{version} (build #{build}) uploaded with What's New in #{texts.keys.join(", ")}; not submitted, and the bump commits are local: push them yourself")
   end
 end
 
@@ -80,15 +113,20 @@ def ensure_release_ready
   ensure_git_status_clean
 end
 
-# Returns [api_key, build]; the build number is committed (not pushed) before archiving.
-def bump_and_archive
+# Returns [api_key, build, ipa_path]; the build number is committed (not pushed) before archiving. With only_if_needed
+# the build is left alone when the project's number is already past App Store Connect's.
+def bump_and_archive(only_if_needed: false)
   api_key = asc_api_key
-  build = next_build_number(api_key)
-  set_app_build_number(build)
-  git_commit(
-    path: "#{PROJECT}/project.pbxproj",
-    message: "Bump build number to #{build}"
-  )
+  build = next_build_number(api_key, only_if_needed: only_if_needed)
+  if build == app_build_number
+    UI.message("Build #{build} is already past App Store Connect; not bumping")
+  else
+    set_app_build_number(build)
+    git_commit(
+      path: "#{PROJECT}/project.pbxproj",
+      message: "Bump build number to #{build}"
+    )
+  end
   build_app(
     project: PROJECT,
     scheme: SCHEME,
@@ -97,20 +135,24 @@ def bump_and_archive
     output_directory: "build",
     xcargs: auth_xcargs # gym also passes xcargs to -exportArchive, so no export_xcargs (it would duplicate them)
   )
-  [api_key, build]
+  [api_key, build, lane_context[SharedValues::IPA_OUTPUT_PATH]]
 end
 
-# Asked before archiving, so nothing waits on the keyboard later. TestFlight caps What to Test at 4000 characters.
-def ask_whats_new
-  UI.user_error!("beta_external asks for the What to Test text, so it needs a terminal") unless UI.interactive?
+# Asked before archiving, so nothing waits on the keyboard later. App Store Connect and TestFlight cap these at 4000.
+def ask_text(label)
+  UI.user_error!("#{label} is asked on a terminal; pass it as an option instead") unless UI.interactive?
   loop do
     text = prompt(
-      text: "What to Test for #{EXTERNAL_GROUP} (several lines; type END on its own line to finish):",
+      text: "#{label} (several lines; type END on its own line to finish):",
       multi_line_end_keyword: "END"
     ).to_s.strip
     return text if !text.empty? && text.length <= 4000
-    UI.error(text.empty? ? "What to Test can't be empty." : "What to Test is #{text.length} characters; the limit is 4000.")
+    UI.error(text.empty? ? "#{label} can't be empty." : "#{label} is #{text.length} characters; the limit is 4000.")
   end
+end
+
+def ask_whats_new
+  ask_text("What to Test for #{EXTERNAL_GROUP}")
 end
 
 def asc_api_key
@@ -129,6 +171,17 @@ def auth_xcargs
     "-authenticationKeyID #{ENV.fetch('ASC_KEY_ID')}",
     "-authenticationKeyIssuerID #{ENV.fetch('ASC_ISSUER_ID')}"
   ].join(" ")
+end
+
+# The same rules as editable_app_version, without creating anything.
+def check_version_available(app, version)
+  platform = Spaceship::ConnectAPI::Platform::IOS
+  states = Spaceship::ConnectAPI::AppStoreVersion::AppVersionState
+  versions = app.get_app_store_versions(filter: { platform: platform }, includes: nil)
+  same = versions.find { |v| v.version_string == version }
+  UI.user_error!("Version #{version} already exists in state #{same.app_version_state}, not editable") if same && same.app_version_state != states::PREPARE_FOR_SUBMISSION
+  other = versions.find { |v| v.app_version_state == states::PREPARE_FOR_SUBMISSION }
+  UI.user_error!("Editable version #{other.version_string} already exists; finish or delete it first (not renaming it to #{version})") if other && !same
 end
 
 # Reuses the prepare-for-submission iOS version when it has this number, else creates it. A different editable number
@@ -173,10 +226,13 @@ def set_whats_new(app_version, texts, primary_locale)
   end
 end
 
-# The repo's number can lag App Store Connect, so take whichever is higher.
-def next_build_number(api_key)
+# The repo's number can lag App Store Connect, so take whichever is higher. only_if_needed keeps the project's own
+# number when it is already past App Store Connect's.
+def next_build_number(api_key, only_if_needed: false)
   remote = latest_testflight_build_number(api_key: api_key, initial_build_number: 0).to_i
-  [remote, app_build_number].max + 1
+  local = app_build_number
+  return local if only_if_needed && local > remote
+  [remote, local].max + 1
 end
 
 def app_target
@@ -195,6 +251,20 @@ def set_app_build_number(build)
   text = File.read(path)
   app_target.build_configurations.each do |config|
     text = text.sub(/(#{config.uuid} \/\*.*?CURRENT_PROJECT_VERSION = )\d+;/m, "\\1#{build};")
+  end
+  File.write(path, text)
+end
+
+def app_version_number
+  app_target.build_configurations.map { |c| c.build_settings["MARKETING_VERSION"].to_s }.max
+end
+
+# Same text edit as the build number, for MARKETING_VERSION.
+def set_app_version(version)
+  path = File.expand_path("../#{PROJECT}/project.pbxproj", __dir__)
+  text = File.read(path)
+  app_target.build_configurations.each do |config|
+    text = text.sub(/(#{config.uuid} \/\*.*?MARKETING_VERSION = )[^;]+;/m, "\\1#{version};")
   end
   File.write(path, text)
 end

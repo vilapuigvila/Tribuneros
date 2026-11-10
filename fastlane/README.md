@@ -29,7 +29,7 @@ Run the unit tests (skips the two live-network tests)
 [bundle exec] fastlane ios beta
 ```
 
-Bump the build past App Store Connect's latest, commit it, archive and upload to TestFlight
+Optionally ask a new version (empty skips), bump the build past App Store Connect's latest, commit, archive and upload to TestFlight
 
 ### ios beta_external
 
@@ -37,7 +37,7 @@ Bump the build past App Store Connect's latest, commit it, archive and upload to
 [bundle exec] fastlane ios beta_external
 ```
 
-Like beta, then send it to the External-alfys testers with a What to Test you type first
+Like beta (optional new version, empty skips), then send it to the External-alfys testers with a What to Test you type first
 
 ### ios latest_build
 
@@ -53,7 +53,7 @@ Print the latest build number on App Store Connect
 [bundle exec] fastlane ios new_version
 ```
 
-Create the App Store version (or reuse the editable one) and set its What's New: new_version version:1.1 whats_new:"..." [whats_new_ca:"..."]
+From a clean development branch: ask the new version and its What's New (English, Catalan), archive the .ipa with that version, and upload binary and texts to App Store Connect: new_version version:1.1 whats_new:"..." whats_new_ca:"..."
 
 ----
 
