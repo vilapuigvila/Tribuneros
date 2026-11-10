@@ -155,6 +155,28 @@ def ask_whats_new
   ask_text("What to Test for #{EXTERNAL_GROUP}")
 end
 
+VERSION_FORMAT = /\A\d+(\.\d+){1,2}\z/
+
+# Empty answer returns nil (keep the project's version). Asked before archiving, like ask_text.
+def ask_optional_version
+  return nil unless UI.interactive?
+  loop do
+    answer = prompt(text: "New version, like 1.1 or 1.1.2 (current #{app_version_number}; empty keeps it):").to_s.strip
+    return nil if answer.empty?
+    return answer if answer.match?(VERSION_FORMAT)
+    UI.error("\"#{answer}\" isn't like 1.1 or 1.1.2.")
+  end
+end
+
+def ask_version
+  UI.user_error!("The version is asked on a terminal; pass it as an option instead") unless UI.interactive?
+  loop do
+    answer = prompt(text: "New version, like 1.1 or 1.1.2 (current #{app_version_number}):").to_s.strip
+    return answer if answer.match?(VERSION_FORMAT)
+    UI.error("\"#{answer}\" isn't like 1.1 or 1.1.2.")
+  end
+end
+
 def asc_api_key
   app_store_connect_api_key(
     key_id: ENV.fetch("ASC_KEY_ID"),
