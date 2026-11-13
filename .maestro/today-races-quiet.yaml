@@ -1,0 +1,41 @@
+# Today Races on a quiet day (mock scenario "quiet", Debug build only): nothing today or yesterday,
+# so the page shows the notice, the latest History result as a hero and the next ones under "Earlier",
+# with no error card and none of the usual Today / Results sections.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: quiet
+- extendedWaitUntil:
+    visible:
+      id: "home.quiet.notice"
+    timeout: 20000
+- assertVisible:
+    id: "home.quiet.notice"
+    text: ".*No racing today.*"
+- assertNotVisible: "No info available"
+- assertNotVisible:
+    id: "home.today.empty"
+- assertNotVisible:
+    id: "home.results.empty"
+- assertVisible: "Latest finish"
+- assertVisible:
+    id: "home.latest.hero"
+    text: ".*Tre Valli Varesine.*"
+- scrollUntilVisible:
+    element:
+      id: "home.earlier.row.3"
+- assertVisible: "Earlier"
+- assertVisible:
+    id: "home.earlier.row.0"
+    text: ".*Il Lombardia.*"
+- assertNotVisible:
+    id: "home.earlier.seeAll"
+- tapOn:
+    id: "home.earlier.row.0"
+- assertNotVisible:
+    id: "home.quiet.notice"

@@ -3245,6 +3245,29 @@
         }
       }
     },
+    "Latest finish" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Última arribada"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Última llegada"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Azken helmuga"
+          }
+        }
+      }
+    },
     "LATEST RESULT" : {
       "comment" : "CX Zone latest result card tag",
       "extractionState" : "manual",
@@ -4747,6 +4770,29 @@
         }
       }
     },
+    "No racing today" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avui no hi ha curses"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoy no hay carreras"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gaur ez dago lasterketarik"
+          }
+        }
+      }
+    },
     "No results available" : {
       "comment" : "Race results empty state",
       "extractionState" : "manual",
@@ -5074,6 +5120,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ez dago telebista-programazioan"
+          }
+        }
+      }
+    },
+    "Nothing finished yesterday either. Here is the latest." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ahir tampoc no va acabar cap cursa. Aquí tens l’última."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ayer tampoco terminó ninguna carrera. Aquí tienes la última."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atzo ere ez zen lasterketarik amaitu. Hona hemen azkena."
           }
         }
       }

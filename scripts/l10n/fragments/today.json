@@ -596,5 +596,20 @@
     "ca": "ha començat a les %@",
     "eu": "hasiera: %@",
     "es": "hora de salida: %@"
+  },
+  "Latest finish": {
+    "ca": "Última arribada",
+    "eu": "Azken helmuga",
+    "es": "Última llegada"
+  },
+  "No racing today": {
+    "ca": "Avui no hi ha curses",
+    "eu": "Gaur ez dago lasterketarik",
+    "es": "Hoy no hay carreras"
+  },
+  "Nothing finished yesterday either. Here is the latest.": {
+    "ca": "Ahir tampoc no va acabar cap cursa. Aquí tens l’última.",
+    "eu": "Atzo ere ez zen lasterketarik amaitu. Hona hemen azkena.",
+    "es": "Ayer tampoco terminó ninguna carrera. Aquí tienes la última."
   }
 }

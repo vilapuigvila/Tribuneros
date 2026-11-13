@@ -33,6 +33,11 @@ enum HomeRaces {
             let historyResults: [RaceFinished]
             var previews: [RacePreview] = []
             var firstFinishExpected: String? = nil
+
+            /// Nothing racing or finished today or yesterday: History leads the page instead.
+            var isQuietDay: Bool {
+                nextToFinish.isEmpty && racesFinished.isEmpty && yesterdayResults.isEmpty && !historyResults.isEmpty
+            }
         }
         /// A homepage "Previews" entry; the `racePreview` route's payload.
         struct RacePreview: Identifiable, Hashable, Sendable {

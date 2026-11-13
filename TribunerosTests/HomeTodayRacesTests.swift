@@ -336,6 +336,82 @@ final class HomeTodayRacesTests: XCTestCase {
         XCTAssertEqual(representable.sections.previews.map(\.name), ["Tomorrow Classic"])
     }
 
+    // MARK: - Quiet day
+
+    private func historyResult(_ name: String) -> DTO.TodayResult {
+        DTO.TodayResult(
+            raceName: name,
+            raceDetails: "10 Nov",
+            raceURL: URL(string: "https://www.procyclingstats.com/race/\(name.lowercased())/2026/result"),
+            winner: nil,
+            podium: [
+                DTO.TodayResult.Winner(position: "1", flag: nil, countryCode: "sk", name: "Winner \(name)", team: "", time: "")
+            ],
+            additionalDetails: []
+        )
+    }
+
+    private func home(nextToFinish: [DTO.NextToFinishResult] = []) -> DTO.Home {
+        DTO.Home(
+            nextToFinish: nextToFinish,
+            today: [],
+            yesterdayResults: [],
+            tomorrowRaces: [],
+            liveStats: []
+        )
+    }
+
+    func testAnEmptyHomepageWithHistoryIsNotAnError() {
+        XCTAssertFalse(HomeRacesInteractorImpl.isEmptyResponse(home(), history: [historyResult("Faso")]))
+        XCTAssertFalse(HomeRacesInteractorImpl.isEmptyResponse(home(nextToFinish: [race()]), history: []))
+    }
+
+    func testAPageWithNothingAtAllIsStillAnError() {
+        XCTAssertTrue(HomeRacesInteractorImpl.isEmptyResponse(home(), history: []))
+    }
+
+    func testOnlyHistoryMakesAQuietDay() throws {
+        let domain = HomeRacesDomain(
+            nextToFinishRaces: [],
+            todayRaces: [],
+            yesterdayResults: [],
+            historyResults: [historyResult("Faso"), historyResult("Okinawa")],
+            tomorrowRaces: [],
+            liveStatsRaces: [],
+            error: nil,
+            loading: false
+        )
+
+        guard case .loaded(let representable) = state(after: domain) else {
+            return XCTFail("Expected a loaded state")
+        }
+        XCTAssertTrue(representable.sections.isQuietDay)
+        XCTAssertEqual(representable.sections.historyResults.map(\.race), ["Faso", "Okinawa"])
+    }
+
+    func testARaceTodayOrNoHistoryIsNotAQuietDay() throws {
+        let withRace = HomeRacesDomain(
+            nextToFinishRaces: [race("Soon")],
+            todayRaces: [],
+            yesterdayResults: [],
+            historyResults: [historyResult("Faso")],
+            tomorrowRaces: [],
+            liveStatsRaces: [],
+            error: nil,
+            loading: false
+        )
+        guard case .loaded(let racing) = state(after: withRace) else {
+            return XCTFail("Expected a loaded state")
+        }
+        XCTAssertFalse(racing.sections.isQuietDay)
+
+        guard case .loaded(let nothing) = state(after: .empty) else {
+            return XCTFail("Expected a loaded state")
+        }
+        XCTAssertFalse(nothing.sections.isQuietDay)
+        XCTAssertFalse(HomeRaces.Representable.placeholders.sections.isQuietDay)
+    }
+
     private func response(_ headers: [String: String]) -> HTTPURLResponse {
         HTTPURLResponse(
             url: URL(string: "https://www.procyclingstats.com/index.php")!,

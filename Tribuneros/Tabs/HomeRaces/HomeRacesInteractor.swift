@@ -159,7 +159,7 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                             historyResults: historyResults,
                             tomorrowRaces: result.tomorrowRaces,
                             liveStatsRaces: result.liveStats,
-                            error: (result.nextToFinish.isEmpty && result.today.isEmpty && result.yesterdayResults.isEmpty && result.tomorrowRaces.isEmpty && result.liveStats.isEmpty) ?
+                            error: Self.isEmptyResponse(result, history: historyResults) ?
                                 HomeRaces.ErrorReason.emptyResponse.toEquatableError() : nil,
                             loading: false,
                             staleCopy: staleCopy,
@@ -190,6 +190,15 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
             task?.cancel()
             task = nil
         }
+    }
+
+    /// A day without races is normal (off-season); only a page with nothing at all, History included, is an error.
+    static func isEmptyResponse(
+        _ home: DTO.Home,
+        history: [DTO.TodayResult]
+    ) -> Bool {
+        home.nextToFinish.isEmpty && home.today.isEmpty && home.yesterdayResults.isEmpty &&
+        home.tomorrowRaces.isEmpty && home.liveStats.isEmpty && history.isEmpty
     }
 
     private func applyingSession(_ domain: Domain) -> Domain {

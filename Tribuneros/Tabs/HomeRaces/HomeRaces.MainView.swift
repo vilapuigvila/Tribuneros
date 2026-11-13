@@ -154,29 +154,36 @@ extension HomeRaces {
                         }
                     }
 
-                    TodaySection(
-                        races: sections.nextToFinish,
-                        isCompact: !sections.previews.isEmpty,
-                        action: action
-                    )
+                    if sections.isQuietDay {
+                        QuietDaySections(
+                            history: sections.historyResults,
+                            action: action
+                        )
+                    } else {
+                        TodaySection(
+                            races: sections.nextToFinish,
+                            isCompact: !sections.previews.isEmpty,
+                            action: action
+                        )
 
-                    ResultsTodaySection(
-                        races: sections.racesFinished,
-                        firstFinishExpected: sections.firstFinishExpected,
-                        isHintAnchor: representable.showSpoilerHint && !sections.racesFinished.isEmpty,
-                        action: action
-                    )
+                        ResultsTodaySection(
+                            races: sections.racesFinished,
+                            firstFinishExpected: sections.firstFinishExpected,
+                            isHintAnchor: representable.showSpoilerHint && !sections.racesFinished.isEmpty,
+                            action: action
+                        )
 
-                    YesterdaySection(
-                        races: sections.yesterdayResults,
-                        isHintAnchor: representable.showSpoilerHint && sections.racesFinished.isEmpty && !sections.yesterdayResults.isEmpty,
-                        action: action
-                    )
+                        YesterdaySection(
+                            races: sections.yesterdayResults,
+                            isHintAnchor: representable.showSpoilerHint && sections.racesFinished.isEmpty && !sections.yesterdayResults.isEmpty,
+                            action: action
+                        )
 
-                    HistorySection(
-                        races: sections.historyResults,
-                        action: action
-                    )
+                        HistorySection(
+                            races: sections.historyResults,
+                            action: action
+                        )
+                    }
 
                     Color.clear
                         .frame(height: safeAreaInsets.bottom * 3 + (sections.previews.isEmpty ? 0 : 96))

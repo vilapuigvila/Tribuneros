@@ -21,6 +21,8 @@ extension HomeRaces {
         case previews
         /// `live` races still to finish, before any result today: the empty podium with its expected time.
         case pending
+        /// Nothing today, yesterday or tomorrow, only History: the quiet-day page (notice, latest finish, earlier).
+        case quiet
 
         /// The one mock switch: every mock in the app asks this, and nil means real data.
         static var current: MockScenario? {
@@ -45,9 +47,9 @@ extension HomeRaces {
             let races = nextToFinish(now: now)
             var domain = HomeRacesDomain(
                 nextToFinishRaces: races,
-                todayRaces: self == .empty || self == .pending ? [] : Self.resultsToday,
-                yesterdayResults: self == .empty ? [] : Self.resultsYesterday,
-                historyResults: self == .history ? Self.resultsHistory : [],
+                todayRaces: self == .empty || self == .pending || self == .quiet ? [] : Self.resultsToday,
+                yesterdayResults: self == .empty || self == .quiet ? [] : Self.resultsYesterday,
+                historyResults: self == .history || self == .quiet ? Self.resultsHistory : [],
                 tomorrowRaces: [],
                 liveStatsRaces: liveStats(for: races),
                 error: nil,
@@ -73,7 +75,7 @@ extension HomeRaces {
             case .live, .stale, .history, .pending: return [montreal, coppa, cro, chrono]
             case .later: return [montreal, chrono]
             case .one: return [cro]
-            case .empty, .previews: return []
+            case .empty, .previews, .quiet: return []
             }
         }
 
