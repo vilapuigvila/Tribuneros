@@ -55,6 +55,14 @@ Print the latest build number on App Store Connect
 
 From a clean development branch: ask the new version and its What's New (English, Catalan), archive the .ipa with that version, and upload binary and texts to App Store Connect: new_version version:1.1 whats_new:"..." whats_new_ca:"..."
 
+### ios submit_review
+
+```sh
+[bundle exec] fastlane ios submit_review
+```
+
+Attach an already processed build to the editable App Store version and submit it for App Review (no archive, no upload): submit_review [version:1.3] [build:32] [confirm:yes]; defaults are the editable version and its newest processed build
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
