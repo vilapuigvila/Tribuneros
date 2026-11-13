@@ -180,6 +180,6 @@ test("race page: the schedule lists venue-local starts, Men Elite last", () => {
   const schedule = parseRacePage(fixture("race-dendermonde.html")).schedule;
 
   assert.equal(schedule.length, 4);
-  assert.deepEqual(schedule[0], {time: "11:00", category: "Women Junior"});
-  assert.deepEqual(schedule[3], {time: "15:00", category: "Men Elite"});
+  assert.deepEqual(schedule[0], {time: "11:00", category: "Women Junior", date: "11-10-2026"});
+  assert.deepEqual(schedule[3], {time: "15:00", category: "Men Elite", date: "11-10-2026"});
 });

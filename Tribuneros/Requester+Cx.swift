@@ -329,7 +329,31 @@ extension Service {
         )
         async let results = fetchCxEventResults(hasStarted ? event.resultsURL : nil)
         async let video = fetchCxEventVideo(hasStarted && event.videoURL != nil ? event.resultsURL : nil)
-        return await .init(page: page, results: results, videoURL: video)
+        async let schedules = getCxSchedules()
+        return await .init(
+            page: page,
+            results: results,
+            videoURL: video,
+            scheduleEntry: CXRaces.scheduleEntry(
+                for: event,
+                in: schedules
+            )
+        )
+    }
+
+    /// `cx/schedules`; a missing document (before the first deploy) or a failed read gives no entries.
+    static func getCxSchedules() async -> [DTO.CXSchedules.Entry] {
+        #if DEBUG
+        if HomeRaces.MockScenario.current != nil {
+            return CxMock.schedules()
+        }
+        #endif
+        do {
+            return try await readCxDocument("schedules", as: DTO.CXSchedules.self).events
+        } catch {
+            AppLogger.network.debug("cx/schedules unavailable: \(error.localizedDescription)")
+            return []
+        }
     }
 
     /// The race page's schedule, through the same cache as the event detail; empty when unavailable.

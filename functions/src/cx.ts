@@ -532,6 +532,7 @@ export interface RacePage {
 export interface ScheduledStart {
   time: string;
   category: string;
+  date?: string;
 }
 
 export interface RiderFact {
@@ -633,18 +634,148 @@ export function parseRacePage($: CheerioAPI): RacePage {
   };
 }
 
-// The Schedule block lists each category's venue-local start; rows without a valid HH:MM time are skipped.
+const MONTHS = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october",
+  "november", "december"];
+
+// A day heading reads "Sunday 15 November 2026", sometimes followed by " - <edition name>"; gives dd-MM-yyyy.
+export function scheduleHeadingDate(heading: string): string | null {
+  const match = /(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/.exec(heading);
+  const month = match ? MONTHS.indexOf(match[2].toLowerCase()) : -1;
+  if (!match || month < 0) return null;
+  return `${match[1].padStart(2, "0")}-${String(month + 1).padStart(2, "0")}-${match[3]}`;
+}
+
+// The Schedule block lists each category's venue-local start under a day heading; rows without a valid HH:MM time are skipped.
 function parseSchedule($: CheerioAPI): ScheduledStart[] {
-  return $("div.ri_row_sch")
-    .map((_, row): ScheduledStart | null => {
-      const $row = $(row);
-      const time = clean($row.find("div.riLocalTime span.racetime").first().text());
-      const category = clean($row.find("div.ri_sch_category").first().text());
-      if (!/^\d{1,2}:\d{2}$/.test(time) || !category) return null;
-      return {time, category};
-    })
-    .get()
-    .filter((start): start is ScheduledStart => start !== null);
+  let date: string | null = null;
+  const schedule: ScheduledStart[] = [];
+  $("div.ri_date, div.ri_row_sch").each((_, element) => {
+    const $element = $(element);
+    if ($element.hasClass("ri_date")) {
+      date = scheduleHeadingDate(clean($element.text()));
+      return;
+    }
+    const time = clean($element.find("div.riLocalTime span.racetime").first().text());
+    const category = clean($element.find("div.ri_sch_category").first().text());
+    if (!/^\d{1,2}:\d{2}$/.test(time) || !category) return;
+    schedule.push(date ? {time, category, date} : {time, category});
+  });
+  return schedule;
+}
+
+// MARK: - Schedules (cx/schedules)
+
+export type CxSeries = "worldCup" | "superprestige" | "x2oTrofee" | "exactCross" | "championships" | "otherBelgian" |
+  "others";
+
+export interface ScheduleEntry {
+  raceSlug: string;
+  date: string;
+  schedule: ScheduledStart[];
+}
+
+export interface Schedules {
+  events: ScheduleEntry[];
+}
+
+const SCHEDULED_SERIES = new Set<CxSeries>(["worldCup", "superprestige", "x2oTrofee", "otherBelgian", "championships"]);
+const DAY_MS = 86_400_000;
+
+// Mirrors CXRaces.RaceSeries.of(race:raceClass:country:) in the app; checked in the same order.
+export function cxSeries(race: string, raceClass: string, country: string | null): CxSeries {
+  const name = race.toLowerCase();
+  const uciClass = raceClass.trim().toUpperCase();
+  if (name.includes("world cup") || uciClass === "CDM") return "worldCup";
+  if (name.includes("superprestige")) return "superprestige";
+  if (name.includes("x2o") || name.includes("badkamers") || name.includes("trofee")) return "x2oTrofee";
+  if (name.includes("exact cross") || name.includes("exactcross")) return "exactCross";
+  if (name.includes("championship") || ["CM", "CN", "CC"].includes(uciClass)) return "championships";
+  if (country?.toLowerCase() === "belgium") return "otherBelgian";
+  return "others";
+}
+
+// dd-MM-yyyy as days since the epoch, so dates compare and subtract; null when malformed.
+function dayNumber(date: string): number | null {
+  const match = /^(\d{2})-(\d{2})-(\d{4})$/.exec(date);
+  return match ? Date.UTC(Number(match[3]), Number(match[2]) - 1, Number(match[1])) / DAY_MS : null;
+}
+
+export function madridToday(now: Date = new Date()): string {
+  const parts = new Intl.DateTimeFormat("en-GB", {timeZone: "Europe/Madrid", day: "2-digit", month: "2-digit", year: "numeric"})
+    .formatToParts(now);
+  const part = (type: string) => parts.find((item) => item.type === type)?.value ?? "";
+  return `${part("day")}-${part("month")}-${part("year")}`;
+}
+
+// Today or later, not cancelled, with a race page, in one of the series that get start times.
+export function scheduledEvents(events: CalendarEvent[], today: string): CalendarEvent[] {
+  const todayNumber = dayNumber(today) ?? 0;
+  return events.filter((event) => {
+    const day = dayNumber(event.date);
+    return !event.isCancelled &&
+      event.raceSlug !== null &&
+      day !== null &&
+      day >= todayNumber &&
+      SCHEDULED_SERIES.has(cxSeries(event.race, event.raceClass, event.raceCountry));
+  });
+}
+
+// A page shows its venue's next editions; this event's rows are the run of consecutive days that holds its date.
+export function scheduleForEvent(date: string, schedule: ScheduledStart[]): ScheduledStart[] | null {
+  const eventDay = dayNumber(date);
+  if (eventDay === null || !schedule.some((row) => row.date === date)) return null;
+  const days = new Set(schedule.map((row) => (row.date ? dayNumber(row.date) : null)).filter((day) => day !== null));
+  let first = eventDay;
+  while (days.has(first - 1)) first--;
+  let last = eventDay;
+  while (days.has(last + 1)) last++;
+  return schedule.filter((row) => {
+    const day = row.date ? dayNumber(row.date) : null;
+    return day !== null && day >= first && day <= last;
+  });
+}
+
+// pages maps each slug to its parsed schedule, or null when its fetch failed (then the previous entry is kept).
+export function buildSchedules(
+  events: CalendarEvent[],
+  pages: Map<string, ScheduledStart[] | null>,
+  previous: ScheduleEntry[],
+  today: string
+): ScheduleEntry[] {
+  const entries: ScheduleEntry[] = [];
+  for (const event of scheduledEvents(events, today)) {
+    const raceSlug = event.raceSlug as string;
+    const page = pages.get(raceSlug);
+    if (page === undefined) continue;
+    if (page === null) {
+      const kept = previous.find((entry) => entry.raceSlug === raceSlug && entry.date === event.date);
+      if (kept) entries.push(kept);
+      continue;
+    }
+    const schedule = scheduleForEvent(event.date, page);
+    if (schedule) entries.push({raceSlug, date: event.date, schedule});
+  }
+  return entries;
+}
+
+// Fetches each selected slug once; null when no page could be fetched, so the caller keeps the previous document.
+export async function scrapeSchedules(
+  events: CalendarEvent[],
+  previous: ScheduleEntry[],
+  today: string = madridToday()
+): Promise<Schedules | null> {
+  const slugs = [...new Set(scheduledEvents(events, today).map((event) => event.raceSlug as string))];
+  const pages = new Map<string, ScheduledStart[] | null>();
+  for (const slug of slugs) {
+    try {
+      pages.set(slug, (await scrapeRacePage(slug)).schedule);
+    } catch (error) {
+      console.warn(`Race page ${slug} failed`, error);
+      pages.set(slug, null);
+    }
+  }
+  if (slugs.length > 0 && ![...pages.values()].some((page) => page !== null)) return null;
+  return {events: buildSchedules(events, pages, previous, today)};
 }
 
 // Season tables come newest first, so the first rows are the most recent results.

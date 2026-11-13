@@ -35,10 +35,13 @@ struct CXEventDetailView: View {
 
     @State private var detail: DTO.CXEventDetail
     @State private var isLoading: Bool
+    @State private var isScheduleExpanded = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(
         event: DTO.CXCalendarEvent,
         detail: DTO.CXEventDetail? = nil,
+        isScheduleExpanded: Bool = false,
         loadDetail: @escaping (DTO.CXCalendarEvent, Bool) async -> DTO.CXEventDetail = {
             await Service.getCxEventDetail(
                 $0,
@@ -60,6 +63,7 @@ struct CXEventDetailView: View {
         self.loadDetail = loadDetail
         _detail = State(initialValue: detail ?? .empty)
         _isLoading = State(initialValue: detail == nil)
+        _isScheduleExpanded = State(initialValue: isScheduleExpanded)
     }
 
     var body: some View {
@@ -194,6 +198,7 @@ struct CXEventDetailView: View {
                     title: L10n.tr("Date"),
                     value: formattedDate
                 )
+                scheduleSection
                 divider
                 InfoRow(
                     systemImage: "mappin.and.ellipse",
@@ -214,6 +219,49 @@ struct CXEventDetailView: View {
             .padding(.vertical, 6)
         }
         .mudCard()
+    }
+
+    // MARK: - Schedule -
+
+    private var schedule: [DTO.CXRacePage.ScheduledStart] {
+        CXRaces.eventSchedule(
+            on: event.date,
+            entry: detail.scheduleEntry,
+            page: detail.page?.schedule ?? []
+        )
+    }
+
+    @ViewBuilder
+    private var scheduleSection: some View {
+        if isLoading {
+            divider
+            ScheduleRow(
+                summary: "Men Elite 00:00", // l10n:ignore
+                rows: [],
+                isExpanded: false,
+                toggle: {}
+            )
+            .redacted(reason: .placeholder)
+            .shimmering()
+            .disabled(true)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(L10n.tr("Loading the race"))
+        } else if let summary = CXRaces.scheduleSummary(
+            schedule,
+            on: event.date
+        ) {
+            divider
+            ScheduleRow(
+                summary: summary,
+                rows: schedule,
+                isExpanded: isScheduleExpanded,
+                toggle: {
+                    withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.2)) {
+                        isScheduleExpanded.toggle()
+                    }
+                }
+            )
+        }
     }
 
     // MARK: - Winner -
@@ -638,6 +686,100 @@ private extension CXEventDetailView {
         }
     }
 
+    struct ScheduleRow: View {
+        let summary: String
+        let rows: [DTO.CXRacePage.ScheduledStart]
+        let isExpanded: Bool
+        let toggle: () -> Void
+
+        var body: some View {
+            VStack(spacing: 0) {
+                HStack(spacing: 10) {
+                    HStack(spacing: 10) {
+                        Image(systemName: "clock")
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(.tribuneru(.mudTextSecondary))
+                            .frame(width: 18)
+                        TribuneruText(
+                            content: L10n.tr("Schedule"),
+                            style: .vaporMeta,
+                            color: .tribuneru(.mudTextSecondary),
+                            lineLimit: 1
+                        )
+                        .frame(width: 64, alignment: .leading)
+                        TribuneruText(
+                            content: summary,
+                            style: .vaporRaceNameResult,
+                            color: .tribuneru(.mudTextPrimary),
+                            lineLimit: 2
+                        )
+                        Spacer(minLength: 0)
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityIdentifier("cx-schedule-row")
+                    Button(action: toggle) {
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(.tribuneru(.mudTextSecondary))
+                            .rotationEffect(.degrees(isExpanded ? 180 : 0))
+                            .frame(width: 32, height: 32)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(isExpanded ? L10n.tr("Hide schedule") : L10n.tr("Show schedule"))
+                    .accessibilityIdentifier("cx-schedule-toggle")
+                }
+                .padding(.vertical, 10)
+
+                if isExpanded {
+                    VStack(spacing: 8) {
+                        ForEach(Array(CXRaces.scheduleDays(rows).enumerated()), id: \.offset) { _, day in
+                            if let date = day.date {
+                                TribuneruText(
+                                    content: CXRaces.scheduleDayTitle(date),
+                                    style: .vaporMeta,
+                                    color: .tribuneru(.mudTextSecondary),
+                                    lineLimit: 1
+                                )
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.leading, 28)
+                                .padding(.top, 4)
+                                .accessibilityAddTraits(.isHeader)
+                                .accessibilityIdentifier("cx-schedule-day-\(date)")
+                            }
+                            dayRows(day.rows)
+                        }
+                    }
+                    .padding(.bottom, 10)
+                }
+            }
+        }
+
+        private func dayRows(_ rows: [DTO.CXRacePage.ScheduledStart]) -> some View {
+            ForEach(rows, id: \.self) { row in
+                HStack(spacing: 10) {
+                    TribuneruText(
+                        content: row.time,
+                        style: .vaporMeta,
+                        color: .tribuneru(.mudTextSecondary),
+                        lineLimit: 1
+                    )
+                    .frame(width: 64, alignment: .leading)
+                    TribuneruText(
+                        content: row.category,
+                        style: .vaporRaceNameResult,
+                        color: .tribuneru(.mudTextPrimary),
+                        lineLimit: 1
+                    )
+                    Spacer(minLength: 0)
+                }
+                .padding(.leading, 28)
+                .accessibilityElement(children: .combine)
+                .accessibilityIdentifier("cx-schedule-\(CXRaces.scheduleSlug(row.category))")
+            }
+        }
+    }
+
     struct ResultRow: View {
         let result: DTO.CX24Homepage.CategoryResult
 
@@ -680,9 +822,130 @@ private extension CXEventDetailView {
     }
 }
 
+// MARK: - Schedule summary -
+
+extension CXRaces {
+    typealias ScheduledStart = DTO.CXRacePage.ScheduledStart
+
+    /// The `cx/schedules` entry of this edition, matched by slug and race day.
+    static func scheduleEntry(
+        for event: DTO.CXCalendarEvent,
+        in entries: [DTO.CXSchedules.Entry]
+    ) -> [ScheduledStart]? {
+        guard let slug = event.raceSlug else { return nil }
+        return entries.first { $0.raceSlug == slug && $0.date == event.date }?.schedule
+    }
+
+    /// The `cx/schedules` entry, else the race page: undated rows as they are, dated ones only when they list `date`.
+    static func eventSchedule(
+        on date: String,
+        entry: [ScheduledStart]?,
+        page: [ScheduledStart]
+    ) -> [ScheduledStart] {
+        if let entry { return entry }
+        guard page.contains(where: { $0.date != nil }) else { return page }
+        return schedule(page, forEventOn: date)
+    }
+
+    /// Same rule as `scheduleForEvent` in `functions/src/cx.ts`: the run of consecutive days that holds `date`.
+    static func schedule(
+        _ rows: [ScheduledStart],
+        forEventOn date: String
+    ) -> [ScheduledStart] {
+        guard let eventDay = scheduleDayNumber(date),
+              rows.contains(where: { $0.date == date }) else { return [] }
+        let days = Set(rows.compactMap { $0.date.flatMap(scheduleDayNumber) })
+        var first = eventDay
+        while days.contains(first - 1) { first -= 1 }
+        var last = eventDay
+        while days.contains(last + 1) { last += 1 }
+        return rows.filter { row in
+            guard let day = row.date.flatMap(scheduleDayNumber) else { return false }
+            return (first...last).contains(day)
+        }
+    }
+
+    /// "Men Elite 15:10": the first "Men Elite…" row on `date`, else that day's last row; nil when nothing is published.
+    static func scheduleSummary(
+        _ schedule: [ScheduledStart],
+        on date: String? = nil
+    ) -> String? {
+        let onDay = schedule.filter { $0.date == nil || date == nil || $0.date == date }
+        let day = onDay.isEmpty ? schedule : onDay
+        let row = day.first { $0.category.lowercased().hasPrefix("men elite") } ?? day.last
+        return row.map { "\($0.category) \($0.time)" }
+    }
+
+    /// Rows grouped by their day, in order; one group when the schedule covers a single day (or has no days).
+    static func scheduleDays(_ schedule: [ScheduledStart]) -> [(date: String?, rows: [ScheduledStart])] {
+        var days: [(date: String?, rows: [ScheduledStart])] = []
+        for row in schedule {
+            if let lastIndex = days.indices.last, days[lastIndex].date == row.date {
+                days[lastIndex].rows.append(row)
+            } else {
+                days.append((row.date, [row]))
+            }
+        }
+        return Set(days.map(\.date)).count > 1 ? days : [(nil, schedule)]
+    }
+
+    /// A "dd-MM-yyyy" day as "Thursday 26 November" in the app's language.
+    static func scheduleDayTitle(_ date: String) -> String {
+        guard let day = scheduleDate(date, calendar: .current) else { return date }
+        return L10n.dateFormatter(template: "EEEEdMMMM").string(from: day)
+    }
+
+    private static func scheduleDate(
+        _ date: String,
+        calendar: Calendar
+    ) -> Date? {
+        let parts = date.split(separator: "-").compactMap { Int($0) }
+        guard parts.count == 3 else { return nil }
+        return calendar.date(from: DateComponents(
+            year: parts[2],
+            month: parts[1],
+            day: parts[0]
+        ))
+    }
+
+    private static func scheduleDayNumber(_ date: String) -> Int? {
+        var utc = Calendar(identifier: .gregorian)
+        utc.timeZone = TimeZone(identifier: "UTC") ?? .current
+        return scheduleDate(date, calendar: utc).map { Int($0.timeIntervalSince1970 / 86_400) }
+    }
+
+    static func scheduleSlug(_ category: String) -> String {
+        category
+            .lowercased()
+            .split { !$0.isLetter && !$0.isNumber }
+            .joined(separator: "-")
+    }
+}
+
 #if DEBUG
 
 // MARK: - Mocks -
+
+private extension [DTO.CXRacePage.ScheduledStart] {
+    static let mockSchedule: [DTO.CXRacePage.ScheduledStart] = [
+        .init(time: "10:30", category: "Men Junior"),
+        .init(time: "12:00", category: "Women Junior"),
+        .init(time: "13:40", category: "Women Elite"),
+        .init(time: "15:10", category: "Men Elite")
+    ]
+}
+
+private extension DTO.CXRacePage {
+    func withSchedule(_ schedule: [ScheduledStart]) -> DTO.CXRacePage {
+        .init(
+            title: title,
+            summary: summary,
+            pastWinners: pastWinners,
+            tvChannels: tvChannels,
+            schedule: schedule
+        )
+    }
+}
 
 private extension DTO.CXCalendarEvent {
     /// Middelkerke, `daysFromToday` away from now so the status and countdown stay meaningful.
@@ -786,6 +1049,69 @@ private extension DTO.CXRacePage {
             event: .mockMiddelkerke(daysFromToday: 5),
             detail: .init(
                 page: .mockMiddelkerke,
+                results: [],
+                videoURL: nil
+            )
+        ) { _ in }
+    }
+}
+
+#Preview("CX Event Detail - schedule collapsed") {
+    NavigationStack {
+        CXEventDetailView(
+            event: .mockMiddelkerke(daysFromToday: 5),
+            detail: .init(
+                page: .mockMiddelkerke.withSchedule(.mockSchedule),
+                results: [],
+                videoURL: nil
+            )
+        ) { _ in }
+    }
+}
+
+#Preview("CX Event Detail - schedule expanded") {
+    NavigationStack {
+        CXEventDetailView(
+            event: .mockMiddelkerke(daysFromToday: 5),
+            detail: .init(
+                page: .mockMiddelkerke.withSchedule(.mockSchedule),
+                results: [],
+                videoURL: nil
+            ),
+            isScheduleExpanded: true
+        ) { _ in }
+    }
+}
+
+#Preview("CX Event Detail - two-day schedule") {
+    let event = DTO.CXCalendarEvent.mockMiddelkerke(daysFromToday: 5)
+    let parts = event.date.split(separator: "-")
+    let eve = String(format: "%02d-%@-%@", (Int(parts[0]) ?? 2) - 1, String(parts[1]), String(parts[2]))
+    return NavigationStack {
+        CXEventDetailView(
+            event: event,
+            detail: .init(
+                page: .mockMiddelkerke,
+                results: [],
+                videoURL: nil,
+                scheduleEntry: [
+                    .init(time: "18:15", category: "Women Junior", date: eve),
+                    .init(time: "19:45", category: "Men Junior", date: eve),
+                    .init(time: "18:15", category: "Women Elite", date: event.date),
+                    .init(time: "19:45", category: "Men Elite", date: event.date)
+                ]
+            ),
+            isScheduleExpanded: true
+        ) { _ in }
+    }
+}
+
+#Preview("CX Event Detail - no schedule") {
+    NavigationStack {
+        CXEventDetailView(
+            event: .mockMiddelkerke(daysFromToday: 5),
+            detail: .init(
+                page: .mockMiddelkerke.withSchedule([]),
                 results: [],
                 videoURL: nil
             )

@@ -359,6 +359,32 @@ enum CxMock {
         )
     }
 
+    /// `cx/schedules`: Koksijde on one day (the race page's times), Namur over two days.
+    static func schedules(now: Date = Date()) -> [DTO.CXSchedules.Entry] {
+        let koksijde = date(daysFromNow: 30, format: "dd-MM-yyyy", now: now)
+        let namurEve = date(daysFromNow: 44, format: "dd-MM-yyyy", now: now)
+        let namur = date(daysFromNow: 45, format: "dd-MM-yyyy", now: now)
+        return [
+            .init(
+                raceSlug: "world-cup-koksijde",
+                date: koksijde,
+                schedule: racePage(id: "world-cup-koksijde", now: now).schedule.map {
+                    .init(time: $0.time, category: $0.category, date: koksijde)
+                }
+            ),
+            .init(
+                raceSlug: "world-cup-namur",
+                date: namur,
+                schedule: [
+                    .init(time: "18:15", category: "Women Junior", date: namurEve), // l10n:ignore
+                    .init(time: "19:45", category: "Men Junior", date: namurEve), // l10n:ignore
+                    .init(time: "13:45", category: "Women Elite", date: namur), // l10n:ignore
+                    .init(time: "15:00", category: "Men Elite", date: namur) // l10n:ignore
+                ]
+            )
+        ]
+    }
+
     private static let extraNames = ["Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen"]
 
     /// Rows 11 to 15 of a results page; `prefix` is "Rider" or "Woman".

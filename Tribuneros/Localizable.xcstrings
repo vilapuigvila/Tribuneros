@@ -2860,6 +2860,30 @@
         }
       }
     },
+    "Hide schedule" : {
+      "comment" : "Accessibility label of the schedule chevron",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Amaga l’horari"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar horario"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ezkutatu ordutegia"
+          }
+        }
+      }
+    },
     "History" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6478,6 +6502,30 @@
         }
       }
     },
+    "Schedule" : {
+      "comment" : "Race detail info row label, start times",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Horari"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Horario"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordutegia"
+          }
+        }
+      }
+    },
     "Season" : {
       "comment" : "Rider screen transfer tile: the season the transfer is for",
       "extractionState" : "manual",
@@ -7017,6 +7065,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Erakutsi emaitzak"
+          }
+        }
+      }
+    },
+    "Show schedule" : {
+      "comment" : "Accessibility label of the schedule chevron",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra l’horari"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar horario"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erakutsi ordutegia"
           }
         }
       }

@@ -498,4 +498,135 @@ final class CXEventDetailTests: XCTestCase {
         XCTAssertEqual(result.riderURL?.absoluteString, "https://cyclocross24.com/rider/wout-janssen/")
         XCTAssertNil(result.raceVideosURL)
     }
+
+    // MARK: - Schedule summary -
+
+    func testScheduleSummaryPicksMenElite() {
+        let schedule: [DTO.CXRacePage.ScheduledStart] = [
+            .init(time: "10:30", category: "Men Junior"),
+            .init(time: "15:10", category: "Men Elite"),
+            .init(time: "16:30", category: "Women Elite")
+        ]
+        XCTAssertEqual(CXRaces.scheduleSummary(schedule), "Men Elite 15:10")
+    }
+
+    func testScheduleSummaryFallsBackToLastRow() {
+        let schedule: [DTO.CXRacePage.ScheduledStart] = [
+            .init(time: "10:30", category: "Men Junior"),
+            .init(time: "12:00", category: "Women Junior")
+        ]
+        XCTAssertEqual(CXRaces.scheduleSummary(schedule), "Women Junior 12:00")
+    }
+
+    func testEmptyScheduleGivesNoRow() {
+        XCTAssertNil(CXRaces.scheduleSummary([]))
+    }
+
+    func testScheduleSummaryKeepsPublishedTimeAndSlugIsStable() {
+        let schedule: [DTO.CXRacePage.ScheduledStart] = [.init(time: "09:05", category: "Men Elite")]
+        XCTAssertEqual(CXRaces.scheduleSummary(schedule), "Men Elite 09:05")
+        XCTAssertEqual(CXRaces.scheduleSlug("Women Junior"), "women-junior")
+    }
+    // MARK: - cx/schedules -
+
+    func testSchedulesDocumentDecodesRowsWithAndWithoutDate() throws {
+        let schedules = try JSONDecoder().decode(DTO.CXSchedules.self, from: Data("""
+        {"events": [{"raceSlug": "ostrava", "date": "27-11-2026", "schedule": [
+            {"time": "18:15", "category": "Women Junior", "date": "26-11-2026"},
+            {"time": "19:45", "category": "Men Elite", "date": "27-11-2026"}
+        ]}], "updatedAt": "ignored"}
+        """.utf8))
+        XCTAssertEqual(schedules.events.first?.raceSlug, "ostrava")
+        XCTAssertEqual(schedules.events.first?.schedule.first?.date, "26-11-2026")
+
+        let page = try JSONDecoder().decode(DTO.CXRacePage.self, from: Data("""
+        {"title": "T", "summary": "", "pastWinners": [], "schedule": [{"time": "15:00", "category": "Men Elite"}]}
+        """.utf8))
+        XCTAssertEqual(page.schedule, [.init(time: "15:00", category: "Men Elite")])
+        XCTAssertNil(page.schedule.first?.date)
+    }
+
+    func testScheduleEntryMatchesSlugAndDate() {
+        let november = DTO.CXSchedules.Entry(
+            raceSlug: "hamme",
+            date: "15-11-2026",
+            schedule: [.init(time: "15:00", category: "Men Elite (C1)", date: "15-11-2026")]
+        )
+        let entries = [november]
+        XCTAssertEqual(
+            CXRaces.scheduleEntry(for: scheduleEvent(slug: "hamme", date: "15-11-2026"), in: entries),
+            november.schedule
+        )
+        XCTAssertNil(CXRaces.scheduleEntry(for: scheduleEvent(slug: "hamme", date: "23-01-2027"), in: entries))
+        XCTAssertNil(CXRaces.scheduleEntry(for: scheduleEvent(slug: "baal", date: "15-11-2026"), in: entries))
+        XCTAssertNil(CXRaces.scheduleEntry(for: scheduleEvent(slug: "hamme", date: "15-11-2026"), in: []))
+    }
+
+    func testScheduleFallsBackToThePageOnlyWhenItListsTheEventDate() {
+        let entry: [DTO.CXRacePage.ScheduledStart] = [.init(time: "15:10", category: "Men Elite", date: "14-11-2026")]
+        let undated: [DTO.CXRacePage.ScheduledStart] = [.init(time: "15:00", category: "Men Elite")]
+        let dated: [DTO.CXRacePage.ScheduledStart] = [
+            .init(time: "18:15", category: "Women Junior", date: "26-11-2026"),
+            .init(time: "19:45", category: "Men Elite", date: "27-11-2026"),
+            .init(time: "15:00", category: "Men Elite", date: "23-01-2027")
+        ]
+
+        XCTAssertEqual(CXRaces.eventSchedule(on: "14-11-2026", entry: entry, page: undated), entry)
+        XCTAssertEqual(CXRaces.eventSchedule(on: "14-11-2026", entry: nil, page: undated), undated)
+        XCTAssertEqual(CXRaces.eventSchedule(on: "27-11-2026", entry: nil, page: dated), Array(dated.prefix(2)))
+        XCTAssertEqual(CXRaces.eventSchedule(on: "28-11-2026", entry: nil, page: dated), [])
+    }
+
+    func testScheduleSummaryUsesTheEventDayAndMenEliteSuffixes() {
+        let twoDays: [DTO.CXRacePage.ScheduledStart] = [
+            .init(time: "19:45", category: "Men Elite", date: "26-11-2026"),
+            .init(time: "13:45", category: "Women Elite", date: "27-11-2026"),
+            .init(time: "15:00", category: "Men Elite (C1)", date: "27-11-2026"),
+            .init(time: "16:30", category: "Women U23", date: "27-11-2026")
+        ]
+        XCTAssertEqual(CXRaces.scheduleSummary(twoDays, on: "27-11-2026"), "Men Elite (C1) 15:00")
+
+        let noMenElite = Array(twoDays.prefix(2))
+        XCTAssertEqual(CXRaces.scheduleSummary(noMenElite, on: "27-11-2026"), "Women Elite 13:45")
+    }
+
+    func testScheduleDaysHeadOnlyMultiDaySchedules() {
+        let oneDay: [DTO.CXRacePage.ScheduledStart] = [
+            .init(time: "13:40", category: "Women Elite", date: "14-11-2026"),
+            .init(time: "15:10", category: "Men Elite", date: "14-11-2026")
+        ]
+        XCTAssertEqual(CXRaces.scheduleDays(oneDay).count, 1)
+        XCTAssertNil(CXRaces.scheduleDays(oneDay).first?.date)
+
+        let twoDays = oneDay + [.init(time: "11:00", category: "Men Junior", date: "15-11-2026")]
+        let days = CXRaces.scheduleDays(twoDays)
+        XCTAssertEqual(days.map(\.date), ["14-11-2026", "15-11-2026"])
+        XCTAssertEqual(days.map(\.rows.count), [2, 1])
+        let title = CXRaces.scheduleDayTitle("26-11-2026")
+        XCTAssertTrue(title.contains("Thursday") && title.contains("26") && title.contains("November"), title)
+    }
+
+    private func scheduleEvent(
+        slug: String,
+        date: String
+    ) -> DTO.CXCalendarEvent {
+        .init(
+            date: date,
+            race: "Race",
+            raceClass: "C1",
+            flagURL: nil,
+            winnerName: "",
+            isCancelled: false,
+            raceID: nil,
+            raceSlug: slug,
+            raceURL: nil,
+            resultsURL: nil,
+            videoURL: nil,
+            websiteURL: nil,
+            raceCountry: "Belgium",
+            winnerURL: nil,
+            winnerCountry: nil,
+            winnerFlagURL: nil
+        )
+    }
 }

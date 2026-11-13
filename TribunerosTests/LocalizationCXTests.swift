@@ -187,4 +187,16 @@ final class LocalizationCXTests: XCTestCase {
             winnerFlagURL: nil
         )
     }
+
+    // MARK: - Schedule -
+
+    func testScheduleStringsTranslate() {
+        XCTAssertEqual(L10n.tr("Schedule"), "Horari")
+        XCTAssertEqual(L10n.tr("Show schedule"), "Mostra l’horari")
+        XCTAssertEqual(L10n.tr("Hide schedule"), "Amaga l’horari")
+        L10n.setLanguage("eu")
+        XCTAssertEqual(L10n.tr("Schedule"), "Ordutegia")
+        L10n.setLanguage("es")
+        XCTAssertEqual(L10n.tr("Hide schedule"), "Ocultar horario")
+    }
 }

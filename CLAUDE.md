@@ -229,13 +229,22 @@ redacted placeholder cards; an empty list hides it. The feed does the same while
 **CX lists come from Firestore.** The `scrapeCx` scheduled function (`functions/src/index.ts`,
 daily at 16:30 and 22:30 Europe/Madrid) scrapes cyclocross24.com with cheerio (`functions/src/cx.ts`, a port of the old
 Swift parsers) and writes three documents: `cx/homepage`, `cx/calendar`, `cx/standings`, each with
-an `updatedAt` timestamp. `Service.getCxEvents()` / `getCxAllCalendarEvents()` / `getCxStandings()`
-just read and decode those documents, through `readCxDocument`: the on-device Firestore copy is used while its `updatedAt` is not older than the last scheduled run (`Service.cxRunTimes`, 16:30 and 22:30 Europe/Madrid, plus a 5 min grace; change it together with the `scrapeCx` schedule), and the server is asked at most once per 15 min per document after that, so the TypeScript field names must stay identical to the
+an `updatedAt` timestamp. Once those are stored it writes a fourth, `cx/schedules` (`scrapeSchedules` /
+`buildSchedules`): `{events: [{raceSlug, date, schedule: [{time, category, date}]}], updatedAt}` for every race dated
+today or later (Madrid), not cancelled, in World Cup, Superprestige, X2O Trofee, Other Belgian or Championships
+(`cxSeries`, a port of `CXRaces.RaceSeries.of`; keep both in step). Each slug's race page is fetched once per run;
+`parseSchedule` tags each row with its `div.ri_date` day heading (`date`, `dd-MM-yyyy`). A slug names the venue and its
+page shows the next editions (`hamme` holds November's X2O and January's World Cup), so an event gets an entry only
+when a row carries its own date, and the entry keeps the run of consecutive days around it (two-day races such as
+Ostrava). A failed page keeps that event's previous entry, past entries are dropped, no page fetched at all keeps the
+document, and any schedules failure is only logged (the other three documents never depend on it).
+`Service.getCxEvents()` / `getCxAllCalendarEvents()` / `getCxStandings()` / `getCxSchedules()`
+just read and decode those documents (a missing `cx/schedules` reads as no entries), through `readCxDocument`: the on-device Firestore copy is used while its `updatedAt` is not older than the last scheduled run (`Service.cxRunTimes`, 16:30 and 22:30 Europe/Madrid, plus a 5 min grace; change it together with the `scrapeCx` schedule), and the server is asked at most once per 15 min per document after that, so the TypeScript field names must stay identical to the
 Swift DTOs (all `Decodable`). Server-side behaviour to preserve:
 
 - A failed or empty scrape keeps the previous document instead of overwriting it with nothing.
 - cyclocross24 answers bursts with HTTP 429, so all requests are spaced 750 ms apart with
-  `Retry-After`-aware retries. A full run takes ~25s against a 120s timeout.
+  `Retry-After`-aware retries. A full run takes ~90s (about 50 race pages for `cx/schedules`) against a 300s timeout.
 - The calendar season is derived from the date (from July onward, the next season), not hardcoded.
 - Firestore rules (`firestore.rules`): `cx/*` (and the `cxDetail` collections `cxRiders`, `cxRaces`,
   `cxResults`, `cxStandings`) is publicly readable and never client-writable. Only
@@ -286,7 +295,11 @@ and series filter chips (`CXRaces.RaceSeries`, inferred from the race name and U
 cyclocross24 has no series field); the two combine, and chip counts follow the search. A row opens
 `CXEventDetailView`.
 `Service.getCxEventDetail` fills it on demand: the race page's Men Elite history of winners
-(`cxRaces`), plus the Men Elite results (`cxResults`) and video once the race day has come. Its "Winner" row opens `CXWinnerDetailView` (built from `CXRaces.Winner`); each "Past
+(`cxRaces`), plus the Men Elite results (`cxResults`) and video once the race day has come, and the event's
+`cx/schedules` entry (`CXEventDetail.scheduleEntry`, matched by `raceSlug` and `date` in `CXRaces.scheduleEntry`). The
+Schedule row shows that entry, else the race page's schedule (`CXRaces.eventSchedule`: dated rows only when one is the
+event's date); times as published, venue-local; the subtitle is the first "Men Elite…" start on the event's date, else
+that day's last row; a schedule over several days gets a day heading per day when expanded. Its "Winner" row opens `CXWinnerDetailView` (built from `CXRaces.Winner`); each "Past
 winners" row opens `CXRiderDetailView` with `RiderContext.win` (a Victory panel whose race card
 opens that edition; its time/age tiles and the team come from that edition's results page,
 `RiderContext.winResultsURL`, loaded with the rider page through `Service.getCxWinnerDetail`). `CXWinnerDetailView` shows race facts and the winner's results row (time, team, age, fetched

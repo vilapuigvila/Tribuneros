@@ -652,6 +652,18 @@ extension DTO {
             /// Venue-local "HH:mm".
             let time: String
             let category: String
+            /// The day heading the row sits under, "dd-MM-yyyy"; nil in documents stored before it existed.
+            let date: String?
+
+            init(
+                time: String,
+                category: String,
+                date: String? = nil
+            ) {
+                self.time = time
+                self.category = category
+                self.date = date
+            }
         }
 
         let title: String
@@ -695,10 +707,36 @@ extension DTO {
         let page: CXRacePage?
         let results: [CX24Homepage.CategoryResult]
         let videoURL: URL?
+        /// This event's entry in `cx/schedules`; nil when the document has none.
+        let scheduleEntry: [CXRacePage.ScheduledStart]?
+
+        init(
+            page: CXRacePage?,
+            results: [CX24Homepage.CategoryResult],
+            videoURL: URL?,
+            scheduleEntry: [CXRacePage.ScheduledStart]? = nil
+        ) {
+            self.page = page
+            self.results = results
+            self.videoURL = videoURL
+            self.scheduleEntry = scheduleEntry
+        }
 
         static var empty: CXEventDetail {
             .init(page: nil, results: [], videoURL: nil)
         }
+    }
+
+    /// `cx/schedules`, written by `scrapeCx`: start times of upcoming races in the scheduled series.
+    struct CXSchedules: Equatable, Sendable, Decodable {
+        struct Entry: Equatable, Sendable, Hashable, Decodable {
+            let raceSlug: String
+            /// The calendar's race day, "dd-MM-yyyy".
+            let date: String
+            let schedule: [CXRacePage.ScheduledStart]
+        }
+
+        let events: [Entry]
     }
 
     /// What the winner screen loads on demand: the rider page, and the winner's results row

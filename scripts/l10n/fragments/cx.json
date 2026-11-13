@@ -626,5 +626,23 @@
     "eu": "Ikusi guztia",
     "es": "Ver todo",
     "comment": "Race detail link that expands a category to every result"
+  },
+  "Schedule": {
+    "ca": "Horari",
+    "eu": "Ordutegia",
+    "es": "Horario",
+    "comment": "Race detail info row label, start times"
+  },
+  "Show schedule": {
+    "ca": "Mostra l’horari",
+    "eu": "Erakutsi ordutegia",
+    "es": "Mostrar horario",
+    "comment": "Accessibility label of the schedule chevron"
+  },
+  "Hide schedule": {
+    "ca": "Amaga l’horari",
+    "eu": "Ezkutatu ordutegia",
+    "es": "Ocultar horario",
+    "comment": "Accessibility label of the schedule chevron"
   }
 }

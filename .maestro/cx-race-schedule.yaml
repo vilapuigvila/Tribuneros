@@ -1,0 +1,43 @@
+# CX calendar race detail: the Schedule row (mock scenario live), no network.
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- tapOn: "CX Zone"
+- extendedWaitUntil:
+    visible: "NEXT ROUND"
+    timeout: 45000
+- scrollUntilVisible:
+    element: "Calendar"
+- tapOn: "Calendar"
+- assertVisible: "All races"
+- tapOn: "ALL,? ?\\d+"
+- tapOn: "Race, country, winner..."
+- inputText: "koksijde"
+- tapOn: "\\d\\d-\\d\\d-\\d{4}, .*Koksijde"
+- extendedWaitUntil:
+    visible:
+      id: "cx-schedule-row"
+    timeout: 45000
+- assertVisible: "Schedule"
+- assertVisible: "Men Elite 15:00"
+- assertVisible:
+    id: "cx-schedule-row"
+    below: "Date"
+- tapOn:
+    id: "cx-schedule-toggle"
+- assertVisible: "11:00"
+- assertVisible: "13:45"
+- assertVisible: "15:00"
+- assertVisible: "Women Junior"
+- assertVisible: "Women Elite"
+- assertVisible:
+    id: "cx-schedule-men-elite"
+- tapOn:
+    id: "cx-schedule-toggle"
+- assertNotVisible: "11:00"
+- assertNotVisible: "13:45"
