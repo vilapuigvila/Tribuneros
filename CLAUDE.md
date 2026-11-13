@@ -38,9 +38,14 @@ Run from the repo root with `LC_ALL=en_US.UTF-8` (fastlane 2.2x via `Gemfile`, `
   external TestFlight group `External-alfys` (`EXTERNAL_GROUP`; Beta App Review applies). Only when the user asks.
 - `bundle exec fastlane tests` (unit tests minus the two live-network ones, `TEST_DEVICE` to change the simulator) and
   `bundle exec fastlane latest_build` (App Store Connect's and the project's build numbers).
-- `bundle exec fastlane new_version version:1.1 whats_new:"Bug fixes" whats_new_ca:"Correccions"`: creates the iOS App Store version in App Store Connect (or reuses the
-  editable one with that number; a different editable number fails, nothing is renamed) and sets only its What's New for the primary locale and, when
-  `whats_new_ca` is given, Catalan (`ca`, which must already be a language on the version). No upload, no submit. Only when the user asks.
+- `bundle exec fastlane new_version version:1.1 whats_new:"Bug fixes" whats_new_ca:"Correccions"`: same branch/clean-tree checks; checks the version can be
+  created (or is the editable one with that number; a different editable number or one already live fails, nothing is renamed), sets and commits
+  `MARKETING_VERSION` ("Bump version to N"), bumps the build only if the project's isn't past App Store Connect's, archives, creates the version, sets its
+  What's New (primary locale and Catalan `ca`, which must already be a language on the version) and uploads the build. Not submitted; commits not pushed.
+  Only when the user asks.
+- `bundle exec fastlane submit_review [version:1.3] [build:32] [confirm:yes]`: no archive or upload; attaches an already processed build (default: the
+  newest processed one) to the editable version (default: the only one in prepare-for-submission or rejected state) and submits it for App Review. Asks
+  for confirmation on a terminal; without one it refuses unless `confirm:yes`. Only when the user asks.
 - The App Store Connect API key comes from the gitignored `fastlane/.env` (see `fastlane/.env.example`); the `.p8`
   stays in `~/.appstoreconnect/private_keys/`. The app target is named `Tribunerus` (scheme `Tribuneros`).
 

@@ -106,6 +106,61 @@ platform :ios do
     )
     UI.success("Version #{version} (build #{build}) uploaded with What's New in #{texts.keys.join(", ")}; not submitted, and the bump commits are local: push them yourself")
   end
+
+  desc "Attach an already processed build to the editable App Store version and submit it for App Review (no archive, no upload): submit_review [version:1.3] [build:32] [confirm:yes]; defaults are the editable version and its newest processed build"
+  lane :submit_review do |options|
+    api_key = asc_api_key
+    app = Spaceship::ConnectAPI::App.find(BUNDLE_ID) || UI.user_error!("No app #{BUNDLE_ID} on App Store Connect")
+    version = options[:version].to_s.strip
+    version = editable_version_string(app) if version.empty?
+    build = processed_build(app, version, options[:build].to_s.strip)
+
+    # Submitting is outward-facing: ask on a terminal, or require confirm:yes when nobody can answer.
+    question = "Submit #{version} (build #{build.version}, uploaded #{build.uploaded_date}) for App Review?"
+    if UI.interactive?
+      UI.user_error!("Not submitted") unless UI.confirm(question)
+    else
+      UI.user_error!("#{question} Pass confirm:yes to submit without a terminal") unless options[:confirm].to_s == "yes"
+    end
+
+    upload_to_app_store(
+      api_key: api_key,
+      app_version: version,
+      build_number: build.version,
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_screenshots: true,
+      skip_app_version_update: true,
+      submit_for_review: true,
+      force: true, # skips deliver's HTML preview; the confirmation above stands in for it
+      run_precheck_before_submit: false,
+      submission_information: { add_id_info_uses_idfa: false }
+    )
+    UI.success("#{version} (#{build.version}) submitted for App Review")
+  end
+end
+
+EDITABLE_STATES = %w[PREPARE_FOR_SUBMISSION DEVELOPER_REJECTED REJECTED METADATA_REJECTED].freeze
+
+# The one iOS version that can still take a build; none or several stops and asks for version: instead.
+def editable_version_string(app)
+  versions = app.get_app_store_versions(filter: { platform: Spaceship::ConnectAPI::Platform::IOS }, includes: nil)
+  editable = versions.select { |v| EDITABLE_STATES.include?(v.app_version_state) }
+  UI.user_error!("No editable version on App Store Connect; create one with new_version") if editable.empty?
+  UI.user_error!("Several editable versions (#{editable.map(&:version_string).join(", ")}); pass version:") if editable.size > 1
+  editable.first.version_string
+end
+
+# A build that finished processing for that version: the given number, or the newest one.
+def processed_build(app, version, number)
+  builds = Spaceship::ConnectAPI::Build.all(
+    app_id: app.id,
+    version: version,
+    build_number: number.empty? ? nil : number,
+    processing_states: "VALID",
+    sort: "-uploadedDate"
+  )
+  builds.first || UI.user_error!(number.empty? ? "No processed build for #{version} yet" : "No processed build #{number} for #{version}")
 end
 
 def ensure_release_ready
