@@ -15,6 +15,8 @@ extension CXRaces {
         /// Owned by the tab's root so a reload (which redraws the placeholders) keeps the chip.
         var selectedSeries: Binding<CXRaces.RaceSeries?> = .constant(nil)
         var flippedRaces: Binding<Set<String>> = .constant([])
+        var raceAlerts: RaceAlerts.ViewState = .idle
+        var openRaceAlerts: () -> Void = {}
         let action: (CXRaces.Action) -> Void
 
         var body: some View {
@@ -63,6 +65,9 @@ extension CXRaces {
                 selectedSeries: selectedSeries,
                 flippedRaces: flippedRaces,
                 representable: representable,
+                raceAlerts: raceAlerts,
+                isPlaceholder: isPlaceholder,
+                openRaceAlerts: openRaceAlerts,
                 action: action
             )
             .disabled(isPlaceholder)

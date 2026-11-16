@@ -72,6 +72,9 @@ struct TabBarView: View {
     @StateObject private var paddockViewModel: Paddock.ViewModel<Paddock.InteractorImpl>
     @StateObject private var tifosiViewModel: Tifosi.ViewModel<Tifosi.InteractorImpl>
     @StateObject private var settingsViewModel: Settings.ViewModel<Settings.InteractorImpl>
+    /// Shared by CX Zone and Settings, so a switch flipped in one shows in the other at once.
+    @StateObject private var raceAlertsViewModel: RaceAlerts.ViewModel<RaceAlerts.InteractorImpl>
+    @Environment(\.scenePhase) private var scenePhase
 
     init(selectedTab: Binding<Tab>) {
         _selectedTab = selectedTab
@@ -115,6 +118,12 @@ struct TabBarView: View {
                 interactor: Settings.InteractorImpl()
             )
         )
+        _raceAlertsViewModel = StateObject(
+            wrappedValue: RaceAlerts.ViewModel(
+                router: cxRouter,
+                interactor: RaceAlerts.InteractorImpl()
+            )
+        )
     }
     
     var body: some View {
@@ -130,7 +139,10 @@ struct TabBarView: View {
             // CX Zone -
             
             NavigationStack(path: $cxRouter.navPath) {
-                CXRacesRacesView(viewModel: cxRacesViewModel)
+                CXRacesRacesView(
+                    viewModel: cxRacesViewModel,
+                    raceAlerts: raceAlertsViewModel
+                )
             }
             .tag(Tab.cxZone)
             
@@ -156,7 +168,10 @@ struct TabBarView: View {
             // Settings -
 
             NavigationStack(path: $settingsRouter.navPath) {
-                SettingsView(viewModel: settingsViewModel)
+                SettingsView(
+                    viewModel: settingsViewModel,
+                    raceAlerts: raceAlertsViewModel
+                )
             }
             .webPage($settingsRouter.webPage)
             .tag(Tab.settings)
@@ -173,6 +188,14 @@ struct TabBarView: View {
             }
         }
         .environment(\.tabBarHeight, tabBarHeight)
+        .onChange(
+            of: scenePhase,
+            initial: true
+        ) { _, phase in
+            // Back from iOS Settings the permission may have changed.
+            guard phase == .active else { return }
+            raceAlertsViewModel.action(.didRequestAuthorizationRefresh)
+        }
         .environment(\.featureRaceOnTV) { raceID, day in
             tifosiViewModel.action(.didFeatureRace(raceID: raceID, day: day))
             slideToTifosi()

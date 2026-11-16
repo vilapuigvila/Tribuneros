@@ -7,14 +7,22 @@ import SwiftUI
 
 struct SettingsView: View {
     @ObservedObject var viewModel: Settings.ViewModel<Settings.InteractorImpl>
+    @ObservedObject var raceAlerts: RaceAlerts.ViewModel<RaceAlerts.InteractorImpl>
     @Environment(\.replayOnboarding) private var replayOnboarding
 
     var body: some View {
-        Settings.MainView(state: viewModel.stateView) { action in
+        Settings.MainView(
+            state: viewModel.stateView,
+            raceAlerts: raceAlerts.stateView,
+            raceAlertsAction: raceAlerts.action
+        ) { action in
             viewModel.action(action)
             if case .didTapShowOnboarding = action {
                 replayOnboarding()
             }
+        }
+        .onAppear {
+            raceAlerts.action(.didRequestAuthorizationRefresh)
         }
         .navigationDestination(for: Router.Destination.self) { destination in
             switch destination {
@@ -35,8 +43,11 @@ extension Settings {
     struct MainView: View {
         @Environment(\.safeAreaInsets) private var safeAreaInsets
         @State private var showsLanguages = false
+        @State private var showsRaceAlerts = false
 
         let state: Settings.ViewState
+        var raceAlerts: RaceAlerts.ViewState = .idle
+        var raceAlertsAction: (RaceAlerts.Action) -> Void = { _ in }
         let action: (Settings.Action) -> Void
 
         private var version: String {
@@ -70,6 +81,24 @@ extension Settings {
                             action(.didTapShowOnboarding)
                         }
                     }
+                    HStack(spacing: 12) {
+                        SettingsTile(
+                            title: L10n.tr("Notifications"),
+                            subtitle: raceAlerts.notificationsSubtitle,
+                            systemImage: "bell",
+                            identifier: "settings.notifications"
+                        ) {
+                            raceAlertsAction(.didTapOpenSystemSettings)
+                        }
+                        SettingsTile(
+                            title: L10n.tr("Race alerts"),
+                            subtitle: raceAlerts.raceAlertsSubtitle,
+                            systemImage: "flag.checkered",
+                            identifier: "settings.raceAlerts"
+                        ) {
+                            showsRaceAlerts = true
+                        }
+                    }
                     AcknowledgementsRow {
                         action(.didTapAcknowledgements)
                     }
@@ -92,6 +121,11 @@ extension Settings {
                 .presentationBackground(Color.tribuneru(.vaporCardSurface))
                 .preferredColorScheme(.dark)
             }
+            .raceAlertsSheet(
+                isPresented: $showsRaceAlerts,
+                sheet: raceAlerts.settingsSheet,
+                action: raceAlertsAction
+            )
         }
 
         private var header: some View {

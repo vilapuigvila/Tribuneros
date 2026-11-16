@@ -914,6 +914,84 @@
         }
       }
     },
+    "%lld series" : {
+      "comment" : "Settings Race alerts tile: how many series are followed",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld sèrie"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld sèries"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld series"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld series"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld serie"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld series"
+                }
+              }
+            }
+          }
+        },
+        "eu" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Serie %lld"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld serie"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld TEAMS" : {
       "comment" : "Paddock teams list subtitle",
       "extractionState" : "manual",
@@ -1132,6 +1210,30 @@
         }
       }
     },
+    "A notification when each Men Elite race starts and when it finishes. Winners stay hidden." : {
+      "comment" : "Race alerts sheet: what an alert is",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una notificació quan comença i quan acaba cada cursa Elit masculina. Els guanyadors es mantenen amagats."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una notificación cuando empieza y cuando termina cada carrera Élite masculina. Los ganadores siguen ocultos."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jakinarazpen bat gizonezkoen Elite lasterketa bakoitza hasten eta amaitzen denean. Irabazleak ezkutuan geratzen dira."
+          }
+        }
+      }
+    },
     "A rare day off. Go ride your own bike." : {
       "comment" : "TV guide, a day with no broadcasts, joke subline",
       "extractionState" : "manual",
@@ -1272,6 +1374,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gaurko adina"
+          }
+        }
+      }
+    },
+    "ALERT ON" : {
+      "comment" : "CX Zone next-round tag for a followed series",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AVÍS ACTIU"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AVISO ACTIVO"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ABISUA AKTIBO"
           }
         }
       }
@@ -4317,6 +4443,54 @@
         }
       }
     },
+    "Needs notifications in iOS" : {
+      "comment" : "Race alerts row subtitle while iOS blocks notifications",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cal activar les notificacions a iOS"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requiere activar las notificaciones en iOS"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOSeko jakinarazpenak behar dira"
+          }
+        }
+      }
+    },
+    "New: race alerts. Tap the bell to follow a series." : {
+      "comment" : "One-time hint next to the CX Zone bell",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Novetat: avisos de curses. Toca la campana per seguir una sèrie."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Novedad: avisos de carreras. Toca la campana para seguir una serie."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Berria: lasterketen abisuak. Sakatu kanpaia serie bat jarraitzeko."
+          }
+        }
+      }
+    },
     "Next" : {
       "comment" : "Onboarding button",
       "extractionState" : "manual",
@@ -4433,6 +4607,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "HURRENGO IRTEERA"
+          }
+        }
+      }
+    },
+    "No alerts for these series" : {
+      "comment" : "Race alerts sheet footer label, above the series without alerts",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sense avisos per a aquestes sèries"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin avisos para estas series"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serie hauentzat ez dago abisurik"
           }
         }
       }
@@ -5194,6 +5392,78 @@
         }
       }
     },
+    "Notifications" : {
+      "comment" : "Settings tile that opens the iOS notification settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notificacions"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notificaciones"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jakinarazpenak"
+          }
+        }
+      }
+    },
+    "Notifications are off in iOS" : {
+      "comment" : "Race alerts banner when iOS blocks notifications",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les notificacions estan desactivades a iOS"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las notificaciones están desactivadas en iOS"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jakinarazpenak desaktibatuta daude iOSen"
+          }
+        }
+      }
+    },
+    "Off" : {
+      "comment" : "Race alerts: a series not followed, or none followed",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivado"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desaktibatuta"
+          }
+        }
+      }
+    },
     "OFF" : {
       "comment" : "Settings switch state tag",
       "extractionState" : "manual",
@@ -5214,6 +5484,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "EZ"
+          }
+        }
+      }
+    },
+    "Off in iOS" : {
+      "comment" : "Settings Notifications tile: iOS notifications off or not decided",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivades a iOS"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivadas en iOS"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desaktibatuta iOSen"
           }
         }
       }
@@ -5265,6 +5559,30 @@
         }
       }
     },
+    "On" : {
+      "comment" : "Race alerts row subtitle for a followed series",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activado"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktibatuta"
+          }
+        }
+      }
+    },
     "ON" : {
       "comment" : "Settings switch state tag",
       "extractionState" : "manual",
@@ -5289,6 +5607,30 @@
         }
       }
     },
+    "On · next: %1$@, %2$@" : {
+      "comment" : "Race alerts row subtitle: the venue and date of the series' next round",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activat · propera: %1$@, %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activado · próxima: %1$@, %2$@"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktibatuta · hurrengoa: %1$@, %2$@"
+          }
+        }
+      }
+    },
     "ON AIR" : {
       "comment" : "Tag on a TV deck card for a race being broadcast now",
       "extractionState" : "manual",
@@ -5309,6 +5651,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ZUZENEAN"
+          }
+        }
+      }
+    },
+    "On in iOS" : {
+      "comment" : "Settings Notifications tile: iOS notifications allowed",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activades a iOS"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activadas en iOS"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktibatuta iOSen"
           }
         }
       }
@@ -5380,6 +5746,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ireki YouTuben"
+          }
+        }
+      }
+    },
+    "Open iOS Settings" : {
+      "comment" : "Race alerts banner button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obre la Configuració d’iOS"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Ajustes de iOS"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ireki iOSeko Ezarpenak"
           }
         }
       }
@@ -5906,6 +6296,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Prologoa %@"
+          }
+        }
+      }
+    },
+    "Race alerts" : {
+      "comment" : "Race alerts sheet title and Settings tile",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avisos de curses"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avisos de carreras"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketen abisuak"
           }
         }
       }

@@ -1,0 +1,52 @@
+# CX Zone race alerts hint (Debug build, mocked launch with alertsHint on): a fresh install never shows it on
+# the first cold launch, shows it near the bell on the next one (state kept), and never again after that.
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+  - cx
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+      alertsHint: "on"
+- tapOn: "CX Zone"
+- extendedWaitUntil:
+    visible: "NEXT ROUND"
+    timeout: 45000
+- assertVisible:
+    id: "cx.alerts.bell"
+- assertNotVisible:
+    id: "cx.alerts.hint"
+
+- launchApp:
+    stopApp: true
+    arguments:
+      mockScenario: live
+      alertsHint: "on"
+- tapOn: "CX Zone"
+- extendedWaitUntil:
+    visible:
+      id: "cx.alerts.hint"
+    timeout: 45000
+- assertVisible: "New: race alerts. Tap the bell to follow a series."
+- takeScreenshot: cx-alerts-hint
+# A tap on it closes it.
+- tapOn:
+    id: "cx.alerts.hint"
+- extendedWaitUntil:
+    notVisible:
+      id: "cx.alerts.hint"
+    timeout: 3000
+
+- launchApp:
+    stopApp: true
+    arguments:
+      mockScenario: live
+      alertsHint: "on"
+- tapOn: "CX Zone"
+- extendedWaitUntil:
+    visible: "NEXT ROUND"
+    timeout: 45000
+- assertNotVisible:
+    id: "cx.alerts.hint"

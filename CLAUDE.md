@@ -410,6 +410,30 @@ every result starts shown, a long press hides that one race, and the `SpoilerHin
 switch applies at once and clears the session's per-race toggles (`Domain.revealedRaces` holds the
 races flipped from the default, revealed or hidden).
 
+### Race alerts (screens only, no push yet)
+
+`Tabs/CXRaces/RaceAlerts/` (`RaceAlerts` feature module, one `ViewModel` created in `TabBarView` and shared by CX Zone
+and Settings so a switch shows in both at once). The CX Zone header has a 44 pt bell (`RaceAlertsBellButton`, id
+`cx.alerts.bell`; the season text drops "Season" via `ViewThatFits` when it doesn't fit): outline with nothing
+followed, filled `mudAccent` with a count badge, slashed when iOS notifications are `.denied`. It opens the "Race
+alerts" sheet (`RaceAlertsSheet`, Mud): World Cup, Superprestige, X2O Trofee, Other Belgian (`RaceAlerts.series`), each
+with a switch; on, the subtitle names the series' next round ("On · next: <venue>, <date>", venue via
+`RaceAlerts.venue(of:)`) when opened from CX Zone, plain "On" from Settings. Blocked: a banner with "Open iOS Settings"
+(`Router.openInSystem`, `UIApplication.openNotificationSettingsURLString`), rows dimmed and switches disabled and drawn
+off; stored choices are kept. A followed series' next-round hero shows an "ALERT ON" tag (not while blocked). Settings
+adds "Notifications" (opens the iOS notification settings; "On in iOS" / "Off in iOS") and "Race alerts" ("<n> series"
+or "Off", opens the same sheet). The choice is stored only, as `CXRaces.RaceSeries` raw values in
+`UserSettings.raceAlertSeries`; nothing subscribes to topics or schedules notifications yet. The iOS status
+(`RaceAlerts.Authorization.current()`) is re-read when the app becomes active, the sheet opens and Settings appears.
+Debug: a mocked launch reports "allowed" unless `NOTIFICATIONS_STATUS=blocked` (or a `notificationsStatus` launch
+argument). The one-time hint (`RaceAlerts.Hint`, `RaceAlertsHintCallout` under the bell): `recordLaunch()` runs in
+`TribunerosApp.init()` right after `PreferencesReset` and stores `UserSettings.raceAlertsHint`: no record on a fresh
+install (`LaunchSplash.isFreshInstall`) is `waiting`, on an existing install `due`; a launch finding `waiting` makes
+it `due`. It appears once the CX Zone page has loaded, counts as shown at once, and goes on a tap on it or the bell, or
+after 7 s. A launch where it is due skips the dock hint (`RaceAlerts.Hint.isDueThisLaunch`), uncounted. Debug: a
+mocked launch hides it unless `ALERTS_HINT=1` (or `alertsHint`). Tests: `RaceAlertsTests`. Maestro:
+`.maestro/cx-race-alerts.yaml`, `.maestro/cx-alerts-hint.yaml`.
+
 ### Localization (English + Castellano + Catalan + Basque)
 
 - One String Catalog, `Tribuneros/Localizable.xcstrings`, generated from

@@ -28,6 +28,7 @@ struct TribunerosApp: App {
     
     init() {
         PreferencesReset.runAtLaunch()
+        RaceAlerts.Hint.recordLaunch()
         AppLocalization.applyAtLaunch()
         CrashlyticsManager.shared.configure()
         Service.useFirebaseEmulatorIfEnabled()

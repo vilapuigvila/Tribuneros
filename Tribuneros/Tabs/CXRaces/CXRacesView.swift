@@ -9,6 +9,8 @@ import SwiftUI
 
 struct CXRacesRacesView: View {
     @ObservedObject var viewModel: CXRaces.ViewModel<CXRaces.InteractorImpl>
+    @ObservedObject var raceAlerts: RaceAlerts.ViewModel<RaceAlerts.InteractorImpl>
+    @State private var showsRaceAlerts = false
     @State private var lensSeries: CXRaces.RaceSeries?
     @State private var flippedRaces: Set<String> = []
 
@@ -16,7 +18,9 @@ struct CXRacesRacesView: View {
         CXRaces.MainView(
             state: viewModel.stateView,
             selectedSeries: $lensSeries,
-            flippedRaces: $flippedRaces
+            flippedRaces: $flippedRaces,
+            raceAlerts: raceAlerts.stateView,
+            openRaceAlerts: { showsRaceAlerts = true }
         ) {
             switch $0 {
             case .didAppeared:
@@ -25,6 +29,17 @@ struct CXRacesRacesView: View {
                 viewModel.action($0)
             }
         }
+        .onChange(
+            of: viewModel.stateView.result.calendarEvents,
+            initial: true
+        ) { _, calendar in
+            raceAlerts.action(.didLoadCalendar(calendar))
+        }
+        .raceAlertsSheet(
+            isPresented: $showsRaceAlerts,
+            sheet: raceAlerts.stateView.cxSheet,
+            action: raceAlerts.action
+        )
         .navigationDestination(for: Router.Destination.self) { destination in
             let _ = AppLogger.navigation.debug("\(destination)")
             switch destination {

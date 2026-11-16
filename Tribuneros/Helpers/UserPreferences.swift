@@ -21,6 +21,8 @@ enum UserPreferencesKey: String, CaseIterable {
     case onboardingMusicMuted
     case appLanguage
     case hidesResults
+    case raceAlertSeries
+    case raceAlertsHint
     case preferencesResetVersion
 }
 
@@ -166,6 +168,13 @@ struct UserSettings {
     /// Results start hidden behind the spoiler painting; off shows them as soon as they load.
     @UserDefault(UserPreferencesKey.hidesResults.rawValue, defaultValue: true)
     static var hidesResults: Bool?
+
+    /// `CXRaces.RaceSeries` raw values the user follows in the Race alerts sheet.
+    @UserDefault(UserPreferencesKey.raceAlertSeries.rawValue, defaultValue: [])
+    static var raceAlertSeries: [String]?
+
+    @UserDefault(UserPreferencesKey.raceAlertsHint.rawValue, defaultValue: nil)
+    static var raceAlertsHint: RaceAlerts.HintState?
 }
 
 

@@ -28,8 +28,12 @@ extension CXRaces {
         @Environment(\.tabBarHeight) private var tabBarHeight
         @Binding var selectedSeries: RaceSeries?
         @Binding var flippedRaces: Set<String>
+        @State private var showsAlertsHint = false
 
         let representable: Representable
+        var raceAlerts: RaceAlerts.ViewState = .idle
+        var isPlaceholder = false
+        var openRaceAlerts: () -> Void = {}
         let action: (CXRaces.Action) -> Void
 
         private var availableSeries: [RaceSeries] {
@@ -48,6 +52,7 @@ extension CXRaces {
             ScrollView {
                 VStack(alignment: .leading, spacing: 26) {
                     header
+                        .zIndex(1)
                     if let series {
                         let lens = SeriesLens(
                             series: series,
@@ -55,6 +60,7 @@ extension CXRaces {
                         )
                         NextRoundSection(
                             lens: lens,
+                            isAlertOn: raceAlerts.alertOnSeries.contains(series),
                             open: { action(.didTapOnCalendarEvent($0)) }
                         )
                         if !lens.leaders.isEmpty {
@@ -163,21 +169,67 @@ extension CXRaces {
                         )
                     }
                     Spacer(minLength: 0)
-                    TribuneruText(
-                        content: L10n.tr("Season %@", SeriesLens.seasonLabel()),
-                        style: .vaporScreenDate,
-                        color: .tribuneru(.mudTextSecondary),
-                        lineLimit: 1
-                    )
+                    // The longest languages drop the word "Season" so the bell fits.
+                    ViewThatFits(in: .horizontal) {
+                        seasonText(L10n.tr("Season %@", SeriesLens.seasonLabel()))
+                        seasonText(SeriesLens.seasonLabel())
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityIdentifier("cx.header")
+                    RaceAlertsBellButton(bell: isPlaceholder ? .none : raceAlerts.bell) {
+                        dismissAlertsHint()
+                        openRaceAlerts()
+                    }
+                    .overlay(alignment: .bottomTrailing) {
+                        // A zero-height anchor under the bell; the callout grows downward from it.
+                        Color.clear
+                            .frame(height: 0)
+                            .overlay(alignment: .topTrailing) {
+                                if showsAlertsHint {
+                                    RaceAlertsHintCallout(dismiss: dismissAlertsHint)
+                                        .fixedSize(
+                                            horizontal: true,
+                                            vertical: true
+                                        )
+                                        .padding(.top, 10)
+                                        .transition(.opacity.combined(with: .offset(y: -8)))
+                                }
+                            }
+                    }
                 }
-                .accessibilityElement(children: .combine)
-                .accessibilityIdentifier("cx.header")
+                .zIndex(1)
+                .task(id: isPlaceholder) {
+                    await presentAlertsHint()
+                }
 
                 if availableSeries.count > 1 {
                     chips
                 }
             }
             .padding(.top, 16)
+        }
+
+        private func seasonText(_ content: String) -> some View {
+            TribuneruText(
+                content: content,
+                style: .vaporScreenDate,
+                color: .tribuneru(.mudTextSecondary),
+                lineLimit: 1
+            )
+            .fixedSize()
+        }
+
+        /// Only on the loaded page, with the bell on screen; counted as shown the moment it appears.
+        private func presentAlertsHint() async {
+            guard !isPlaceholder, RaceAlerts.Hint.present() else { return }
+            withAnimation(.easeOut(duration: 0.3)) { showsAlertsHint = true }
+            try? await Task.sleep(for: RaceAlerts.Hint.visibleDuration)
+            dismissAlertsHint()
+        }
+
+        private func dismissAlertsHint() {
+            guard showsAlertsHint else { return }
+            withAnimation(.easeOut(duration: 0.3)) { showsAlertsHint = false }
         }
 
         private func chipButton(
@@ -322,6 +374,7 @@ private struct Chevron: View {
 
 private struct NextRoundSection: View {
     let lens: CXRaces.SeriesLens
+    var isAlertOn = false
     let open: (DTO.CXCalendarEvent) -> Void
 
     var body: some View {
@@ -374,6 +427,13 @@ private struct NextRoundSection: View {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(spacing: 8) {
                     MudTag(title: tag)
+                    if isAlertOn, pill != nil {
+                        MudTag(
+                            title: L10n.tr("ALERT ON"),
+                            color: .tribuneru(.mudAccent)
+                        )
+                        .accessibilityIdentifier("cx.nextRound.alertOn")
+                    }
                     Spacer(minLength: 0)
                     if let pill {
                         TribuneruText(

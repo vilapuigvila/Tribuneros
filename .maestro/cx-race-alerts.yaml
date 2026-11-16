@@ -1,0 +1,128 @@
+# CX Zone race alerts (Debug build, mocked launch): the header bell opens the Race alerts sheet; following
+# World Cup turns its row on, fills the bell with a count, tags its next round and shows in Settings as
+# "1 series". A relaunch with notificationsStatus blocked (state kept) shows the iOS banner and disabled switches.
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+  - cx
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+- tapOn: "CX Zone"
+- extendedWaitUntil:
+    visible: "NEXT ROUND"
+    timeout: 45000
+- assertNotVisible:
+    id: "cx.alerts.hint"
+- assertNotVisible:
+    id: "cx.nextRound.alertOn"
+- assertVisible:
+    id: "cx.alerts.bell"
+- tapOn:
+    id: "cx.alerts.bell"
+- extendedWaitUntil:
+    visible:
+      id: "raceAlerts.row.worldCup"
+    timeout: 5000
+- assertVisible: "A notification when each Men Elite race starts and when it finishes. Winners stay hidden."
+- assertVisible:
+    id: "raceAlerts.row.worldCup"
+    text: "World Cup, Off"
+- assertVisible:
+    id: "raceAlerts.row.superprestige"
+- assertVisible:
+    id: "raceAlerts.row.x2oTrofee"
+- assertVisible:
+    id: "raceAlerts.row.otherBelgian"
+- assertVisible: "Exact Cross · Championships · Others"
+- assertNotVisible:
+    id: "raceAlerts.blocked"
+- tapOn:
+    id: "raceAlerts.switch.worldCup"
+- assertVisible:
+    id: "raceAlerts.row.worldCup"
+    text: "World Cup, On · next: .*"
+- takeScreenshot: cx-race-alerts-sheet
+- swipe:
+    start: 50%, 35%
+    end: 50%, 95%
+- extendedWaitUntil:
+    notVisible:
+      id: "raceAlerts.title"
+    timeout: 5000
+- assertVisible:
+    id: "cx.alerts.bell"
+    text: ".*1 series.*"
+- assertVisible:
+    id: "cx.nextRound.alertOn"
+- takeScreenshot: cx-race-alerts-bell
+- tapOn:
+    id: "tab.settings"
+- assertVisible:
+    id: "settings.raceAlerts"
+    text: "Race alerts, 1 series"
+- assertVisible:
+    id: "settings.notifications"
+    text: "Notifications, On in iOS"
+- takeScreenshot: cx-race-alerts-settings
+# The Settings tile opens the same sheet, without the next round.
+- tapOn:
+    id: "settings.raceAlerts"
+- extendedWaitUntil:
+    visible:
+      id: "raceAlerts.row.worldCup"
+    timeout: 5000
+- assertVisible:
+    id: "raceAlerts.row.worldCup"
+    text: "World Cup, On"
+- swipe:
+    start: 50%, 35%
+    end: 50%, 95%
+
+# Blocked in iOS: stored choices stay, the rows are dimmed and their switches disabled.
+- launchApp:
+    stopApp: true
+    arguments:
+      mockScenario: live
+      notificationsStatus: blocked
+- tapOn: "CX Zone"
+- extendedWaitUntil:
+    visible: "NEXT ROUND"
+    timeout: 45000
+- assertVisible:
+    id: "cx.alerts.bell"
+    text: ".*Notifications are off in iOS.*"
+- assertNotVisible:
+    id: "cx.nextRound.alertOn"
+- tapOn:
+    id: "cx.alerts.bell"
+- extendedWaitUntil:
+    visible:
+      id: "raceAlerts.blocked"
+    timeout: 5000
+- assertVisible: "Notifications are off in iOS"
+- assertVisible:
+    id: "raceAlerts.openSettings"
+- assertVisible:
+    id: "raceAlerts.row.worldCup"
+    text: "World Cup, Needs notifications in iOS"
+- assertVisible:
+    id: "raceAlerts.switch.worldCup"
+    enabled: false
+- assertVisible:
+    id: "raceAlerts.switch.superprestige"
+    enabled: false
+- takeScreenshot: cx-race-alerts-blocked
+- swipe:
+    start: 50%, 35%
+    end: 50%, 95%
+- tapOn:
+    id: "tab.settings"
+- assertVisible:
+    id: "settings.notifications"
+    text: "Notifications, Off in iOS"
+- assertVisible:
+    id: "settings.raceAlerts"
+    text: "Race alerts, 1 series"

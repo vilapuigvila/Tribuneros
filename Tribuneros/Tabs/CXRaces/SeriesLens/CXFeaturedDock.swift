@@ -257,6 +257,8 @@ struct CXFeaturedDock<Result: View, Race: View>: View {
         #if DEBUG
         guard CXRaces.DockHint.isEnabledInDebug else { return }
         #endif
+        // Never on screen with the race alerts hint: that launch leaves this one for later, uncounted.
+        guard !RaceAlerts.Hint.isDueThisLaunch else { return }
         let count = UserSettings.dockHintShownCount ?? 0
         guard CXRaces.DockHint.shouldShow(count: count) else { return }
         UserSettings.dockHintShownCount = count + 1

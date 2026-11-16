@@ -25,6 +25,12 @@ tags:
     element: "Results"
 - tapOn: "Results"
 - assertVisible: "Latest Cyclocross Results"
+# Results start hidden and a hidden card ignores taps: hold it to reveal, then tap it open
+- longPressOn:
+    text: ".*\\(C.*\\).*"
+    below: "Latest Cyclocross Results"
+    retryTapIfNoChange: false
+    delay: 1
 - tapOn:
     text: ".*\\(C.*\\).*"
     below: "Latest Cyclocross Results"

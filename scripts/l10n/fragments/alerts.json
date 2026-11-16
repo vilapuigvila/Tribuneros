@@ -1,0 +1,107 @@
+{
+  "%lld series": {
+    "plural": {
+      "en": {
+        "one": "%lld series",
+        "other": "%lld series"
+      },
+      "ca": {
+        "one": "%lld sèrie",
+        "other": "%lld sèries"
+      },
+      "eu": {
+        "one": "Serie %lld",
+        "other": "%lld serie"
+      },
+      "es": {
+        "one": "%lld serie",
+        "other": "%lld series"
+      }
+    },
+    "comment": "Settings Race alerts tile: how many series are followed"
+  },
+  "A notification when each Men Elite race starts and when it finishes. Winners stay hidden.": {
+    "ca": "Una notificació quan comença i quan acaba cada cursa Elit masculina. Els guanyadors es mantenen amagats.",
+    "eu": "Jakinarazpen bat gizonezkoen Elite lasterketa bakoitza hasten eta amaitzen denean. Irabazleak ezkutuan geratzen dira.",
+    "es": "Una notificación cuando empieza y cuando termina cada carrera Élite masculina. Los ganadores siguen ocultos.",
+    "comment": "Race alerts sheet: what an alert is"
+  },
+  "ALERT ON": {
+    "ca": "AVÍS ACTIU",
+    "eu": "ABISUA AKTIBO",
+    "es": "AVISO ACTIVO",
+    "comment": "CX Zone next-round tag for a followed series"
+  },
+  "Needs notifications in iOS": {
+    "ca": "Cal activar les notificacions a iOS",
+    "eu": "iOSeko jakinarazpenak behar dira",
+    "es": "Requiere activar las notificaciones en iOS",
+    "comment": "Race alerts row subtitle while iOS blocks notifications"
+  },
+  "New: race alerts. Tap the bell to follow a series.": {
+    "ca": "Novetat: avisos de curses. Toca la campana per seguir una sèrie.",
+    "eu": "Berria: lasterketen abisuak. Sakatu kanpaia serie bat jarraitzeko.",
+    "es": "Novedad: avisos de carreras. Toca la campana para seguir una serie.",
+    "comment": "One-time hint next to the CX Zone bell"
+  },
+  "No alerts for these series": {
+    "ca": "Sense avisos per a aquestes sèries",
+    "eu": "Serie hauentzat ez dago abisurik",
+    "es": "Sin avisos para estas series",
+    "comment": "Race alerts sheet footer label, above the series without alerts"
+  },
+  "Notifications": {
+    "ca": "Notificacions",
+    "eu": "Jakinarazpenak",
+    "es": "Notificaciones",
+    "comment": "Settings tile that opens the iOS notification settings"
+  },
+  "Notifications are off in iOS": {
+    "ca": "Les notificacions estan desactivades a iOS",
+    "eu": "Jakinarazpenak desaktibatuta daude iOSen",
+    "es": "Las notificaciones están desactivadas en iOS",
+    "comment": "Race alerts banner when iOS blocks notifications"
+  },
+  "Off": {
+    "ca": "Desactivat",
+    "eu": "Desaktibatuta",
+    "es": "Desactivado",
+    "comment": "Race alerts: a series not followed, or none followed"
+  },
+  "Off in iOS": {
+    "ca": "Desactivades a iOS",
+    "eu": "Desaktibatuta iOSen",
+    "es": "Desactivadas en iOS",
+    "comment": "Settings Notifications tile: iOS notifications off or not decided"
+  },
+  "On": {
+    "ca": "Activat",
+    "eu": "Aktibatuta",
+    "es": "Activado",
+    "comment": "Race alerts row subtitle for a followed series"
+  },
+  "On in iOS": {
+    "ca": "Activades a iOS",
+    "eu": "Aktibatuta iOSen",
+    "es": "Activadas en iOS",
+    "comment": "Settings Notifications tile: iOS notifications allowed"
+  },
+  "On · next: %1$@, %2$@": {
+    "ca": "Activat · propera: %1$@, %2$@",
+    "eu": "Aktibatuta · hurrengoa: %1$@, %2$@",
+    "es": "Activado · próxima: %1$@, %2$@",
+    "comment": "Race alerts row subtitle: the venue and date of the series' next round"
+  },
+  "Open iOS Settings": {
+    "ca": "Obre la Configuració d’iOS",
+    "eu": "Ireki iOSeko Ezarpenak",
+    "es": "Abrir Ajustes de iOS",
+    "comment": "Race alerts banner button"
+  },
+  "Race alerts": {
+    "ca": "Avisos de curses",
+    "eu": "Lasterketen abisuak",
+    "es": "Avisos de carreras",
+    "comment": "Race alerts sheet title and Settings tile"
+  }
+}
