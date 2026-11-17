@@ -276,7 +276,18 @@ enum CxMock {
                 country: "Netherlands"
             )
         }
-        return others + [
+        let tonight = RaceAlerts.isLiveInMock
+            ? eveningRaces.map {
+                event(
+                    $0.race,
+                    raceClass: $0.raceClass,
+                    path: "race/\($0.slug)/",
+                    id: $0.id,
+                    daysFromNow: 0
+                )
+            }
+            : []
+        return others + tonight + [
             event("Kleeberg Cross Mechelen", raceClass: "C2", path: kleebergPath, id: 18001, daysFromNow: -10, winner: 0),
             event("Superprestige Gavere", raceClass: "C1", path: gaverePath, id: 17001, daysFromNow: -1, winner: 0),
             event("Exact Cross Mol", raceClass: "C2", path: molPath, id: 17002, daysFromNow: -1, winner: 1),
@@ -359,12 +370,46 @@ enum CxMock {
         )
     }
 
+    /// `RACE_ALERTS_LIVE` mock races today: their last start is `lastStartOffset` minutes from launch, so the
+    /// "after finish" alert fires 75 min after it.
+    private static let eveningRaces: [(race: String, raceClass: String, slug: String, id: Int, lastStartOffset: Int)] = [
+        ("World Cup Mock Evening", "CDM", "world-cup-mock-evening", 18101, -59), // l10n:ignore
+        ("Superprestige Mock Evening", "C1", "superprestige-mock-evening", 18102, -45), // l10n:ignore
+        ("X2O Badkamers Trofee Mock Night", "C2", "x2o-trofee-mock-night", 18103, -30), // l10n:ignore
+        ("Mock Cross Overijse", "C2", "mock-cross-overijse", 18104, -15) // l10n:ignore
+    ]
+
+    /// Fixed at the first use, so re-plans in the same run keep the same times.
+    private static let eveningAnchor = Date()
+
+    private static func eveningSchedules(now: Date) -> [DTO.CXSchedules.Entry] {
+        guard RaceAlerts.isLiveInMock else { return [] }
+        let today = date(daysFromNow: 0, format: "dd-MM-yyyy", now: now)
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "Europe/Brussels")
+        formatter.dateFormat = "HH:mm"
+        return eveningRaces.map { race in
+            .init(
+                raceSlug: race.slug,
+                date: today,
+                schedule: [
+                    .init(
+                        time: formatter.string(from: eveningAnchor.addingTimeInterval(TimeInterval(race.lastStartOffset * 60))),
+                        category: "Men Elite", // l10n:ignore
+                        date: today
+                    )
+                ]
+            )
+        }
+    }
+
     /// `cx/schedules`: Koksijde on one day (the race page's times), Namur over two days.
     static func schedules(now: Date = Date()) -> [DTO.CXSchedules.Entry] {
         let koksijde = date(daysFromNow: 30, format: "dd-MM-yyyy", now: now)
         let namurEve = date(daysFromNow: 44, format: "dd-MM-yyyy", now: now)
         let namur = date(daysFromNow: 45, format: "dd-MM-yyyy", now: now)
-        return [
+        return eveningSchedules(now: now) + [
             .init(
                 raceSlug: "world-cup-koksijde",
                 date: koksijde,

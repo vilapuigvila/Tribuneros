@@ -410,7 +410,7 @@ every result starts shown, a long press hides that one race, and the `SpoilerHin
 switch applies at once and clears the session's per-race toggles (`Domain.revealedRaces` holds the
 races flipped from the default, revealed or hidden).
 
-### Race alerts (screens only, no push yet)
+### Race alerts (local notifications)
 
 `Tabs/CXRaces/RaceAlerts/` (`RaceAlerts` feature module, one `ViewModel` created in `TabBarView` and shared by CX Zone
 and Settings so a switch shows in both at once). The CX Zone header has a 44 pt bell (`RaceAlertsBellButton`, id
@@ -422,8 +422,20 @@ with a switch; on, the subtitle names the series' next round ("On · next: <venu
 (`Router.openInSystem`, `UIApplication.openNotificationSettingsURLString`), rows dimmed and switches disabled and drawn
 off; stored choices are kept. A followed series' next-round hero shows an "ALERT ON" tag (not while blocked). Settings
 adds "Notifications" (opens the iOS notification settings; "On in iOS" / "Off in iOS") and "Race alerts" ("<n> series"
-or "Off", opens the same sheet). The choice is stored only, as `CXRaces.RaceSeries` raw values in
-`UserSettings.raceAlertSeries`; nothing subscribes to topics or schedules notifications yet. The iOS status
+or "Off", opens the same sheet). The choice is stored as `CXRaces.RaceSeries` raw values in
+`UserSettings.raceAlertSeries` and turned into local notifications (no FCM topics, no deep link: a tap just opens the app).
+`RaceAlerts.Planner.alerts` (`RaceAlerts.Planner.swift`, pure) plans, per non-cancelled race of a followed series dated
+today or later in the venue calendar (`SeriesLens.venueTimeZone`), a "before start" alert at a random minute in
+[09:00, 11:00) on race day (skipped after 10:55 or once that time passed) and an "after finish" alert at the race day's
+latest `cx/schedules` row (matched by `CXRaces.scheduleEntry`, 15:00 without one) + 75 min (skipped after that row + 60 min).
+Minute and Women/Men body come from a generator seeded by slug + date (`SeededGenerator`), so re-plans repeat; bodies are
+`L10n.tr`, titles carry the country flag (`Planner.flagEmoji`) and the finish one "🏁🏁🏁". Nearest 64 by fire date, ids
+`raceAlert.<start|finish>.<slug>.<yyyy-MM-dd>`. `InteractorImpl` re-plans (serialized) after a switch, after every iOS
+permission refresh (so app active) and on `.replan`: it fetches calendar and schedules through `Store.loadCalendar` /
+`loadSchedules`, removes only pending `raceAlert.` requests, then adds the new set through `NotificationScheduling`
+(`UserNotificationScheduler`; mocked launches get `NoOpScheduler`, so they never touch `UNUserNotificationCenter`). Switch
+ON while iOS is undetermined asks for permission first; blocked or nothing followed removes every race alert. Alerts past
+the first 64 wait for the next app open. Tapping a finish alert opens CX Zone with that race's event detail pushed (cold or warm): the alert's `userInfo` carries `raceSlug` (may be absent), `date` and `race`; `PushNotifications`' `didReceive` hands an `RaceAlerts.OpenRequest` to `RaceAlerts.OpenRequests.shared.pending`, which `TabBarView` consumes (kept until it exists) and resolves with `RaceAlerts.event(for:in:)` (slug + date, else name + date, else a minimal event); start alerts and other notifications have no destination. Debug: `OPEN_RACE_ALERT=<slug>` (or `openRaceAlert`) on a mocked launch feeds the same hand-off with that slug's latest race on or before today; Maestro `.maestro/cx-race-alert-open.yaml`. Tests: `RaceAlertsSchedulingTests` (fake scheduler). The iOS status
 (`RaceAlerts.Authorization.current()`) is re-read when the app becomes active, the sheet opens and Settings appears.
 Debug: a mocked launch reports "allowed" unless `NOTIFICATIONS_STATUS=blocked` (or a `notificationsStatus` launch
 argument). The one-time hint (`RaceAlerts.Hint`, `RaceAlertsHintCallout` under the bell): `recordLaunch()` runs in

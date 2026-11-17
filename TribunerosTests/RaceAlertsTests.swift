@@ -39,7 +39,10 @@ final class RaceAlertsTests: XCTestCase {
             store: RaceAlerts.Store(
                 loadFollowed: { stored },
                 saveFollowed: saved,
-                authorization: { authorization }
+                authorization: { authorization },
+                loadCalendar: { [] },
+                loadSchedules: { [] },
+                scheduler: FakeScheduler()
             )
         )
     }

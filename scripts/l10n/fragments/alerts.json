@@ -103,5 +103,29 @@
     "eu": "Lasterketen abisuak",
     "es": "Avisos de carreras",
     "comment": "Race alerts sheet title and Settings tile"
+  },
+  "Women’s elite starts soon - stay tuned 👀": {
+    "ca": "L’elit femenina comença aviat - estigues atent 👀",
+    "eu": "Emakumezkoen eliteak laster hasiko da - adi egon 👀",
+    "es": "La élite femenina empieza pronto - atento 👀",
+    "comment": "Race alert before the start"
+  },
+  "Men’s elite starts soon - stay tuned 👀": {
+    "ca": "L’elit masculina comença aviat - estigues atent 👀",
+    "eu": "Gizonezkoen eliteak laster hasiko da - adi egon 👀",
+    "es": "La élite masculina empieza pronto - atento 👀",
+    "comment": "Race alert before the start"
+  },
+  "Women’s elite finished - see the results 🏆🏆🏆": {
+    "ca": "L’elit femenina ha acabat - mira els resultats 🏆🏆🏆",
+    "eu": "Emakumezkoen elitea amaitu da - ikusi emaitzak 🏆🏆🏆",
+    "es": "La élite femenina ha terminado - mira los resultados 🏆🏆🏆",
+    "comment": "Race alert after the finish"
+  },
+  "Men’s elite finished - see the results 🏆🏆🏆": {
+    "ca": "L’elit masculina ha acabat - mira els resultats 🏆🏆🏆",
+    "eu": "Gizonezkoen elitea amaitu da - ikusi emaitzak 🏆🏆🏆",
+    "es": "La élite masculina ha terminado - mira los resultados 🏆🏆🏆",
+    "comment": "Race alert after the finish"
   }
 }

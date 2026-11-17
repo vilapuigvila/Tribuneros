@@ -196,6 +196,23 @@ struct TabBarView: View {
             guard phase == .active else { return }
             raceAlertsViewModel.action(.didRequestAuthorizationRefresh)
         }
+        .onReceive(RaceAlerts.OpenRequests.shared.$pending) { request in
+            guard let request else { return }
+            RaceAlerts.OpenRequests.shared.pending = nil
+            Task { await openRaceAlert(request) }
+        }
+        #if DEBUG
+        .task {
+            guard let slug = RaceAlerts.debugOpenSlug,
+                  let calendar = try? await Service.getCxAllCalendarEvents(),
+                  let request = RaceAlerts.debugRequest(
+                      slug: slug,
+                      in: calendar
+                  )
+            else { return }
+            RaceAlerts.OpenRequests.shared.pending = request
+        }
+        #endif
         .environment(\.featureRaceOnTV) { raceID, day in
             tifosiViewModel.action(.didFeatureRace(raceID: raceID, day: day))
             slideToTifosi()
@@ -288,6 +305,13 @@ struct TabBarView: View {
         } else {
             selectedTab = tab
         }
+    }
+
+    private func openRaceAlert(_ request: RaceAlerts.OpenRequest) async {
+        let calendar = (try? await Service.getCxAllCalendarEvents()) ?? []
+        selectedTab = .cxZone
+        cxRouter.popToRoot()
+        cxRouter.routeTo(.cxZone(.eventDetail(RaceAlerts.event(for: request, in: calendar))))
     }
 
     private func popToRoot(for tab: Tab) {

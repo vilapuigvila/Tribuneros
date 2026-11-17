@@ -80,6 +80,18 @@ extension PushNotifications: UNUserNotificationCenterDelegate {
     ) async -> UNNotificationPresentationOptions {
         [.banner, .sound, .list]
     }
+
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse
+    ) async {
+        let content = response.notification.request.content
+        guard let request = RaceAlerts.OpenRequest(
+            identifier: response.notification.request.identifier,
+            userInfo: content.userInfo
+        ) else { return }
+        await MainActor.run { RaceAlerts.OpenRequests.shared.pending = request }
+    }
 }
 
 extension PushNotifications: MessagingDelegate {

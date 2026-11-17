@@ -1,0 +1,24 @@
+# A tapped race "finished" alert opens CX Zone on that race's event detail (mock scenario live, the debug
+# openRaceAlert argument stands in for the tap): Superprestige Gavere with its winner; back returns to CX Zone.
+appId: com.pskmoons.Tribuneros
+tags:
+  - mock
+  - cx
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+      openRaceAlert: superprestige-gavere
+- extendedWaitUntil:
+    visible: ".*Superprestige Gavere.*"
+    timeout: 45000
+- extendedWaitUntil:
+    visible: "Winner"
+    timeout: 45000
+- swipe:
+    start: 1%, 50%
+    end: 70%, 50%
+- extendedWaitUntil:
+    visible: "NEXT ROUND"
+    timeout: 20000

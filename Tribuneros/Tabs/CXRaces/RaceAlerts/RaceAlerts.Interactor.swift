@@ -43,7 +43,7 @@ extension RaceAlerts {
             environment: [String: String],
             launchValue: String?
         ) -> Authorization? {
-            guard isMockedLaunch else { return nil }
+            guard isMockedLaunch, !RaceAlerts.isLiveInMock else { return nil }
             switch (environment["NOTIFICATIONS_STATUS"] ?? launchValue)?.lowercased() {
             case "blocked", "denied": return .blocked
             case "undetermined", "notdetermined": return .notDetermined
@@ -63,12 +63,28 @@ extension RaceAlerts {
         case setFollowing(CXRaces.RaceSeries, Bool)
         case refreshAuthorization
         case updateCalendar([DTO.CXCalendarEvent])
+        case replan
     }
 
     struct Store {
         var loadFollowed: () -> [String]?
         var saveFollowed: ([String]) -> Void
         var authorization: @Sendable () async -> Authorization
+        var loadCalendar: @Sendable () async -> [DTO.CXCalendarEvent]? = {
+            try? await Service.getCxAllCalendarEvents()
+        }
+        var loadSchedules: @Sendable () async -> [DTO.CXSchedules.Entry] = {
+            await Service.getCxSchedules()
+        }
+        var scheduler: NotificationScheduling = Store.defaultScheduler
+        var now: @Sendable () -> Date = { Date() }
+
+        static var defaultScheduler: NotificationScheduling {
+            #if DEBUG
+            if HomeRaces.MockScenario.current != nil, !RaceAlerts.isLiveInMock { return NoOpScheduler() }
+            #endif
+            return UserNotificationScheduler()
+        }
 
         static let userSettings = Store(
             loadFollowed: { UserSettings.raceAlertSeries },
@@ -84,6 +100,7 @@ extension RaceAlerts {
         private let subject: CurrentValueSubject<Domain, Never>
         private let store: Store
         private var authorizationTask: Task<Void, Never>?
+        private var replanTask: Task<Void, Never>?
 
         var publisher: AnyPublisher<Domain, Never> {
             subject.eraseToAnyPublisher()
@@ -106,7 +123,10 @@ extension RaceAlerts {
                 authorizationTask?.cancel()
                 authorizationTask = Task { @MainActor [weak self] in
                     await self?.refreshAuthorization()
+                    self?.enqueueReplan(requestPermission: false)
                 }
+            case .replan:
+                enqueueReplan(requestPermission: false)
             case .updateCalendar(let calendar):
                 guard calendar != subject.value.calendar else { return }
                 var updated = subject.value
@@ -143,6 +163,68 @@ extension RaceAlerts {
                     .map(\.rawValue)
             )
             subject.send(updated)
+            enqueueReplan(requestPermission: isOn)
+        }
+
+        /// Replans run one after another, so overlapping triggers never leave a half set.
+        @discardableResult
+        private func enqueueReplan(requestPermission: Bool) -> Task<Void, Never> {
+            let previous = replanTask
+            let task = Task { @MainActor [weak self] in
+                await previous?.value
+                await self?.replan(requestPermission: requestPermission)
+            }
+            replanTask = task
+            return task
+        }
+
+        func waitForReplan() async {
+            await replanTask?.value
+        }
+
+        @MainActor
+        private func replan(requestPermission: Bool) async {
+            var authorization = await store.authorization()
+            if requestPermission, authorization == .notDetermined, !subject.value.followed.isEmpty {
+                _ = await store.scheduler.requestAuthorization()
+                authorization = await store.authorization()
+            }
+            if authorization != subject.value.authorization {
+                var updated = subject.value
+                updated.authorization = authorization
+                subject.send(updated)
+            }
+            let scheduler = store.scheduler
+            let followed = subject.value.followed
+            guard authorization == .allowed, !followed.isEmpty else {
+                await removeRaceAlerts(from: scheduler)
+                return
+            }
+            guard let calendar = await store.loadCalendar() else {
+                await removeRaceAlerts(from: scheduler) { id in
+                    Planner.series(ofID: id).map { !followed.contains($0) } ?? true
+                }
+                return
+            }
+            let schedules = await store.loadSchedules()
+            let alerts = Planner.alerts(
+                followed: followed,
+                calendar: calendar,
+                schedules: schedules,
+                now: store.now(),
+                pending: Set(await scheduler.pendingIdentifiers())
+            )
+            await removeRaceAlerts(from: scheduler)
+            await scheduler.add(alerts)
+        }
+
+        private func removeRaceAlerts(
+            from scheduler: NotificationScheduling,
+            where shouldRemove: (String) -> Bool = { _ in true }
+        ) async {
+            let ids = await scheduler.pendingIdentifiers().filter { $0.hasPrefix(Planner.idPrefix) && shouldRemove($0) }
+            guard !ids.isEmpty else { return }
+            scheduler.remove(identifiers: ids)
         }
     }
 }
