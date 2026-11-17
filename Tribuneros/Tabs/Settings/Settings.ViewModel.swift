@@ -34,6 +34,8 @@ extension Settings {
                 break
             case .didTapAcknowledgements:
                 router.routeTo(.settingsAcknowledgements)
+            case .didTapWhatsNew:
+                router.routeTo(.settingsWhatsNew)
             case .didSelectLanguage(let code):
                 interactor.useCase(.selectLanguage(code))
             case .didToggleHidesResults(let value):
@@ -52,7 +54,8 @@ extension Settings {
             return Settings.ViewState(
                 languageTitle: languages.first { $0.isSelected }?.title ?? Settings.Domain.title(for: Settings.Domain.defaultLanguage),
                 languages: languages,
-                hidesResults: domain.hidesResults
+                hidesResults: domain.hidesResults,
+                showsWhatsNew: !WhatsNew.history().isEmpty
             )
         }
     }

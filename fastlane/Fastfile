@@ -80,6 +80,8 @@ platform :ios do
       UI.user_error!("#{key} is #{text.length} characters; the limit is 4000.") if text.length > 4000
     end
 
+    ensure_whats_new_release(version, options[:skip_whats_new])
+
     # Checked before archiving, so a failure here costs nothing: the version must be creatable or the editable one.
     api_key = asc_api_key
     app = Spaceship::ConnectAPI::App.find(BUNDLE_ID) || UI.user_error!("No app #{BUNDLE_ID} on App Store Connect")
@@ -161,6 +163,17 @@ def processed_build(app, version, number)
     sort: "-uploadedDate"
   )
   builds.first || UI.user_error!(number.empty? ? "No processed build for #{version} yet" : "No processed build #{number} for #{version}")
+end
+
+WHATS_NEW_SOURCE = "Tribuneros/WhatsNew/WhatsNew.swift"
+
+# The archive ships the in-app What's New: fail before archiving when WhatsNew.releases() has no entry for the version,
+# unless skip_whats_new:yes says this version has no news (the screen then stays hidden).
+def ensure_whats_new_release(version, skip)
+  return UI.important("No in-app What's New for #{version} (skip_whats_new:yes)") if skip.to_s == "yes"
+  source = File.read(File.expand_path("../#{WHATS_NEW_SOURCE}", __dir__))
+  return if source.match?(/Release\(\s*version:\s*"#{Regexp.escape(version)}"/)
+  UI.user_error!("No in-app What's New release for #{version} in #{WHATS_NEW_SOURCE}. Add it to WhatsNew.releases() and commit it (the new-version skill does this), or pass skip_whats_new:yes if this version has no news.")
 end
 
 def ensure_release_ready

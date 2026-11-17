@@ -29,6 +29,7 @@ struct TribunerosApp: App {
     init() {
         PreferencesReset.runAtLaunch()
         RaceAlerts.Hint.recordLaunch()
+        WhatsNew.recordLaunch()
         AppLocalization.applyAtLaunch()
         CrashlyticsManager.shared.configure()
         Service.useFirebaseEmulatorIfEnabled()
@@ -39,8 +40,10 @@ struct TribunerosApp: App {
         WindowGroup {
             LaunchSplashHost {
                 OnboardingHost {
-                    MaintenanceHost {
-                        LocalizedRoot()
+                    WhatsNewHost {
+                        MaintenanceHost {
+                            LocalizedRoot()
+                        }
                     }
                 }
             }

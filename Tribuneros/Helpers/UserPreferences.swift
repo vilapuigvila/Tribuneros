@@ -23,6 +23,7 @@ enum UserPreferencesKey: String, CaseIterable {
     case hidesResults
     case raceAlertSeries
     case raceAlertsHint
+    case whatsNewLastVersion
     case preferencesResetVersion
 }
 
@@ -175,6 +176,10 @@ struct UserSettings {
 
     @UserDefault(UserPreferencesKey.raceAlertsHint.rawValue, defaultValue: nil)
     static var raceAlertsHint: RaceAlerts.HintState?
+
+    /// The app version whose what's-new screen was last decided (shown, or skipped because it has no news).
+    @UserDefault(UserPreferencesKey.whatsNewLastVersion.rawValue, defaultValue: nil)
+    static var whatsNewLastVersion: String?
 }
 
 

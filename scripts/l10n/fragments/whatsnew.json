@@ -1,0 +1,56 @@
+{
+  "WHAT'S NEW": {
+    "ca": "NOVETATS",
+    "eu": "BERRIAK",
+    "es": "NOVEDADES",
+    "comment": "What's new screen label"
+  },
+  "What's new": {
+    "ca": "Novetats",
+    "eu": "Berritasunak",
+    "es": "Novedades",
+    "comment": "Settings row and history screen title"
+  },
+  "Fresh off the road": {
+    "ca": "Fresc de la carretera",
+    "eu": "Errepidetik berri-berria",
+    "es": "Recién salido de la carretera",
+    "comment": "What's new screen title"
+  },
+  "Here is what we added since your last ride.": {
+    "ca": "Això és el que hem afegit des de l’última vegada.",
+    "eu": "Hau da zure azken irteeratik gehitu duguna.",
+    "es": "Esto es lo que hemos añadido desde tu última salida.",
+    "comment": "What's new screen subtitle"
+  },
+  "Follow World Cup, Superprestige, X2O Trofee and Other Belgian races. The bell in CX Zone sets it up.": {
+    "ca": "Segueix les curses de la Copa del Món, Superprestige, X2O Trofee i Altres belgues. La campana de CX Zone ho configura.",
+    "eu": "Jarraitu Munduko Kopa, Superprestige, X2O Trofee eta Beste belgikarrak lasterketak. CX Zoneko kanpaiak konfiguratzen du.",
+    "es": "Sigue las carreras de Copa del Mundo, Superprestige, X2O Trofee y Otras belgas. La campana de CX Zone lo configura.",
+    "comment": "What's new 1.4 item body"
+  },
+  "Races and teams": {
+    "ca": "Curses i equips",
+    "eu": "Lasterketak eta taldeak",
+    "es": "Carreras y equipos",
+    "comment": "What's new 1.4 item title"
+  },
+  "Paddock now lists the whole calendar, men and women, plus every WorldTeam and ProTeam.": {
+    "ca": "Paddock ara llista tot el calendari, masculí i femení, i tots els WorldTeam i ProTeam.",
+    "eu": "Paddock-ek egutegi osoa erakusten du, gizonezkoena eta emakumezkoena, baita WorldTeam eta ProTeam guztiak ere.",
+    "es": "Paddock ahora lista todo el calendario, masculino y femenino, y todos los WorldTeam y ProTeam.",
+    "comment": "What's new 1.4 item body"
+  },
+  "Now in Euskara": {
+    "ca": "Ara en euskara",
+    "eu": "Orain euskaraz",
+    "es": "Ahora en euskera",
+    "comment": "What's new 1.4 item title"
+  },
+  "Basque joins English, Castellano and Català. Pick it in Settings, Language.": {
+    "ca": "El basc s’uneix a l’anglès, el castellà i el català. Tria’l a Configuració, Idioma.",
+    "eu": "Euskara ingelesa, gaztelania eta katalana ere badaude. Aukeratu Ezarpenak, Hizkuntza atalean.",
+    "es": "El euskera se une al inglés, el castellano y el catalán. Elígelo en Ajustes, Idioma.",
+    "comment": "What's new 1.4 item body"
+  }
+}

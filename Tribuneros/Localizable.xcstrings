@@ -1482,6 +1482,30 @@
         }
       }
     },
+    "Basque joins English, Castellano and Català. Pick it in Settings, Language." : {
+      "comment" : "What's new 1.4 item body",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El basc s’uneix a l’anglès, el castellà i el català. Tria’l a Configuració, Idioma."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El euskera se une al inglés, el castellano y el catalán. Elígelo en Ajustes, Idioma."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Euskara ingelesa, gaztelania eta katalana ere badaude. Aukeratu Ezarpenak, Hizkuntza atalean."
+          }
+        }
+      }
+    },
     "Birthday" : {
       "comment" : "Rider screen tag and panel title",
       "extractionState" : "manual",
@@ -2713,6 +2737,54 @@
         }
       }
     },
+    "Follow World Cup, Superprestige, X2O Trofee and Other Belgian races. The bell in CX Zone sets it up." : {
+      "comment" : "What's new 1.4 item body",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Segueix les curses de la Copa del Món, Superprestige, X2O Trofee i Altres belgues. La campana de CX Zone ho configura."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sigue las carreras de Copa del Mundo, Superprestige, X2O Trofee y Otras belgas. La campana de CX Zone lo configura."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jarraitu Munduko Kopa, Superprestige, X2O Trofee eta Beste belgikarrak lasterketak. CX Zoneko kanpaiak konfiguratzen du."
+          }
+        }
+      }
+    },
+    "Fresh off the road" : {
+      "comment" : "What's new screen title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fresc de la carretera"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recién salido de la carretera"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Errepidetik berri-berria"
+          }
+        }
+      }
+    },
     "Full ranking" : {
       "comment" : "Accessibility label of the chevron that opens a ranking's full table",
       "extractionState" : "manual",
@@ -2803,6 +2875,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "LASTERKETAREN BURUA"
+          }
+        }
+      }
+    },
+    "Here is what we added since your last ride." : {
+      "comment" : "What's new screen subtitle",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Això és el que hem afegit des de l’última vegada."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esto es lo que hemos añadido desde tu última salida."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hau da zure azken irteeratik gehitu duguna."
           }
         }
       }
@@ -5193,6 +5289,30 @@
         }
       }
     },
+    "Now in Euskara" : {
+      "comment" : "What's new 1.4 item title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ara en euskara"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ahora en euskera"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orain euskaraz"
+          }
+        }
+      }
+    },
     "OFF" : {
       "comment" : "Settings switch state tag",
       "extractionState" : "manual",
@@ -5789,6 +5909,30 @@
         }
       }
     },
+    "Paddock now lists the whole calendar, men and women, plus every WorldTeam and ProTeam." : {
+      "comment" : "What's new 1.4 item body",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paddock ara llista tot el calendari, masculí i femení, i tots els WorldTeam i ProTeam."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paddock ahora lista todo el calendario, masculino y femenino, y todos los WorldTeam y ProTeam."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paddock-ek egutegi osoa erakusten du, gizonezkoena eta emakumezkoena, baita WorldTeam eta ProTeam guztiak ere."
+          }
+        }
+      }
+    },
     "Past winners" : {
       "comment" : "Race detail panel header",
       "extractionState" : "manual",
@@ -6279,6 +6423,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lasterketak"
+          }
+        }
+      }
+    },
+    "Races and teams" : {
+      "comment" : "What's new 1.4 item title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Curses i equips"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carreras y equipos"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasterketak eta taldeak"
           }
         }
       }
@@ -8651,6 +8819,30 @@
         }
       }
     },
+    "WHAT'S NEW" : {
+      "comment" : "What's new screen label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NOVETATS"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NOVEDADES"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BERRIAK"
+          }
+        }
+      }
+    },
     "WOMEN" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -8765,6 +8957,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ongi etorri Cycling Tribune-ra"
+          }
+        }
+      }
+    },
+    "What's new" : {
+      "comment" : "Settings row and history screen title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Novetats"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Novedades"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Berritasunak"
           }
         }
       }

@@ -12,6 +12,7 @@ extension Settings {
     enum Action {
         case didTapShowOnboarding
         case didTapAcknowledgements
+        case didTapWhatsNew
         case didSelectLanguage(String)
         case didToggleHidesResults(Bool)
     }
@@ -23,6 +24,8 @@ extension Settings {
         let languageTitle: String
         let languages: [Representable.Language]
         let hidesResults: Bool
+        /// A row to the what's-new history, only once there is a release to list.
+        let showsWhatsNew: Bool
 
         static var idle: ViewState {
             ViewModel<InteractorImpl>.mapToViewState(

@@ -18,6 +18,30 @@ extension EnvironmentValues {
     }
 }
 
+extension Onboarding {
+    /// What the launch's onboarding decided, for the steps that wait on it (`WhatsNewHost`).
+    struct LaunchState: Equatable {
+        var hasStarted = false
+        var isShowing = false
+        var shownAtLaunch = false
+    }
+}
+
+private struct OnboardingLaunchKey: EnvironmentKey {
+    static let defaultValue = Onboarding.LaunchState(
+        hasStarted: true,
+        isShowing: false,
+        shownAtLaunch: false
+    )
+}
+
+extension EnvironmentValues {
+    var onboardingLaunch: Onboarding.LaunchState {
+        get { self[OnboardingLaunchKey.self] }
+        set { self[OnboardingLaunchKey.self] = newValue }
+    }
+}
+
 /// Owns the onboarding state so showing it re-renders only this view; `content` is built once, like `MaintenanceHost`.
 struct OnboardingHost<Content: View>: View {
     @StateObject private var presenter = Onboarding.Presenter()
@@ -34,6 +58,14 @@ struct OnboardingHost<Content: View>: View {
                 .environment(
                     \.replayOnboarding,
                     replay
+                )
+                .environment(
+                    \.onboardingLaunch,
+                    Onboarding.LaunchState(
+                        hasStarted: presenter.hasStarted,
+                        isShowing: presenter.showing != nil,
+                        shownAtLaunch: presenter.shownAtLaunch
+                    )
                 )
                 .accessibilityHidden(presenter.showing != nil)
             if let showing = presenter.showing {
