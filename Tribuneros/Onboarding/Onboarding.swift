@@ -137,6 +137,8 @@ extension Onboarding {
         private let now: () -> Date
         /// Set once `start` has decided whether to show, so later launch steps can wait on it.
         @Published private(set) var hasStarted = false
+        /// True when this launch's schedule showed the onboarding (not a Settings replay).
+        @Published private(set) var shownAtLaunch = false
 
         init(
             store: Store = .userSettings,
@@ -170,6 +172,7 @@ extension Onboarding {
                 record: record
             ) else { return }
             store.save(next)
+            shownAtLaunch = true
             showing = next.count
         }
 

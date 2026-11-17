@@ -28,6 +28,8 @@ struct SettingsView: View {
             switch destination {
             case .settingsAcknowledgements:
                 Settings.AcknowledgementsView()
+            case .settingsWhatsNew:
+                WhatsNew.HistoryView()
             default:
                 EmptyView()
             }
@@ -99,7 +101,20 @@ extension Settings {
                             showsRaceAlerts = true
                         }
                     }
-                    AcknowledgementsRow {
+                    if state.showsWhatsNew {
+                        SettingsLinkRow(
+                            title: L10n.tr("What's new"),
+                            systemImage: "sparkles",
+                            identifier: "settings.whatsNew"
+                        ) {
+                            action(.didTapWhatsNew)
+                        }
+                    }
+                    SettingsLinkRow(
+                        title: L10n.tr("Acknowledgements"),
+                        systemImage: "heart",
+                        identifier: "settings.acknowledgements"
+                    ) {
                         action(.didTapAcknowledgements)
                     }
                     Color.clear
@@ -410,18 +425,21 @@ private struct SettingsTile: View {
     }
 }
 
-private struct AcknowledgementsRow: View {
+private struct SettingsLinkRow: View {
+    let title: String
+    let systemImage: String
+    let identifier: String
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: 14) {
-                Image(systemName: "heart")
+                Image(systemName: systemImage)
                     .font(.system(size: 20, weight: .regular))
                     .foregroundColor(.tribuneru(.vaporTextMuted))
                     .accessibilityHidden(true)
                 TribuneruText(
-                    content: L10n.tr("Acknowledgements"),
+                    content: title,
                     style: .vaporRowTitle,
                     color: .tribuneru(.vaporTextPrimary),
                     lineLimit: 1
@@ -439,9 +457,9 @@ private struct AcknowledgementsRow: View {
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(L10n.tr("Acknowledgements"))
+        .accessibilityLabel(title)
         .accessibilityAddTraits(.isButton)
-        .accessibilityIdentifier("settings.acknowledgements")
+        .accessibilityIdentifier(identifier)
     }
 }
 

@@ -66,7 +66,7 @@ struct TribuneruText: View {
             "SpaceGrotesk-Medium"
         case .vaporLink, .vaporRowTitle, .vaporRowCountdown:
             "SpaceGrotesk-SemiBold"
-        case .vaporRowMeta, .vaporBannerSubtitle:
+        case .vaporRowMeta, .vaporBannerSubtitle, .vaporBody:
             "SpaceGrotesk-Regular"
         case .vaporPill, .vaporStatTime, .vaporRowTime, .vaporResultTime, .tifosiDeckCountdown:
             "SpaceMono-Bold"
@@ -108,6 +108,7 @@ struct TribuneruText: View {
         case .vaporLink, .vaporSeeAll: 14
         case .vaporRowTitle: 16
         case .vaporRowMeta: 12
+        case .vaporBody: 14
         case .vaporRowCountdown: 12
         case .vaporRowTime: 18
         case .vaporResultTitle: 15
@@ -143,7 +144,7 @@ struct TribuneruText: View {
             .medium
         case .vaporScreenDate, .vaporMeta, .vaporFinishTime, .vaporETALine,
              .vaporFeedDetail, .vaporMonoMeta, .vaporGroupLabel,
-             .vaporRowMeta, .vaporBannerSubtitle:
+             .vaporRowMeta, .vaporBannerSubtitle, .vaporBody:
             .regular
         }
     }
@@ -227,6 +228,7 @@ extension TribuneruText {
         case vaporStatTime
         case vaporRowTitle
         case vaporRowMeta
+        case vaporBody
         case vaporRowCountdown
         case vaporRowTime
         case vaporResultTitle

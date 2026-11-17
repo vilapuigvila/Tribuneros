@@ -57,6 +57,7 @@ final class Router: ObservableObject {
         /// A team's native screen (its roster), pushed from a Teams row.
         case paddockTeam(Paddock.TeamItem)
         case settingsAcknowledgements
+        case settingsWhatsNew
         case web(URL)
         /// A news page: like `web`, but opens in Safari Reader when the page supports it.
         case article(URL)
