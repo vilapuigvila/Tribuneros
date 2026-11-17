@@ -424,7 +424,7 @@ with a switch; on, the subtitle names the series' next round ("On · next: <venu
 off; stored choices are kept. A followed series' next-round hero shows an "ALERT ON" tag (not while blocked). Settings
 adds "Notifications" (opens the iOS notification settings; "On in iOS" / "Off in iOS") and "Race alerts" ("<n> series"
 or "Off", opens the same sheet). The choice is stored as `CXRaces.RaceSeries` raw values in
-`UserSettings.raceAlertSeries` and turned into local notifications (no FCM topics, no deep link: a tap just opens the app).
+`UserSettings.raceAlertSeries` and turned into local notifications (no FCM topics, no deep link: a tap just opens the app) that play `Music/race_alert.caf`, `onboarding_1.m4a` from beat 2 of its last bar (120 BPM, 6.5 s) to the end plus an echo tail, 3.1 s as 16-bit PCM (`UNNotificationSound` doesn't take AAC; `UserNotificationScheduler.soundFileName`).
 `RaceAlerts.Planner.alerts` (`RaceAlerts.Planner.swift`, pure) plans, per non-cancelled race of a followed series dated
 today or later in the venue calendar (`SeriesLens.venueTimeZone`), a "before start" alert at a random minute in
 [09:00, 11:00) on race day (skipped after 10:55 or once that time passed) and an "after finish" alert at the race day's
