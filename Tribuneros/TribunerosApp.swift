@@ -41,8 +41,10 @@ struct TribunerosApp: App {
             LaunchSplashHost {
                 OnboardingHost {
                     WhatsNewHost {
-                        MaintenanceHost {
-                            LocalizedRoot()
+                        UpdateAlertHost {
+                            MaintenanceHost {
+                                LocalizedRoot()
+                            }
                         }
                     }
                 }

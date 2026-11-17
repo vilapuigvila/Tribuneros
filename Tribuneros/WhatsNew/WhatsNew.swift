@@ -181,8 +181,8 @@ extension WhatsNew {
     @MainActor
     final class Presenter: ObservableObject {
         @Published private(set) var showing: Release?
+        @Published private(set) var hasStarted = false
         private let store: Store
-        private var hasStarted = false
 
         init(store: Store = .userSettings) {
             self.store = store
@@ -212,5 +212,13 @@ extension WhatsNew {
         func dismiss() {
             showing = nil
         }
+    }
+}
+
+extension WhatsNew {
+    /// What the launch's what's-new decision is, for the steps that wait on it (`UpdateAlertHost`).
+    struct LaunchState: Equatable {
+        var hasStarted = false
+        var isShowing = false
     }
 }

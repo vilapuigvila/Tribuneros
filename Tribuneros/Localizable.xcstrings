@@ -4291,6 +4291,30 @@
         }
       }
     },
+    "NEW VERSION" : {
+      "comment" : "Update alert label above the title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NOVA VERSIÓ"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NUEVA VERSIÓN"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BERTSIO BERRIA"
+          }
+        }
+      }
+    },
     "NEXT" : {
       "comment" : "Tag on the TV deck card for the next race to start",
       "extractionState" : "manual",
@@ -5167,6 +5191,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ez dago telebista-programazioan"
+          }
+        }
+      }
+    },
+    "Not now" : {
+      "comment" : "Update alert dismiss button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ara no"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ahora no"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orain ez"
           }
         }
       }
@@ -8440,6 +8488,30 @@
         }
       }
     },
+    "Tribuneros %@ is on the App Store. Update to get the latest races, results and improvements." : {
+      "comment" : "Update alert body; %@ is the App Store version, e.g. 1.4",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tribuneros %@ ja és a l’App Store. Actualitza per tenir les últimes curses, resultats i millores."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tribuneros %@ ya está en la App Store. Actualiza para tener las últimas carreras, resultados y mejoras."
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tribuneros %@ App Storen dago jada. Eguneratu azken lasterketak, emaitzak eta hobekuntzak izateko."
+          }
+        }
+      }
+    },
     "Try again" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -8697,6 +8769,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Laster"
+          }
+        }
+      }
+    },
+    "Update available" : {
+      "comment" : "Update alert title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualització disponible"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualización disponible"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eguneratzea eskuragarri"
+          }
+        }
+      }
+    },
+    "Update now" : {
+      "comment" : "Update alert primary button, opens the App Store",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualitza ara"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizar ahora"
+          }
+        },
+        "eu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eguneratu orain"
           }
         }
       }

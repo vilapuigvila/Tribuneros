@@ -24,6 +24,7 @@ enum UserPreferencesKey: String, CaseIterable {
     case raceAlertSeries
     case raceAlertsHint
     case whatsNewLastVersion
+    case updateAlertLastVersion
     case preferencesResetVersion
 }
 
@@ -180,6 +181,10 @@ struct UserSettings {
     /// The app version whose what's-new screen was last decided (shown, or skipped because it has no news).
     @UserDefault(UserPreferencesKey.whatsNewLastVersion.rawValue, defaultValue: nil)
     static var whatsNewLastVersion: String?
+
+    /// The App Store version the update alert was last shown for: it never shows twice for the same version.
+    @UserDefault(UserPreferencesKey.updateAlertLastVersion.rawValue, defaultValue: nil)
+    static var updateAlertLastVersion: String?
 }
 
 

@@ -5,6 +5,20 @@
 
 import SwiftUI
 
+private struct WhatsNewLaunchKey: EnvironmentKey {
+    static let defaultValue = WhatsNew.LaunchState(
+        hasStarted: true,
+        isShowing: false
+    )
+}
+
+extension EnvironmentValues {
+    var whatsNewLaunch: WhatsNew.LaunchState {
+        get { self[WhatsNewLaunchKey.self] }
+        set { self[WhatsNewLaunchKey.self] = newValue }
+    }
+}
+
 /// Owns the what's-new state so showing it re-renders only this view; `content` is built once, like `OnboardingHost`.
 struct WhatsNewHost<Content: View>: View {
     @StateObject private var presenter = WhatsNew.Presenter()
@@ -23,6 +37,13 @@ struct WhatsNewHost<Content: View>: View {
     var body: some View {
         ZStack {
             content
+                .environment(
+                    \.whatsNewLaunch,
+                    WhatsNew.LaunchState(
+                        hasStarted: presenter.hasStarted,
+                        isShowing: presenter.showing != nil
+                    )
+                )
                 .accessibilityHidden(presenter.showing != nil)
             if let release = presenter.showing {
                 WhatsNewView(

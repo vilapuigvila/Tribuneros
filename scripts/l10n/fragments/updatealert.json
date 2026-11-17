@@ -1,0 +1,32 @@
+{
+  "NEW VERSION": {
+    "ca": "NOVA VERSIÓ",
+    "eu": "BERTSIO BERRIA",
+    "es": "NUEVA VERSIÓN",
+    "comment": "Update alert label above the title"
+  },
+  "Update available": {
+    "ca": "Actualització disponible",
+    "eu": "Eguneratzea eskuragarri",
+    "es": "Actualización disponible",
+    "comment": "Update alert title"
+  },
+  "Tribuneros %@ is on the App Store. Update to get the latest races, results and improvements.": {
+    "ca": "Tribuneros %@ ja és a l’App Store. Actualitza per tenir les últimes curses, resultats i millores.",
+    "eu": "Tribuneros %@ App Storen dago jada. Eguneratu azken lasterketak, emaitzak eta hobekuntzak izateko.",
+    "es": "Tribuneros %@ ya está en la App Store. Actualiza para tener las últimas carreras, resultados y mejoras.",
+    "comment": "Update alert body; %@ is the App Store version, e.g. 1.4"
+  },
+  "Update now": {
+    "ca": "Actualitza ara",
+    "eu": "Eguneratu orain",
+    "es": "Actualizar ahora",
+    "comment": "Update alert primary button, opens the App Store"
+  },
+  "Not now": {
+    "ca": "Ara no",
+    "eu": "Orain ez",
+    "es": "Ahora no",
+    "comment": "Update alert dismiss button"
+  }
+}

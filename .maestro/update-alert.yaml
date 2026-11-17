@@ -1,0 +1,36 @@
+# Update alert (Debug build): a mocked launch skips it, so the updateAlert argument turns it on, and
+# the pretend App Store version (9.9) makes no request. It shows once per App Store version:
+# "Not now" closes it and the next launch, same version, doesn't show it again.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+  - update-alert
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: live
+      updateAlert: "on"
+      resetUpdateAlert: "on"
+- extendedWaitUntil:
+    visible:
+      id: "updatealert"
+    timeout: 15000
+- assertVisible: "Update available"
+- assertVisible:
+    id: "updatealert.update"
+- tapOn:
+    id: "updatealert.later"
+- assertNotVisible:
+    id: "updatealert"
+- launchApp:
+    stopApp: true
+    arguments:
+      mockScenario: live
+      updateAlert: "on"
+- extendedWaitUntil:
+    visible: "Races"
+    timeout: 15000
+- assertNotVisible:
+    id: "updatealert"
