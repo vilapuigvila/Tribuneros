@@ -18,6 +18,16 @@ final class RaceAlertsTests: XCTestCase {
         L10n.setLanguage("en")
     }
 
+    func testAlertSoundShipsInTheAppBundle() {
+        let name = RaceAlerts.UserNotificationScheduler.soundFileName as NSString
+        XCTAssertNotNil(
+            Bundle.main.url(
+                forResource: name.deletingPathExtension,
+                withExtension: name.pathExtension
+            )
+        )
+    }
+
     // MARK: - Fixtures -
 
     private final class HintBox {
