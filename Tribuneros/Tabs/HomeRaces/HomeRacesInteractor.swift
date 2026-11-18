@@ -133,10 +133,18 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                 return
             }
             #endif
-            subject.send(applyingSession(domain.copy(loading: true)))
-            
             task = Task { [weak self] in
                 defer { self?.task = nil }
+                let isCacheFresh = await Requester.isValidCache(Service.homepageURL)
+                guard let current = self?.domain else { return }
+                guard Self.shouldReload(
+                    current,
+                    isHomepageCacheFresh: isCacheFresh
+                ) else {
+                    return
+                }
+                self?.subject.send(self?.applyingSession(current.copy(loading: true)) ?? current)
+                
                 do {
                     async let history = Service.getHistoryRaces()
                     let result = try await Service.getLatestResults()
@@ -159,8 +167,9 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                             historyResults: historyResults,
                             tomorrowRaces: result.tomorrowRaces,
                             liveStatsRaces: result.liveStats,
-                            error: Self.isEmptyResponse(result, history: historyResults) ?
-                                HomeRaces.ErrorReason.emptyResponse.toEquatableError() : nil,
+                            error: Self.isEmptyResponse(result, history: historyResults)
+                            ? HomeRaces.ErrorReason.emptyResponse.toEquatableError()
+                            : nil,
                             loading: false,
                             staleCopy: staleCopy,
                             previews: result.previews,
@@ -190,6 +199,18 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
             task?.cancel()
             task = nil
         }
+    }
+
+    /// Skip the reload when data is on screen and the homepage copy is still fresh.
+    static func shouldReload(
+        _ domain: Domain,
+        isHomepageCacheFresh: Bool
+    ) -> Bool {
+        guard isHomepageCacheFresh, !domain.loading, domain.error == nil else { return true }
+        let hasData = !domain.nextToFinishRaces.isEmpty || !domain.todayRaces.isEmpty ||
+            !domain.yesterdayResults.isEmpty || !domain.historyResults.isEmpty ||
+            !domain.tomorrowRaces.isEmpty || !domain.liveStatsRaces.isEmpty
+        return !hasData
     }
 
     /// A day without races is normal (off-season); only a page with nothing at all, History included, is an error.
