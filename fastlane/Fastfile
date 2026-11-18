@@ -88,8 +88,10 @@ platform :ios do
     check_version_available(app, version)
 
     # 4: archive with the new version; the build number is bumped only if the project's isn't already past App Store Connect
-    set_app_version(version)
-    git_commit(path: "#{PROJECT}/project.pbxproj", message: "Bump version to #{version}")
+    if app_version_number != version
+      set_app_version(version)
+      git_commit(path: "#{PROJECT}/project.pbxproj", message: "Bump version to #{version}")
+    end
     _, build, ipa = bump_and_archive(only_if_needed: true)
 
     # 5: version, texts and binary to App Store Connect (not submitted for review)
