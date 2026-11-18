@@ -31,6 +31,18 @@ enum WhatsNew {
     static func releases() -> [Release] {
         [
             Release(
+                version: "1.5",
+                items: [
+                    Item(
+                        id: "ciscuJingles",
+                        systemImage: "speaker.wave.2",
+                        tint: .amber,
+                        title: L10n.tr("New Ciscu Bates jingles"),
+                        body: L10n.tr("Race alert notifications now play new jingles by Ciscu Bates: one for the start, one for the finish.")
+                    ),
+                ]
+            ),
+            Release(
                 version: "1.4",
                 items: [
                     Item(

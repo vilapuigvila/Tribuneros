@@ -52,5 +52,17 @@
     "eu": "Euskara ingelesa, gaztelania eta katalana ere badaude. Aukeratu Ezarpenak, Hizkuntza atalean.",
     "es": "El euskera se une al inglés, el castellano y el catalán. Elígelo en Ajustes, Idioma.",
     "comment": "What's new 1.4 item body"
+  },
+  "New Ciscu Bates jingles": {
+    "ca": "Nous jingles de Ciscu Bates",
+    "eu": "Ciscu Bates-en jingle berriak",
+    "es": "Nuevos jingles de Ciscu Bates",
+    "comment": "What's new 1.5 item title"
+  },
+  "Race alert notifications now play new jingles by Ciscu Bates: one for the start, one for the finish.": {
+    "ca": "Les notificacions d’alerta de cursa ara reprodueixen nous jingles de Ciscu Bates: un per a la sortida i un altre per a l’arribada.",
+    "eu": "Lasterketa-alertek Ciscu Bates-en jingle berriak jotzen dituzte orain: bat irteerarako eta beste bat helmugarako.",
+    "es": "Las notificaciones de alerta de carrera ahora reproducen nuevos jingles de Ciscu Bates: uno para la salida y otro para la llegada.",
+    "comment": "What's new 1.5 item body"
   }
 }
