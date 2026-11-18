@@ -189,14 +189,26 @@ extension WhatsNew {
             }
         }
 
+        @ViewBuilder
+        private var icon: some View {
+            if let assetImage = item.assetImage {
+                Image(assetImage)
+                    .resizable()
+                    .scaledToFit()
+                    .padding(6)
+            } else {
+                Image(systemName: item.systemImage)
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(tint)
+            }
+        }
+
         var body: some View {
             HStack(
                 alignment: .top,
                 spacing: 16
             ) {
-                Image(systemName: item.systemImage)
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundColor(tint)
+                icon
                     .frame(width: 44, height: 44)
                     .background(
                         tint.opacity(0.16),

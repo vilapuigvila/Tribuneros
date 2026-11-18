@@ -15,6 +15,7 @@ enum WhatsNew {
     struct Item: Identifiable, Equatable {
         let id: String
         let systemImage: String
+        var assetImage: String? = nil
         let tint: Tint
         let title: String
         let body: String
@@ -36,6 +37,7 @@ enum WhatsNew {
                     Item(
                         id: "ciscuJingles",
                         systemImage: "speaker.wave.2",
+                        assetImage: "FaceIcon",
                         tint: .amber,
                         title: L10n.tr("New Ciscu Bates jingles"),
                         body: L10n.tr("Race alert notifications now play new jingles by Ciscu Bates: one for the start, one for the finish.")
