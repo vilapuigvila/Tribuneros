@@ -84,8 +84,6 @@ extension HomeRaces {
         @Environment(\.safeAreaInsets) private var safeAreaInsets
         @Environment(\.tabBarHeight) private var tabBarHeight
         @State private var retryCount = 0
-        // onAppear also fires when popping back from a detail; only the first one fetches.
-        @State private var hasAppeared = false
 
         let state: HomeRaces.ViewState
         let action: (HomeRaces.Action) -> Void
@@ -132,8 +130,6 @@ extension HomeRaces {
             }
             .preferredColorScheme(.dark)
             .onAppear {
-                guard !hasAppeared else { return }
-                hasAppeared = true
                 action(.onAppear)
             }
         }

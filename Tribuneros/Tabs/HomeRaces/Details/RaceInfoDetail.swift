@@ -403,7 +403,7 @@ struct NextToFinishRaceDetail: View {
             let (data, _) = try await Requester
                 .makeRequest(url.absoluteString)
                 .headers(Service.pcsImageHeaders(for: url))
-                .ttl(86400 * 7) // 1 week
+                .ttl(.days(7))
                 .cacheControlBehavior(.ignoreServer)
                 .send()
             return UIImage(data: data).map { ProfileImage(type: type, image: $0) }

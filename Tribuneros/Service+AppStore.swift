@@ -16,7 +16,7 @@ extension DTO {
 
 extension Service {
 
-    private static let appStoreLookupTTL: TimeInterval = 60 * 60
+    private static let appStoreLookupTTL: CachedURLSession.TTL = .hours(1)
 
     /// The App Store's current version of this app; `nil` when the lookup fails or the app isn't listed in the device's storefront.
     static func getAppStoreRelease() async -> DTO.AppStoreRelease? {

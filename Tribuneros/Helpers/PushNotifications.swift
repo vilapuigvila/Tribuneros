@@ -81,7 +81,9 @@ extension PushNotifications: UNUserNotificationCenterDelegate {
         [.banner, .sound, .list]
     }
 
-    nonisolated func userNotificationCenter(
+    // Main actor: UIKit runs the completion (snapshot/state restoration) on the thread this returns on.
+    @MainActor
+    func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse
     ) async {
@@ -90,7 +92,7 @@ extension PushNotifications: UNUserNotificationCenterDelegate {
             identifier: response.notification.request.identifier,
             userInfo: content.userInfo
         ) else { return }
-        await MainActor.run { RaceAlerts.OpenRequests.shared.pending = request }
+        RaceAlerts.OpenRequests.shared.pending = request
     }
 }
 
@@ -100,8 +102,6 @@ extension PushNotifications: MessagingDelegate {
         didReceiveRegistrationToken fcmToken: String?
     ) {
         AppLogger.network.log("FCM token: \(fcmToken ?? "nil")")
-        guard fcmToken != nil else { return }
-        PushNotifications.subscribeToAllTopic()
     }
 }
 
@@ -137,6 +137,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         let hex = deviceToken.map { String(format: "%02x", $0) }.joined()
         AppLogger.network.log("APNs token: \(hex)")
         Messaging.messaging().apnsToken = deviceToken
+        PushNotifications.subscribeToAllTopic()
     }
 
     func application(

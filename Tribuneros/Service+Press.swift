@@ -55,7 +55,7 @@ extension Service {
         let (data, _) = try await Requester
             .makeRequest(url.absoluteString)
             .header(.custom(headerField: "User-Agent", value: pressUserAgent))
-            .ttl(60 * 30)
+            .ttl(.minutes(30))
             .cacheControlBehavior(.ignoreServer)
             .send()
         return data

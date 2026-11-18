@@ -67,7 +67,7 @@ extension Service {
               !path.contains(".."),
               let document = await directoryDocument(
                   baseStringURL + path,
-                  ttl: 60 * 60 * 12
+                  ttl: .hours(12)
               )
         else {
             return nil
@@ -77,7 +77,7 @@ extension Service {
 
     private static func directoryDocument(
         _ url: String,
-        ttl: TimeInterval = 60 * 60 * 48 // 2 days
+        ttl: CachedURLSession.TTL = .days(2)
     ) async -> Document? {
         do {
             let (data, _) = try await Requester

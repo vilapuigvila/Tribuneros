@@ -19,7 +19,7 @@ extension Service {
         do {
             let (data, _) = try await Requester
                 .makeRequest(transfersURL)
-                .ttl(60 * 60 * 24)
+                .ttl(.hours(24))
                 .cacheControlBehavior(.ignoreServer)
                 .send()
             guard let html = String(data: data, encoding: .utf8) else {

@@ -552,7 +552,7 @@ extension Service {
         do {
             let (data, response) = try await Requester
                 .makeRequest(url.absoluteString)
-                .ttl(900)
+                .ttl(.minutes(15))
                 .send()
             switch (response as? HTTPURLResponse)?.statusCode {
             case 200: return data

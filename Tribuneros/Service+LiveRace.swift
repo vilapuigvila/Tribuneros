@@ -26,7 +26,7 @@ extension Service {
         do {
             let (data, _) = try await Requester
                 .makeRequest(url.absoluteString)
-                .ttl(4) // the live screen polls every 5 seconds
+                .ttl(.seconds(5)) // the live screen polls every 5 seconds
                 .cacheControlBehavior(.ignoreServer)
                 .send()
             guard let html = String(data: data, encoding: .utf8) else {

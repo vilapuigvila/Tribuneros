@@ -144,7 +144,7 @@ extension Service {
         do {
             let (data, _) = try await Requester
                 .makeRequest(url.absoluteString)
-                .ttl(60 * 60 * 12)
+                .ttl(.hours(12))
                 .cacheControlBehavior(.ignoreServer)
                 .send()
             guard let html = String(data: data, encoding: .utf8) else {

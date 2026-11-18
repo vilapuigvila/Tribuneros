@@ -38,7 +38,7 @@ extension Service {
         do {
             let (data, _) = try await Requester
                 .makeRequest(courseDuJourURL(date: date).absoluteString)
-                .ttl(courseDuJourTTL())
+                .ttl(.seconds(max(courseDuJourTTL(), CachedURLSession.TTL.minimum)))
                 .cacheControlBehavior(.ignoreServer)
                 .send()
             guard let html = String(data: data, encoding: .utf8),

@@ -66,7 +66,7 @@ extension Service {
         do {
             let (data, _) = try await Requester
                 .makeRequest(url.absoluteString)
-                .ttl(600) // 10 minutes
+                .ttl(.minutes(10))
                 .cacheControlBehavior(.ignoreServer)
                 .send()
             guard let html = String(data: data, encoding: .utf8) else {

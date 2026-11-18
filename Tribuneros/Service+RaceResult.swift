@@ -22,7 +22,8 @@ extension Service {
         do {
             let (data, _) = try await Requester
                 .makeRequest(url.absoluteString)
-                .ttl(86400) // 1 day
+                .ttl(.days(1))
+                .timeout(20)
                 .cacheControlBehavior(.ignoreServer)
                 .send()
             guard let html = String(data: data, encoding: .utf8) else {
