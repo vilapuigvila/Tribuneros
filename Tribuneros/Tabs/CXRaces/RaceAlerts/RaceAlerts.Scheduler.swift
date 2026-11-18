@@ -10,11 +10,12 @@ extension RaceAlerts {
     struct UserNotificationScheduler: NotificationScheduling {
         private var center: UNUserNotificationCenter { .current() }
 
-        /// `onboarding_1.m4a` from beat 2 of its last bar to the end, with the last beat echoing out (3.1 s, `Music/race_alert.caf`: notification sounds can't be AAC).
-        static let soundFileName = "race_alert.caf"
-
-        private var alertSound: UNNotificationSound {
-            UNNotificationSound(named: UNNotificationSoundName(Self.soundFileName))
+        /// Notification sounds can't be AAC: `Music/start.m4a` and `end.m4a` shipped as 16-bit PCM `.caf`.
+        static func soundFileName(for kind: PlannedAlert.Kind) -> String {
+            switch kind {
+            case .start: "race_start.caf"
+            case .finish: "race_end.caf"
+            }
         }
 
         func pendingIdentifiers() async -> [String] {
@@ -30,7 +31,9 @@ extension RaceAlerts {
                 let content = UNMutableNotificationContent()
                 content.title = alert.title
                 content.body = alert.body
-                content.sound = alertSound
+                content.sound = UNNotificationSound(
+                    named: UNNotificationSoundName(Self.soundFileName(for: alert.kind))
+                )
                 content.userInfo = alert.userInfo
                 let components = Calendar.current.dateComponents(
                     [.year, .month, .day, .hour, .minute],

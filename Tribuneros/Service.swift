@@ -194,10 +194,35 @@ struct Service {
         try await getHomepageCopy().document
     }
     
+    /// Homepage cache lifetime by local time of day, capped at the window end and never below the minimum.
+    static func homepageTTL(
+        now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> CachedURLSession.TTL {
+        let windows: [(start: Int, ttl: TimeInterval)] = [
+            (0, 6 * 3600),
+            (6, 2 * 3600),
+            (10, 30 * 60),
+            (14, 15 * 60),
+            (20, 30 * 60),
+            (22, 3600)
+        ]
+        let hour = calendar.component(.hour, from: now)
+        guard let index = windows.lastIndex(where: { $0.start <= hour }) else {
+            return .seconds(CachedURLSession.TTL.minimum)
+        }
+        let startOfDay = calendar.startOfDay(for: now)
+        let end = index + 1 < windows.count
+            ? calendar.date(bySettingHour: windows[index + 1].start, minute: 0, second: 0, of: startOfDay)
+            : calendar.date(byAdding: .day, value: 1, to: startOfDay)
+        let untilEnd = end?.timeIntervalSince(now) ?? windows[index].ttl
+        return .seconds(max(min(windows[index].ttl, untilEnd), CachedURLSession.TTL.minimum))
+    }
+
     static func getHomepageCopy() async throws -> (document: Document, staleCopySavedAt: Date?) {
         let (data, response) = try await Requester
             .makeRequest(homepageURL)
-            .ttl(.minutes(15))
+            .ttl(homepageTTL())
             .cacheControlBehavior(.ignoreServer)
             .send()
         guard let htmlContent = String(data: data, encoding: .utf8) else {

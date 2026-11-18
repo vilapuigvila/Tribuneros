@@ -19,13 +19,15 @@ final class RaceAlertsTests: XCTestCase {
     }
 
     func testAlertSoundShipsInTheAppBundle() {
-        let name = RaceAlerts.UserNotificationScheduler.soundFileName as NSString
-        XCTAssertNotNil(
-            Bundle.main.url(
-                forResource: name.deletingPathExtension,
-                withExtension: name.pathExtension
+        for kind in [RaceAlerts.PlannedAlert.Kind.start, .finish] {
+            let name = RaceAlerts.UserNotificationScheduler.soundFileName(for: kind) as NSString
+            XCTAssertNotNil(
+                Bundle.main.url(
+                    forResource: name.deletingPathExtension,
+                    withExtension: name.pathExtension
+                )
             )
-        )
+        }
     }
 
     // MARK: - Fixtures -
