@@ -374,9 +374,7 @@ enum CxMock {
     /// "after finish" alert fires 75 min after it.
     private static let eveningRaces: [(race: String, raceClass: String, slug: String, id: Int, lastStartOffset: Int)] = [
         ("World Cup Mock Evening", "CDM", "world-cup-mock-evening", 18101, -59), // l10n:ignore
-        ("Superprestige Mock Evening", "C1", "superprestige-mock-evening", 18102, -45), // l10n:ignore
-        ("X2O Badkamers Trofee Mock Night", "C2", "x2o-trofee-mock-night", 18103, -30), // l10n:ignore
-        ("Mock Cross Overijse", "C2", "mock-cross-overijse", 18104, -15) // l10n:ignore
+        ("Superprestige Mock Evening", "C1", "superprestige-mock-evening", 18102, -45) // l10n:ignore
     ]
 
     /// Fixed at the first use, so re-plans in the same run keep the same times.

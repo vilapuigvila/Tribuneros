@@ -26,6 +26,19 @@ extension RaceAlerts {
             center.removePendingNotificationRequests(withIdentifiers: identifiers)
         }
 
+        #if DEBUG
+        /// `RACE_ALERTS_LIVE` mock finish alerts fire 30 s, 60 s… after the first one is scheduled (the planner's own times are minutes to an hour away).
+        private static let mockAnchor = Date()
+
+        private func mockFireInterval(for alert: PlannedAlert, in alerts: [PlannedAlert]) -> TimeInterval? {
+            guard RaceAlerts.isLiveInMock, alert.kind == .finish, alert.id.contains("mock") else { return nil }
+            let mocks = alerts.filter { $0.kind == .finish && $0.id.contains("mock") }
+                .sorted { ($0.fireDate, $0.id) < ($1.fireDate, $1.id) }
+            guard let rank = mocks.firstIndex(where: { $0.id == alert.id }) else { return nil }
+            return Self.mockAnchor.addingTimeInterval(TimeInterval(30 * (rank + 1))).timeIntervalSinceNow
+        }
+        #endif
+
         func add(_ alerts: [PlannedAlert]) async {
             for alert in alerts {
                 let content = UNMutableNotificationContent()
@@ -39,13 +52,23 @@ extension RaceAlerts {
                     [.year, .month, .day, .hour, .minute],
                     from: alert.fireDate
                 )
+                var trigger: UNNotificationTrigger = UNCalendarNotificationTrigger(
+                    dateMatching: components,
+                    repeats: false
+                )
+                #if DEBUG
+                if let interval = mockFireInterval(for: alert, in: alerts) {
+                    guard interval > 1 else { continue }
+                    trigger = UNTimeIntervalNotificationTrigger(
+                        timeInterval: interval,
+                        repeats: false
+                    )
+                }
+                #endif
                 let request = UNNotificationRequest(
                     identifier: alert.id,
                     content: content,
-                    trigger: UNCalendarNotificationTrigger(
-                        dateMatching: components,
-                        repeats: false
-                    )
+                    trigger: trigger
                 )
                 do {
                     try await center.add(request)
