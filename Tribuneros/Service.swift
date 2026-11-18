@@ -87,7 +87,7 @@ struct Service {
         do {
             let (data, _) = try await Requester
                 .makeRequest(latestResultsURL)
-                .ttl(6 * 3600)
+                .ttl(.hours(6))
                 .cacheControlBehavior(.ignoreServer)
                 .send()
             guard let html = String(data: data, encoding: .utf8) else { return [] }
@@ -193,11 +193,11 @@ struct Service {
     static func getHomepageDocument() async throws -> Document {
         try await getHomepageCopy().document
     }
-
+    
     static func getHomepageCopy() async throws -> (document: Document, staleCopySavedAt: Date?) {
         let (data, response) = try await Requester
             .makeRequest(homepageURL)
-            .ttl(60*15) // 15 minutes
+            .ttl(.minutes(15))
             .cacheControlBehavior(.ignoreServer)
             .send()
         guard let htmlContent = String(data: data, encoding: .utf8) else {
@@ -221,11 +221,12 @@ struct Service {
         return now.addingTimeInterval(-age)
     }
 
+    /// No usable connection: offline (-1009) or a timeout (-1001); neither goes to Crashlytics.
     static func isOffline(_ error: Error) -> Bool {
         if let reason = error as? Requester.ErrorReason, case .noInternetConnection = reason {
             return true
         }
-        return (error as NSError).code == -1009
+        return [NSURLErrorNotConnectedToInternet, NSURLErrorTimedOut].contains((error as NSError).code)
     }
     
     static func parseNextToFinishResults(_ document: Document) -> [DTO.NextToFinishResult] {
@@ -744,7 +745,7 @@ struct Service {
         do {
             let (data, _) = try await Requester
                 .makeRequest(url.absoluteString)
-                .ttl(86400*2) // 2 days
+                .ttl(.days(2))
                 .cacheControlBehavior(.ignoreServer)
                 .send()
             guard let htmlContent = String(data: data, encoding: .utf8) else {
@@ -886,7 +887,7 @@ struct Service {
         do {
             let (data, _) = try await Requester
                 .makeRequest(url.absoluteString)
-                .ttl(60*30) // 30 minutes
+                .ttl(.minutes(30))
                 .cacheControlBehavior(.ignoreServer)
                 .send()
             guard let htmlContent = String(data: data, encoding: .utf8) else {
