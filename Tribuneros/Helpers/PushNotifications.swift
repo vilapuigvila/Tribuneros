@@ -88,6 +88,7 @@ extension PushNotifications: UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse
     ) async {
         let content = response.notification.request.content
+        Messaging.messaging().appDidReceiveMessage(content.userInfo)
         guard let request = RaceAlerts.OpenRequest(
             identifier: response.notification.request.identifier,
             userInfo: content.userInfo
