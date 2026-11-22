@@ -79,11 +79,31 @@ struct Service {
     }
 
     private static let latestResultsURL = baseStringURL + "races.php?s=latest-results"
-    private static let historyLimit = 30
+    static let historyLimit = 30
 
     /// Winners of the races finished before yesterday, newest first, from PCS's "Latest race
-    /// results" table (today and yesterday have their own sections, from the homepage).
+    /// results" table (today and yesterday have their own sections, from the homepage). That table
+    /// only covers about two weeks, all cyclocross in the off-season, so when no road row is left
+    /// History reaches further back through the season calendar (`getSeasonCalendarHistory`).
     static func getHistoryRaces(now: Date = Date()) async -> [DTO.TodayResult] {
+        let calendar = Calendar.current
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: now) ?? now
+        let cutoff = calendar.startOfDay(for: yesterday)
+        let latest = await getLatestResultsHistory(
+            before: cutoff,
+            calendar: calendar
+        )
+        guard latest.isEmpty else { return latest }
+        return await getSeasonCalendarHistory(
+            before: cutoff,
+            calendar: calendar
+        )
+    }
+
+    private static func getLatestResultsHistory(
+        before cutoff: Date,
+        calendar: Calendar
+    ) async -> [DTO.TodayResult] {
         do {
             let (data, _) = try await Requester
                 .makeRequest(latestResultsURL)
@@ -91,11 +111,9 @@ struct Service {
                 .cacheControlBehavior(.ignoreServer)
                 .send()
             guard let html = String(data: data, encoding: .utf8) else { return [] }
-            let calendar = Calendar.current
-            let yesterday = calendar.date(byAdding: .day, value: -1, to: now) ?? now
             return parseHistoryResults(
                 try SwiftSoup.parse(html),
-                before: calendar.startOfDay(for: yesterday),
+                before: cutoff,
                 calendar: calendar
             )
         } catch {
