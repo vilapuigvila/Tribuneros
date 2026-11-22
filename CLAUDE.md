@@ -209,6 +209,11 @@ bar), then four sections:
   (`DTO.TodayResult.raceURL`). Both results parsers split the title (`<b>`) from the route and
   distance (`<span>`).
 - **History**: a placeholder banner (`HistoryBanner`) with an inert "See all" until there is data.
+  `Service.getHistoryRaces` reads PCS `races.php?s=latest-results` (no paging, ~2 weeks, cyclocross rows dropped); when
+  no road row is left (off-season, the list is all cyclocross) it falls back to the season calendar
+  (`Service+HistoryCalendar.swift`: `races.php?year=<year>`, WorldTour, else last year's in early January; rows with a
+  `rider/` winner link that ended before yesterday, newest first, 6 h TTL; `HistoryCalendarParsingTests`), so the quiet
+  day below shows instead of the "No info available" error.
 - **Quiet day** (`Section.isQuietDay`: no Today race, no result today or yesterday, but History has rows; common
   off-season): those four sections give way to `QuietDaySections` (`Components/QuietDaySections.swift`): a "No racing
   today" notice, "Latest finish" (`LatestFinishCard`, the newest History row over the day painting) and "Earlier"
