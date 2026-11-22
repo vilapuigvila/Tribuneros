@@ -87,8 +87,8 @@ extension CXRaces {
                         )
                     )
                 )
-            case .didTapOnStandings:
-                router.routeTo(.cxZone(.standings))
+            case .didTapOnStandings(let series):
+                router.routeTo(.cxZone(.standings(series: series)))
             }
         }
         
