@@ -26,7 +26,8 @@ final class Router: ObservableObject {
             /// race again pops back instead of pushing a duplicate.
             /// `nil` when opened from a rider screen, where there's no race to go back to.
             case winnerDetail(CXRaces.Winner, from: DTO.CXCalendarEvent?)
-            case standings
+            /// `series` limits the list to that series' tables; `nil` lists every standings item.
+            case standings(series: CXRaces.RaceSeries?)
             /// Every Men Elite row of a race's results (`results` as the event detail loaded them).
             case fullResults(DTO.CXCalendarEvent, results: [DTO.CX24Homepage.CategoryResult])
             /// A rider's whole results table, grouped by season.

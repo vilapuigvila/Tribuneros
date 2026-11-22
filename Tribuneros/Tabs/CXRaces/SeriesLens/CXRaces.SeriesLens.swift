@@ -129,16 +129,34 @@ extension CXRaces.SeriesLens {
         }
     }
 
+    /// Whether a standings item belongs to `series`, by its title.
+    private static func isStandingsItem(
+        _ item: DTO.CXStandings.Item,
+        of series: CXRaces.RaceSeries
+    ) -> Bool {
+        let title = item.title.lowercased()
+        return standingsKeywords(of: series).contains { title.contains($0) }
+    }
+
+    /// The standings list opened from a series: only that series' items (Superprestige shows the
+    /// Superprestige tables, X2O Trofee the X2O ones). `nil` keeps every item.
+    static func standings(
+        of series: CXRaces.RaceSeries?,
+        in standings: DTO.CXStandings
+    ) -> DTO.CXStandings {
+        guard let series else { return standings }
+        return DTO.CXStandings(
+            items: standings.items.filter { isStandingsItem($0, of: series) }
+        )
+    }
+
     private static func leaders(
         of series: CXRaces.RaceSeries,
         in standings: DTO.CXStandings
     ) -> [Leader] {
-        let keywords = standingsKeywords(of: series)
-        guard !keywords.isEmpty,
-              let item = standings.items.first(where: { item in
-                  let title = item.title.lowercased()
-                  return keywords.contains { title.contains($0) }
-              }) else { return [] }
+        guard let item = standings.items.first(where: { isStandingsItem($0, of: series) }) else {
+            return []
+        }
         return item.categories
             .filter { !$0.leaders.isEmpty }
             .prefix(2)

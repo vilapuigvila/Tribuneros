@@ -32,7 +32,8 @@ extension CXRaces {
         case didTapOnRaceDetail(DTO.CX24Homepage.Race, category: String? = nil)
         /// A latest results card outside its category blocks: one of the card's categories, at random.
         case didTapOnRaceHeader(DTO.CX24Homepage.Race)
-        case didTapOnStandings
+        /// The standings list; a series shows only that series' tables (e.g. Superprestige), `nil` shows them all.
+        case didTapOnStandings(series: CXRaces.RaceSeries?)
     }
 }
 

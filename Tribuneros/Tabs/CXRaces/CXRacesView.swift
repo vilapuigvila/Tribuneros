@@ -108,9 +108,12 @@ struct CXRacesRacesView: View {
                 ) { result in
                     viewModel.action(.didTapOnResultRider(result))
                 }
-            case .cxZone(.standings):
+            case .cxZone(.standings(let series)):
                 CXStandingsListView(
-                    standings: viewModel.stateView.result.standings,
+                    standings: CXRaces.SeriesLens.standings(
+                        of: series,
+                        in: viewModel.stateView.result.standings
+                    ),
                     openRider: { standing in
                         viewModel.action(.didTapOnStandingRider(standing))
                     },
@@ -118,7 +121,7 @@ struct CXRacesRacesView: View {
                         viewModel.action(.didTapOnRanking(context))
                     }
                 )
-                .navigationTitle(L10n.tr("Standings"))
+                .navigationTitle(series?.title ?? L10n.tr("Standings"))
             case .cxZone(.riderDetail(let context)):
                 CXRiderDetailView(
                     context: context,

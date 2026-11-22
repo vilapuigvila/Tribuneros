@@ -67,7 +67,7 @@ extension CXRaces {
                             LeadersSection(
                                 leaders: lens.leaders,
                                 openRider: { action(.didTapOnStandingRider($0)) },
-                                openStandings: { action(.didTapOnStandings) }
+                                openStandings: { action(.didTapOnStandings(series: series)) }
                             )
                         }
                         if let lastRound = lens.lastRound {

@@ -122,6 +122,40 @@ final class CXEventDetailTests: XCTestCase {
         XCTAssertTrue(CXRaces.standings(standings, matching: "nys").items.isEmpty)
     }
 
+    // MARK: - Standings by series -
+
+    func testSeriesStandingsKeepOnlyThatSeriesItems() {
+        func item(_ title: String) -> DTO.CXStandings.Item {
+            .init(
+                title: title,
+                url: nil,
+                logoURL: nil,
+                categories: []
+            )
+        }
+        let standings = DTO.CXStandings(items: [
+            item("UCI Ranking"),
+            item("UCI World Cup"),
+            item("Superprestige"),
+            item("X2O Badkamers Trofee")
+        ])
+
+        XCTAssertEqual(CXRaces.SeriesLens.standings(of: nil, in: standings), standings)
+        XCTAssertEqual(
+            CXRaces.SeriesLens.standings(of: .superprestige, in: standings).items.map(\.title),
+            ["Superprestige"]
+        )
+        XCTAssertEqual(
+            CXRaces.SeriesLens.standings(of: .x2oTrofee, in: standings).items.map(\.title),
+            ["X2O Badkamers Trofee"]
+        )
+        XCTAssertEqual(
+            CXRaces.SeriesLens.standings(of: .worldCup, in: standings).items.map(\.title),
+            ["UCI World Cup"]
+        )
+        XCTAssertTrue(CXRaces.SeriesLens.standings(of: .others, in: standings).items.isEmpty)
+    }
+
     // MARK: - Winner -
 
     func testPastWinnerBuildsWinnerForItsEdition() {
