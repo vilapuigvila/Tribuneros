@@ -423,7 +423,7 @@ final class PaddockDirectoryTests: XCTestCase {
     func testTeamDetailModelFailureCanBeRetried() async {
         var results: [DTO.PCSTeamPage?] = [nil, PaddockMock.teamPage(path: "team/mock-2027")]
         let team = Paddock.TeamItem(path: "team/mock-2027", name: "Mock", division: "", countryCode: "")
-        let model = Paddock.TeamDetailModel(team: team, fetch: { _ in results.removeFirst() })
+        let model = Paddock.TeamDetailModel(team: team, fetch: { _ in results.isEmpty ? nil : results.removeFirst() })
         model.load()
         try? await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertEqual(model.riders, .failed)
