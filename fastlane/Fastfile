@@ -124,7 +124,7 @@ platform :ios do
     if UI.interactive?
       UI.user_error!("Not submitted") unless UI.confirm(question)
     else
-      UI.user_error!("#{question} Pass confirm:yes to submit without a terminal") unless options[:confirm].to_s == "yes"
+      UI.user_error!("#{question} Pass confirm:yes to submit without a terminal") unless %w[yes true].include?(options[:confirm].to_s)
     end
 
     upload_to_app_store(
@@ -172,7 +172,7 @@ WHATS_NEW_SOURCE = "Tribuneros/WhatsNew/WhatsNew.swift"
 # The archive ships the in-app What's New: fail before archiving when WhatsNew.releases() has no entry for the version,
 # unless skip_whats_new:yes says this version has no news (the screen then stays hidden).
 def ensure_whats_new_release(version, skip)
-  return UI.important("No in-app What's New for #{version} (skip_whats_new:yes)") if skip.to_s == "yes"
+  return UI.important("No in-app What's New for #{version} (skip_whats_new:yes)") if %w[yes true].include?(skip.to_s)
   source = File.read(File.expand_path("../#{WHATS_NEW_SOURCE}", __dir__))
   return if source.match?(/Release\(\s*version:\s*"#{Regexp.escape(version)}"/)
   UI.user_error!("No in-app What's New release for #{version} in #{WHATS_NEW_SOURCE}. Add it to WhatsNew.releases() and commit it (the new-version skill does this), or pass skip_whats_new:yes if this version has no news.")
