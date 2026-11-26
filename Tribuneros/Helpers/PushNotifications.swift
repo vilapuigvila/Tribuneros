@@ -41,12 +41,31 @@ final class PushNotifications: NSObject {
     static let shared = PushNotifications()
 
     private var center: UNUserNotificationCenter { .current() }
+    private var backgroundObserver: NSObjectProtocol?
 
     /// Called from `didFinishLaunching`, after `FirebaseApp.configure()` ran in `TribunerosApp.init()`.
     func start(application: UIApplication) {
         center.delegate = self
         Messaging.messaging().delegate = self
         application.registerForRemoteNotifications()
+        // A badge left after the user opened the app reads as unread news, so it goes when the app leaves.
+        backgroundObserver = NotificationCenter.default.addObserver(
+            forName: UIApplication.didEnterBackgroundNotification,
+            object: nil,
+            queue: .main
+        ) { _ in
+            // queue: .main, so this already runs on the main actor; no hop before the app is suspended.
+            MainActor.assumeIsolated {
+                PushNotifications.shared.clearBadge()
+            }
+        }
+    }
+
+    func clearBadge() {
+        center.setBadgeCount(0) { error in
+            guard let error else { return }
+            AppLogger.network.error("Badge reset failed: \(error.localizedDescription)")
+        }
     }
 
     func requestPermissionIfNeeded(
