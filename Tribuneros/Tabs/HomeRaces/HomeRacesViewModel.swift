@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import SwiftUI
+import Alfy
 
 final class HomeRacesViewModel<Interactor: InteractorProtocol>: ObservableObject
 where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseCase {
@@ -45,6 +46,8 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
             interactor.useCase(.toggleReveal(key: race.revealKey))
         case .dismissSpoilerHint:
             interactor.useCase(.dismissSpoilerHint)
+        case .retryUnavailable:
+            interactor.useCase(.retryUnavailable)
         case .openLink(let url):
             router.routeTo(.web(url))
         case .openRaceResult(let raceFinished):
@@ -106,10 +109,10 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
             return .loading
         } else {
             if let error = domain.error {
-                guard let errorType = error.asError(type: HomeRaces.ErrorReason.self) else {
-                    return .error(.networkFailure)
-                }
-                return .error(errorType.asErrorView)
+                return Self.errorState(
+                    error,
+                    domain: domain
+                )
             } else {
                 return .loaded(
                     HomeRaces.Representable(
@@ -129,6 +132,22 @@ where Interactor.Domain == HomeRacesDomain, Interactor.UseCase == HomeRaces.UseC
             }
         }
     }
+    /// An empty response gets the no-data screen; any other failure the generic error card.
+    static func errorState(
+        _ error: EquatableError,
+        domain: HomeRacesDomain
+    ) -> HomeRaces.ViewState {
+        guard case .emptyResponse = error.asError(type: HomeRaces.ErrorReason.self) else {
+            return .error(.networkFailure)
+        }
+        return .unavailable(
+            HomeRaces.Unavailable(
+                triesLeft: domain.retriesLeft,
+                lastLoaded: domain.lastLoaded
+            )
+        )
+    }
+
     private static func errorDueEmptyData(_ domain: HomeRacesDomain) -> Bool {
         domain.nextToFinishRaces.isEmpty && domain.todayRaces.isEmpty &&
         domain.yesterdayResults.isEmpty && domain.tomorrowRaces.isEmpty

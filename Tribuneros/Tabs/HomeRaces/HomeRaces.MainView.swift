@@ -106,26 +106,20 @@ extension HomeRaces {
                 case .error(let errorView):
                     VStack(spacing: 20) {
                         Spacer(minLength: safeAreaInsets.top + 20)
-                        switch errorView {
-                        case .emtpyData:
-                            ErrorCardView.emptyData(
-                                showTryAgainButton: retryCount < 3
-                            ) {
-                                retryCount += 1
-                                action(.onAppear)
-                            }
-                        default:
-                            ErrorCardView.generic(
-                                message: errorView.message,
-                                showTryAgainButton: retryCount < 3
-                            ) {
-                                retryCount += 1
-                                action(.onAppear)
-                            }
+                        ErrorCardView.generic(
+                            message: errorView.message,
+                            showTryAgainButton: retryCount < 3
+                        ) {
+                            retryCount += 1
+                            action(.onAppear)
                         }
                         Spacer(minLength: safeAreaInsets.bottom + 20)
                     }
                     .padding(.horizontal)
+                case .unavailable(let unavailable):
+                    RoadUnavailableView(state: unavailable) {
+                        action(.retryUnavailable)
+                    }
                 }
             }
             .preferredColorScheme(.dark)

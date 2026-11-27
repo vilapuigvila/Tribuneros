@@ -611,5 +611,55 @@
     "ca": "Ahir tampoc no va acabar cap cursa. Aquí tens l’última.",
     "eu": "Atzo ere ez zen lasterketarik amaitu. Hona hemen azkena.",
     "es": "Ayer tampoco terminó ninguna carrera. Aquí tienes la última."
+  },
+  "%lld tries left": {
+    "plural": {
+      "en": {
+        "one": "%lld try left",
+        "other": "%lld tries left"
+      },
+      "ca": {
+        "one": "Queda %lld intent",
+        "other": "Queden %lld intents"
+      },
+      "eu": {
+        "one": "Saiakera %lld geratzen da",
+        "other": "%lld saiakera geratzen dira"
+      },
+      "es": {
+        "one": "Queda %lld intento",
+        "other": "Quedan %lld intentos"
+      }
+    }
+  },
+  "Last updated": {
+    "ca": "Última actualització",
+    "eu": "Azken eguneraketa",
+    "es": "Última actualización"
+  },
+  "Never loaded on this device": {
+    "ca": "Mai s’ha carregat en aquest dispositiu",
+    "eu": "Ez da inoiz kargatu gailu honetan",
+    "es": "Nunca se ha cargado en este dispositivo"
+  },
+  "No tries left · reopen the app": {
+    "ca": "No queden intents · torna a obrir l’app",
+    "eu": "Ez da saiakerarik geratzen · ireki berriro aplikazioa",
+    "es": "No quedan intentos · vuelve a abrir la app"
+  },
+  "ROAD CLOSED · NO DATA": {
+    "ca": "CARRETERA TALLADA · SENSE DADES",
+    "eu": "ERREPIDEA ITXITA · DATURIK EZ",
+    "es": "CARRETERA CORTADA · SIN DATOS"
+  },
+  "The peloton hasn’t shown up on our side yet. We’ll keep looking.": {
+    "ca": "El pilot encara no ha arribat al nostre costat. Seguirem buscant.",
+    "eu": "Tropela ez da oraindik gure aldera iritsi. Bilatzen jarraituko dugu.",
+    "es": "El pelotón aún no ha llegado a nuestro lado. Seguiremos buscando."
+  },
+  "Try again later": {
+    "ca": "Torna-ho a provar més tard",
+    "eu": "Saiatu berriro geroago",
+    "es": "Vuelve a intentarlo más tarde"
   }
 }

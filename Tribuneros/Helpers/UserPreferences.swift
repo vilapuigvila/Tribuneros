@@ -15,6 +15,7 @@ enum UserPreferencesKey: String, CaseIterable {
     case spoilerHintShownCount
     case liveHintFirstShown
     case liveHintShownCount
+    case roadLastLoaded
     case dockHintShownCount
     case onboardingFirstShown
     case onboardingShownCount
@@ -151,6 +152,10 @@ struct UserSettings {
 
     @UserDefault(UserPreferencesKey.liveHintShownCount.rawValue, defaultValue: 0)
     static var liveHintShownCount: Int?
+
+    /// When Today Races last loaded with data; the no-data screen shows it.
+    @UserDefault(UserPreferencesKey.roadLastLoaded.rawValue, defaultValue: nil)
+    static var roadLastLoaded: Date?
 
     @UserDefault(UserPreferencesKey.dockHintShownCount.rawValue, defaultValue: 0)
     static var dockHintShownCount: Int?

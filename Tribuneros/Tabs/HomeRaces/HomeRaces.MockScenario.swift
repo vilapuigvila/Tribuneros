@@ -23,6 +23,8 @@ extension HomeRaces {
         case pending
         /// Nothing today, yesterday or tomorrow, only History: the quiet-day page (notice, latest finish, earlier).
         case quiet
+        /// The load found nothing at all (as when PCS is blocked): the no-data screen, last loaded 3 hours ago.
+        case unavailable
 
         /// The one mock switch: every mock in the app asks this, and nil means real data.
         static var current: MockScenario? {
@@ -63,6 +65,19 @@ extension HomeRaces {
             if self == .previews || self == .live {
                 domain.previews = Self.mockPreviews
             }
+            if self == .unavailable {
+                domain = HomeRacesDomain(
+                    nextToFinishRaces: [],
+                    todayRaces: [],
+                    yesterdayResults: [],
+                    historyResults: [],
+                    tomorrowRaces: [],
+                    liveStatsRaces: [],
+                    error: HomeRaces.ErrorReason.emptyResponse.toEquatableError(),
+                    loading: false
+                )
+                domain.lastLoaded = now.addingTimeInterval(-3 * 3600)
+            }
             return domain
         }
 
@@ -75,7 +90,7 @@ extension HomeRaces {
             case .live, .stale, .history, .pending: return [montreal, coppa, cro, chrono]
             case .later: return [montreal, chrono]
             case .one: return [cro]
-            case .empty, .previews, .quiet: return []
+            case .empty, .previews, .quiet, .unavailable: return []
             }
         }
 

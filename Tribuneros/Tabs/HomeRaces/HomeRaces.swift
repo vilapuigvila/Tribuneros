@@ -14,6 +14,8 @@ enum HomeRaces {
         case loading
         case loaded(Representable)
         case error(ErrorView)
+        /// The load ended with no data at all (`ErrorReason.emptyResponse`): the "Empty road at dawn" screen.
+        case unavailable(Unavailable)
         
         var result: Representable {
             guard case .loaded(let result) = self else {
@@ -144,8 +146,38 @@ enum HomeRaces {
         let isOffline: Bool
     }
 
+    struct Unavailable: Equatable {
+        let triesLeft: Int
+        let lastLoaded: Date?
+
+        var isLocked: Bool { triesLeft == 0 }
+    }
+
+    /// "Try again" taps on the no-data screen: 3 per app session, back to 3 after a load with data.
+    struct RetryBudget: Equatable {
+        static let maxTries = 3
+        /// Lives for the process, so a language switch (which rebuilds the tabs) keeps the count.
+        nonisolated(unsafe) static var session = RetryBudget()
+
+        private(set) var used = 0
+
+        var left: Int { max(0, Self.maxTries - used) }
+
+        /// Uses one try; false when none is left.
+        mutating func consume() -> Bool {
+            guard left > 0 else { return false }
+            used += 1
+            return true
+        }
+
+        mutating func reset() {
+            used = 0
+        }
+    }
+
     enum Action: Hashable, Sendable {
         case onAppear
+        case retryUnavailable
         case onDisappear
         case toggleReveal(Representable.RaceFinished)
         case dismissSpoilerHint

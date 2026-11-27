@@ -1,0 +1,58 @@
+# Today Races with no data at all (mock scenario "unavailable", Debug build only): the
+# "Empty road at dawn" screen with its last-update row; three "Try again" taps use up the
+# session's tries and lock the button.
+appId: com.pskmoons.Tribuneros
+tags:
+  - home
+  - mock
+---
+- launchApp:
+    clearState: true
+    arguments:
+      mockScenario: unavailable
+- extendedWaitUntil:
+    visible:
+      id: "home.unavailable.title"
+    timeout: 20000
+- assertVisible:
+    id: "home.unavailable.title"
+    text: "No info available"
+- assertVisible:
+    id: "home.unavailable.tag"
+    text: "ROAD CLOSED · NO DATA"
+- assertVisible:
+    id: "home.unavailable.lastLoaded"
+    text: "Last updated.*"
+- assertVisible:
+    id: "home.unavailable.hint"
+    text: ".*3 tries left.*"
+- assertNotVisible: "Something went wrong"
+- takeScreenshot: today-races-unavailable
+- tapOn:
+    id: "home.unavailable.retry"
+- extendedWaitUntil:
+    visible:
+      id: "home.unavailable.hint"
+      text: ".*2 tries left.*"
+    timeout: 5000
+- tapOn:
+    id: "home.unavailable.retry"
+- extendedWaitUntil:
+    visible:
+      id: "home.unavailable.hint"
+      text: ".*1 try left.*"
+    timeout: 5000
+- tapOn:
+    id: "home.unavailable.retry"
+- extendedWaitUntil:
+    visible:
+      id: "home.unavailable.hint"
+      text: ".*No tries left.*"
+    timeout: 5000
+- assertVisible:
+    id: "home.unavailable.retry"
+    text: "Try again later"
+- assertVisible:
+    id: "home.unavailable.retry"
+    enabled: false
+- takeScreenshot: today-races-unavailable-locked

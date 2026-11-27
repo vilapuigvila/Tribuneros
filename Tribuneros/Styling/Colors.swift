@@ -61,6 +61,24 @@ extension Color {
             Color(hex: 0xE6F2D9)
         case .vaporGroupBadge:
             Color(hex: 0x2F6FDE)
+        case .roadDawnSkyTop:
+            Color(hex: 0x150E1E)
+        case .roadDawnSkyMid:
+            Color(hex: 0x2A1B3D)
+        case .roadDawnSkyLow:
+            Color(hex: 0x7A3E5C)
+        case .roadDawnHorizon:
+            Color(hex: 0xE58A6A)
+        case .roadDawnSun:
+            Color(hex: 0xFFD9A8)
+        case .roadDawnGlow:
+            Color(hex: 0xFFB27A)
+        case .roadDawnRidgeNear:
+            Color(hex: 0x1B1230)
+        case .roadDawnGround:
+            Color(hex: 0x0F0A1B)
+        case .roadDawnRoad:
+            Color(hex: 0x171026)
         case .mudPageBackground:
             Color(hex: 0x0E0B08)
         case .mudCardSurface:
@@ -337,6 +355,17 @@ extension Color {
         case vaporProfileDone
         /// The blue round badge of a group in the situation list.
         case vaporGroupBadge
+
+        // MARK: - Road no-data painting (Empty road at dawn) -
+        case roadDawnSkyTop
+        case roadDawnSkyMid
+        case roadDawnSkyLow
+        case roadDawnHorizon
+        case roadDawnSun
+        case roadDawnGlow
+        case roadDawnRidgeNear
+        case roadDawnGround
+        case roadDawnRoad
         // MARK: - Mud (CX Zone Series lens) -
         case mudPageBackground
         case mudCardSurface

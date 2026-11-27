@@ -129,7 +129,7 @@ private struct HomeRacesMockHarness: View {
             switch action {
             case .toggleReveal(let race):
                 toggle(race)
-            case .onAppear, .onDisappear, .dismissSpoilerHint, .navigate, .openLink, .openRaceResult, .openRacePreview:
+            case .onAppear, .onDisappear, .dismissSpoilerHint, .navigate, .openLink, .openRaceResult, .openRacePreview, .retryUnavailable:
                 break
             }
         }
@@ -184,5 +184,12 @@ private struct HomeRacesMockHarness: View {
 }
 
 #Preview("Home — empty") {
-    HomeRacesMockHarness(initialState: .error(.emtpyData))
+    HomeRacesMockHarness(
+        initialState: .unavailable(
+            HomeRaces.Unavailable(
+                triesLeft: 3,
+                lastLoaded: Date().addingTimeInterval(-3 * 3600)
+            )
+        )
+    )
 }

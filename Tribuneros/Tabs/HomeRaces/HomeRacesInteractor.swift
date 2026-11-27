@@ -29,6 +29,10 @@ struct HomeRacesDomain: Equatable {
     private(set) var revealedRaces: Set<String> = []
     /// `UserSettings.hidesResults`: results start hidden behind the spoiler painting.
     var hidesResults = true
+    /// Tries left on the no-data screen (`HomeRaces.RetryBudget.session`).
+    var retriesLeft = HomeRaces.RetryBudget.maxTries
+    /// When a load last had data (`UserSettings.roadLastLoaded`).
+    var lastLoaded: Date? = nil
 
     static let empty: HomeRacesDomain = .init(
         nextToFinishRaces: [],
@@ -123,6 +127,13 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
         case .dismissSpoilerHint:
             hintVisible = false
             subject.send(applyingSession(domain))
+        case .retryUnavailable:
+            guard HomeRaces.RetryBudget.session.consume() else {
+                subject.send(applyingSession(domain))
+                return
+            }
+            subject.send(applyingSession(domain))
+            self.useCase(.requestDayRaces(date: Date()))
         case .requestDayRaces(_):
             guard task == nil else { return }
             #if DEBUG
@@ -157,6 +168,15 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                     }
                     
                     let historyResults = await history
+                    let isEmpty = Self.isEmptyResponse(result, history: historyResults)
+                    UserSettings.roadLastLoaded = Self.lastLoaded(
+                        afterLoadAt: Date(),
+                        isEmpty: isEmpty,
+                        previous: UserSettings.roadLastLoaded
+                    )
+                    if !isEmpty {
+                        HomeRaces.RetryBudget.session.reset()
+                    }
 
                     guard let self else { return }
                     self.subject.send(
@@ -167,7 +187,7 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
                             historyResults: historyResults,
                             tomorrowRaces: result.tomorrowRaces,
                             liveStatsRaces: result.liveStats,
-                            error: Self.isEmptyResponse(result, history: historyResults)
+                            error: isEmpty
                             ? HomeRaces.ErrorReason.emptyResponse.toEquatableError()
                             : nil,
                             loading: false,
@@ -222,10 +242,21 @@ final class HomeRacesInteractorImpl: InteractorProtocol {
         home.tomorrowRaces.isEmpty && home.liveStats.isEmpty && history.isEmpty
     }
 
+    /// Only a load with data moves the "Last updated" time.
+    static func lastLoaded(
+        afterLoadAt now: Date,
+        isEmpty: Bool,
+        previous: Date?
+    ) -> Date? {
+        isEmpty ? previous : now
+    }
+
     private func applyingSession(_ domain: Domain) -> Domain {
         var updated = domain
         updated.showSpoilerHint = hintVisible
         updated.hidesResults = hidesResults
+        updated.retriesLeft = HomeRaces.RetryBudget.session.left
+        updated.lastLoaded = updated.lastLoaded ?? UserSettings.roadLastLoaded
         return updated
     }
 
@@ -285,6 +316,7 @@ extension HomeRaces {
         case cancelRequestStation
         case toggleReveal(key: String)
         case dismissSpoilerHint
+        case retryUnavailable
 //        case navigate(HomeRaces.Navigate)
     }
     
